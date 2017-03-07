@@ -1,6 +1,6 @@
 var restify = require('restify')
 
-function respond(req, res, next) {
+function respond (req, res, next) {
   res.send('hello ' + req.params.name)
   next()
 }

@@ -1,0 +1,9 @@
+FROM node:6.10.0-alpine
+RUN mkdir -p /usr/www
+WORKDIR /usr/www
+COPY package.json /usr/www/package.json
+RUN npm i
+COPY src /usr/www/src
+COPY test /usr/www/test
+EXPOSE 3001
+CMD ./node_modules/.bin/standard && ./node_modules/.bin/mocha test/*.js

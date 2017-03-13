@@ -4,7 +4,7 @@ IMAGEDEV:=nudj/api-dev
 CWD=$(shell pwd)
 BIN:=./node_modules/.bin
 
-.PHONY: build buildDev run dev pack test tdd
+.PHONY: build buildDev run dev test tdd
 
 build:
 	@docker build -t $(IMAGE) .
@@ -24,10 +24,11 @@ dev:
 	@docker run --rm -it \
 		--name dev-container \
 		-p 0.0.0.0:3001:3001 \
-		-v $(CWD)/src:/usr/www/src \
+		-v $(CWD)/src/package.json:/usr/src/package.json \
+		-v $(CWD)/src/lib:/usr/src/lib \
 		$(IMAGEDEV) \
 		$(BIN)/nodemon \
-			--config src/nodemon.json \
+			--config nodemon.json \
 			-e js \
 			--quiet \
 			--watch ./ \
@@ -38,16 +39,16 @@ test:
 	-@docker rm -f test-container 2> /dev/null || true
 	@docker run --rm -it \
 		--name test-container \
-		-v $(CWD)/src:/usr/www/src \
-		-v $(CWD)/test:/usr/www/test \
+		-v $(CWD)/src/lib:/usr/src/lib \
+		-v $(CWD)/src/test:/usr/src/test \
 		$(IMAGEDEV)
 
 tdd:
 	-@docker rm -f test-container 2> /dev/null || true
 	@docker run --rm -it \
 		--name test-container \
-		-v $(CWD)/src:/usr/www/src \
-		-v $(CWD)/test:/usr/www/test \
+		-v $(CWD)/src/lib:/usr/src/lib \
+		-v $(CWD)/src/test:/usr/src/test \
 		$(IMAGEDEV) \
 		$(BIN)/nodemon \
 			--quiet \

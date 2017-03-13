@@ -2,7 +2,7 @@
   "name": "api",
   "version": "0.1.0",
   "description": "Internal api for nudj data",
-  "main": "src",
+  "main": "lib",
   "directories": {
     "test": "test"
   },

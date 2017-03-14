@@ -18,7 +18,10 @@ describe('Store', function () {
 
   before(function () {
     fetchStub = sinon.stub().resolves({
-      id: 'some job'
+      _key: '18598',
+      _id: 'jobs/18598',
+      _rev: '_UqxYheW---',
+      title: 'some job'
     })
     Store = proxyquire('../lib/store', {
       'node-fetch': fetchStub
@@ -33,18 +36,19 @@ describe('Store', function () {
 
     beforeEach(function () {
       result = Store.getOne('jobs', {
-        id: 1
+        id: '18598'
       })
       return result
     })
 
     it('should fetch the data from the db', function () {
-      expect(fetchStub).to.have.been.calledWith(`http://db:8529/_api/document/jobs/1`)
+      expect(fetchStub).to.have.been.calledWith(`http://db:8529/_api/document/jobs/18598`)
     })
 
     it('should return the result of the db fetch', function () {
       return expect(result).to.eventually.deep.equal({
-        id: 'some job'
+        id: '18598',
+        title: 'some job'
       })
     })
   })

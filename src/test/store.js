@@ -12,8 +12,6 @@ chai.use(sinonChai)
 chai.use(chaiAsPromised)
 chai.use(dirtyChai)
 
-let Store = require('../lib/store')
-
 describe('Store', function () {
   let Store
   let fetchStub

@@ -44,9 +44,9 @@ test:
 		$(IMAGEDEV)
 
 tdd:
-	-@docker rm -f test-container 2> /dev/null || true
+	-@docker rm -f tdd-container 2> /dev/null || true
 	@docker run --rm -it \
-		--name test-container \
+		--name tdd-container \
 		-v $(CWD)/src/lib:/usr/src/lib \
 		-v $(CWD)/src/test:/usr/src/test \
 		$(IMAGEDEV) \
@@ -54,4 +54,4 @@ tdd:
 			--quiet \
 			--watch ./ \
 			--delay 250ms \
-			-x '$(BIN)/mocha test/*.js || exit 1'
+			-x '$(BIN)/standard && $(BIN)/mocha test/*.js || exit 1'

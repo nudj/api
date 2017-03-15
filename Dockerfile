@@ -1,8 +1,8 @@
 FROM node:6.10.0-alpine
-RUN mkdir -p /usr/www
-WORKDIR /usr/www
-COPY package.json /usr/www/package.json
+ARG NPM_TOKEN
+RUN mkdir -p /usr/src
+WORKDIR /usr/src
+COPY src /usr/src
 RUN npm i --production
-COPY src /usr/www/src
-EXPOSE 3001
+EXPOSE 3000
 CMD node .

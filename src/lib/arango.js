@@ -1,13 +1,14 @@
 let fetch = require('node-fetch')
 let omit = require('lodash/omit')
+let reduce = require('lodash/reduce')
 
 let StoreError = require('./errors').StoreError
 
-function extractData (response) {
+function extractJson (response) {
   return Promise.resolve(response.json())
 }
 
-function normaliseData (data) {
+function normalise (data) {
   if (data.error) {
     return {
       error: true,
@@ -16,23 +17,40 @@ function normaliseData (data) {
     }
   }
   return Object.assign({
-    id: data._key
-  }, omit(data, [
+    id: data.document._key
+  }, omit(data.document, [
     '_key',
     '_id',
     '_rev'
   ]))
 }
 
-function normaliseError (error) {
+function handleError (error) {
   return Promise.reject(new StoreError(error.message, error.code, error))
+}
+
+function denormalise (data) {
+  return reduce(data, (result, value, key) => {
+    if (key === 'id') {
+      result._key = value
+    } else {
+      result[key] = value
+    }
+    return result
+  }, {})
 }
 
 module.exports = {
   getOne: (type, filters) => {
-    return fetch(`http://db:8529/_api/document/${type}/${filters.id}`)
-      .then(extractData)
-      .then(normaliseData)
-      .catch(normaliseError)
+    return fetch(`http://db:8529/_api/simple/first-example`, {
+      method: 'PUT',
+      body: JSON.stringify({
+        collection: type,
+        example: denormalise(filters)
+      })
+    })
+    .then(extractJson)
+    .then(normalise)
+    .catch(handleError)
   }
 }

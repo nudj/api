@@ -35,22 +35,34 @@ describe('Arango', function () {
       before(function () {
         fetchStub.resolves({
           json: () => ({
-            _key: '18598',
-            _id: 'jobs/18598',
-            _rev: '_UqxYheW---',
-            title: 'some job'
+            document: {
+              _key: '18598',
+              _id: 'jobs/18598',
+              _rev: '_UqxYheW---',
+              title: 'some job'
+            },
+            error: false,
+            code: 200
           })
         })
       })
       beforeEach(function () {
-        result = Store.getOne('jobs', {
+        result = Store.getOne('type', {
           id: '18598'
         })
         return result
       })
 
       it('should fetch the data from the db', function () {
-        expect(fetchStub).to.have.been.calledWith(`http://db:8529/_api/document/jobs/18598`)
+        expect(fetchStub).to.have.been.calledWith('http://db:8529/_api/simple/first-example', {
+          method: 'PUT',
+          body: JSON.stringify({
+            collection: 'type',
+            example: {
+              _key: '18598'
+            }
+          })
+        })
       })
 
       it('should return the normalised result of the db fetch', function () {
@@ -66,16 +78,16 @@ describe('Arango', function () {
         fetchStub.resolves({
           json: () => ({
             error: true,
-            errorMessage: 'document not found',
             code: 404,
-            errorNum: 1202
+            errorNum: 404,
+            errorMessage: 'no match'
           })
         })
-        return expect(Store.getOne('jobs', {
+        return expect(Store.getOne('type', {
           id: '18598'
         })).to.eventually.deep.equal({
           code: 404,
-          message: 'document not found',
+          message: 'no match',
           error: true
         })
       })
@@ -84,7 +96,7 @@ describe('Arango', function () {
     describe('when fetch rejects with error', function () {
       it('should reject with Error', function () {
         fetchStub.rejects(new Error())
-        return expect(Store.getOne('jobs', {
+        return expect(Store.getOne('type', {
           id: '18598'
         })).to.eventually.be.rejectedWith(StoreError)
       })

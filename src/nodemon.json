@@ -1,6 +1,4 @@
 {
-  "ignore": [
-    "src/build*"
-  ],
+  "ignore": [],
   "ext": "js"
 }

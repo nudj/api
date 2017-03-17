@@ -41,9 +41,11 @@ steps:
     type: push
     candidate: '${{build_image}}'
     tag: 0.1.0
-    credentials:
-      username: '${{dockerUsername}}'
-      password: '${{dockerPassword}}'
+    provider: 'ecr'
+    registry: ${{AWS_REGISTRY}}
+    accessKeyId: ${{AWS_ACCESS_KEY}}
+    secretAccessKey: ${{AWS_SECRET_KEY}}
+    region: ${{AWS_REGION}}
     when:
       branch:
         only:

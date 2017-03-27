@@ -38,4 +38,11 @@ module.exports = (server) => {
       .catch(handleReject)
       .then((data) => res.status(data.status) && res.json(data.body))
   })
+  server.post('/referrals', (req, res) => {
+    Store
+      .createUnique('referrals', req.body)
+      .then(handleResolve)
+      .catch(handleReject)
+      .then((data) => res.status(data.status) && res.json(data.body))
+  })
 }

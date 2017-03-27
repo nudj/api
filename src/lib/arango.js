@@ -1,28 +1,41 @@
-let fetch = require('node-fetch')
-let omit = require('lodash/omit')
+let nodeFetch = require('node-fetch')
 let reduce = require('lodash/reduce')
 
 let StoreError = require('./errors').StoreError
+
+function fetch (path, options) {
+  return nodeFetch(`http://db:8529/_api/${path}`, options)
+    .then(extractJson)
+    .catch(handleError)
+}
 
 function extractJson (response) {
   return Promise.resolve(response.json())
 }
 
-function normalise (data) {
-  if (data.error) {
-    return {
-      error: true,
-      message: data.errorMessage,
-      code: data.code
+function normalise (responseKey) {
+  return (data) => {
+    if (data.error) {
+      return Promise.resolve({
+        error: true,
+        errorMessage: data.errorMessage,
+        code: data.code
+      })
     }
+    return reduce(data[responseKey], (result, value, key) => {
+      switch (key) {
+        case '_key':
+          result.id = value
+          break
+        case '_id':
+        case '_rev':
+          break
+        default:
+          result[key] = value
+      }
+      return result
+    }, {})
   }
-  return Object.assign({
-    id: data.document._key
-  }, omit(data.document, [
-    '_key',
-    '_id',
-    '_rev'
-  ]))
 }
 
 function handleError (error) {
@@ -40,17 +53,37 @@ function denormalise (data) {
   }, {})
 }
 
-module.exports = {
-  getOne: (type, filters) => {
-    return fetch(`http://db:8529/_api/simple/first-example`, {
-      method: 'PUT',
-      body: JSON.stringify({
-        collection: type,
-        example: denormalise(filters)
-      })
+function getOne (type, filters) {
+  return fetch('simple/first-example', {
+    method: 'PUT',
+    body: JSON.stringify({
+      collection: type,
+      example: denormalise(filters)
     })
-    .then(extractJson)
-    .then(normalise)
-    .catch(handleError)
-  }
+  })
+  .then(normalise('document'))
+}
+
+function createUnique (type, props) {
+  return getOne(type, props)
+  .then((data) => {
+    if (data.code === 404) {
+      return fetch(`document/${type}?returnNew=true`, {
+        method: 'POST',
+        body: JSON.stringify(props)
+      })
+      .then(normalise('new'))
+    } else {
+      return Promise.resolve({
+        error: true,
+        errorMessage: 'already exists',
+        code: 409
+      })
+    }
+  })
+}
+
+module.exports = {
+  getOne,
+  createUnique
 }

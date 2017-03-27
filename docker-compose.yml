@@ -1,0 +1,15 @@
+version: '2'
+services:
+  api:
+    image: nudj/api:latest
+    depends_on:
+      - db
+    ports:
+      - "81:3001"
+  db:
+    image: arangodb
+    environment:
+      - ARANGO_NO_AUTH=1
+    ports:
+      - "8529:8529"
+    command: arangod --server.authentication false

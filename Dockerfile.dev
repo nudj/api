@@ -6,4 +6,4 @@ RUN npm i
 COPY src/lib /usr/src/lib
 COPY src/test /usr/src/test
 EXPOSE 3001
-CMD ./node_modules/.bin/standard && ./node_modules/.bin/mocha test/*.js
+CMD ./node_modules/.bin/standard && ./node_modules/.bin/mocha --recursive test

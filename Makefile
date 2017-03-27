@@ -54,4 +54,4 @@ tdd:
 			--quiet \
 			--watch ./ \
 			--delay 250ms \
-			-x '$(BIN)/standard && $(BIN)/mocha test/**/*.js || exit 1'
+			-x '$(BIN)/standard && $(BIN)/mocha --recursive test || exit 1'

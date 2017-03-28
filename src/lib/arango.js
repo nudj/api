@@ -77,7 +77,8 @@ function createUnique (type, props) {
       return Promise.resolve({
         error: true,
         errorMessage: 'already exists',
-        code: 409
+        code: 409,
+        document: data
       })
     }
   })

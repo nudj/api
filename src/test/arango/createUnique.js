@@ -79,7 +79,7 @@ describe('Arango.createUnique', function () {
       })
     })
 
-    it('should check for an existing record with the same props', function () {
+    it('should post new document to db', function () {
       expect(fetchStub).to.have.been.calledWith('http://db:8529/_api/document/type?returnNew=true', {
         method: 'POST',
         body: JSON.stringify({
@@ -140,7 +140,11 @@ describe('Arango.createUnique', function () {
       return expect(result).to.eventually.deep.equal({
         code: 409,
         errorMessage: 'already exists',
-        error: true
+        error: true,
+        document: {
+          id: '12345',
+          title: 'new item'
+        }
       })
     })
   })

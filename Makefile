@@ -15,25 +15,33 @@ buildDev:
 run:
 	@docker run -it --rm \
 		--name web \
-		-p 0.0.0.0:4001:3001 \
+		-p 0.0.0.0:81:81 \
 		$(IMAGE)
-	@echo 'App running on http://localhost:4001/'
+	@echo 'App running on http://localhost:81/'
+
+cache:
+	-@docker rm -f dev-cache 2> /dev/null || true
+	@docker run --rm -it \
+		--name dev-cache \
+		-v $(CWD)/.cache:/usr/src/.cache \
+		$(IMAGEDEV) \
+		/bin/sh -c 'cp -R /tmp/node_modules/. .cache/'
 
 dev:
 	-@docker rm -f dev-container 2> /dev/null || true
 	@docker run --rm -it \
 		--name dev-container \
-		-p 0.0.0.0:3001:3001 \
-		-v $(CWD)/src/package.json:/usr/src/package.json \
+		-p 0.0.0.0:81:81 \
 		-v $(CWD)/src/lib:/usr/src/lib \
+		-v $(CWD)/src/test:/usr/src/test \
 		$(IMAGEDEV) \
-		$(BIN)/nodemon \
+		/bin/sh -c 'ln -s /tmp/node_modules ./node_modules && $(BIN)/nodemon \
 			--config nodemon.json \
 			-e js \
 			--quiet \
 			--watch ./ \
 			--delay 250ms \
-			-x 'node .'
+			-x "node ."'
 
 test:
 	-@docker rm -f test-container 2> /dev/null || true
@@ -50,8 +58,8 @@ tdd:
 		-v $(CWD)/src/lib:/usr/src/lib \
 		-v $(CWD)/src/test:/usr/src/test \
 		$(IMAGEDEV) \
-		$(BIN)/nodemon \
+		/bin/sh -c 'ln -s /tmp/node_modules ./node_modules && $(BIN)/nodemon \
 			--quiet \
 			--watch ./ \
 			--delay 250ms \
-			-x '$(BIN)/standard && $(BIN)/mocha --recursive test || exit 1'
+			-x "$(BIN)/standard && $(BIN)/mocha --recursive test || exit 1"'

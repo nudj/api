@@ -1,9 +1,8 @@
 FROM node:6.10.0-alpine
-RUN mkdir -p /usr/src
+COPY src/package.json /tmp/
+COPY .cache /tmp/node_modules
+RUN cd /tmp && npm i && mkdir -p /usr/src
 WORKDIR /usr/src
-COPY src/package.json /usr/src/package.json
-RUN npm i
-COPY src/lib /usr/src/lib
-COPY src/test /usr/src/test
+COPY src /usr/src
 EXPOSE 3001
-CMD ./node_modules/.bin/standard && ./node_modules/.bin/mocha --recursive test
+CMD ln -s /tmp/node_modules ./node_modules && ./node_modules/.bin/standard && ./node_modules/.bin/mocha --recursive test

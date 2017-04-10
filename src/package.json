@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/nudj/api#readme",
   "dependencies": {
+    "date-fns": "^1.28.2",
     "lodash": "^4.17.4",
     "restify": "^4.3.0",
     "node-fetch": "^1.6.3"

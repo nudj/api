@@ -2,7 +2,7 @@ let Store = require('./arango')
 
 function handleResolve (data) {
   if (data.error) {
-    console.error('RESPONSE ERROR', data.error.message)
+    console.error('RESPONSE ERROR', data)
     return Promise.resolve({
       status: data.code,
       body: data
@@ -15,7 +15,7 @@ function handleResolve (data) {
 }
 
 function handleReject (error) {
-  console.error('REQUEST ERROR', error.message)
+  console.error('REQUEST ERROR', error)
   return Promise.resolve({
     status: 500,
     body: {
@@ -34,8 +34,8 @@ module.exports = (server) => {
     Store
       .getOne(req.params.type, req.query)
       .then(handleResolve)
-      .then(getResponder(res))
       .catch(handleReject)
+      .then(getResponder(res))
   })
   server.get('/:type/:id', (req, res) => {
     let filters
@@ -47,14 +47,21 @@ module.exports = (server) => {
     Store
       .getOne(req.params.type, filters)
       .then(handleResolve)
-      .then(getResponder(res))
       .catch(handleReject)
+      .then(getResponder(res))
   })
-  server.post('/referrals', (req, res) => {
+  server.post('/:type', (req, res) => {
     Store
-      .createUnique('referrals', req.body)
+      .createUnique(req.params.type, req.body)
       .then(handleResolve)
-      .then(getResponder(res))
       .catch(handleReject)
+      .then(getResponder(res))
+  })
+  server.patch('/:type/:id', (req, res) => {
+    Store
+      .patch(req.params.type, req.params.id, req.body)
+      .then(handleResolve)
+      .catch(handleReject)
+      .then(getResponder(res))
   })
 }

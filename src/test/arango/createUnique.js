@@ -80,12 +80,14 @@ describe('Arango.createUnique', function () {
     })
 
     it('should post new document to db', function () {
-      expect(fetchStub).to.have.been.calledWith('http://db:8529/_api/document/type?returnNew=true', {
-        method: 'POST',
-        body: JSON.stringify({
-          title: 'new item'
-        })
-      })
+      expect(fetchStub).to.have.been.calledWith('http://db:8529/_api/document/type?returnNew=true')
+      let options = fetchStub.getCall(1).args[1]
+      expect(options).to.have.property('method', 'POST')
+      expect(options).to.have.property('body')
+      let body = JSON.parse(options.body)
+      expect(body).to.have.property('title', 'new item')
+      expect(body).to.have.property('created')
+      expect(body).to.have.property('modified')
     })
 
     it('should return the normalised result of the db fetch', function () {

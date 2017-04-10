@@ -54,9 +54,11 @@ function denormalise (data) {
   }, {})
 }
 
-function addDateTimes (data) {
+function addDateTimes (data, addCreated) {
   let datetime = format(new Date())
-  data.created = data.created || datetime
+  if (addCreated) {
+    data.created = datetime
+  }
   data.modified = datetime
   return data
 }
@@ -78,7 +80,7 @@ function createUnique (type, props) {
     if (data.code === 404) {
       return fetch(`document/${type}?returnNew=true`, {
         method: 'POST',
-        body: JSON.stringify(addDateTimes(props))
+        body: JSON.stringify(addDateTimes(props, true))
       })
       .then(normalise('new'))
     } else {
@@ -95,9 +97,7 @@ function createUnique (type, props) {
 function patch (type, id, props) {
   return fetch(`document/${type}/${id}?returnNew=true`, {
     method: 'PATCH',
-    body: JSON.stringify(Object.assign(props, {
-      modified: format(new Date())
-    }))
+    body: JSON.stringify(addDateTimes(props))
   })
   .then(normalise('new'))
 }

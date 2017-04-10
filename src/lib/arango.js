@@ -1,4 +1,5 @@
 let nodeFetch = require('node-fetch')
+let format = require('date-fns/format')
 let reduce = require('lodash/reduce')
 
 let StoreError = require('./errors').StoreError
@@ -53,6 +54,13 @@ function denormalise (data) {
   }, {})
 }
 
+function addDateTimes (data) {
+  let datetime = format(new Date())
+  data.created = data.created || datetime
+  data.modified = datetime
+  return data
+}
+
 function getOne (type, filters) {
   return fetch('simple/first-example', {
     method: 'PUT',
@@ -70,7 +78,7 @@ function createUnique (type, props) {
     if (data.code === 404) {
       return fetch(`document/${type}?returnNew=true`, {
         method: 'POST',
-        body: JSON.stringify(props)
+        body: JSON.stringify(addDateTimes(props))
       })
       .then(normalise('new'))
     } else {
@@ -84,7 +92,18 @@ function createUnique (type, props) {
   })
 }
 
+function patch (type, id, props) {
+  return fetch(`document/${type}/${id}?returnNew=true`, {
+    method: 'PATCH',
+    body: JSON.stringify(Object.assign(props, {
+      modified: format(new Date())
+    }))
+  })
+  .then(normalise('new'))
+}
+
 module.exports = {
   getOne,
-  createUnique
+  createUnique,
+  patch
 }

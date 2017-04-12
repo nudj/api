@@ -53,15 +53,14 @@ describe('Arango.getOne', function () {
     })
 
     it('should fetch the data from the db', function () {
-      expect(fetchStub).to.have.been.calledWith('http://db:8529/_api/simple/first-example', {
-        method: 'PUT',
-        body: JSON.stringify({
-          collection: 'type',
-          example: {
-            _key: '18598'
-          }
-        })
-      })
+      expect(fetchStub).to.have.been.calledWith('http://db:8529/_db/nudj/_api/simple/first-example')
+      let options = fetchStub.getCall(0).args[1]
+      expect(options).to.have.property('method', 'PUT')
+      expect(options).to.have.property('body')
+      expect(options).to.have.deep.property('headers.Authorization')
+      let body = JSON.parse(options.body)
+      expect(body).to.have.property('collection', 'type')
+      expect(body).to.have.deep.property('example._key', '18598')
     })
 
     it('should return the normalised result of the db fetch', function () {

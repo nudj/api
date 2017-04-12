@@ -53,7 +53,7 @@ describe('Arango.patch', function () {
     })
 
     it('should send the patch to the db', function () {
-      expect(fetchStub).to.have.been.calledWith('http://db:8529/_api/document/type/123?returnNew=true')
+      expect(fetchStub).to.have.been.calledWith('http://db:8529/_db/nudj/_api/document/type/123?returnNew=true')
       let options = fetchStub.getCall(0).args[1]
       expect(options).to.have.property('method', 'PATCH')
       expect(options).to.have.property('body')

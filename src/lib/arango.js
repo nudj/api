@@ -3,11 +3,16 @@ let format = require('date-fns/format')
 let reduce = require('lodash/reduce')
 
 let StoreError = require('./errors').StoreError
+let authHash = new Buffer(process.env.DB_USER + ':' + process.env.DB_PASS).toString('base64')
 
 function fetch (path, options) {
-  return nodeFetch(`http://db:8529/_api/${path}`, options)
-    .then(extractJson)
-    .catch(handleError)
+  return nodeFetch(`http://db:8529/_db/nudj/_api/${path}`, Object.assign(options, {
+    headers: {
+      'Authorization': 'Basic ' + authHash
+    }
+  }))
+  .then(extractJson)
+  .catch(handleError)
 }
 
 function extractJson (response) {

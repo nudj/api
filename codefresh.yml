@@ -28,7 +28,7 @@ steps:
     title: Build Image
     type: build
     image_name: nudj/api
-    tag: 0.3.0
+    tag: 0.4.0
     working_directory: ${{main_clone}}
     dockerfile: Dockerfile
     when:
@@ -40,7 +40,7 @@ steps:
     title: Push Image
     type: push
     candidate: '${{build_image}}'
-    tag: 0.3.0
+    tag: 0.4.0
     credentials:
       username: '${{dockerUsername}}'
       password: '${{dockerPassword}}'

@@ -9,6 +9,9 @@ BIN:=./node_modules/.bin
 build:
 	@docker build -t $(IMAGE) .
 
+push:
+	@docker push $(IMAGE):latest
+
 buildDev:
 	@docker build -t $(IMAGEDEV) -f $(CWD)/Dockerfile.dev .
 

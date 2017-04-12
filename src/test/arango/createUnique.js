@@ -32,7 +32,7 @@ describe('Arango.createUnique', function () {
     let result
 
     before(function () {
-      fetchStub.withArgs('http://db:8529/_api/simple/first-example').resolves({
+      fetchStub.withArgs('http://db:8529/_db/nudj/_api/simple/first-example').resolves({
         json: () => ({
           document: {
             error: true,
@@ -44,7 +44,7 @@ describe('Arango.createUnique', function () {
           code: 200
         })
       })
-      fetchStub.withArgs('http://db:8529/_api/document/type?returnNew=true').resolves({
+      fetchStub.withArgs('http://db:8529/_db/nudj/_api/document/type?returnNew=true').resolves({
         json: () => ({
           _key: '12345',
           _id: 'type/12345',
@@ -68,19 +68,18 @@ describe('Arango.createUnique', function () {
     })
 
     it('should check for an existing record with the same props', function () {
-      expect(fetchStub).to.have.been.calledWith('http://db:8529/_api/simple/first-example', {
-        method: 'PUT',
-        body: JSON.stringify({
-          collection: 'type',
-          example: {
-            title: 'new item'
-          }
-        })
-      })
+      expect(fetchStub).to.have.been.calledWith('http://db:8529/_db/nudj/_api/simple/first-example')
+      let options = fetchStub.getCall(0).args[1]
+      expect(options).to.have.property('method', 'PUT')
+      expect(options).to.have.property('body')
+      expect(options).to.have.deep.property('headers.Authorization')
+      let body = JSON.parse(options.body)
+      expect(body).to.have.property('collection', 'type')
+      expect(body).to.have.deep.property('example.title', 'new item')
     })
 
     it('should post new document to db', function () {
-      expect(fetchStub).to.have.been.calledWith('http://db:8529/_api/document/type?returnNew=true')
+      expect(fetchStub).to.have.been.calledWith('http://db:8529/_db/nudj/_api/document/type?returnNew=true')
       let options = fetchStub.getCall(1).args[1]
       expect(options).to.have.property('method', 'POST')
       expect(options).to.have.property('body')
@@ -102,7 +101,7 @@ describe('Arango.createUnique', function () {
     let result
 
     before(function () {
-      fetchStub.withArgs('http://db:8529/_api/simple/first-example').resolves({
+      fetchStub.withArgs('http://db:8529/_db/nudj/_api/simple/first-example').resolves({
         json: () => ({
           document: {
             _key: '12345',
@@ -123,19 +122,18 @@ describe('Arango.createUnique', function () {
     })
 
     it('should check for an existing record with the same props', function () {
-      expect(fetchStub).to.have.been.calledWith('http://db:8529/_api/simple/first-example', {
-        method: 'PUT',
-        body: JSON.stringify({
-          collection: 'type',
-          example: {
-            title: 'new item'
-          }
-        })
-      })
+      expect(fetchStub).to.have.been.calledWith('http://db:8529/_db/nudj/_api/simple/first-example')
+      let options = fetchStub.getCall(0).args[1]
+      expect(options).to.have.property('method', 'PUT')
+      expect(options).to.have.property('body')
+      expect(options).to.have.deep.property('headers.Authorization')
+      let body = JSON.parse(options.body)
+      expect(body).to.have.property('collection', 'type')
+      expect(body).to.have.deep.property('example.title', 'new item')
     })
 
     it('should not call the create endpoint', function () {
-      expect(fetchStub).to.not.have.been.calledWith('http://db:8529/_api/document/type?returnNew=true')
+      expect(fetchStub).to.not.have.been.calledWith('http://db:8529/_db/nudj/_api/document/type?returnNew=true')
     })
 
     it('should resolve with error state', function () {
@@ -153,7 +151,7 @@ describe('Arango.createUnique', function () {
 
   describe('when match check rejects with error', function () {
     it('should reject with Error', function () {
-      fetchStub.withArgs('http://db:8529/_api/simple/first-example').rejects(new Error())
+      fetchStub.withArgs('http://db:8529/_db/nudj/_api/simple/first-example').rejects(new Error())
       return expect(Store.createUnique('type', {
         title: 'new item'
       })).to.eventually.be.rejectedWith(StoreError)
@@ -162,7 +160,7 @@ describe('Arango.createUnique', function () {
 
   describe('when create rejects with error', function () {
     it('should reject with Error', function () {
-      fetchStub.withArgs('http://db:8529/_api/simple/first-example').resolves({
+      fetchStub.withArgs('http://db:8529/_db/nudj/_api/simple/first-example').resolves({
         json: () => ({
           document: {
             error: true,
@@ -174,7 +172,7 @@ describe('Arango.createUnique', function () {
           code: 200
         })
       })
-      fetchStub.withArgs('http://db:8529/_api/document/type?returnNew=true').rejects(new Error())
+      fetchStub.withArgs('http://db:8529/_db/nudj/_api/document/type?returnNew=true').rejects(new Error())
       return expect(Store.createUnique('type', {
         title: 'new item'
       })).to.eventually.be.rejectedWith(StoreError)

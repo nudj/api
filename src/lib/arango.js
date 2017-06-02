@@ -19,8 +19,8 @@ function extractJson (response) {
   return Promise.resolve(response.json())
 }
 
-function normaliseChild (data, responseKey) {
-  return reduce(data[responseKey], (result, value, key) => {
+function normaliseData (data) {
+  return reduce(data, (result, value, key) => {
     switch (key) {
       case '_key':
         result.id = value
@@ -48,10 +48,10 @@ function normalise (responseKey) {
     const parent = data[responseKey]
 
     if (Array.isArray(parent)) {
-      return parent.map((child, index) => normaliseChild(parent, index))
+      return parent.map(child => normaliseData(child))
     }
 
-    return normaliseChild(data, responseKey)
+    return normaliseData(parent)
   }
 }
 

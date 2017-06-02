@@ -19,6 +19,22 @@ function extractJson (response) {
   return Promise.resolve(response.json())
 }
 
+function normaliseData (data) {
+  return reduce(data, (result, value, key) => {
+    switch (key) {
+      case '_key':
+        result.id = value
+        break
+      case '_id':
+      case '_rev':
+        break
+      default:
+        result[key] = value
+    }
+    return result
+  }, {})
+}
+
 function normalise (responseKey) {
   return (data) => {
     if (data.error) {
@@ -28,19 +44,14 @@ function normalise (responseKey) {
         code: data.code
       })
     }
-    return reduce(data[responseKey], (result, value, key) => {
-      switch (key) {
-        case '_key':
-          result.id = value
-          break
-        case '_id':
-        case '_rev':
-          break
-        default:
-          result[key] = value
-      }
-      return result
-    }, {})
+
+    const parent = data[responseKey]
+
+    if (Array.isArray(parent)) {
+      return parent.map(normaliseData)
+    }
+
+    return normaliseData(parent)
   }
 }
 
@@ -66,6 +77,17 @@ function addDateTimes (data, addCreated) {
   }
   data.modified = datetime
   return data
+}
+
+function getAll (type, filters) {
+  return fetch('simple/all', {
+    method: 'PUT',
+    body: JSON.stringify({
+      collection: type,
+      example: denormalise(filters)
+    })
+  })
+  .then(normalise('result'))
 }
 
 function getOne (type, filters) {
@@ -108,6 +130,7 @@ function patch (type, id, props) {
 }
 
 module.exports = {
+  getAll,
   getOne,
   createUnique,
   patch

@@ -48,7 +48,7 @@ function normalise (responseKey) {
     const parent = data[responseKey]
 
     if (Array.isArray(parent)) {
-      return parent.map(child => normaliseData(child))
+      return parent.map(normaliseData)
     }
 
     return normaliseData(parent)

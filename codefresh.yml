@@ -2,44 +2,42 @@ version: '1.0'
 
 steps:
 
-  build_test_image:
-    title: Build Test Image
+  build_test:
+    title: Build Test
     type: build
-    image_name: nudj/api-dev-test
+    image_name: nudj/api-test
     working_directory: ${{main_clone}}
     dockerfile: Dockerfile.dev
 
   test:
     title: Test
-    image: ${{build_test_image}}
+    image: ${{build_test}}
     working_directory: 'IMAGE_WORK_DIR'
 
-  build_dev_image:
-    title: Build Dev Image
-    type: build
-    image_name: nudj/api-dev
-    dockerfile: Dockerfile
-    when:
-      branch:
-        ignore:
-          - master
-
-  build_image:
-    title: Build Image
+  build:
+    title: Build
     type: build
     image_name: nudj/api
-    tag: 1.0.0
-    working_directory: ${{main_clone}}
+    tag: latest
     dockerfile: Dockerfile
+
+  push_latest:
+    title: Push Latest
+    type: push
+    candidate: '${{build}}'
+    tag: latest
+    credentials:
+      username: '${{dockerUsername}}'
+      password: '${{dockerPassword}}'
     when:
       branch:
         only:
-          - master
+          - develop
 
   push_image:
-    title: Push Image
+    title: Push Release
     type: push
-    candidate: '${{build_image}}'
+    candidate: '${{build}}'
     tag: 1.0.0
     credentials:
       username: '${{dockerUsername}}'

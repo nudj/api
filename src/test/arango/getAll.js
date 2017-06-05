@@ -14,7 +14,7 @@ chai.use(sinonChai)
 chai.use(chaiAsPromised)
 chai.use(dirtyChai)
 
-describe('Arango.getAll', function () {
+describe('Arango.getFiltered', function () {
   let Store
   let fetchStub
 
@@ -54,14 +54,14 @@ describe('Arango.getAll', function () {
       })
     })
     beforeEach(function () {
-      result = Store.getAll('type', {
+      result = Store.getFiltered('type', {
         title: 'some job'
       })
       return result
     })
 
     it('should fetch the data from the db', function () {
-      expect(fetchStub).to.have.been.calledWith('http://db:8529/_db/nudj/_api/simple/all')
+      expect(fetchStub).to.have.been.calledWith('http://db:8529/_db/nudj/_api/simple/by-example')
       let options = fetchStub.getCall(0).args[1]
       expect(options).to.have.property('method', 'PUT')
       expect(options).to.have.property('body')
@@ -95,7 +95,7 @@ describe('Arango.getAll', function () {
           errorMessage: 'no match'
         })
       })
-      return expect(Store.getAll('type', {
+      return expect(Store.getFiltered('type', {
         title: 'some job'
       })).to.eventually.deep.equal({
         code: 404,
@@ -108,7 +108,7 @@ describe('Arango.getAll', function () {
   describe('when fetch rejects with error', function () {
     it('should reject with Error', function () {
       fetchStub.rejects(new Error())
-      return expect(Store.getAll('type', {
+      return expect(Store.getFiltered('type', {
         title: 'some job'
       })).to.eventually.be.rejectedWith(StoreError)
     })

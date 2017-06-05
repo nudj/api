@@ -79,8 +79,8 @@ function addDateTimes (data, addCreated) {
   return data
 }
 
-function getAll (type, filters) {
-  return fetch('simple/all', {
+function getFiltered (type, filters) {
+  return fetch('simple/by-example', {
     method: 'PUT',
     body: JSON.stringify({
       collection: type,
@@ -130,7 +130,7 @@ function patch (type, id, props) {
 }
 
 module.exports = {
-  getAll,
+  getFiltered,
   getOne,
   createUnique,
   patch

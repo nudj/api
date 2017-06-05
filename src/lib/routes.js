@@ -32,7 +32,7 @@ function getResponder (res) {
 module.exports = (server) => {
   server.get('/:type/filter', (req, res) => {
     Store
-      .getAll(req.params.type, req.query)
+      .getFiltered(req.params.type, req.query)
       .then(handleResolve)
       .catch(handleReject)
       .then(getResponder(res))

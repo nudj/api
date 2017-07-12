@@ -1,4 +1,4 @@
-FROM node:6.10.0-alpine
+FROM node:6.11.1-alpine
 RUN mkdir -p /usr/src
 WORKDIR /usr/src
 COPY src /usr/src

@@ -44,8 +44,8 @@ steps:
     candidate: '${{build}}'
     tag: latest
     credentials:
-      username: '${{cfrepoUsername}}'
-      password: '${{cfrepoPassword}}'
+      username: '${{dockerUsername}}'
+      password: '${{dockerPassword}}'
     when:
       branch:
         only:

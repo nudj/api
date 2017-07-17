@@ -7,13 +7,20 @@ BIN:=./node_modules/.bin
 .PHONY: build buildDev run dev test tdd
 
 build:
-	@docker build -t $(IMAGE) .
+	@docker build \
+		-t $(IMAGE) \
+		--build-arg NPM_TOKEN=${NPM_TOKEN} \
+		.
 
 push:
 	@docker push $(IMAGE):latest
 
 buildDev:
-	@docker build -t $(IMAGEDEV) -f $(CWD)/Dockerfile.dev .
+	@docker build \
+		-t $(IMAGEDEV) \
+		-f $(CWD)/Dockerfile.dev \
+		--build-arg NPM_TOKEN=${NPM_TOKEN} \
+		.
 
 run:
 	@docker run -it --rm \

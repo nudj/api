@@ -1,6 +1,6 @@
 {
-  "name": "api",
-  "version": "0.1.0",
+  "name": "@nudj/api",
+  "version": "1.0.0",
   "description": "Internal api for nudj data",
   "main": "lib",
   "directories": {
@@ -17,21 +17,29 @@
   },
   "homepage": "https://github.com/nudj/api#readme",
   "dependencies": {
-    "date-fns": "^1.28.2",
-    "lodash": "^4.17.4",
-    "restify": "^4.3.0",
-    "node-fetch": "^1.6.3"
+    "@nudj/library": "0.2.0",
+    "body-parser": "1.17.2",
+    "date-fns": "1.28.2",
+    "express": "4.15.3",
+    "graphql": "0.10.3",
+    "graphql-server-express": "1.0.0",
+    "graphql-tools": "1.1.0",
+    "json-server": "0.11.2",
+    "lodash": "4.17.4",
+    "node-fetch": "1.6.3",
+    "pluralize": "5.0.0",
+    "restify": "4.3.0"
   },
   "devDependencies": {
-    "chai": "^3.5.0",
-    "chai-as-promised": "^6.0.0",
-    "dirty-chai": "^1.2.2",
-    "mocha": "^3.2.0",
-    "nodemon": "^1.11.0",
-    "proxyquire": "^1.7.11",
-    "sinon": "^1.17.7",
-    "sinon-as-promised": "^4.0.2",
-    "sinon-chai": "^2.8.0",
-    "standard": "^9.0.0"
+    "chai": "3.5.0",
+    "chai-as-promised": "6.0.0",
+    "dirty-chai": "1.2.2",
+    "mocha": "3.2.0",
+    "nodemon": "1.11.0",
+    "proxyquire": "1.7.11",
+    "sinon": "1.17.7",
+    "sinon-as-promised": "4.0.2",
+    "sinon-chai": "2.8.0",
+    "standard": "9.0.0"
   }
 }

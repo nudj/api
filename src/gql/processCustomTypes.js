@@ -4,9 +4,9 @@ const some = require('lodash/some')
 const { merge } = require('@nudj/library')
 
 module.exports = ({
-  schema: customTypeDefs,
-  resolvers: customResolvers,
-  storeAdaptor: store
+  customTypeDefs,
+  customResolvers,
+  store
 }) => {
   function getRelationsFor (typeResolvers, typeName, field, fieldName, isList) {
     switch (field.kind) {

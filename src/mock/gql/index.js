@@ -1,6 +1,6 @@
 const gql = require('../../gql')
 const rest = require('../rest')
-const storeAdaptor = require('./gql/store')
+const storeAdaptor = require('./store')
 
 module.exports = ({ data, addCustomHandlers }) => {
   return {

@@ -1,5 +1,4 @@
 const { GraphQLScalarType } = require('graphql')
-const store = require('./store')
 
 const DateTime = new GraphQLScalarType({
   name: 'DateTime',
@@ -9,7 +8,7 @@ const DateTime = new GraphQLScalarType({
   parseLiteral: (ast) => ast.value
 })
 
-module.exports = {
+module.exports = ({ store }) => ({
   Query: {
     referralDepth: (obj, args, context) => {
       let count = null
@@ -27,4 +26,4 @@ module.exports = {
     }
   },
   DateTime
-}
+})

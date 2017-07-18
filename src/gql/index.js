@@ -6,13 +6,13 @@ const schema = require('./schema')
 const resolvers = require('./resolvers')
 const processCustomTypes = require('./processCustomTypes')
 
-module.exports = ({
-  storeAdaptor
-}) => {
-  const executableSchema = makeExecutableSchema(processCustomTypes({schema, resolvers, storeAdaptor}))
-  const app = express()
-  app.use('/', bodyParser.json(), graphqlExpress({
-    executableSchema
+module.exports = ({ storeAdaptor }) => {
+  const executableSchema = makeExecutableSchema(processCustomTypes({
+    customTypeDefs: schema,
+    customResolvers: resolvers({ store: storeAdaptor }),
+    store: storeAdaptor
   }))
+  const app = express()
+  app.use('/', bodyParser.json(), graphqlExpress({ executableSchema }))
   return app
 }

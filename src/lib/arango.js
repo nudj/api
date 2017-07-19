@@ -6,17 +6,23 @@ let StoreError = require('./errors').StoreError
 let authHash = new Buffer(process.env.DB_USER + ':' + process.env.DB_PASS).toString('base64')
 
 function fetch (path, options) {
-  return nodeFetch(`http://db:8529/_db/nudj/_api/${path}`, Object.assign(options, {
+  const uri = `http://db:8529/_db/nudj/_api/${path}`
+  console.log((new Date()).toISOString(), 'REQUEST', uri, options)
+  return nodeFetch(uri, Object.assign(options, {
     headers: {
       'Authorization': 'Basic ' + authHash
     }
   }))
-  .then(extractJson)
-  .catch(handleError)
+  .then(extractJson({ uri, options }))
+  .catch(handleError({ uri, options }))
 }
 
-function extractJson (response) {
-  return Promise.resolve(response.json())
+function extractJson ({ uri, options }) {
+  return (response) => {
+    const json = response.json()
+    console.log((new Date()).toISOString(), 'RESPONSE', uri, options, json)
+    return Promise.resolve(json)
+  }
 }
 
 function normaliseData (data) {
@@ -55,8 +61,12 @@ function normalise (responseKey) {
   }
 }
 
-function handleError (error) {
-  return Promise.reject(new StoreError(error.message, error.code, error))
+function handleError ({ uri, options }) {
+  return (error) => {
+    const storeError = new StoreError(error.message, error.code, error)
+    console.log((new Date()).toISOString(), 'ERROR', uri, options)
+    return Promise.reject(storeError)
+  }
 }
 
 function denormalise (data) {

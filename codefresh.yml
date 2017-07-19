@@ -8,11 +8,26 @@ steps:
     image_name: nudj/api-test
     working_directory: ${{main_clone}}
     dockerfile: Dockerfile.dev
+    build_arguments:
+      - NPM_TOKEN=${{NPM_TOKEN}}
 
   test:
     title: Test
     image: ${{build_test}}
     working_directory: 'IMAGE_WORK_DIR'
+
+  publish:
+    title: Publish package to npm
+    image: ${{build_test}}
+    working_directory: 'IMAGE_WORK_DIR'
+    environment:
+      - NPM_TOKEN=${{NPM_TOKEN}}
+    commands:
+      - npm publish
+    when:
+      branch:
+        only:
+          - publish
 
   build:
     title: Build
@@ -20,6 +35,8 @@ steps:
     image_name: nudj/api
     tag: latest
     dockerfile: Dockerfile
+    build_arguments:
+      - NPM_TOKEN=${{NPM_TOKEN}}
 
   push_latest:
     title: Push Latest
@@ -38,7 +55,7 @@ steps:
     title: Push Release
     type: push
     candidate: '${{build}}'
-    tag: 1.1.0
+    tag: 1.1.1
     credentials:
       username: '${{dockerUsername}}'
       password: '${{dockerPassword}}'

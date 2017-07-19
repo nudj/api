@@ -1,5 +1,6 @@
-FROM node:6.10.0-alpine
-COPY src/package.json /tmp/
+FROM node:6.11.1-alpine
+ARG NPM_TOKEN
+COPY src/package.json src/.npmrc /tmp/
 COPY .cache /tmp/node_modules
 RUN cd /tmp && npm i && mkdir -p /usr/src
 WORKDIR /usr/src

@@ -38,6 +38,22 @@ module.exports = ({
                 })
               }
             }
+            typeResolvers[`${fieldName.singular}ByFilter`] = (parent, args, context) => {
+              return store.readOne({
+                type: targetName.plural,
+                filters: merge(args.filters, {
+                  [`${typeName.singular}Id`]: parent.id
+                })
+              })
+            }
+            typeResolvers[`${fieldName.plural}ByFilter`] = (parent, args, context) => {
+              return store.readAll({
+                type: targetName.plural,
+                filters: merge(args.filters, {
+                  [`${typeName.singular}Id`]: parent.id
+                })
+              })
+            }
           } else {
             typeResolvers[fieldName.singular] = (parent, args, context) => {
               if (parent[`${fieldName.singular}Id`] || parent[fieldName.original]) {
@@ -169,6 +185,11 @@ module.exports = ({
           fieldStrings.type.push(`${field.name.value}: ${typeConfig.string}${typeConfig.unique ? ' @isUnique' : ''}`)
           if (!['id'].includes(field.name.value) && !tally.types.includes(typeConfig.name) && !typeConfig.list) {
             fieldStrings.filter.push(`${field.name.value}: ${typeConfig.name}`)
+          }
+          if (typeConfig.list) {
+            let fieldNamePluralisms = getPluralisms(field.name.value)
+            fieldStrings.type.push(`${fieldNamePluralisms.singular}ByFilter: ${typeConfig.name}`)
+            fieldStrings.type.push(`${fieldNamePluralisms.plural}ByFilter: [${typeConfig.name}!]`)
           }
           if (!['id', 'created', 'modified'].includes(field.name.value) && !typeConfig.list) {
             if (tally.types.includes(typeConfig.name)) {

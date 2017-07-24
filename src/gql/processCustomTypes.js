@@ -188,7 +188,7 @@ module.exports = ({
           if (!['id'].includes(field.name.value) && !tally.types.includes(typeConfig.name) && !typeConfig.list) {
             fieldStrings.filter.push(`${field.name.value}: ${typeConfig.name}`)
           }
-          if (typeConfig.list) {
+          if (typeConfig.list && tally.types.includes(typeConfig.name)) {
             let fieldNamePluralisms = getPluralisms(field.name.value)
             fieldStrings.type.push(`${fieldNamePluralisms.singular}ByFilters(filters: ${typeConfig.name}FilterInput): ${typeConfig.name}`)
             fieldStrings.type.push(`${fieldNamePluralisms.plural}ByFilters(filters: ${typeConfig.name}FilterInput): [${typeConfig.name}!]`)

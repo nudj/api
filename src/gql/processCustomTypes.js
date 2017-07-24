@@ -124,7 +124,7 @@ module.exports = ({
 
         // root resolver schemas
         schema.types.Query.push(`${typeName.singular}(id: ID!): ${type}`)
-        schema.types.Query.push(`${typeName.singular}BySlug(slug: String!): ${type}`)
+        schema.types.Query.push(`${typeName.singular}ByFilters(filters: ${type}FilterInput): ${type}`)
         schema.types.Query.push(`${typeName.plural}(filters: ${type}FilterInput): [${type}]`)
         schema.types.Mutation.push(`delete${type}(id: ID!): ${type}`)
 
@@ -196,8 +196,8 @@ module.exports = ({
         // get one (by id)
         resolvers.Query[typeName.singular] = (obj, args, context) => store.readOne({ type: typeName.plural, id: args.id })
 
-        // get one (by slug)
-        resolvers.Query[`${typeName.singular}BySlug`] = (obj, args, context) => store.readOne({ type: typeName.plural, filters: { slug: args.slug } })
+        // get one (by filters)
+        resolvers.Query[`${typeName.singular}ByFilters`] = (obj, filters, context) => store.readOne({ type: typeName.plural, filters })
 
         // get all (filterable)
         resolvers.Query[typeName.plural] = (obj, args, context) => store.readAll({ type: typeName.plural, filters: args.filters })

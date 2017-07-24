@@ -190,8 +190,8 @@ module.exports = ({
           }
           if (typeConfig.list) {
             let fieldNamePluralisms = getPluralisms(field.name.value)
-            fieldStrings.type.push(`${fieldNamePluralisms.singular}ByFilters(filters: ${fieldNamePluralisms.singular}FilterInput): ${fieldNamePluralisms.Singular}`)
-            fieldStrings.type.push(`${fieldNamePluralisms.plural}ByFilters(filters: ${fieldNamePluralisms.singular}FilterInput): [${fieldNamePluralisms.Singular}!]`)
+            fieldStrings.type.push(`${fieldNamePluralisms.singular}ByFilters(filters: ${fieldNamePluralisms.Singular}FilterInput): ${fieldNamePluralisms.Singular}`)
+            fieldStrings.type.push(`${fieldNamePluralisms.plural}ByFilters(filters: ${fieldNamePluralisms.Singular}FilterInput): [${fieldNamePluralisms.Singular}!]`)
           }
           if (!['id', 'created', 'modified'].includes(field.name.value) && !typeConfig.list) {
             if (tally.types.includes(typeConfig.name)) {

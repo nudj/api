@@ -197,7 +197,7 @@ module.exports = ({
         resolvers.Query[typeName.singular] = (obj, args, context) => store.readOne({ type: typeName.plural, id: args.id })
 
         // get one (by filters)
-        resolvers.Query[`${typeName.singular}ByFilters`] = (obj, filters, context) => store.readOne({ type: typeName.plural, filters })
+        resolvers.Query[`${typeName.singular}ByFilters`] = (obj, args, context) => store.readOne({ type: typeName.plural, filters: args.filters })
 
         // get all (filterable)
         resolvers.Query[typeName.plural] = (obj, args, context) => store.readAll({ type: typeName.plural, filters: args.filters })

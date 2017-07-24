@@ -75,7 +75,9 @@ module.exports = ({
     return {
       original,
       singular: pluralize.singular(original[0].toLowerCase() + original.slice(1)),
-      plural: pluralize.plural(original[0].toLowerCase() + original.slice(1))
+      plural: pluralize.plural(original[0].toLowerCase() + original.slice(1)),
+      Singular: pluralize.singular(original[0].toUpperCase() + original.slice(1)),
+      Plural: pluralize.plural(original[0].toUpperCase() + original.slice(1))
     }
   }
   function isCustomType (value) {
@@ -188,8 +190,8 @@ module.exports = ({
           }
           if (typeConfig.list) {
             let fieldNamePluralisms = getPluralisms(field.name.value)
-            fieldStrings.type.push(`${fieldNamePluralisms.singular}ByFilters(filters: ${fieldNamePluralisms.singular}FilterInput): ${fieldNamePluralisms.singular}`)
-            fieldStrings.type.push(`${fieldNamePluralisms.plural}ByFilters(filters: ${fieldNamePluralisms.singular}FilterInput): [${fieldNamePluralisms.singular}!]`)
+            fieldStrings.type.push(`${fieldNamePluralisms.singular}ByFilters(filters: ${fieldNamePluralisms.singular}FilterInput): ${fieldNamePluralisms.Singular}`)
+            fieldStrings.type.push(`${fieldNamePluralisms.plural}ByFilters(filters: ${fieldNamePluralisms.singular}FilterInput): [${fieldNamePluralisms.Singular}!]`)
           }
           if (!['id', 'created', 'modified'].includes(field.name.value) && !typeConfig.list) {
             if (tally.types.includes(typeConfig.name)) {

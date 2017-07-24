@@ -38,7 +38,7 @@ module.exports = ({
                 })
               }
             }
-            typeResolvers[`${fieldName.singular}ByFilter`] = (parent, args, context) => {
+            typeResolvers[`${fieldName.singular}ByFilters`] = (parent, args, context) => {
               return store.readOne({
                 type: targetName.plural,
                 filters: merge(args.filters, {
@@ -46,7 +46,7 @@ module.exports = ({
                 })
               })
             }
-            typeResolvers[`${fieldName.plural}ByFilter`] = (parent, args, context) => {
+            typeResolvers[`${fieldName.plural}ByFilters`] = (parent, args, context) => {
               return store.readAll({
                 type: targetName.plural,
                 filters: merge(args.filters, {
@@ -188,8 +188,8 @@ module.exports = ({
           }
           if (typeConfig.list) {
             let fieldNamePluralisms = getPluralisms(field.name.value)
-            fieldStrings.type.push(`${fieldNamePluralisms.singular}ByFilter: ${typeConfig.name}`)
-            fieldStrings.type.push(`${fieldNamePluralisms.plural}ByFilter: [${typeConfig.name}!]`)
+            fieldStrings.type.push(`${fieldNamePluralisms.singular}ByFilters(filters: ${fieldNamePluralisms.singular}FilterInput): ${fieldNamePluralisms.singular}`)
+            fieldStrings.type.push(`${fieldNamePluralisms.plural}ByFilters(filters: ${fieldNamePluralisms.singular}FilterInput): [${fieldNamePluralisms.singular}!]`)
           }
           if (!['id', 'created', 'modified'].includes(field.name.value) && !typeConfig.list) {
             if (tally.types.includes(typeConfig.name)) {
@@ -278,7 +278,7 @@ module.exports = ({
     }
   `).join('')
 
-  // console.log(typeDefs)
+  console.log(typeDefs)
   // console.log(resolvers)
 
   return {

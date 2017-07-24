@@ -1,6 +1,6 @@
 {
   "name": "@nudj/api",
-  "version": "1.4.3",
+  "version": "1.4.4",
   "description": "Internal api for nudj data",
   "main": "lib",
   "directories": {

@@ -33,7 +33,7 @@ module.exports = ({
                 return store.readAll({
                   type: targetName.plural,
                   filters: {
-                    [`${typeName.singular}Id`]: parent.id
+                    [`${typeName.singular}`]: parent.id
                   }
                 })
               }
@@ -42,7 +42,7 @@ module.exports = ({
               return store.readOne({
                 type: targetName.plural,
                 filters: merge(args.filters, {
-                  [`${typeName.singular}Id`]: parent.id
+                  [`${typeName.singular}`]: parent.id
                 })
               })
             }
@@ -50,16 +50,16 @@ module.exports = ({
               return store.readAll({
                 type: targetName.plural,
                 filters: merge(args.filters, {
-                  [`${typeName.singular}Id`]: parent.id
+                  [`${typeName.singular}`]: parent.id
                 })
               })
             }
           } else {
             typeResolvers[fieldName.singular] = (parent, args, context) => {
-              if (parent[`${fieldName.singular}Id`] || parent[fieldName.original]) {
+              if (parent[`${fieldName.singular}`] || parent[fieldName.original]) {
                 return store.readOne({
                   type: targetName.plural,
-                  id: parent[`${fieldName.singular}Id`] || parent[fieldName.original]
+                  id: parent[`${fieldName.singular}`] || parent[fieldName.original]
                 })
               } else {
                 return null
@@ -185,9 +185,17 @@ module.exports = ({
             }
           }
           fieldStrings.type.push(`${field.name.value}: ${typeConfig.string}${typeConfig.unique ? ' @isUnique' : ''}`)
-          if (!['id'].includes(field.name.value) && !tally.types.includes(typeConfig.name) && !typeConfig.list) {
-            fieldStrings.filter.push(`${field.name.value}: ${typeConfig.name}`)
+
+          // add field to filter input schema
+          if (!['id'].includes(field.name.value) && !typeConfig.list) {
+            if (tally.types.includes(typeConfig.name)) {
+              fieldStrings.filter.push(`${field.name.value}: ID`)
+            } else {
+              fieldStrings.filter.push(`${field.name.value}: ${typeConfig.name}`)
+            }
           }
+
+          // add [field]ByFilters to schema
           if (typeConfig.list && tally.types.includes(typeConfig.name)) {
             let fieldNamePluralisms = getPluralisms(field.name.value)
             fieldStrings.type.push(`${fieldNamePluralisms.singular}ByFilters(filters: ${typeConfig.name}FilterInput): ${typeConfig.name}`)

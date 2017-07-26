@@ -114,7 +114,7 @@ module.exports = ({
     scalars: [],
     enums: {},
     types: {
-      Query: ['referralDepth(id: ID!): Int'],
+      Query: ['referralDepth(id: ID): Int'],
       Mutation: []
     },
     inputs: {}
@@ -141,7 +141,7 @@ module.exports = ({
         // console.log('Type', type)
 
         // root resolver schemas
-        schema.types.Query.push(`${typeName.singular}(id: ID!): ${type}`)
+        schema.types.Query.push(`${typeName.singular}(id: ID): ${type}`)
         schema.types.Query.push(`${typeName.singular}ByFilters(filters: ${type}FilterInput): ${type}`)
         schema.types.Query.push(`${typeName.plural}(filters: ${type}FilterInput): [${type}]`)
         schema.types.Mutation.push(`delete${type}(id: ID!): ${type}`)

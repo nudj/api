@@ -120,9 +120,6 @@ module.exports = ({
     inputs: {}
   }
 
-  // custom resolvers
-  resolvers = merge(customResolvers, resolvers)
-
   // main loop
   parsedDefinitions.forEach((definition) => {
     const type = definition.name.value
@@ -288,8 +285,11 @@ module.exports = ({
     }
   `).join('')
 
+  // custom resolvers
+  resolvers = merge(resolvers, customResolvers)
+
   console.log(typeDefs)
-  // console.log(resolvers)
+  console.log(resolvers)
 
   return {
     typeDefs,

@@ -13,16 +13,31 @@ module.exports = ({ store }) => ({
     referralDepth: (obj, args, context) => {
       let count = null
       function fetchReferral (id) {
-        return store.one({ type: 'referrals', id }).then(referral => {
+        return store.readOne({ type: 'referrals', id }).then(referral => {
           count = count === null ? 0 : count + 1
-          if (referral.fromReferral) {
-            return fetchReferral(referral.fromReferral)
+          if (referral.parent) {
+            return fetchReferral(referral.parent)
           } else {
             return count
           }
         })
       }
       return fetchReferral(args.id)
+    }
+  },
+  Mutation: {
+    createReferral: (obj, args, context) => {
+      const { parent, person, job } = args.input
+      return store.readOne({
+        type: 'referrals',
+        filters: { person, job }
+      })
+      .then(referral => {
+        return referral || store.create({
+          type: 'referrals',
+          data: { parent, person, job }
+        })
+      })
     }
   },
   DateTime

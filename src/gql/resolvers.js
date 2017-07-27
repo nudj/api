@@ -33,7 +33,8 @@ module.exports = ({ store }) => ({
         filters: { person, job }
       })
       .then(referral => {
-        return referral || store.create({
+        if (referral) throw new Error('Already referred')
+        return store.create({
           type: 'referrals',
           data: { parent, person, job }
         })

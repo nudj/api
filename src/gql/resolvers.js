@@ -39,6 +39,20 @@ module.exports = ({ store }) => ({
           data: { parent, person, job }
         })
       })
+    },
+    createApplication: (obj, args, context) => {
+      const { referral, person, job } = args.input
+      return store.readOne({
+        type: 'applications',
+        filters: { person, job }
+      })
+      .then(application => {
+        if (application) throw new Error('Already applied')
+        return store.create({
+          type: 'applications',
+          data: { referral, person, job }
+        })
+      })
     }
   },
   DateTime

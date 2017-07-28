@@ -9,11 +9,12 @@ const toQs = (filters = {}) => {
 const takeFirst = (result) => result[0]
 const newISODate = () => (new Date()).toISOString()
 
-module.exports = {
+module.exports = ({baseURL}) => ({
   create: ({
     type,
     data
   }) => request(`/${type}`, {
+    baseURL,
     method: 'post',
     data: Object.assign(data, {
       created: newISODate(),
@@ -26,24 +27,25 @@ module.exports = {
     filters
   }) => {
     let filterString = toQs(filters)
-    return id ? request(`/${type}/${id}`) : request(`/${type}${filterString.length ? `?${filterString}` : ''}`).then(takeFirst)
+    return id ? request(`/${type}/${id}`, {baseURL}) : request(`/${type}${filterString.length ? `?${filterString}` : ''}`, {baseURL}).then(takeFirst)
   },
   readAll: ({
     type,
     filters
   }) => {
     let filterString = toQs(filters)
-    return request(`/${type}${filterString.length ? `?${filterString}` : ''}`)
+    return request(`/${type}${filterString.length ? `?${filterString}` : ''}`, {baseURL})
   },
   readMany: ({
     type,
     ids
-  }) => Promise.all(ids.map(id => request(`/${type}/${id}`))),
+  }) => Promise.all(ids.map(id => request(`/${type}/${id}`, {baseURL}))),
   update: ({
     type,
     id,
     data
   }) => request(`/${type}/${id}`, {
+    baseURL,
     method: 'patch',
     data: Object.assign(data, {
       modified: newISODate()
@@ -53,6 +55,7 @@ module.exports = {
     type,
     id
   }) => request(`/${type}/${id}`).then(item => request(`/${type}/${id}`, {
+    baseURL,
     method: 'delete'
   }).then(() => item))
-}
+})

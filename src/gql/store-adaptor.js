@@ -69,6 +69,20 @@ const StoreAdaptor = ({
     return response
       .then(response => response.result)
       .catch(errorHandler)
+  },
+  update: ({
+    type,
+    id,
+    data
+  }) => {
+    return request(`${baseURL}/document/${type}/${id}?returnNew=true`, {
+      method: 'patch',
+      data: Object.assign({
+        modified: newISODate()
+      }, data)
+    })
+    .then(response => response.new)
+    .catch(errorHandler)
   }
 })
 

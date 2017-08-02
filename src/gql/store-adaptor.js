@@ -32,7 +32,7 @@ const StoreAdaptor = ({
   }) => {
     let response
     if (id) {
-      response = request(`${baseURL}/document/test/${id}`)
+      response = request(`${baseURL}/document/${type}/${id}`)
     } else {
       response = request(`${baseURL}/simple/first-example`, {
         method: 'put',
@@ -44,6 +44,31 @@ const StoreAdaptor = ({
       .then(response => response.document)
     }
     return response.catch(errorHandler)
+  },
+  readAll: ({
+    type,
+    filters
+  }) => {
+    let response
+    if (filters) {
+      response = request(`${baseURL}/simple/by-example`, {
+        method: 'put',
+        data: {
+          collection: type,
+          example: filters
+        }
+      })
+    } else {
+      response = request(`${baseURL}/simple/all`, {
+        method: 'put',
+        data: {
+          collection: type
+        }
+      })
+    }
+    return response
+      .then(response => response.result)
+      .catch(errorHandler)
   }
 })
 

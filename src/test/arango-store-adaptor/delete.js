@@ -51,11 +51,11 @@ describe('ArangoStoreAdaptor.delete', () => {
       .query({
         returnOld: true
       })
-      .reply(200, { old: 'response' })
+      .reply(200, { old: { prop: 'value' } })
     return expect(StoreAdaptor.delete({
       type: 'test',
       id: 1
-    })).to.become('response')
+    })).to.become({ prop: 'value' })
   })
   it('handles errors', () => {
     server

@@ -20,7 +20,7 @@ describe('Arango.getOne', function () {
 
   before(function () {
     fetchStub = sinon.stub()
-    Store = proxyquire('../../lib/arango', {
+    Store = proxyquire('../../rest/arango', {
       'node-fetch': fetchStub
     })
   })

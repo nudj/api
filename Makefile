@@ -24,7 +24,7 @@ buildDev:
 
 buildLatest:
 	@docker build \
-		-t $(IMAGEDEV):latest \
+		-t $(IMAGE):latest \
 		--build-arg NPM_TOKEN=${NPM_TOKEN} \
 		.
 

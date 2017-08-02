@@ -32,7 +32,7 @@ describe('ArangoStoreAdaptor.readAll', () => {
   it('gets all from arango', () => {
     server.put('/simple/all', {
       collection: 'test'
-    }).reply(200)
+    }).reply(200, { result: [] })
     return expect(StoreAdaptor.readAll({
       type: 'test'
     })).to.be.fulfilled()
@@ -41,7 +41,7 @@ describe('ArangoStoreAdaptor.readAll', () => {
     server.put('/simple/all', {
       collection: 'test'
     }).reply(200, {
-      result: 'response',
+      result: [{ prop: 'value' }],
       hasMore: false,
       count: 2,
       cached: false,
@@ -61,7 +61,7 @@ describe('ArangoStoreAdaptor.readAll', () => {
     })
     return expect(StoreAdaptor.readAll({
       type: 'test'
-    })).to.become('response')
+    })).to.become([{ prop: 'value' }])
   })
   it('gets from arango by filters', () => {
     server.put('/simple/by-example', {
@@ -70,7 +70,7 @@ describe('ArangoStoreAdaptor.readAll', () => {
         filter: true
       }
     })
-    .reply(200)
+    .reply(200, { result: [] })
     return expect(StoreAdaptor.readAll({
       type: 'test',
       filters: {
@@ -86,7 +86,7 @@ describe('ArangoStoreAdaptor.readAll', () => {
       }
     })
     .reply(200, {
-      result: 'response',
+      result: [{ prop: 'value' }],
       hasMore: false,
       count: 4,
       error: false,
@@ -97,7 +97,7 @@ describe('ArangoStoreAdaptor.readAll', () => {
       filters: {
         filter: true
       }
-    })).to.become('response')
+    })).to.become([{ prop: 'value' }])
   })
   it('handles errors', () => {
     server.put('/simple/by-example', {

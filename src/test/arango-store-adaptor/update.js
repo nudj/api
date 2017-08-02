@@ -25,7 +25,7 @@ describe('ArangoStoreAdaptor.update', () => {
   })
   it('returns a promise', () => {
     server
-      .patch('/document/test/1', { key: 'value' })
+      .patch('/document/test/1', { prop: 'value' })
       .query({
         returnNew: true
       })
@@ -40,7 +40,7 @@ describe('ArangoStoreAdaptor.update', () => {
   })
   it('patches to arango', () => {
     server
-      .patch('/document/test/1', { key: 'value' })
+      .patch('/document/test/1', { prop: 'value' })
       .query({
         returnNew: true
       })
@@ -49,13 +49,13 @@ describe('ArangoStoreAdaptor.update', () => {
       type: 'test',
       id: 1,
       data: {
-        key: 'value'
+        prop: 'value'
       }
     })).to.be.fulfilled()
   })
-  it('resolves with the newly created object', () => {
+  it('resolves with the newly updated object', () => {
     server
-      .patch('/document/test/1', { key: 'value' })
+      .patch('/document/test/1', { prop: 'value' })
       .query({
         returnNew: true
       })
@@ -64,15 +64,15 @@ describe('ArangoStoreAdaptor.update', () => {
         _key: '9915',
         _rev: '_VWLl9f2---',
         _oldRev: '_VWLl9fy---',
-        new: 'response'
+        new: { prop: 'value' }
       })
     return expect(StoreAdaptor.update({
       type: 'test',
       id: 1,
       data: {
-        key: 'value'
+        prop: 'value'
       }
-    })).to.become('response')
+    })).to.become({ prop: 'value' })
   })
   it('adds modified to data', () => {
     server
@@ -89,13 +89,13 @@ describe('ArangoStoreAdaptor.update', () => {
       type: 'test',
       id: 1,
       data: {
-        key: 'value'
+        prop: 'value'
       }
     })).to.be.fulfilled()
   })
   it('handles errors', () => {
     server
-      .patch('/document/test/1', { key: 'value' })
+      .patch('/document/test/1', { prop: 'value' })
       .query({
         returnNew: true
       })
@@ -109,13 +109,13 @@ describe('ArangoStoreAdaptor.update', () => {
       type: 'test',
       id: 1,
       data: {
-        key: 'value'
+        prop: 'value'
       }
     })).to.be.rejectedWith(StoreError)
   })
   it('passes through error code', () => {
     server
-      .patch('/document/test/1', { key: 'value' })
+      .patch('/document/test/1', { prop: 'value' })
       .query({
         returnNew: true
       })
@@ -129,7 +129,7 @@ describe('ArangoStoreAdaptor.update', () => {
       type: 'test',
       id: 1,
       data: {
-        key: 'value'
+        prop: 'value'
       }
     }).catch(error => error.code)).to.become(400)
   })

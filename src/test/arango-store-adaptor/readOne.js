@@ -36,11 +36,11 @@ describe('ArangoStoreAdaptor.readOne', () => {
     })).to.be.fulfilled()
   })
   it('resolves by id with the response', () => {
-    server.get('/document/test/1').reply(200, 'response')
+    server.get('/document/test/1').reply(200, { prop: 'value' })
     return expect(StoreAdaptor.readOne({
       type: 'test',
       id: 1
-    })).to.become('response')
+    })).to.become({ prop: 'value' })
   })
   it('gets from arango by filters', () => {
     server.put('/simple/first-example', {
@@ -65,7 +65,7 @@ describe('ArangoStoreAdaptor.readOne', () => {
       }
     })
     .reply(200, {
-      document: 'response',
+      document: { prop: 'value' },
       error: false,
       code: 200
     })
@@ -74,7 +74,7 @@ describe('ArangoStoreAdaptor.readOne', () => {
       filters: {
         filter: true
       }
-    })).to.become('response')
+    })).to.become({ prop: 'value' })
   })
   it('handles errors', () => {
     server.get('/document/test/1').reply(400, {

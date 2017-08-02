@@ -1,13 +1,37 @@
-const request = require('@nudj/library/lib/request')
-let StoreError = require('../lib/errors').StoreError
+const libRequest = require('@nudj/library/lib/request')
+const { merge } = require('@nudj/library')
+const reduce = require('lodash/reduce')
+const StoreError = require('../lib/errors').StoreError
 
 const newISODate = () => (new Date()).toISOString()
+const authHash = new Buffer(process.env.DB_USER + ':' + process.env.DB_PASS).toString('base64')
+const request = (uri, options = {}) => libRequest(uri, merge({
+  headers: {
+    'Authorization': 'Basic ' + authHash
+  }
+}, options))
 
 const errorHandler = (error) => {
   console.error((new Date()).toISOString(), error)
   throw new StoreError({
     code: error.response.status
   })
+}
+
+function normaliseData (data) {
+  return reduce(data, (result, value, key) => {
+    switch (key) {
+      case '_key':
+        result.id = value
+        break
+      case '_id':
+      case '_rev':
+        break
+      default:
+        result[key] = value
+    }
+    return result
+  }, {})
 }
 
 const StoreAdaptor = ({
@@ -23,7 +47,8 @@ const StoreAdaptor = ({
       modified: newISODate()
     }, data)
   })
-  .then(response => response.new)
+  .then(response => console.log('create', response) || response)
+  .then(response => normaliseData(response.new))
   .catch(errorHandler),
   readOne: ({
     type,
@@ -33,6 +58,8 @@ const StoreAdaptor = ({
     let response
     if (id) {
       response = request(`${baseURL}/document/${type}/${id}`)
+      .then(response => console.log('one id', response) || response)
+      .then(normaliseData)
     } else {
       response = request(`${baseURL}/simple/first-example`, {
         method: 'put',
@@ -41,7 +68,8 @@ const StoreAdaptor = ({
           example: filters
         }
       })
-      .then(response => response.document)
+      .then(response => console.log('one filtered', response) || response)
+      .then(response => normaliseData(response.document))
     }
     return response.catch(errorHandler)
   },
@@ -58,6 +86,7 @@ const StoreAdaptor = ({
           example: filters
         }
       })
+      .then(response => console.log('all filtered', response) || response)
     } else {
       response = request(`${baseURL}/simple/all`, {
         method: 'put',
@@ -65,9 +94,10 @@ const StoreAdaptor = ({
           collection: type
         }
       })
+      .then(response => console.log('all', response) || response)
     }
     return response
-      .then(response => response.result)
+      .then(response => response.result.map(normaliseData))
       .catch(errorHandler)
   },
   update: ({
@@ -81,7 +111,8 @@ const StoreAdaptor = ({
         modified: newISODate()
       }, data)
     })
-    .then(response => response.new)
+    .then(response => console.log('update', response) || response)
+    .then(response => normaliseData(response.new))
     .catch(errorHandler)
   },
   delete: ({
@@ -91,7 +122,8 @@ const StoreAdaptor = ({
     return request(`${baseURL}/document/${type}/${id}?returnOld=true`, {
       method: 'delete'
     })
-    .then(response => response.old)
+    .then(response => console.log('delete', response) || response)
+    .then(response => normaliseData(response.old))
     .catch(errorHandler)
   }
 })

@@ -25,7 +25,7 @@ describe('ArangoStoreAdaptor.create', () => {
   })
   it('returns a promise', () => {
     server
-      .post('/document/test', { key: 'value' })
+      .post('/document/test', { prop: 'value' })
       .query({
         returnNew: true
       })
@@ -33,13 +33,13 @@ describe('ArangoStoreAdaptor.create', () => {
     expect(StoreAdaptor.create({
       type: 'test',
       data: {
-        key: 'value'
+        prop: 'value'
       }
     })).to.be.an.instanceof(Promise)
   })
   it('posts to arango', () => {
     server
-      .post('/document/test', { key: 'value' })
+      .post('/document/test', { prop: 'value' })
       .query({
         returnNew: true
       })
@@ -47,23 +47,23 @@ describe('ArangoStoreAdaptor.create', () => {
     return expect(StoreAdaptor.create({
       type: 'test',
       data: {
-        key: 'value'
+        prop: 'value'
       }
     })).to.be.fulfilled()
   })
   it('resolves with the newly created object', () => {
     server
-      .post('/document/test', { key: 'value' })
+      .post('/document/test', { prop: 'value' })
       .query({
         returnNew: true
       })
-      .reply(200, { new: 'response' })
+      .reply(200, { new: { _key: 'id', prop: 'value' } })
     return expect(StoreAdaptor.create({
       type: 'test',
       data: {
-        key: 'value'
+        prop: 'value'
       }
-    })).to.become('response')
+    })).to.become({ id: 'id', prop: 'value' })
   })
   it('adds created and modified to data', () => {
     server
@@ -82,13 +82,13 @@ describe('ArangoStoreAdaptor.create', () => {
     return expect(StoreAdaptor.create({
       type: 'test',
       data: {
-        key: 'value'
+        prop: 'value'
       }
     })).to.be.fulfilled()
   })
   it('handles errors', () => {
     server
-      .post('/document/test', { key: 'value' })
+      .post('/document/test', { prop: 'value' })
       .query({
         returnNew: true
       })
@@ -101,13 +101,13 @@ describe('ArangoStoreAdaptor.create', () => {
     return expect(StoreAdaptor.create({
       type: 'test',
       data: {
-        key: 'value'
+        prop: 'value'
       }
     })).to.be.rejectedWith(StoreError)
   })
   it('passes through error code', () => {
     server
-      .post('/document/test', { key: 'value' })
+      .post('/document/test', { prop: 'value' })
       .query({
         returnNew: true
       })
@@ -120,7 +120,7 @@ describe('ArangoStoreAdaptor.create', () => {
     return expect(StoreAdaptor.create({
       type: 'test',
       data: {
-        key: 'value'
+        prop: 'value'
       }
     }).catch(error => error.code)).to.become(400)
   })

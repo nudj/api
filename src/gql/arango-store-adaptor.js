@@ -47,7 +47,6 @@ const StoreAdaptor = ({
       modified: newISODate()
     }, data)
   })
-  .then(response => console.log('create', response) || response)
   .then(response => normaliseData(response.new))
   .catch(errorHandler),
   readOne: ({
@@ -58,7 +57,6 @@ const StoreAdaptor = ({
     let response
     if (id) {
       response = request(`${baseURL}/document/${type}/${id}`)
-      .then(response => console.log('one id', response) || response)
       .then(normaliseData)
     } else {
       response = request(`${baseURL}/simple/first-example`, {
@@ -68,7 +66,6 @@ const StoreAdaptor = ({
           example: filters
         }
       })
-      .then(response => console.log('one filtered', response) || response)
       .then(response => normaliseData(response.document))
     }
     return response.catch(errorHandler)
@@ -86,7 +83,6 @@ const StoreAdaptor = ({
           example: filters
         }
       })
-      .then(response => console.log('all filtered', response) || response)
     } else {
       response = request(`${baseURL}/simple/all`, {
         method: 'put',
@@ -94,7 +90,6 @@ const StoreAdaptor = ({
           collection: type
         }
       })
-      .then(response => console.log('all', response) || response)
     }
     return response
       .then(response => response.result.map(normaliseData))
@@ -119,7 +114,6 @@ const StoreAdaptor = ({
         modified: newISODate()
       }, data)
     })
-    .then(response => console.log('update', response) || response)
     .then(response => normaliseData(response.new))
     .catch(errorHandler)
   },
@@ -130,7 +124,6 @@ const StoreAdaptor = ({
     return request(`${baseURL}/document/${type}/${id}?returnOld=true`, {
       method: 'delete'
     })
-    .then(response => console.log('delete', response) || response)
     .then(response => normaliseData(response.old))
     .catch(errorHandler)
   }

@@ -83,6 +83,16 @@ const StoreAdaptor = ({
     })
     .then(response => response.new)
     .catch(errorHandler)
+  },
+  delete: ({
+    type,
+    id
+  }) => {
+    return request(`${baseURL}/document/${type}/${id}?returnOld=true`, {
+      method: 'delete'
+    })
+    .then(response => response.old)
+    .catch(errorHandler)
   }
 })
 

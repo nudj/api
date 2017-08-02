@@ -12,10 +12,10 @@ chai.use(chaiAsPromised)
 chai.use(dirtyChai)
 
 let StoreError = require('../../lib/errors').StoreError
-let StoreAdaptor = require('../../gql/store-adaptor')
+let StoreAdaptor = require('../../gql/arango-store-adaptor')
 let server
 
-describe('StoreAdaptor.update', () => {
+describe('ArangoStoreAdaptor.create', () => {
   before(() => {
     server = nock('http://localhost:82/_api')
     StoreAdaptor = StoreAdaptor({ baseURL: 'http://localhost:82/_api' })
@@ -25,29 +25,27 @@ describe('StoreAdaptor.update', () => {
   })
   it('returns a promise', () => {
     server
-      .patch('/document/test/1', { key: 'value' })
+      .post('/document/test', { key: 'value' })
       .query({
         returnNew: true
       })
       .reply(200)
-    expect(StoreAdaptor.update({
+    expect(StoreAdaptor.create({
       type: 'test',
-      id: 1,
       data: {
         key: 'value'
       }
     })).to.be.an.instanceof(Promise)
   })
-  it('patches to arango', () => {
+  it('posts to arango', () => {
     server
-      .patch('/document/test/1', { key: 'value' })
+      .post('/document/test', { key: 'value' })
       .query({
         returnNew: true
       })
       .reply(200)
-    return expect(StoreAdaptor.update({
+    return expect(StoreAdaptor.create({
       type: 'test',
-      id: 1,
       data: {
         key: 'value'
       }
@@ -55,29 +53,25 @@ describe('StoreAdaptor.update', () => {
   })
   it('resolves with the newly created object', () => {
     server
-      .patch('/document/test/1', { key: 'value' })
+      .post('/document/test', { key: 'value' })
       .query({
         returnNew: true
       })
-      .reply(200, {
-        _id: 'products/9915',
-        _key: '9915',
-        _rev: '_VWLl9f2---',
-        _oldRev: '_VWLl9fy---',
-        new: 'response'
-      })
-    return expect(StoreAdaptor.update({
+      .reply(200, { new: 'response' })
+    return expect(StoreAdaptor.create({
       type: 'test',
-      id: 1,
       data: {
         key: 'value'
       }
     })).to.become('response')
   })
-  it('adds modified to data', () => {
+  it('adds created and modified to data', () => {
     server
-      .patch('/document/test/1', (body) => {
-        return body.modified &&
+      .post('/document/test', (body) => {
+        return body.created &&
+        isValid(new Date(body.created)) &&
+        differenceInMinutes(new Date(body.created), new Date()) < 1 &&
+        body.modified &&
         isValid(new Date(body.modified)) &&
         differenceInMinutes(new Date(body.modified), new Date()) < 1
       })
@@ -85,9 +79,8 @@ describe('StoreAdaptor.update', () => {
         returnNew: true
       })
       .reply(200)
-    return expect(StoreAdaptor.update({
+    return expect(StoreAdaptor.create({
       type: 'test',
-      id: 1,
       data: {
         key: 'value'
       }
@@ -95,7 +88,7 @@ describe('StoreAdaptor.update', () => {
   })
   it('handles errors', () => {
     server
-      .patch('/document/test/1', { key: 'value' })
+      .post('/document/test', { key: 'value' })
       .query({
         returnNew: true
       })
@@ -105,9 +98,8 @@ describe('StoreAdaptor.update', () => {
         code: 400,
         errorNum: 600
       })
-    return expect(StoreAdaptor.update({
+    return expect(StoreAdaptor.create({
       type: 'test',
-      id: 1,
       data: {
         key: 'value'
       }
@@ -115,7 +107,7 @@ describe('StoreAdaptor.update', () => {
   })
   it('passes through error code', () => {
     server
-      .patch('/document/test/1', { key: 'value' })
+      .post('/document/test', { key: 'value' })
       .query({
         returnNew: true
       })
@@ -125,9 +117,8 @@ describe('StoreAdaptor.update', () => {
         code: 400,
         errorNum: 600
       })
-    return expect(StoreAdaptor.update({
+    return expect(StoreAdaptor.create({
       type: 'test',
-      id: 1,
       data: {
         key: 'value'
       }

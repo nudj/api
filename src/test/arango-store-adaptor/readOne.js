@@ -10,10 +10,10 @@ chai.use(chaiAsPromised)
 chai.use(dirtyChai)
 
 let StoreError = require('../../lib/errors').StoreError
-let StoreAdaptor = require('../../gql/store-adaptor')
+let StoreAdaptor = require('../../gql/arango-store-adaptor')
 let server
 
-describe('StoreAdaptor.readOne', () => {
+describe('ArangoStoreAdaptor.readOne', () => {
   before(() => {
     server = nock('http://localhost:82/_api')
     StoreAdaptor = StoreAdaptor({ baseURL: 'http://localhost:82/_api' })

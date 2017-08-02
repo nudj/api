@@ -63,7 +63,11 @@ function normalise (responseKey) {
 
 function handleError ({ uri, options }) {
   return (error) => {
-    const storeError = new StoreError(error.message, error.code, error)
+    const storeError = new StoreError({
+      message: error.message,
+      code: error.code,
+      originalError: error
+    })
     console.log((new Date()).toISOString(), 'ERROR', uri, options)
     return Promise.reject(storeError)
   }

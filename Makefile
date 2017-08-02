@@ -22,6 +22,12 @@ buildDev:
 		--build-arg NPM_TOKEN=${NPM_TOKEN} \
 		.
 
+buildLatest:
+	@docker build \
+		-t $(IMAGEDEV):latest \
+		--build-arg NPM_TOKEN=${NPM_TOKEN} \
+		.
+
 run:
 	@docker run -it --rm \
 		--name web \
@@ -76,6 +82,7 @@ test:
 	-@docker rm -f test-container 2> /dev/null || true
 	@docker run --rm -it \
 		--name test-container \
+		-v $(CWD)/src/gql:/usr/src/gql \
 		-v $(CWD)/src/lib:/usr/src/lib \
 		-v $(CWD)/src/test:/usr/src/test \
 		$(IMAGEDEV)
@@ -84,6 +91,7 @@ tdd:
 	-@docker rm -f tdd-container 2> /dev/null || true
 	@docker run --rm -it \
 		--name tdd-container \
+		-v $(CWD)/src/gql:/usr/src/gql \
 		-v $(CWD)/src/lib:/usr/src/lib \
 		-v $(CWD)/src/test:/usr/src/test \
 		$(IMAGEDEV) \

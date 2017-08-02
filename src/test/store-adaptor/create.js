@@ -17,8 +17,8 @@ let server
 
 describe('StoreAdaptor.create', () => {
   before(() => {
-    server = nock('http://localhost:82/')
-    StoreAdaptor = StoreAdaptor({ baseURL: 'http://localhost:82/' })
+    server = nock('http://localhost:82/_api')
+    StoreAdaptor = StoreAdaptor({ baseURL: 'http://localhost:82/_api' })
   })
   afterEach(() => {
     nock.cleanAll()
@@ -104,5 +104,24 @@ describe('StoreAdaptor.create', () => {
         key: 'value'
       }
     })).to.be.rejectedWith(StoreError)
+  })
+  it('passes through error code', () => {
+    server
+      .post('/document/test', { key: 'value' })
+      .query({
+        returnNew: true
+      })
+      .reply(400, {
+        error: true,
+        errorMessage: 'Error message',
+        code: 400,
+        errorNum: 600
+      })
+    return expect(StoreAdaptor.create({
+      type: 'test',
+      data: {
+        key: 'value'
+      }
+    }).catch(error => error.code)).to.become(400)
   })
 })

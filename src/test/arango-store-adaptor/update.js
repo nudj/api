@@ -74,6 +74,27 @@ describe('ArangoStoreAdaptor.update', () => {
       }
     })).to.become({ prop: 'value' })
   })
+  it('normalises the newly updated object', () => {
+    server
+      .patch('/document/test/1', { prop: 'value' })
+      .query({
+        returnNew: true
+      })
+      .reply(200, {
+        _id: 'products/9915',
+        _key: '9915',
+        _rev: '_VWLl9f2---',
+        _oldRev: '_VWLl9fy---',
+        new: { _key: 'id', _id: 123, _rev: 123, prop: 'value' }
+      })
+    return expect(StoreAdaptor.update({
+      type: 'test',
+      id: 1,
+      data: {
+        prop: 'value'
+      }
+    })).to.become({ id: 'id', prop: 'value' })
+  })
   it('adds modified to data', () => {
     server
       .patch('/document/test/1', (body) => {

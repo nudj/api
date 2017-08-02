@@ -65,6 +65,20 @@ describe('ArangoStoreAdaptor.create', () => {
       }
     })).to.become({ id: 'id', prop: 'value' })
   })
+  it('normalises the result', () => {
+    server
+      .post('/document/test', { prop: 'value' })
+      .query({
+        returnNew: true
+      })
+      .reply(200, { new: { _key: 'id', '_id': 123, '_rev': 123, prop: 'value' } })
+    return expect(StoreAdaptor.create({
+      type: 'test',
+      data: {
+        prop: 'value'
+      }
+    })).to.become({ id: 'id', prop: 'value' })
+  })
   it('adds created and modified to data', () => {
     server
       .post('/document/test', (body) => {

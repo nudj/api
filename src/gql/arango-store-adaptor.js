@@ -100,6 +100,14 @@ const StoreAdaptor = ({
       .then(response => response.result.map(normaliseData))
       .catch(errorHandler)
   },
+  readMany: ({
+    type,
+    ids
+  }) => {
+    return Promise.all(ids.map(id => request(`${baseURL}/document/${type}/${id}`)))
+      .then(response => response.map(normaliseData))
+      .catch(errorHandler)
+  },
   update: ({
     type,
     id,

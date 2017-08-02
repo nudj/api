@@ -57,6 +57,18 @@ describe('ArangoStoreAdaptor.delete', () => {
       id: 1
     })).to.become({ prop: 'value' })
   })
+  it('normalises the result', () => {
+    server
+      .delete('/document/test/1')
+      .query({
+        returnOld: true
+      })
+      .reply(200, { old: { _key: 'id', _id: 123, _rev: 123, prop: 'value' } })
+    return expect(StoreAdaptor.delete({
+      type: 'test',
+      id: 1
+    })).to.become({ id: 'id', prop: 'value' })
+  })
   it('handles errors', () => {
     server
       .delete('/document/test/1')

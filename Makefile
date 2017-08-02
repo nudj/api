@@ -48,6 +48,9 @@ dev:
 	@docker run --rm -it \
 		--name dev-container \
 		-p 0.0.0.0:81:81 \
+		-p 0.0.0.0:82:82 \
+		-v $(CWD)/src/index.js:/usr/src/index.js \
+		-v $(CWD)/src/rest:/usr/src/rest \
 		-v $(CWD)/src/gql:/usr/src/gql \
 		-v $(CWD)/src/lib:/usr/src/lib \
 		-v $(CWD)/src/test:/usr/src/test \

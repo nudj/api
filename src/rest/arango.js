@@ -2,7 +2,7 @@ let nodeFetch = require('node-fetch')
 let format = require('date-fns/format')
 let reduce = require('lodash/reduce')
 
-let StoreError = require('./errors').StoreError
+let StoreError = require('../lib/errors').StoreError
 let authHash = new Buffer(process.env.DB_USER + ':' + process.env.DB_PASS).toString('base64')
 
 function fetch (path, options) {

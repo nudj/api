@@ -5,5 +5,5 @@ COPY .cache /tmp/node_modules
 RUN cd /tmp && npm i && mkdir -p /usr/src
 WORKDIR /usr/src
 COPY src /usr/src
-EXPOSE 3001
+EXPOSE 81 82
 CMD ln -s /tmp/node_modules ./node_modules && ./node_modules/.bin/standard && ./node_modules/.bin/mocha --recursive test

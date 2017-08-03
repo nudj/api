@@ -2,7 +2,7 @@
   "name": "@nudj/api",
   "version": "1.7.0",
   "description": "Internal api for nudj data",
-  "main": "lib",
+  "main": "index",
   "directories": {
     "test": "test"
   },
@@ -36,6 +36,7 @@
     "chai-as-promised": "6.0.0",
     "dirty-chai": "1.2.2",
     "mocha": "3.2.0",
+    "nock": "9.0.14",
     "nodemon": "1.11.0",
     "proxyquire": "1.7.11",
     "sinon": "1.17.7",

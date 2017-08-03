@@ -7,4 +7,4 @@ server.use(morgan('combined'))
 server.use(restify.bodyParser())
 server.use(restify.queryParser())
 routes(server)
-server.listen(81, () => console.log('Api running on http://localhost:81/'))
+module.exports = server

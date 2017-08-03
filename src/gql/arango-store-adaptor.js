@@ -12,6 +12,9 @@ const request = (uri, options = {}) => libRequest(uri, merge({
 }, options))
 
 const errorHandler = (error) => {
+  if (error.response.status === 404) {
+    return null
+  }
   console.error((new Date()).toISOString(), error)
   throw new StoreError({
     code: error.response.status

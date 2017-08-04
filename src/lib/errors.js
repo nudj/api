@@ -1,6 +1,10 @@
-function StoreError (message, code, originalError) {
+function StoreError ({
+  message = 'Something went wrong',
+  code = 500,
+  originalError
+}) {
   this.name = 'StoreError'
-  this.message = message || 'Default Message'
+  this.message = message
   this.code = code
   this.originalError = originalError
 }

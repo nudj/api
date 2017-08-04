@@ -13,6 +13,8 @@ module.exports = ({ storeAdaptor }) => {
     store: storeAdaptor
   }))
   const app = express()
-  app.use('/', bodyParser.json(), graphqlExpress({ executableSchema }))
+  app.use('/', bodyParser.json(), graphqlExpress({
+    schema: executableSchema
+  }))
   return app
 }

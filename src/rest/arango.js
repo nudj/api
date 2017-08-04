@@ -2,7 +2,7 @@ let nodeFetch = require('node-fetch')
 let format = require('date-fns/format')
 let reduce = require('lodash/reduce')
 
-let StoreError = require('./errors').StoreError
+let StoreError = require('../lib/errors').StoreError
 let authHash = new Buffer(process.env.DB_USER + ':' + process.env.DB_PASS).toString('base64')
 
 function fetch (path, options) {
@@ -63,7 +63,11 @@ function normalise (responseKey) {
 
 function handleError ({ uri, options }) {
   return (error) => {
-    const storeError = new StoreError(error.message, error.code, error)
+    const storeError = new StoreError({
+      message: error.message,
+      code: error.code,
+      originalError: error
+    })
     console.log((new Date()).toISOString(), 'ERROR', uri, options)
     return Promise.reject(storeError)
   }

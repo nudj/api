@@ -20,6 +20,7 @@ module.exports = `
   enum JobStatus {
     PUBLISHED
     ARCHIVED
+    DRAFT
   }
 
   enum RecommendationSource {

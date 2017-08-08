@@ -93,6 +93,16 @@ function addDateTimes (data, addCreated) {
   return data
 }
 
+function getAll (type) {
+  return fetch('simple/all', {
+    method: 'PUT',
+    body: JSON.stringify({
+      collection: type
+    })
+  })
+  .then(normalise('result'))
+}
+
 function getFiltered (type, filters) {
   return fetch('simple/by-example', {
     method: 'PUT',
@@ -144,6 +154,7 @@ function patch (type, id, props) {
 }
 
 module.exports = {
+  getAll,
   getFiltered,
   getOne,
   createUnique,

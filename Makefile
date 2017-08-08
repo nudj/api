@@ -86,6 +86,7 @@ test:
 	@docker run --rm -it \
 		--name test-container \
 		-v $(CWD)/src/gql:/usr/src/gql \
+		-v $(CWD)/src/rest:/usr/src/rest \
 		-v $(CWD)/src/lib:/usr/src/lib \
 		-v $(CWD)/src/test:/usr/src/test \
 		$(IMAGEDEV)
@@ -95,6 +96,7 @@ tdd:
 	@docker run --rm -it \
 		--name tdd-container \
 		-v $(CWD)/src/gql:/usr/src/gql \
+		-v $(CWD)/src/rest:/usr/src/rest \
 		-v $(CWD)/src/lib:/usr/src/lib \
 		-v $(CWD)/src/test:/usr/src/test \
 		$(IMAGEDEV) \

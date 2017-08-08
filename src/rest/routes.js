@@ -57,6 +57,13 @@ module.exports = (server) => {
       .catch(handleReject)
       .then(getResponder(res))
   })
+  server.get('/:type', (req, res) => {
+    Store
+      .getAll(req.params.type)
+      .then(handleResolve)
+      .catch(handleReject)
+      .then(getResponder(res))
+  })
   server.post('/:type', (req, res) => {
     Store
       .createUnique(req.params.type, req.body)

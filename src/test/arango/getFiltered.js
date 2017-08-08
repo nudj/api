@@ -14,7 +14,7 @@ chai.use(sinonChai)
 chai.use(chaiAsPromised)
 chai.use(dirtyChai)
 
-describe('Arango.getAll', function () {
+describe('Arango.getFiltered', function () {
   let Store
   let fetchStub
 
@@ -54,23 +54,21 @@ describe('Arango.getAll', function () {
       })
     })
     beforeEach(function () {
-      result = Store.getAll('type')
+      result = Store.getFiltered('type', {
+        title: 'some job'
+      })
       return result
     })
 
     it('should fetch the data from the db', function () {
-      expect(fetchStub).to.have.been.calledWith('http://db:8529/_db/nudj/_api/simple/all')
-    })
-
-    it('should have the correct method', function () {
+      expect(fetchStub).to.have.been.calledWith('http://db:8529/_db/nudj/_api/simple/by-example')
       let options = fetchStub.getCall(0).args[1]
       expect(options).to.have.property('method', 'PUT')
-    })
-
-    it('should have a body', function () {
-      let options = fetchStub.getCall(0).args[1]
+      expect(options).to.have.property('body')
+      expect(options).to.have.deep.property('headers.Authorization')
       let body = JSON.parse(options.body)
       expect(body).to.have.property('collection', 'type')
+      expect(body).to.have.deep.property('example.title', 'some job')
     })
 
     it('should return the normalised result of the db fetch', function () {
@@ -97,7 +95,9 @@ describe('Arango.getAll', function () {
           errorMessage: 'no match'
         })
       })
-      return expect(Store.getAll('type')).to.eventually.deep.equal({
+      return expect(Store.getFiltered('type', {
+        title: 'some job'
+      })).to.eventually.deep.equal({
         code: 404,
         errorMessage: 'no match',
         error: true
@@ -108,7 +108,9 @@ describe('Arango.getAll', function () {
   describe('when fetch rejects with error', function () {
     it('should reject with Error', function () {
       fetchStub.rejects(new Error())
-      return expect(Store.getAll('type')).to.eventually.be.rejectedWith(StoreError)
+      return expect(Store.getFiltered('type', {
+        title: 'some job'
+      })).to.eventually.be.rejectedWith(StoreError)
     })
   })
 })

@@ -14,7 +14,6 @@ build:
 ssh:
 	-@docker rm -f api-dev 2> /dev/null || true
 	@docker run --rm -it \
-		--add-host api:127.0.0.1 \
 		--name api-dev \
 		-e NPM_TOKEN=${NPM_TOKEN} \
 		-p 0.0.0.0:60:80 \

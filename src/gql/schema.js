@@ -52,6 +52,7 @@ module.exports = `
     modified: DateTime!
     url: String!
     hirers: [Hirer!]!
+    onboarded: Boolean!
   }
 
   type Job {

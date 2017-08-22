@@ -1,6 +1,8 @@
 module.exports = `
   scalar DateTime
 
+  scalar Data
+
   enum ExternalLength {
     SHORT
     LONG
@@ -26,6 +28,11 @@ module.exports = `
   enum RecommendationSource {
     NUDJ
     HIRER
+  }
+
+  enum TokenType {
+    SHARE_COMPANY_JOBS
+    SURVEY_TYPEFORM_COMPLETE
   }
 
   type Company {
@@ -142,5 +149,14 @@ module.exports = `
     person: Person!
     referrals: [Referral!]!
     modified: DateTime!
+  }
+
+  type Token {
+    created: DateTime!
+    id: ID! @isUnique
+    modified: DateTime!
+    type: TokenType
+    token: String
+    data: Data
   }
 `

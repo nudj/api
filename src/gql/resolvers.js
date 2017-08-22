@@ -8,6 +8,14 @@ const DateTime = new GraphQLScalarType({
   parseLiteral: (ast) => ast.value
 })
 
+const Data = new GraphQLScalarType({
+  name: 'Data',
+  description: 'Data emulated type',
+  serialize: (value) => value,
+  parseValue: (value) => value,
+  parseLiteral: (ast) => ast.value
+})
+
 module.exports = ({ store }) => ({
   Query: {
     referralDepth: (obj, args, context) => {
@@ -55,5 +63,6 @@ module.exports = ({ store }) => ({
       })
     }
   },
-  DateTime
+  DateTime,
+  Data
 })

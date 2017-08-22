@@ -1,5 +1,5 @@
-IMAGE:=nudj/admin
-IMAGEDEV:=nudj/admin-dev
+IMAGE:=nudj/api
+IMAGEDEV:=nudj/api-dev
 CWD=$(shell pwd)
 
 .PHONY: build ssh test
@@ -12,10 +12,10 @@ build:
 		.
 
 ssh:
-	-@docker rm -f admin-dev 2> /dev/null || true
+	-@docker rm -f api-dev 2> /dev/null || true
 	@docker run --rm -it \
 		--add-host api:127.0.0.1 \
-		--name admin-dev \
+		--name api-dev \
 		-e NPM_TOKEN=${NPM_TOKEN} \
 		-p 0.0.0.0:60:80 \
 		-p 0.0.0.0:61:81 \
@@ -34,9 +34,9 @@ ssh:
 		/bin/zsh
 
 test:
-	-@docker rm -f admin-test 2> /dev/null || true
+	-@docker rm -f api-test 2> /dev/null || true
 	@docker run --rm -it \
-		--name admin-test \
+		--name api-test \
 		-v $(CWD)/src/gql:/usr/src/gql \
 		-v $(CWD)/src/lib:/usr/src/lib \
 		-v $(CWD)/src/mocks:/usr/src/mocks \

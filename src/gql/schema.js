@@ -159,4 +159,12 @@ module.exports = `
     token: String
     data: Data
   }
+
+  type Employee {
+    created: DateTime!
+    id: ID! @isUnique
+    modified: DateTime!
+    company: Company!
+    person: Person!
+  }
 `

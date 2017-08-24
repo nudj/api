@@ -167,4 +167,13 @@ module.exports = `
     company: Company!
     person: Person!
   }
+
+  type Survey {
+    created: DateTime!
+    id: ID! @isUnique
+    modified: DateTime!
+    company: Company!
+    link: String!
+    uuid: String!
+  }
 `

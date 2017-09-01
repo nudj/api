@@ -177,4 +177,13 @@ module.exports = `
     link: String!
     uuid: String!
   }
+
+  type EmployeeSurvey {
+    id: ID! @isUnique
+    created: DateTime!
+    modified: DateTime!
+    employee: Employee!
+    survey: Survey!
+    typeformToken: String
+  }
 `

@@ -1,6 +1,8 @@
 module.exports = `
   scalar DateTime
 
+  scalar Data
+
   enum ExternalLength {
     SHORT
     LONG
@@ -28,6 +30,11 @@ module.exports = `
     HIRER
   }
 
+  enum TokenType {
+    SHARE_COMPANY_JOBS
+    SURVEY_TYPEFORM_COMPLETE
+  }
+
   type Company {
     created: DateTime!
     description: String!
@@ -45,6 +52,7 @@ module.exports = `
     modified: DateTime!
     url: String!
     hirers: [Hirer!]!
+    onboarded: Boolean!
   }
 
   type Job {
@@ -142,5 +150,40 @@ module.exports = `
     person: Person!
     referrals: [Referral!]!
     modified: DateTime!
+  }
+
+  type Token {
+    created: DateTime!
+    id: ID! @isUnique
+    modified: DateTime!
+    type: TokenType
+    token: String
+    data: Data
+  }
+
+  type Employee {
+    created: DateTime!
+    id: ID! @isUnique
+    modified: DateTime!
+    company: Company!
+    person: Person!
+  }
+
+  type Survey {
+    created: DateTime!
+    id: ID! @isUnique
+    modified: DateTime!
+    company: Company!
+    link: String!
+    uuid: String!
+  }
+
+  type EmployeeSurvey {
+    id: ID! @isUnique
+    created: DateTime!
+    modified: DateTime!
+    employee: Employee!
+    survey: Survey!
+    typeformToken: String
   }
 `

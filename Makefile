@@ -38,7 +38,7 @@ test:
 		--name api-test \
 		-v $(CWD)/src/gql:/usr/src/gql \
 		-v $(CWD)/src/lib:/usr/src/lib \
-		-v $(CWD)/src/mocks:/usr/src/mocks \
+		-v $(CWD)/src/mock:/usr/src/mock \
 		-v $(CWD)/src/rest:/usr/src/rest \
 		-v $(CWD)/src/test:/usr/src/test \
 		$(IMAGEDEV)

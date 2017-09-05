@@ -53,7 +53,6 @@ const StoreAdaptor = ({
   .then(response => normaliseData(response.new))
   .catch(errorHandler({
     action: 'create',
-    baseUrl,
     type,
     data
   })),
@@ -78,7 +77,6 @@ const StoreAdaptor = ({
     }
     return response.catch(errorHandler({
       action: 'readOne',
-      baseUrl,
       type,
       id,
       filters
@@ -109,7 +107,6 @@ const StoreAdaptor = ({
       .then(response => response.result.map(normaliseData))
       .catch(errorHandler({
         action: 'readAll',
-        baseUrl,
         type,
         filters
       }))
@@ -122,9 +119,8 @@ const StoreAdaptor = ({
       .then(response => response.map(normaliseData))
       .catch(errorHandler({
         action: 'readMany',
-        baseUrl,
         type,
-        id
+        ids
       }))
   },
   update: ({
@@ -141,7 +137,6 @@ const StoreAdaptor = ({
     .then(response => normaliseData(response.new))
     .catch(errorHandler({
       action: 'update',
-      baseUrl,
       type,
       id,
       data
@@ -157,7 +152,6 @@ const StoreAdaptor = ({
     .then(response => normaliseData(response.old))
     .catch(errorHandler({
       action: 'delete',
-      baseUrl,
       type,
       id
     }))

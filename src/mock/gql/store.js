@@ -1,6 +1,8 @@
 const request = require('@nudj/library/lib/request')
 const toQs = require('@nudj/library/lib/toQs')
 
+const StoreError = require('../../lib/errors').StoreError
+
 const takeFirst = (result) => result[0]
 const newISODate = () => (new Date()).toISOString()
 
@@ -28,7 +30,6 @@ module.exports = ({baseURL}) => ({
   })
   .catch(errorHandler({
     action: 'create',
-    baseUrl,
     type,
     data
   })),
@@ -46,7 +47,6 @@ module.exports = ({baseURL}) => ({
     }
     return response.catch(errorHandler({
       action: 'readOne',
-      baseUrl,
       type,
       id,
       filters
@@ -60,7 +60,6 @@ module.exports = ({baseURL}) => ({
     return request(`/${type}${filterString.length ? `?${filterString}` : ''}`, {baseURL})
       .catch(errorHandler({
         action: 'readAll',
-        baseUrl,
         type,
         filters
       }))
@@ -71,9 +70,8 @@ module.exports = ({baseURL}) => ({
   }) => Promise.all(ids.map(id => request(`/${type}/${id}`, {baseURL})))
   .catch(errorHandler({
     action: 'readMany',
-    baseUrl,
     type,
-    id
+    ids
   })),
   update: ({
     type,
@@ -88,7 +86,6 @@ module.exports = ({baseURL}) => ({
   })
   .catch(errorHandler({
     action: 'update',
-    baseUrl,
     type,
     id,
     data
@@ -103,7 +100,6 @@ module.exports = ({baseURL}) => ({
   .then(() => item))
   .catch(errorHandler({
     action: 'delete',
-    baseUrl,
     type,
     id
   }))

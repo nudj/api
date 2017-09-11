@@ -1,5 +1,5 @@
 const request = require('@nudj/library/lib/request')
-const toQs = require('@nudj/library/lib/toQs')
+const toQs = require('@nudj/library/lib/to-qs')
 
 const StoreError = require('../../lib/errors').StoreError
 

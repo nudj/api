@@ -14,7 +14,7 @@ chai.use(sinonChai)
 chai.use(chaiAsPromised)
 chai.use(dirtyChai)
 
-describe('Arango.patch', function () {
+describe('Arango.post', function () {
   let Store
   let fetchStub
 
@@ -28,46 +28,36 @@ describe('Arango.patch', function () {
     fetchStub.reset()
   })
 
-  describe('when item exists', function () {
+  describe('when post request is sucessful', function () {
     let result
 
     before(function () {
-      fetchStub.resolves({
+      fetchStub.withArgs('http://db:8529/_db/nudj/_api/document/type?returnNew=true').resolves({
         json: () => ({
-          new: {
-            _key: '18598',
-            _id: 'jobs/18598',
-            _rev: '_UqxYheW---',
-            prop: 'value'
-          },
+          _key: '12345',
+          _id: 'type/12345',
+          _rev: '_UqxYheW---',
           error: false,
           code: 200
         })
       })
     })
     beforeEach(function () {
-      result = Store.patch('type', 123, {
-        prop: 'value'
+      result = Store.post('type', {
+        title: 'new object'
       })
       return result
     })
 
-    it('should send the patch to the db', function () {
-      expect(fetchStub).to.have.been.calledWith('http://db:8529/_db/nudj/_api/document/type/123?returnNew=true')
+    it('should post new document to db', function () {
+      expect(fetchStub).to.have.been.calledWith('http://db:8529/_db/nudj/_api/document/type?returnNew=true')
       let options = fetchStub.getCall(0).args[1]
-      expect(options).to.have.property('method', 'PATCH')
+      expect(options).to.have.property('method', 'POST')
       expect(options).to.have.property('body')
       let body = JSON.parse(options.body)
-      expect(body).to.have.property('prop', 'value')
+      expect(body).to.have.property('title', 'new object')
+      expect(body).to.have.property('created')
       expect(body).to.have.property('modified')
-      expect(body).to.not.have.property('created')
-    })
-
-    it('should return the normalised result of the db fetch', function () {
-      return expect(result).to.eventually.deep.equal({
-        id: '18598',
-        prop: 'value'
-      })
     })
   })
 
@@ -81,8 +71,8 @@ describe('Arango.patch', function () {
           errorMessage: 'no match'
         })
       })
-      return expect(Store.post('type', {
-        title: 'new title'
+      return expect(Store.patch('type', 123, {
+        id: '18598'
       })).to.eventually.deep.equal({
         code: 404,
         errorMessage: 'no match',
@@ -91,11 +81,11 @@ describe('Arango.patch', function () {
     })
   })
 
-  describe('when fetch rejects with error', function () {
-    it('should reject with Error', function () {
-      fetchStub.rejects(new Error())
-      return expect(Store.patch('type', 123, {
-        id: '18598'
+  describe('when request responds with error', function () {
+    it('should resolve with error state', function () {
+      fetchStub.withArgs('http://db:8529/_db/nudj/_api/document/type?returnNew=true').rejects(new Error())
+      return expect(Store.post('type', {
+        title: 'new object'
       })).to.eventually.be.rejectedWith(StoreError)
     })
   })

@@ -125,24 +125,12 @@ function getOne (type, filters) {
   .then(normalise('document'))
 }
 
-function createUnique (type, props) {
-  return getOne(type, props)
-  .then((data) => {
-    if (data.code === 404) {
-      return fetch(`document/${type}?returnNew=true`, {
-        method: 'POST',
-        body: JSON.stringify(addDateTimes(props, true))
-      })
-      .then(normalise('new'))
-    } else {
-      return Promise.resolve({
-        error: true,
-        errorMessage: 'already exists',
-        code: 409,
-        document: data
-      })
-    }
+function post (type, props) {
+  return fetch(`document/${type}?returnNew=true`, {
+    method: 'POST',
+    body: JSON.stringify(addDateTimes(props, true))
   })
+  .then(normalise('new'))
 }
 
 function patch (type, id, props) {
@@ -157,6 +145,6 @@ module.exports = {
   getAll,
   getFiltered,
   getOne,
-  createUnique,
+  post,
   patch
 }

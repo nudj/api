@@ -66,7 +66,7 @@ module.exports = (server) => {
   })
   server.post('/:type', (req, res) => {
     Store
-      .createUnique(req.params.type, req.body)
+      .post(req.params.type, req.body)
       .then(handleResolve)
       .catch(handleReject)
       .then(getResponder(res))

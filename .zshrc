@@ -1,6 +1,6 @@
 source /root/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 
-PROMPT='admin» '
+PROMPT='api» '
 
 alias run="node ."
 alias dev='./node_modules/.bin/nodemon \

@@ -71,6 +71,13 @@ module.exports = (server) => {
       .catch(handleReject)
       .then(getResponder(res))
   })
+  server.del('/:type/:id', (req, res) => {
+    Store
+      .del(req.params.type, req.params.id)
+      .then(handleResolve)
+      .catch(handleReject)
+      .then(getResponder(res))
+  })
   server.patch('/:type/:id', (req, res) => {
     Store
       .patch(req.params.type, req.params.id, req.body)

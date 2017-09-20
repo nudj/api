@@ -133,6 +133,13 @@ function post (type, props) {
   .then(normalise('new'))
 }
 
+function del (type, id) {
+  return fetch(`document/${type}/${id}?returnOld=true`, {
+    method: 'DELETE'
+  })
+  .then(normalise('old'))
+}
+
 function patch (type, id, props) {
   return fetch(`document/${type}/${id}?returnNew=true`, {
     method: 'PATCH',
@@ -146,5 +153,6 @@ module.exports = {
   getFiltered,
   getOne,
   post,
-  patch
+  patch,
+  del
 }

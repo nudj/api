@@ -37,6 +37,7 @@ test:
 	-@docker rm -f api-test 2> /dev/null || true
 	@docker run --rm -it \
 		--name api-test \
+		-e ENVIRONMENT=test \
 		-v $(CWD)/src/gql:/usr/src/gql \
 		-v $(CWD)/src/lib:/usr/src/lib \
 		-v $(CWD)/src/mock:/usr/src/mock \

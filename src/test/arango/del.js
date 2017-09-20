@@ -4,7 +4,6 @@ const chai = require('chai')
 const chaiAsPromised = require('chai-as-promised')
 const dirtyChai = require('dirty-chai')
 const nock = require('nock')
-const proxyquire = require('proxyquire')
 const expect = chai.expect
 
 chai.use(chaiAsPromised)

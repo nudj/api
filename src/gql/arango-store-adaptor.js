@@ -1,8 +1,8 @@
 const libRequest = require('@nudj/library/lib/request')
-const { merge } = require('@nudj/library')
+const { logger, merge } = require('@nudj/library')
 const reduce = require('lodash/reduce')
-const StoreError = require('../lib/errors').StoreError
 
+const StoreError = require('../lib/errors').StoreError
 const newISODate = () => (new Date()).toISOString()
 const authHash = new Buffer(process.env.DB_USER + ':' + process.env.DB_PASS).toString('base64')
 const request = (uri, options = {}) => libRequest(uri, merge({
@@ -11,11 +11,11 @@ const request = (uri, options = {}) => libRequest(uri, merge({
   }
 }, options))
 
-const errorHandler = (error) => {
+const errorHandler = (details) => (error) => {
   if (error.response.status === 404) {
     return null
   }
-  console.error((new Date()).toISOString(), error)
+  logger('error', (new Date()).toISOString(), details, error)
   throw new StoreError({
     code: error.response.status
   })
@@ -51,7 +51,11 @@ const StoreAdaptor = ({
     }, data)
   })
   .then(response => normaliseData(response.new))
-  .catch(errorHandler),
+  .catch(errorHandler({
+    action: 'create',
+    type,
+    data
+  })),
   readOne: ({
     type,
     id,
@@ -71,7 +75,12 @@ const StoreAdaptor = ({
       })
       .then(response => normaliseData(response.document))
     }
-    return response.catch(errorHandler)
+    return response.catch(errorHandler({
+      action: 'readOne',
+      type,
+      id,
+      filters
+    }))
   },
   readAll: ({
     type,
@@ -96,7 +105,11 @@ const StoreAdaptor = ({
     }
     return response
       .then(response => response.result.map(normaliseData))
-      .catch(errorHandler)
+      .catch(errorHandler({
+        action: 'readAll',
+        type,
+        filters
+      }))
   },
   readMany: ({
     type,
@@ -104,7 +117,11 @@ const StoreAdaptor = ({
   }) => {
     return Promise.all(ids.map(id => request(`${baseURL}/document/${type}/${id}`)))
       .then(response => response.map(normaliseData))
-      .catch(errorHandler)
+      .catch(errorHandler({
+        action: 'readMany',
+        type,
+        ids
+      }))
   },
   update: ({
     type,
@@ -118,7 +135,12 @@ const StoreAdaptor = ({
       }, data)
     })
     .then(response => normaliseData(response.new))
-    .catch(errorHandler)
+    .catch(errorHandler({
+      action: 'update',
+      type,
+      id,
+      data
+    }))
   },
   delete: ({
     type,
@@ -128,7 +150,11 @@ const StoreAdaptor = ({
       method: 'delete'
     })
     .then(response => normaliseData(response.old))
-    .catch(errorHandler)
+    .catch(errorHandler({
+      action: 'delete',
+      type,
+      id
+    }))
   }
 })
 

@@ -9,8 +9,8 @@ const expect = chai.expect
 chai.use(chaiAsPromised)
 chai.use(dirtyChai)
 
-let Store = require('../../rest/arango')
-let StoreError = require('../../lib/errors').StoreError
+const Store = require('../../rest/arango')
+const StoreError = require('../../lib/errors').StoreError
 
 describe('Arango.del', function () {
   let server

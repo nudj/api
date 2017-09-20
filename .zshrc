@@ -10,12 +10,20 @@ alias dev='./node_modules/.bin/nodemon \
 		--watch ./ \
 		--delay 250ms \
 		-x "node ."'
-alias test="./node_modules/.bin/standard && ./node_modules/.bin/mocha --recursive test"
-alias tdd='./node_modules/.bin/nodemon \
-	--quiet \
-	--watch ./ \
-	--delay 250ms \
-	-x "./node_modules/.bin/mocha --recursive test || exit 1"'
+function test {
+	export ENVIRONMENT=test
+	./node_modules/.bin/standard && ./node_modules/.bin/mocha --recursive test
+	export ENVIRONMENT=local
+}
+function tdd {
+	export ENVIRONMENT=test
+	./node_modules/.bin/nodemon \
+		--quiet \
+		--watch ./ \
+		--delay 250ms \
+		-x "./node_modules/.bin/mocha --recursive test || exit 1"
+	export ENVIRONMENT=local
+}
 
 alias ll="ls -la"
 

@@ -29,6 +29,7 @@ ssh:
 		-v $(CWD)/src/nodemon.json:/usr/src/nodemon.json \
 		-v $(CWD)/src/package.json:/usr/src/package.json \
 		-v $(CWD)/src/readme.md:/usr/src/readme.md \
+		-v $(CWD)/../library/src:/usr/src/library \
 		$(IMAGEDEV) \
 		/bin/zsh
 
@@ -36,9 +37,11 @@ test:
 	-@docker rm -f api-test 2> /dev/null || true
 	@docker run --rm -it \
 		--name api-test \
+		-e ENVIRONMENT=test \
 		-v $(CWD)/src/gql:/usr/src/gql \
 		-v $(CWD)/src/lib:/usr/src/lib \
-		-v $(CWD)/src/mocks:/usr/src/mocks \
+		-v $(CWD)/src/mock:/usr/src/mock \
 		-v $(CWD)/src/rest:/usr/src/rest \
 		-v $(CWD)/src/test:/usr/src/test \
-		$(IMAGEDEV)
+		$(IMAGEDEV) \
+		/bin/zsh -c './node_modules/.bin/standard && ./node_modules/.bin/mocha --recursive test'

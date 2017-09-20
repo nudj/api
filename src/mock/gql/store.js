@@ -1,5 +1,6 @@
 const request = require('@nudj/library/lib/request')
 const toQs = require('@nudj/library/lib/to-qs')
+const logger = require('@nudj/library/lib/logger')
 
 const StoreError = require('../../lib/errors').StoreError
 
@@ -10,7 +11,7 @@ const errorHandler = (details) => (error) => {
   if (error.response.status === 404) {
     return null
   }
-  console.error((new Date()).toISOString(), details, error)
+  logger('error', (new Date()).toISOString(), details, error)
   throw new StoreError({
     code: error.response.status
   })

@@ -4,13 +4,14 @@ const chai = require('chai')
 const chaiAsPromised = require('chai-as-promised')
 const dirtyChai = require('dirty-chai')
 const nock = require('nock')
+const proxyquire = require('proxyquire')
 const expect = chai.expect
 
 chai.use(chaiAsPromised)
 chai.use(dirtyChai)
 
-let Store = require('../../rest/arango')
-let StoreError = require('../../lib/errors').StoreError
+const Store = require('../../rest/arango')
+const StoreError = require('../../lib/errors').StoreError
 
 describe('Arango.del', function () {
   let server

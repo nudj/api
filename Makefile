@@ -29,6 +29,7 @@ ssh:
 		-v $(CWD)/src/nodemon.json:/usr/src/nodemon.json \
 		-v $(CWD)/src/package.json:/usr/src/package.json \
 		-v $(CWD)/src/readme.md:/usr/src/readme.md \
+		-v $(CWD)/../library/src:/usr/src/library \
 		$(IMAGEDEV) \
 		/bin/zsh
 
@@ -41,4 +42,5 @@ test:
 		-v $(CWD)/src/mock:/usr/src/mock \
 		-v $(CWD)/src/rest:/usr/src/rest \
 		-v $(CWD)/src/test:/usr/src/test \
-		$(IMAGEDEV)
+		$(IMAGEDEV) \
+		/bin/zsh -c './node_modules/.bin/standard && ./node_modules/.bin/mocha --recursive test'

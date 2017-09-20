@@ -1,8 +1,8 @@
 const libRequest = require('@nudj/library/lib/request')
-const { merge } = require('@nudj/library')
+const { logger, merge } = require('@nudj/library')
 const reduce = require('lodash/reduce')
-const StoreError = require('../lib/errors').StoreError
 
+const StoreError = require('../lib/errors').StoreError
 const newISODate = () => (new Date()).toISOString()
 const authHash = new Buffer(process.env.DB_USER + ':' + process.env.DB_PASS).toString('base64')
 const request = (uri, options = {}) => libRequest(uri, merge({
@@ -15,7 +15,7 @@ const errorHandler = (details) => (error) => {
   if (error.response.status === 404) {
     return null
   }
-  console.error((new Date()).toISOString(), details, error)
+  logger('error', (new Date()).toISOString(), details, error)
   throw new StoreError({
     code: error.response.status
   })

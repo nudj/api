@@ -1,13 +1,14 @@
-let nodeFetch = require('node-fetch')
-let format = require('date-fns/format')
-let reduce = require('lodash/reduce')
+const nodeFetch = require('node-fetch')
+const format = require('date-fns/format')
+const reduce = require('lodash/reduce')
+const logger = require('@nudj/library/lib/logger')
 
-let StoreError = require('../lib/errors').StoreError
-let authHash = new Buffer(process.env.DB_USER + ':' + process.env.DB_PASS).toString('base64')
+const StoreError = require('../lib/errors').StoreError
+const authHash = new Buffer(process.env.DB_USER + ':' + process.env.DB_PASS).toString('base64')
 
 function fetch (path, options) {
   const uri = `http://db:8529/_db/nudj/_api/${path}`
-  console.log((new Date()).toISOString(), 'REQUEST', uri, options)
+  logger('info', (new Date()).toISOString(), 'REQUEST', uri, options)
   return nodeFetch(uri, Object.assign(options, {
     headers: {
       'Authorization': 'Basic ' + authHash
@@ -20,7 +21,7 @@ function fetch (path, options) {
 function extractJson ({ uri, options }) {
   return (response) => {
     const json = response.json()
-    console.log((new Date()).toISOString(), 'RESPONSE', uri, options, json)
+    logger('info', (new Date()).toISOString(), 'RESPONSE', uri, options, json)
     return Promise.resolve(json)
   }
 }
@@ -68,7 +69,7 @@ function handleError ({ uri, options }) {
       code: error.code,
       originalError: error
     })
-    console.log((new Date()).toISOString(), 'ERROR', uri, options)
+    logger('info', (new Date()).toISOString(), 'ERROR', uri, options)
     return Promise.reject(storeError)
   }
 }
@@ -133,6 +134,13 @@ function post (type, props) {
   .then(normalise('new'))
 }
 
+function del (type, id) {
+  return fetch(`document/${type}/${id}?returnOld=true`, {
+    method: 'DELETE'
+  })
+  .then(normalise('old'))
+}
+
 function patch (type, id, props) {
   return fetch(`document/${type}/${id}?returnNew=true`, {
     method: 'PATCH',
@@ -146,5 +154,6 @@ module.exports = {
   getFiltered,
   getOne,
   post,
-  patch
+  patch,
+  del
 }

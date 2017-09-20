@@ -127,16 +127,12 @@ module.exports = ({
 
     switch (definition.kind) {
       case 'ScalarTypeDefinition':
-        // console.log('Scalar', type)
         schema.scalars.push(type)
         break
       case 'EnumTypeDefinition':
-        // console.log('Enum', type)
         schema.enums[type] = definition.values.map(value => value.name.value)
         break
       case 'ObjectTypeDefinition':
-        // console.log('Type', type)
-
         // root resolver schemas
         schema.types.Query.push(`${typeName.singular}(id: ID): ${type}`)
         schema.types.Query.push(`${typeName.singular}ByFilters(filters: ${type}FilterInput): ${type}`)
@@ -288,8 +284,8 @@ module.exports = ({
   // custom resolvers
   resolvers = merge(resolvers, customResolvers)
 
-  console.log(typeDefs)
-  console.log(resolvers)
+  // console.log(typeDefs)
+  // console.log(resolvers)
 
   return {
     typeDefs,

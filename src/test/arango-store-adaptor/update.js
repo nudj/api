@@ -11,7 +11,7 @@ const expect = chai.expect
 chai.use(chaiAsPromised)
 chai.use(dirtyChai)
 
-let StoreError = require('../../lib/errors').StoreError
+const StoreError = require('../../lib/errors').StoreError
 let StoreAdaptor = require('../../gql/arango-store-adaptor')
 let server
 
@@ -36,7 +36,7 @@ describe('ArangoStoreAdaptor.update', () => {
       data: {
         key: 'value'
       }
-    })).to.be.an.instanceof(Promise)
+    }).catch(() => {})).to.be.an.instanceof(Promise)
   })
   it('patches to arango', () => {
     server

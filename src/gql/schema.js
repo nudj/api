@@ -35,6 +35,13 @@ module.exports = `
     SURVEY_TYPEFORM_COMPLETE
   }
 
+  enum TaskType {
+    HIRER_SURVEY
+    SEND_SURVEY_INTERNAL
+    SHARE_JOBS
+    UNLOCK_NETWORK_LINKEDIN
+  }
+
   type Company {
     created: DateTime!
     description: String!
@@ -185,5 +192,15 @@ module.exports = `
     employee: Employee!
     survey: Survey!
     typeformToken: String
+  }
+
+  type Task {
+    id: ID! @isUnique
+    created: DateTime!
+    modified: DateTime!
+    type: TaskType!
+    company: Company
+    hirer: Hirer
+    completed: Hirer
   }
 `

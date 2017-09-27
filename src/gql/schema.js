@@ -30,6 +30,11 @@ module.exports = `
     HIRER
   }
 
+  enum SurveyType {
+    EMPLOYEE_SURVEY
+    HIRER_SURVEY
+  }
+
   enum TokenType {
     SHARE_COMPANY_JOBS
     SURVEY_TYPEFORM_COMPLETE
@@ -183,6 +188,7 @@ module.exports = `
     company: Company!
     link: String!
     uuid: String!
+    type: SurveyType!
   }
 
   type EmployeeSurvey {

@@ -72,6 +72,8 @@ module.exports = `
     company: Company!
     created: DateTime!
     description: String!
+    roleDescription: String
+    candidateDescription: String
     experience: String
     id: ID! @isUnique
     location: String!

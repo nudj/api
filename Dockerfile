@@ -5,4 +5,4 @@ WORKDIR /usr/src
 COPY src /usr/src
 RUN npm i --production
 EXPOSE 81 82
-CMD node .
+CMD ["node", "."]

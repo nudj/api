@@ -38,6 +38,19 @@ module.exports = ({
                 })
               }
             }
+            typeResolvers[`${fieldName.singular}ById`] = (parent, args, context) => {
+              if (args.id) {
+                return store.readOne({
+                  type: targetName.plural,
+                  filters: {
+                    id: args.id,
+                    [`${typeName.singular}`]: parent.id
+                  }
+                })
+              } else {
+                return null
+              }
+            }
             typeResolvers[`${fieldName.singular}ByFilters`] = (parent, args, context) => {
               return store.readOne({
                 type: targetName.plural,
@@ -188,9 +201,10 @@ module.exports = ({
             }
           }
 
-          // add [field]ByFilters to schema
+          // add [field]By[Id|Filters] to schema
           if (typeConfig.list && tally.types.includes(typeConfig.name)) {
             let fieldNamePluralisms = getPluralisms(field.name.value)
+            fieldStrings.type.push(`${fieldNamePluralisms.singular}ById(id: ID): ${typeConfig.name}`)
             fieldStrings.type.push(`${fieldNamePluralisms.singular}ByFilters(filters: ${typeConfig.name}FilterInput): ${typeConfig.name}`)
             fieldStrings.type.push(`${fieldNamePluralisms.plural}ByFilters(filters: ${typeConfig.name}FilterInput): [${typeConfig.name}!]`)
           }

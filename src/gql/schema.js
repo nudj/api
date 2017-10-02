@@ -30,9 +30,21 @@ module.exports = `
     HIRER
   }
 
+  enum SurveyType {
+    EMPLOYEE_SURVEY
+    HIRER_SURVEY
+  }
+
   enum TokenType {
     SHARE_COMPANY_JOBS
     SURVEY_TYPEFORM_COMPLETE
+  }
+
+  enum TaskType {
+    HIRER_SURVEY
+    SEND_SURVEY_INTERNAL
+    SHARE_JOBS
+    UNLOCK_NETWORK_LINKEDIN
   }
 
   type Company {
@@ -60,6 +72,8 @@ module.exports = `
     company: Company!
     created: DateTime!
     description: String!
+    roleDescription: String
+    candidateDescription: String
     experience: String
     id: ID! @isUnique
     location: String!
@@ -176,6 +190,7 @@ module.exports = `
     company: Company!
     link: String!
     uuid: String!
+    type: SurveyType!
   }
 
   type EmployeeSurvey {
@@ -185,5 +200,15 @@ module.exports = `
     employee: Employee!
     survey: Survey!
     typeformToken: String
+  }
+
+  type Task {
+    id: ID! @isUnique
+    created: DateTime!
+    modified: DateTime!
+    type: TaskType!
+    company: Company
+    hirer: Hirer
+    completed: Hirer
   }
 `

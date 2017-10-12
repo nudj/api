@@ -50,6 +50,7 @@ module.exports = `
   type Company {
     created: DateTime!
     description: String!
+    mission: String
     facebook: String
     id: ID! @isUnique
     industry: String!

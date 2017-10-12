@@ -50,7 +50,7 @@ module.exports = `
   type Company {
     created: DateTime!
     description: String!
-    mission: String
+    mission: String!
     facebook: String
     id: ID! @isUnique
     industry: String!
@@ -73,8 +73,8 @@ module.exports = `
     company: Company!
     created: DateTime!
     description: String!
-    roleDescription: String
-    candidateDescription: String
+    roleDescription: String!
+    candidateDescription: String!
     experience: String
     id: ID! @isUnique
     location: String!

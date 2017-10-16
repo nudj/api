@@ -55,7 +55,7 @@ steps:
     title: Push Release
     type: push
     candidate: '${{build}}'
-    tag: 3.2.0
+    tag: 3.3.0
     credentials:
       username: '${{dockerUsername}}'
       password: '${{dockerPassword}}'

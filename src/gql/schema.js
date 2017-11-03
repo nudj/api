@@ -123,6 +123,14 @@ module.exports = `
     modified: DateTime!
   }
 
+  type Message {
+    created: DateTime!
+    id: ID! @isUnique
+    pixelToken: String!
+    readCount: Int!
+    modified: DateTime!
+  }
+
   type ExternalMessage {
     composeMessage: String
     created: DateTime!

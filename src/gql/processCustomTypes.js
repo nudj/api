@@ -201,6 +201,15 @@ module.exports = ({
             }
           }
 
+          // add field to update input schema
+          if (!['id', 'created', 'modified'].includes(field.name.value) && !typeConfig.list) {
+            if (tally.types.includes(typeConfig.name)) {
+              fieldStrings.update.push(`${field.name.value}: ID`)
+            } else {
+              fieldStrings.update.push(`${field.name.value}: ${typeConfig.name}`)
+            }
+          }
+
           // add [field]By[Id|Filters] to schema
           if (typeConfig.list && tally.types.includes(typeConfig.name)) {
             let fieldNamePluralisms = getPluralisms(field.name.value)
@@ -211,10 +220,8 @@ module.exports = ({
           if (!['id', 'created', 'modified'].includes(field.name.value) && !typeConfig.list) {
             if (tally.types.includes(typeConfig.name)) {
               fieldStrings.create.push(`${field.name.value}: ID${typeConfig.required ? '!' : ''}`)
-              fieldStrings.update.push(`${field.name.value}: ID`)
             } else {
               fieldStrings.create.push(`${field.name.value}: ${typeConfig.string}`)
-              fieldStrings.update.push(`${field.name.value}: ${typeConfig.string}`)
             }
           }
         })

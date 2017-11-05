@@ -3,6 +3,11 @@ module.exports = `
 
   scalar Data
 
+  enum InternalSend {
+    MAILGUN
+    GMAIL
+  }
+
   enum ExternalLength {
     SHORT
     LONG
@@ -47,6 +52,13 @@ module.exports = `
     UNLOCK_NETWORK_LINKEDIN
   }
 
+  enum SurveyQuestionType {
+    TEXT
+    FREETEXT
+    CHOICE
+    MULTICHOICE
+  }
+
   type Company {
     created: DateTime!
     description: String!
@@ -64,8 +76,10 @@ module.exports = `
     twitter: String
     modified: DateTime!
     url: String!
-    hirers: [Hirer!]!
+    hirers: [HirerPerson!]!
     onboarded: Boolean!
+    tasks: [CompanyTask!]!
+    surveys: [Survey!]!
   }
 
   type Job {
@@ -90,6 +104,7 @@ module.exports = `
     modified: DateTime!
     url: String!
     applications: [Application!]!
+    internalMessages: [InternalMessage!]!
     externalMessages: [ExternalMessage!]!
     recommendations: [Recommendation!]!
     referrals: [Referral!]!
@@ -110,8 +125,33 @@ module.exports = `
     applications: [Application!]!
     externalMessages: [ExternalMessage!]!
     hirer: Hirer
+    hirerForCompany: Company
     recommendations: [Recommendation!]!
     referrals: [Referral!]!
+    tasks: [PersonTask!]!
+    incompleteTaskCount: Int
+    connections: [Connection!]!
+  }
+
+  type HirerPerson {
+    company: String
+    created: DateTime!
+    email: String!
+    firstName: String
+    id: ID! @isUnique
+    lastName: String
+    status: String
+    title: String
+    type: String
+    modified: DateTime!
+    url: String
+    applications: [Application!]!
+    externalMessages: [ExternalMessage!]!
+    hirer: Hirer
+    recommendations: [Recommendation!]!
+    referrals: [Referral!]!
+    tasks: [PersonTask!]!
+    hirerCreated: DateTime!
   }
 
   type Application {
@@ -129,6 +169,19 @@ module.exports = `
     pixelToken: String!
     readCount: Int!
     modified: DateTime!
+  }
+
+  type InternalMessage {
+    id: ID! @isUnique
+    created: DateTime!
+    modified: DateTime!
+    recipients: [String]!
+    subject: String!
+    message: String!
+    type: InternalSend!
+    sent: Boolean!
+    hirer: Hirer!
+    job: Job!
   }
 
   type ExternalMessage {
@@ -193,13 +246,45 @@ module.exports = `
   }
 
   type Survey {
-    created: DateTime!
     id: ID! @isUnique
+    created: DateTime!
     modified: DateTime!
     company: Company!
-    link: String!
-    uuid: String!
-    type: SurveyType!
+    slug: String!
+    surveySections: [SurveySection!]!
+  }
+
+  type SurveySection {
+    id: ID! @isUnique
+    created: DateTime!
+    modified: DateTime!
+    survey: Survey!
+    title: String!
+    description: String
+    surveyQuestions: [SurveyQuestion!]!
+  }
+
+  type SurveyQuestion {
+    id: ID! @isUnique
+    created: DateTime!
+    modified: DateTime!
+    surveySection: SurveySection!
+    title: String!
+    description: String
+    name: String!
+    type: SurveyQuestionType!
+    dependencies: Data!
+    required: Boolean!
+    options: Data
+    tags: [String!]!
+  }
+
+  type Connection {
+    id: ID! @isUnique
+    created: DateTime!
+    modified: DateTime!
+    from: Person!
+    to: Person!
   }
 
   type EmployeeSurvey {
@@ -211,13 +296,22 @@ module.exports = `
     typeformToken: String
   }
 
-  type Task {
+  type PersonTask {
     id: ID! @isUnique
     created: DateTime!
     modified: DateTime!
     type: TaskType!
-    company: Company
-    hirer: Hirer
-    completed: Hirer
+    person: Person!
+    completed: Boolean!
+  }
+
+  type CompanyTask {
+    id: ID! @isUnique
+    created: DateTime!
+    modified: DateTime!
+    type: TaskType!
+    company: Company!
+    completed: Boolean!
+    completedBy: Person
   }
 `

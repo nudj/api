@@ -135,7 +135,7 @@ module.exports = ({ store }) => ({
           ids: hirers.map(hirer => hirer.person)
         })
         .then(people => {
-          return people.map((people, index) => merge(person, {
+          return people.map((person, index) => merge(person, {
             hirerCreated: hirers[index].created
           }))
         })
@@ -298,7 +298,7 @@ module.exports = ({ store }) => ({
     _depth: (obj, args, context) => {
       let count = null
       function fetchItem (id) {
-        return store.readOne({ type: typeName.plural, id }).then(item => {
+        return store.readOne({ type: 'referrals', id }).then(item => {
           count = count === null ? 0 : count + 1
           if (item.parent) {
             return fetchItem(item.parent)

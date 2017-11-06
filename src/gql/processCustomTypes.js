@@ -311,8 +311,8 @@ module.exports = ({
   // custom resolvers
   resolvers = merge(resolvers, customResolvers)
 
-  // console.log(typeDefs)
-  // console.log(resolvers)
+  console.log(typeDefs)
+  console.log(resolvers)
 
   return {
     typeDefs,

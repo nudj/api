@@ -19,106 +19,22 @@ const Data = new GraphQLScalarType({
 
 module.exports = ({ store }) => ({
   Query: {
-    referralDepth: (obj, args, context) => {
-      let count = null
-      function fetchReferral (id) {
-        return store.readOne({ type: 'referrals', id }).then(referral => {
-          count = count === null ? 0 : count + 1
-          if (referral.parent) {
-            return fetchReferral(referral.parent)
-          } else {
-            return count
-          }
-        })
-      }
-      return fetchReferral(args.id)
+    user: (obj, args) => {
+      return store.readOne({
+        type: 'people',
+        filters: {
+          email: args.email
+        }
+      })
     }
   },
   Mutation: {
-    createReferral: (obj, args, context) => {
-      const { parent, person, job } = args.input
-      return store.readOne({
-        type: 'referrals',
-        filters: { person, job }
-      })
-      .then(referral => {
-        if (referral) throw new Error('Already referred')
-        return store.create({
-          type: 'referrals',
-          data: { parent, person, job }
-        })
-      })
-    },
-    createApplication: (obj, args, context) => {
-      const { referral, person, job } = args.input
-      return store.readOne({
-        type: 'applications',
-        filters: { person, job }
-      })
-      .then(application => {
-        if (application) throw new Error('Already applied')
-        return store.create({
-          type: 'applications',
-          data: { referral, person, job }
-        })
-      })
-    },
-    getOrCreateConnection: (obj, args) => {
-      const { from, to } = args
+    user: (obj, args) => {
       return store.readOne({
         type: 'people',
-        filters: { email: to.email }
-      })
-      .then(person => {
-        if (person) return person
-        return store.create({
-          type: 'people',
-          data: to
-        })
-      })
-      .then(person => {
-        return store.readOne({
-          type: 'connections',
-          filters: { from, to: person.id }
-        })
-        .then(connection => {
-          if (connection) return connection
-          return store.create({
-            type: 'connections',
-            data: { from, to: person.id }
-          })
-        })
-      })
-    },
-    getOrCreateConnections: (obj, args) => {
-      const { from, to } = args
-      return Promise.all(to.map(connection => {
-        return store.readOne({
-          type: 'people',
-          filters: { email: connection.email }
-        })
-        .then(person => {
-          if (person) return person
-          return store.create({
-            type: 'people',
-            data: connection
-          })
-        })
-      }))
-      .then(people => {
-        return Promise.all(people.map(person => {
-          return store.readOne({
-            type: 'connections',
-            filters: { from, to: person.id }
-          })
-          .then(connection => {
-            if (connection) return connection
-            return store.create({
-              type: 'connections',
-              data: { from, to: person.id }
-            })
-          })
-        }))
+        filters: {
+          email: args.email
+        }
       })
     }
   },

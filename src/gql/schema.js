@@ -53,33 +53,41 @@ module.exports = `
   }
 
   enum SurveyQuestionType {
-    TEXT
-    FREETEXT
-    CHOICE
-    MULTICHOICE
+    COMPANIES
+    CONNECTIONS
   }
 
   type Company {
-    created: DateTime!
-    description: String!
-    mission: String!
-    facebook: String
     id: ID! @isUnique
-    industry: String!
+    created: DateTime!
+    modified: DateTime!
+    description: String
+    mission: String
+    facebook: String
+    industry: String
     jobs: [Job!]!
     linkedin: String
-    location: String!
-    logo: String!
+    location: String
+    logo: String
     name: String!
-    size: String!
-    slug: String!
+    size: String
+    slug: String
     twitter: String
-    modified: DateTime!
-    url: String!
+    url: String
     hirers: [HirerPerson!]!
-    onboarded: Boolean!
+    onboarded: Boolean
     tasks: [CompanyTask!]!
     surveys: [Survey!]!
+  }
+
+  type FormerEmployer {
+    id: ID! @isUnique
+    created: DateTime!
+    modified: DateTime!
+    name: String!
+    company: Company!
+    person: Person!
+    source: String!
   }
 
   type Job {
@@ -131,6 +139,7 @@ module.exports = `
     tasks: [PersonTask!]!
     incompleteTaskCount: Int
     connections: [Connection!]!
+    formerEmployers: [FormerEmployer!]!
   }
 
   type HirerPerson {
@@ -284,7 +293,12 @@ module.exports = `
     created: DateTime!
     modified: DateTime!
     from: Person!
-    to: Person!
+    person: Person!
+    firstName: String
+    lastName: String
+    title: String
+    company: String
+    source: String!
   }
 
   type EmployeeSurvey {

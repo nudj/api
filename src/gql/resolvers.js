@@ -1,5 +1,7 @@
 const { GraphQLScalarType } = require('graphql')
 const { merge } = require('@nudj/library')
+const _pick = require('lodash/pick')
+const _omit = require('lodash/omit')
 
 const DateTime = new GraphQLScalarType({
   name: 'DateTime',
@@ -22,9 +24,7 @@ module.exports = ({ store }) => ({
     user: (obj, args) => {
       return store.readOne({
         type: 'people',
-        filters: {
-          email: args.email
-        }
+        id: args.id
       })
     }
   },
@@ -32,9 +32,7 @@ module.exports = ({ store }) => ({
     user: (obj, args) => {
       return store.readOne({
         type: 'people',
-        filters: {
-          email: args.email
-        }
+        id: args.id
       })
     }
   },
@@ -151,7 +149,7 @@ module.exports = ({ store }) => ({
     },
     getOrCreateConnection: (obj, args) => {
       const from = obj.id
-      const { to } = args
+      const { to, source } = args
       return store.readOne({
         type: 'people',
         filters: { email: to.email }
@@ -160,26 +158,33 @@ module.exports = ({ store }) => ({
         if (person) return person
         return store.create({
           type: 'people',
-          data: to
+          data: _pick(to, ['email'])
         })
       })
       .then(person => {
         return store.readOne({
           type: 'connections',
-          filters: { from, to: person.id }
+          filters: {
+            from,
+            person: person.id
+          }
         })
         .then(connection => {
           if (connection) return connection
           return store.create({
             type: 'connections',
-            data: { from, to: person.id }
+            data: merge({
+              from,
+              source,
+              person: person.id
+            }, _omit(to, ['email']))
           })
         })
       })
     },
     getOrCreateConnections: (obj, args) => {
       const from = obj.id
-      const { to } = args
+      const { to, source } = args
       return Promise.all(to.map(connection => {
         return store.readOne({
           type: 'people',
@@ -203,10 +208,58 @@ module.exports = ({ store }) => ({
             if (connection) return connection
             return store.create({
               type: 'connections',
-              data: { from, to: person.id }
+              data: merge({
+                from,
+                source,
+                to: person.id
+              }, _omit(to, ['email']))
             })
           })
         }))
+      })
+    },
+    connections: (person, args) => {
+      const from = person.id
+      return store.readAll({
+        type: 'connections',
+        filters: { from }
+      })
+    },
+    getOrCreateFormerEmployer: (obj, args) => {
+      const person = obj.id
+      const { formerEmployer: newFormerEmployer, source } = args
+      return store.readOne({
+        type: 'companies',
+        filters: { name: newFormerEmployer.name }
+      })
+      .then(storedCompany => {
+        if (storedCompany) return storedCompany
+        // enrich company with clearbit data here
+        return store.create({
+          type: 'companies',
+          data: newFormerEmployer
+        })
+      })
+      .then(storedCompany => {
+        const company = storedCompany.id
+        return store.readOne({
+          type: 'formerEmployers',
+          filters: {
+            person,
+            company
+          }
+        })
+        .then(formerEmployer => {
+          if (formerEmployer) return formerEmployer
+          return store.create({
+            type: 'formerEmployers',
+            data: merge({
+              person,
+              source,
+              company
+            }, newFormerEmployer)
+          })
+        })
       })
     }
   },

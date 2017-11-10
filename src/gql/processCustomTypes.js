@@ -77,7 +77,9 @@ module.exports = ({
               } else {
                 return store.readOne({
                   type: targetName.plural,
-                  [typeName.singular]: parent.id
+                  filters: {
+                    [typeName.singular]: parent.id
+                  }
                 })
               }
             }
@@ -267,10 +269,11 @@ module.exports = ({
 
   // schema.types.Mutation.push(`getOrCreateConnection(from: ID!, to: PersonCreateInput!): Connection`)
   // schema.types.Mutation.push(`getOrCreateConnections(from: ID!, to: [PersonCreateInput!]!): [Connection]`)
-  schema.types.Query.push(`user(email: String!): Person`)
-  schema.types.Mutation.push(`user(email: String!): Person`)
-  schema.types.Person.push(`getOrCreateConnection(to: PersonCreateInput!): Connection`)
-  schema.types.Person.push(`getOrCreateConnections(to: [PersonCreateInput!]!): [Connection]`)
+  schema.types.Query.push(`user(id: ID!): Person`)
+  schema.types.Mutation.push(`user(id: ID!): Person`)
+  schema.types.Person.push(`getOrCreateConnection(to: PersonCreateInput!, source: String!): Connection`)
+  schema.types.Person.push(`getOrCreateConnections(to: [PersonCreateInput!]!, source: String!): [Connection]`)
+  schema.types.Person.push(`getOrCreateFormerEmployer(formerEmployer: CompanyCreateInput!, source: String!): FormerEmployer`)
 
   let typeDefs = ''
 

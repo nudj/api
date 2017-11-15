@@ -7,14 +7,20 @@ const resolvers = require('./resolvers')
 const processCustomTypes = require('./processCustomTypes')
 
 module.exports = ({ storeAdaptor }) => {
-  const executableSchema = makeExecutableSchema(processCustomTypes({
-    customTypeDefs: schema,
-    customResolvers: resolvers({ store: storeAdaptor }),
-    store: storeAdaptor
-  }))
+  const executableSchema = makeExecutableSchema(
+    processCustomTypes({
+      customTypeDefs: schema,
+      customResolvers: resolvers({ store: storeAdaptor }),
+      store: storeAdaptor
+    })
+  )
   const app = express()
-  app.use('/', bodyParser.json(), graphqlExpress({
-    schema: executableSchema
-  }))
+  app.use(
+    '/',
+    bodyParser.json({ limit: '5mb' }),
+    graphqlExpress({
+      schema: executableSchema
+    })
+  )
   return app
 }

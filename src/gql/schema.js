@@ -74,10 +74,17 @@ module.exports = `
     slug: String
     twitter: String
     url: String
-    hirers: [HirerPerson!]!
-    onboarded: Boolean
+    hirers: [Hirer!]!
+    onboarded: CompanyOnboarded
     tasks: [CompanyTask!]!
     surveys: [Survey!]!
+  }
+
+  type CompanyOnboarded {
+    id: ID! @isUnique
+    created: DateTime!
+    modified: DateTime!
+    company: Company!
   }
 
   type FormerEmployer {
@@ -133,34 +140,12 @@ module.exports = `
     applications: [Application!]!
     externalMessages: [ExternalMessage!]!
     hirer: Hirer
-    hirerForCompany: Company
     recommendations: [Recommendation!]!
     referrals: [Referral!]!
     tasks: [PersonTask!]!
     incompleteTaskCount: Int
     connections: [Connection!]!
     formerEmployers: [FormerEmployer!]!
-  }
-
-  type HirerPerson {
-    company: String
-    created: DateTime!
-    email: String!
-    firstName: String
-    id: ID! @isUnique
-    lastName: String
-    status: String
-    title: String
-    type: String
-    modified: DateTime!
-    url: String
-    applications: [Application!]!
-    externalMessages: [ExternalMessage!]!
-    hirer: Hirer
-    recommendations: [Recommendation!]!
-    referrals: [Referral!]!
-    tasks: [PersonTask!]!
-    hirerCreated: DateTime!
   }
 
   type Application {
@@ -214,6 +199,14 @@ module.exports = `
     person: Person!
     recommendations: [Recommendation!]!
     modified: DateTime!
+    onboarded: HirerOnboarded
+  }
+
+  type HirerOnboarded {
+    id: ID! @isUnique
+    created: DateTime!
+    modified: DateTime!
+    hirer: Hirer!
   }
 
   type Recommendation {
@@ -260,6 +253,10 @@ module.exports = `
     modified: DateTime!
     company: Company!
     slug: String!
+    introTitle: String
+    introDescription: String
+    outroTitle: String
+    outroDescription: String
     surveySections: [SurveySection!]!
   }
 

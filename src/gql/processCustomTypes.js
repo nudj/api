@@ -178,14 +178,14 @@ module.exports = ({ customTypeDefs, customResolvers, store }) => {
         schema.enums[type] = definition.values.map(value => value.name.value)
         break
       case 'ObjectTypeDefinition':
-        // // root resolver schemas
-        // schema.types.Query.push(`${typeName.singular}(id: ID): ${type}`)
-        // schema.types.Mutation.push(`${typeName.singular}(id: ID): ${type}`)
-        // schema.types.Query.push(`${typeName.singular}ByFilters(filters: ${type}FilterInput): ${type}`)
-        // schema.types.Mutation.push(`${typeName.singular}ByFilters(filters: ${type}FilterInput): ${type}`)
-        // schema.types.Query.push(`${typeName.plural}(filters: ${type}FilterInput): [${type}]`)
-        // schema.types.Mutation.push(`${typeName.plural}(filters: ${type}FilterInput): [${type}]`)
-        // schema.types.Mutation.push(`delete${type}(id: ID!): ${type}`)
+        // root resolver schemas
+        schema.types.Query.push(`${typeName.singular}(id: ID): ${type}`)
+        schema.types.Mutation.push(`${typeName.singular}(id: ID): ${type}`)
+        schema.types.Query.push(`${typeName.singular}ByFilters(filters: ${type}FilterInput): ${type}`)
+        schema.types.Mutation.push(`${typeName.singular}ByFilters(filters: ${type}FilterInput): ${type}`)
+        schema.types.Query.push(`${typeName.plural}(filters: ${type}FilterInput): [${type}]`)
+        schema.types.Mutation.push(`${typeName.plural}(filters: ${type}FilterInput): [${type}]`)
+        schema.types.Mutation.push(`delete${type}(id: ID!): ${type}`)
 
         // custom type definitions and inputs
         let fieldStrings = {
@@ -294,30 +294,30 @@ module.exports = ({ customTypeDefs, customResolvers, store }) => {
         schema.types[type] = fieldStrings.type.concat('_depth: Int')
         schema.inputs[`${type}FilterInput`] = fieldStrings.filter
         if (fieldStrings.create.length) {
-          // schema.types.Mutation.push(`create${type}(input: ${type}CreateInput): ${type}`)
+          schema.types.Mutation.push(`create${type}(input: ${type}CreateInput): ${type}`)
           schema.inputs[`${type}CreateInput`] = fieldStrings.create
-          // resolvers.Mutation[`create${typeName.original}`] = (obj, args, context) => store.create({ type: typeName.plural, data: args.input })
+          resolvers.Mutation[`create${typeName.original}`] = (obj, args, context) => store.create({ type: typeName.plural, data: args.input })
         }
         if (fieldStrings.update.length) {
-          // schema.types.Mutation.push(`update${type}(id: ID!, input: ${type}UpdateInput): ${type}`)
+          schema.types.Mutation.push(`update${type}(id: ID!, input: ${type}UpdateInput): ${type}`)
           schema.inputs[`${type}UpdateInput`] = fieldStrings.update
-          // resolvers.Mutation[`update${typeName.original}`] = (obj, args, context) => store.update({ type: typeName.plural, id: args.id, data: args.input })
+          resolvers.Mutation[`update${typeName.original}`] = (obj, args, context) => store.update({ type: typeName.plural, id: args.id, data: args.input })
         }
 
-        // // get one (by id)
-        // resolvers.Query[typeName.singular] = (obj, args, context) => args.id ? store.readOne({ type: typeName.plural, id: args.id }) : null
-        // resolvers.Mutation[typeName.singular] = resolvers.Query[typeName.singular]
-        //
-        // // get one (by filters)
-        // resolvers.Query[`${typeName.singular}ByFilters`] = (obj, args, context) => store.readOne({ type: typeName.plural, filters: args.filters })
-        // resolvers.Mutation[`${typeName.singular}ByFilters`] = resolvers.Query[`${typeName.singular}ByFilters`]
-        //
-        // // get all (filterable)
-        // resolvers.Query[typeName.plural] = (obj, args, context) => store.readAll({ type: typeName.plural, filters: args.filters })
-        // resolvers.Mutation[typeName.plural] = resolvers.Query[typeName.plural]
-        //
-        // // delete (by id)
-        // resolvers.Mutation[`delete${typeName.original}`] = (obj, args, context) => store.delete({ type: typeName.plural, id: args.id })
+        // get one (by id)
+        resolvers.Query[typeName.singular] = (obj, args, context) => args.id ? store.readOne({ type: typeName.plural, id: args.id }) : null
+        resolvers.Mutation[typeName.singular] = resolvers.Query[typeName.singular]
+
+        // get one (by filters)
+        resolvers.Query[`${typeName.singular}ByFilters`] = (obj, args, context) => store.readOne({ type: typeName.plural, filters: args.filters })
+        resolvers.Mutation[`${typeName.singular}ByFilters`] = resolvers.Query[`${typeName.singular}ByFilters`]
+
+        // get all (filterable)
+        resolvers.Query[typeName.plural] = (obj, args, context) => store.readAll({ type: typeName.plural, filters: args.filters })
+        resolvers.Mutation[typeName.plural] = resolvers.Query[typeName.plural]
+
+        // delete (by id)
+        resolvers.Mutation[`delete${typeName.original}`] = (obj, args, context) => store.delete({ type: typeName.plural, id: args.id })
 
         // custom type resolvers
         resolvers[type] = definition.fields.reduce(
@@ -334,8 +334,6 @@ module.exports = ({ customTypeDefs, customResolvers, store }) => {
     }
   })
 
-  // schema.types.Mutation.push(`getOrCreateConnection(from: ID!, to: PersonCreateInput!): Connection`)
-  // schema.types.Mutation.push(`getOrCreateConnections(from: ID!, to: [PersonCreateInput!]!): [Connection]`)
   schema.types.Query.push(`user(id: ID!): Person`)
   schema.types.Mutation.push(`user(id: ID!): Person`)
   schema.types.Person.push(
@@ -349,6 +347,9 @@ module.exports = ({ customTypeDefs, customResolvers, store }) => {
   )
   schema.types.Person.push(
     `updateTaskByFilters(filters: PersonTaskFilterInput!, data: PersonTaskUpdateInput!): PersonTask`
+  )
+  schema.types.Hirer.push(
+    `setOnboarded: HirerOnboarded`
   )
 
   let typeDefs = ''

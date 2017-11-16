@@ -36,125 +36,7 @@ module.exports = ({ store }) => ({
       })
     }
   },
-  Company: {
-    hirers: (obj, args, context) => {
-      const company = obj.id
-      return store
-        .readAll({
-          type: 'hirers',
-          filters: { company }
-        })
-        .then(hirers => {
-          return store
-            .readMany({
-              type: 'people',
-              ids: hirers.map(hirer => hirer.person)
-            })
-            .then(people => {
-              return people.map((person, index) =>
-                merge(person, {
-                  hirerCreated: hirers[index].created
-                })
-              )
-            })
-        })
-    },
-    hirerById: (obj, args, context) => {
-      const personId = args.id
-      const company = obj.id
-      return store
-        .readOne({
-          type: 'people',
-          id: personId
-        })
-        .then(person => {
-          return store
-            .readOne({
-              type: 'hirers',
-              filters: { company, person: person.id }
-            })
-            .then(
-              hirer =>
-                console.log('HIRER', hirer, person) ||
-                merge(person, {
-                  hirerCreated: hirer.created
-                })
-            )
-        })
-    },
-    hirerByFilters: (obj, args, context) => {
-      const filters = args.filters
-      const company = obj.id
-      return store
-        .readOne({
-          type: 'people',
-          filters
-        })
-        .then(person => {
-          return store
-            .readOne({
-              type: 'hirers',
-              filters: { company, person: person.id }
-            })
-            .then(hirer =>
-              merge(person, {
-                hirerCreated: hirer.created
-              })
-            )
-        })
-    },
-    hirersByFilters: (obj, args, context) => {
-      const filters = args.filters
-      const company = obj.id
-      return store
-        .readAll({
-          type: 'people',
-          filters
-        })
-        .then(people => {
-          return Promise.all(
-            people.map(person =>
-              store
-                .readOne({
-                  type: 'hirers',
-                  filters: { company, person: person.id }
-                })
-                .catch(() => null)
-            )
-          ).then(hirers =>
-            people.reduce((hirerPeople, person, index) => {
-              const hirer = hirers[index]
-              if (hirer) {
-                hirerPeople = hirerPeople.concat(
-                  merge(person, {
-                    hirerCreated: hirer.created
-                  })
-                )
-              }
-              return hirerPeople
-            }, [])
-          )
-        })
-    }
-  },
   Person: {
-    hirerForCompany: (obj, args, context) => {
-      const person = obj.id
-      return store
-        .readOne({
-          type: 'hirers',
-          filters: { person }
-        })
-        .then(
-          hirer =>
-            !hirer
-              ? null
-              : store.readOne({
-                type: 'companies',
-                id: hirer.company
-              })
-        )
-    },
     incompleteTaskCount: (obj, args, context) => {
       const person = obj.id
       return store
@@ -182,45 +64,40 @@ module.exports = ({ store }) => ({
         )
         .then(tasks => [].concat(...tasks).length)
     },
-    getOrCreateConnection: (obj, args) => {
+    getOrCreateConnection: async (obj, args) => {
       const from = obj.id
       const { to, source } = args
-      return store
-        .readOne({
+      let person = await store.readOne({
+        type: 'people',
+        filters: { email: to.email }
+      })
+      if (!person) {
+        person = await store.create({
           type: 'people',
-          filters: { email: to.email }
+          data: _pick(to, ['email'])
         })
-        .then(person => {
-          if (person) return person
-          return store.create({
-            type: 'people',
-            data: _pick(to, ['email'])
-          })
+      }
+      let connection = await store.readOne({
+        type: 'connections',
+        filters: {
+          from,
+          person: person.id
+        }
+      })
+      if (!connection) {
+        connection = await store.create({
+          type: 'connections',
+          data: merge(
+            {
+              from,
+              source,
+              person: person.id
+            },
+            _omit(to, ['email'])
+          )
         })
-        .then(person => {
-          return store
-            .readOne({
-              type: 'connections',
-              filters: {
-                from,
-                person: person.id
-              }
-            })
-            .then(connection => {
-              if (connection) return connection
-              return store.create({
-                type: 'connections',
-                data: merge(
-                  {
-                    from,
-                    source,
-                    person: person.id
-                  },
-                  _omit(to, ['email'])
-                )
-              })
-            })
-        })
+      }
+      return connection
     },
     getOrCreateConnections: (obj, args) => {
       const from = obj.id
@@ -331,6 +208,25 @@ module.exports = ({ store }) => ({
             data
           })
         })
+    }
+  },
+  Hirer: {
+    setOnboarded: async (hirer, args, context) => {
+      let onboarded = await store.readOne({
+        type: 'hirerOnboardeds',
+        filters: {
+          hirer: hirer.id
+        }
+      })
+      if (!onboarded) {
+        onboarded = await store.create({
+          type: 'hirerOnboardeds',
+          data: {
+            hirer: hirer.id
+          }
+        })
+      }
+      return onboarded
     }
   },
   Referral: {

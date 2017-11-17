@@ -1,6 +1,7 @@
 const request = require('@nudj/library/lib/request')
 const toQs = require('@nudj/library/lib/to-qs')
 const logger = require('@nudj/library/lib/logger')
+const merge = require('@nudj/library/lib/merge')
 
 const StoreError = require('../../lib/errors').StoreError
 
@@ -8,13 +9,13 @@ const takeFirst = (result) => result[0]
 const newISODate = () => (new Date()).toISOString()
 
 const errorHandler = (details) => (error) => {
-  if (error.response.status === 404) {
+  console.log(error.message)
+  const code = error.status || (error.response && error.response.status) || 500
+  if (code === 404) {
     return null
   }
   logger('error', (new Date()).toISOString(), details, error)
-  throw new StoreError({
-    code: error.response.status
-  })
+  throw new StoreError({ code })
 }
 
 module.exports = ({baseURL}) => ({
@@ -24,7 +25,7 @@ module.exports = ({baseURL}) => ({
   }) => request(`/${type}`, {
     baseURL,
     method: 'post',
-    data: Object.assign(data, {
+    data: merge(data, {
       created: newISODate(),
       modified: newISODate()
     })
@@ -52,6 +53,35 @@ module.exports = ({baseURL}) => ({
       id,
       filters
     }))
+  },
+  readOneOrCreate: async ({
+    type,
+    filters,
+    data
+  }) => {
+    try {
+      const filterString = toQs(filters)
+      const matches = await request(`/${type}${filterString.length ? `?${filterString}` : ''}`, {baseURL})
+      let item = takeFirst(matches)
+      if (!item) {
+        item = await request(`/${type}`, {
+          baseURL,
+          method: 'post',
+          data: merge(data, {
+            created: newISODate(),
+            modified: newISODate()
+          })
+        })
+      }
+      return item
+    } catch (error) {
+      return errorHandler({
+        action: 'readOneOrCreate',
+        type,
+        filters,
+        data
+      })(error)
+    }
   },
   readAll: ({
     type,
@@ -81,7 +111,7 @@ module.exports = ({baseURL}) => ({
   }) => request(`/${type}/${id}`, {
     baseURL,
     method: 'patch',
-    data: Object.assign(data, {
+    data: merge(data, {
       modified: newISODate()
     })
   })

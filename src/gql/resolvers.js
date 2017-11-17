@@ -67,78 +67,94 @@ module.exports = ({ store }) => ({
     getOrCreateConnection: async (obj, args) => {
       const from = obj.id
       const { to, source } = args
-      let person = await store.readOne({
-        type: 'people',
-        filters: { email: to.email }
+      const connectionSource = await store.readOneOrCreate({
+        type: 'connectionSources',
+        filters: { name: source },
+        data: { name: source }
       })
-      if (!person) {
-        person = await store.create({
-          type: 'people',
-          data: _pick(to, ['email'])
+      let role
+      if (to.title) {
+        role = await store.readOneOrCreate({
+          type: 'roles',
+          filters: { name: to.title },
+          data: { name: to.title }
         })
       }
-      let connection = await store.readOne({
+      let company
+      if (to.company) {
+        company = await store.readOneOrCreate({
+          type: 'companies',
+          filters: { name: to.company },
+          data: { name: to.company }
+        })
+      }
+      let person = await store.readOneOrCreate({
+        type: 'people',
+        filters: { email: to.email },
+        data: _pick(to, ['email'])
+      })
+      let connection = await store.readOneOrCreate({
         type: 'connections',
         filters: {
           from,
           person: person.id
-        }
-      })
-      if (!connection) {
-        connection = await store.create({
-          type: 'connections',
-          data: merge(
-            {
-              from,
-              source,
-              person: person.id
-            },
-            _omit(to, ['email'])
-          )
+        },
+        data: merge(_omit(to, ['email', 'title']), {
+          from,
+          source: connectionSource.id,
+          role: role && role.id,
+          company: company.id,
+          person: person.id
         })
-      }
+      })
       return connection
     },
-    getOrCreateConnections: (obj, args) => {
+    getOrCreateConnections: async (obj, args) => {
       const from = obj.id
       const { to, source } = args
-      return Promise.all(
-        to.map(connection => {
-          return store
-            .readOne({
-              type: 'people',
-              filters: { email: connection.email }
-            })
-            .then(person => {
-              if (person) return person
-              return store.create({
-                type: 'people',
-                data: _pick(connection, ['email'])
-              })
-            })
-            .then(person => {
-              return store
-                .readOne({
-                  type: 'connections',
-                  filters: { from, person: person.id }
-                })
-                .then(existingConnection => {
-                  if (existingConnection) return existingConnection
-                  return store.create({
-                    type: 'connections',
-                    data: merge(
-                      {
-                        from,
-                        source,
-                        person: person.id
-                      },
-                      _omit(connection, ['email'])
-                    )
-                  })
-                })
-            })
+      const connectionSource = await store.readOneOrCreate({
+        type: 'connectionSources',
+        filters: { name: source },
+        data: { name: source }
+      })
+      return Promise.all(to.map(async data => {
+        let role
+        if (data.title) {
+          role = await store.readOneOrCreate({
+            type: 'roles',
+            filters: { name: data.title },
+            data: { name: data.title }
+          })
+        }
+        let company
+        if (data.company) {
+          company = await store.readOneOrCreate({
+            type: 'companies',
+            filters: { name: data.company },
+            data: { name: data.company }
+          })
+        }
+        let person = await store.readOneOrCreate({
+          type: 'people',
+          filters: { email: data.email },
+          data: _pick(data, ['email'])
         })
-      )
+        let connection = await store.readOneOrCreate({
+          type: 'connections',
+          filters: {
+            from,
+            person: person.id
+          },
+          data: merge(_omit(data, ['email', 'title']), {
+            from,
+            source: connectionSource.id,
+            role: role && role.id,
+            company: company.id,
+            person: person.id
+          })
+        })
+        return connection
+      }))
     },
     connections: (person, args) => {
       const from = person.id

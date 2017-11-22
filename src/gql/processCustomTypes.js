@@ -349,7 +349,7 @@ module.exports = ({ customTypeDefs, customResolvers, store }) => {
     `updateTaskByFilters(filters: PersonTaskFilterInput!, data: PersonTaskUpdateInput!): PersonTask`
   )
   schema.types.Hirer.push(
-    `setOnboarded: HirerOnboarded`
+    `setOnboarded: HirerOnboardedEvent`
   )
 
   let typeDefs = ''

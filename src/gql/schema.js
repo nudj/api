@@ -75,12 +75,12 @@ module.exports = `
     twitter: String
     url: String
     hirers: [Hirer!]!
-    onboarded: CompanyOnboarded
+    onboarded: CompanyOnboardedEvent
     tasks: [CompanyTask!]!
     surveys: [Survey!]!
   }
 
-  type CompanyOnboarded {
+  type CompanyOnboardedEvent {
     id: ID! @isUnique
     created: DateTime!
     modified: DateTime!
@@ -199,10 +199,10 @@ module.exports = `
     person: Person!
     recommendations: [Recommendation!]!
     modified: DateTime!
-    onboarded: HirerOnboarded
+    onboarded: HirerOnboardedEvent
   }
 
-  type HirerOnboarded {
+  type HirerOnboardedEvent {
     id: ID! @isUnique
     created: DateTime!
     modified: DateTime!
@@ -279,7 +279,6 @@ module.exports = `
     description: String
     name: String!
     type: SurveyQuestionType!
-    dependencies: Data!
     required: Boolean!
     options: Data
     tags: [String!]!

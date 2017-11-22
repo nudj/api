@@ -209,7 +209,7 @@ module.exports = ({ store }) => ({
       const { filters, data } = args
       return store
         .readOne({
-          type: 'PersonTasks',
+          type: 'personTasks',
           filters: merge(filters, {
             person: person.id
           })
@@ -219,7 +219,7 @@ module.exports = ({ store }) => ({
             return null
           }
           return store.update({
-            type: 'PersonTasks',
+            type: 'personTasks',
             id: task.id,
             data
           })
@@ -229,14 +229,14 @@ module.exports = ({ store }) => ({
   Hirer: {
     setOnboarded: async (hirer, args, context) => {
       let onboarded = await store.readOne({
-        type: 'hirerOnboardeds',
+        type: 'hirerOnboardedEvents',
         filters: {
           hirer: hirer.id
         }
       })
       if (!onboarded) {
         onboarded = await store.create({
-          type: 'hirerOnboardeds',
+          type: 'hirerOnboardedEvents',
           data: {
             hirer: hirer.id
           }

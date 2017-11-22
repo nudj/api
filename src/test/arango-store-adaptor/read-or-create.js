@@ -30,7 +30,11 @@ describe('ArangoStoreAdaptor.readOneOrCreate', () => {
           filterKey: 'filterValue'
         }
       })
-      .reply(200, { _key: 'id', _id: 123, _rev: 123, prop: 'value' })
+      .reply(200, {
+        document: { _key: 'id', _id: 123, _rev: 123, prop: 'value' },
+        error: false,
+        code: 200
+      })
     })
 
     it('returns existing item', () => {

@@ -1,7 +1,7 @@
 const { GraphQLScalarType } = require('graphql')
 const { merge } = require('@nudj/library')
-const _pick = require('lodash/pick')
-const _omit = require('lodash/omit')
+const pick = require('lodash/pick')
+const omit = require('lodash/omit')
 
 const DateTime = new GraphQLScalarType({
   name: 'DateTime',
@@ -91,7 +91,7 @@ module.exports = ({ store }) => ({
       let person = await store.readOneOrCreate({
         type: 'people',
         filters: { email: to.email },
-        data: _pick(to, ['email'])
+        data: pick(to, ['email'])
       })
       let connection = await store.readOneOrCreate({
         type: 'connections',
@@ -99,7 +99,7 @@ module.exports = ({ store }) => ({
           from,
           person: person.id
         },
-        data: merge(_omit(to, ['email', 'title']), {
+        data: merge(omit(to, ['email', 'title']), {
           from,
           source: connectionSource.id,
           role: role && role.id,
@@ -137,7 +137,7 @@ module.exports = ({ store }) => ({
         let person = await store.readOneOrCreate({
           type: 'people',
           filters: { email: data.email },
-          data: _pick(data, ['email'])
+          data: pick(data, ['email'])
         })
         let connection = await store.readOneOrCreate({
           type: 'connections',
@@ -145,7 +145,7 @@ module.exports = ({ store }) => ({
             from,
             person: person.id
           },
-          data: merge(_omit(data, ['email', 'title']), {
+          data: merge(omit(data, ['email', 'title']), {
             from,
             source: connectionSource.id,
             role: role && role.id,

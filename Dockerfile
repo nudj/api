@@ -1,4 +1,4 @@
-FROM node:6.11.1-alpine
+FROM node:8-alpine
 ARG NPM_TOKEN
 RUN mkdir -p /usr/src
 WORKDIR /usr/src

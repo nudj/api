@@ -12,13 +12,12 @@ const request = (uri, options = {}) => libRequest(uri, merge({
 }, options))
 
 const errorHandler = (details) => (error) => {
-  if (error.response.status === 404) {
+  const code = error.status || (error.response && error.response.status) || 500
+  if (code === 404) {
     return null
   }
   logger('error', (new Date()).toISOString(), details, error)
-  throw new StoreError({
-    code: error.response.status
-  })
+  throw new StoreError({ code })
 }
 
 function normaliseData (data) {
@@ -81,6 +80,48 @@ const StoreAdaptor = ({
       id,
       filters
     }))
+  },
+  readOneOrCreate: async ({
+    type,
+    filters,
+    data
+  }) => {
+    try {
+      let response = await request(`${baseURL}/simple/first-example`, {
+        method: 'put',
+        data: {
+          collection: type,
+          example: filters
+        }
+      })
+      return normaliseData(response.document)
+    } catch (error) {
+      try {
+        if ((error.status || (error.response && error.response.status)) === 404) {
+          const item = await request(`${baseURL}/document/${type}?returnNew=true`, {
+            method: 'post',
+            data: Object.assign({
+              created: newISODate(),
+              modified: newISODate()
+            }, data)
+          })
+          return normaliseData(item)
+        }
+      } catch (error) {
+        return errorHandler({
+          action: 'readOneOrCreate',
+          type,
+          filters,
+          data
+        })(error)
+      }
+      return errorHandler({
+        action: 'readOneOrCreate',
+        type,
+        filters,
+        data
+      })(error)
+    }
   },
   readAll: ({
     type,

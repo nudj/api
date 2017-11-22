@@ -27,7 +27,7 @@ steps:
     when:
       branch:
         only:
-          - publish
+          - master
 
   build:
     title: Build
@@ -55,7 +55,7 @@ steps:
     title: Push Release
     type: push
     candidate: '${{build}}'
-    tag: 3.4.0
+    tag: 4.0.0
     credentials:
       username: '${{dockerUsername}}'
       password: '${{dockerPassword}}'

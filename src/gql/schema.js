@@ -3,6 +3,11 @@ module.exports = `
 
   scalar Data
 
+  enum InternalSend {
+    MAILGUN
+    GMAIL
+  }
+
   enum ExternalLength {
     SHORT
     LONG
@@ -47,25 +52,49 @@ module.exports = `
     UNLOCK_NETWORK_LINKEDIN
   }
 
+  enum SurveyQuestionType {
+    COMPANIES
+    CONNECTIONS
+  }
+
   type Company {
-    created: DateTime!
-    description: String!
-    mission: String!
-    facebook: String
     id: ID! @isUnique
-    industry: String!
+    created: DateTime!
+    modified: DateTime!
+    description: String
+    mission: String
+    facebook: String
+    industry: String
     jobs: [Job!]!
     linkedin: String
-    location: String!
-    logo: String!
+    location: String
+    logo: String
     name: String!
-    size: String!
-    slug: String!
+    size: String
+    slug: String
     twitter: String
-    modified: DateTime!
-    url: String!
+    url: String
     hirers: [Hirer!]!
-    onboarded: Boolean!
+    onboarded: CompanyOnboardedEvent
+    tasks: [CompanyTask!]!
+    surveys: [Survey!]!
+  }
+
+  type CompanyOnboardedEvent {
+    id: ID! @isUnique
+    created: DateTime!
+    modified: DateTime!
+    company: Company!
+  }
+
+  type FormerEmployer {
+    id: ID! @isUnique
+    created: DateTime!
+    modified: DateTime!
+    name: String!
+    company: Company!
+    person: Person!
+    source: String!
   }
 
   type Job {
@@ -90,6 +119,7 @@ module.exports = `
     modified: DateTime!
     url: String!
     applications: [Application!]!
+    internalMessages: [InternalMessage!]!
     externalMessages: [ExternalMessage!]!
     recommendations: [Recommendation!]!
     referrals: [Referral!]!
@@ -112,6 +142,10 @@ module.exports = `
     hirer: Hirer
     recommendations: [Recommendation!]!
     referrals: [Referral!]!
+    tasks: [PersonTask!]!
+    incompleteTaskCount: Int
+    connections: [Connection!]!
+    formerEmployers: [FormerEmployer!]!
   }
 
   type Application {
@@ -129,6 +163,19 @@ module.exports = `
     pixelToken: String!
     readCount: Int!
     modified: DateTime!
+  }
+
+  type InternalMessage {
+    id: ID! @isUnique
+    created: DateTime!
+    modified: DateTime!
+    recipients: [String]!
+    subject: String!
+    message: String!
+    type: InternalSend!
+    sent: Boolean!
+    hirer: Hirer!
+    job: Job!
   }
 
   type ExternalMessage {
@@ -152,6 +199,14 @@ module.exports = `
     person: Person!
     recommendations: [Recommendation!]!
     modified: DateTime!
+    onboarded: HirerOnboardedEvent
+  }
+
+  type HirerOnboardedEvent {
+    id: ID! @isUnique
+    created: DateTime!
+    modified: DateTime!
+    hirer: Hirer!
   }
 
   type Recommendation {
@@ -193,13 +248,60 @@ module.exports = `
   }
 
   type Survey {
-    created: DateTime!
     id: ID! @isUnique
+    created: DateTime!
     modified: DateTime!
     company: Company!
-    link: String!
-    uuid: String!
-    type: SurveyType!
+    slug: String!
+    introTitle: String
+    introDescription: String
+    outroTitle: String
+    outroDescription: String
+    surveySections: [SurveySection!]!
+  }
+
+  type SurveySection {
+    id: ID! @isUnique
+    created: DateTime!
+    modified: DateTime!
+    survey: Survey!
+    title: String!
+    description: String
+    surveyQuestions: [SurveyQuestion!]!
+  }
+
+  type SurveyQuestion {
+    id: ID! @isUnique
+    created: DateTime!
+    modified: DateTime!
+    surveySection: SurveySection!
+    title: String!
+    description: String
+    name: String!
+    type: SurveyQuestionType!
+    required: Boolean!
+    options: Data
+    tags: [String!]!
+  }
+
+  type Connection {
+    id: ID! @isUnique
+    created: DateTime!
+    modified: DateTime!
+    from: Person!
+    person: Person!
+    firstName: String
+    lastName: String
+    role: Role
+    company: Company
+    source: ConnectionSource!
+  }
+
+  type ConnectionSource {
+    id: ID! @isUnique
+    created: DateTime!
+    modified: DateTime!
+    name: String!
   }
 
   type EmployeeSurvey {
@@ -211,13 +313,29 @@ module.exports = `
     typeformToken: String
   }
 
-  type Task {
+  type PersonTask {
     id: ID! @isUnique
     created: DateTime!
     modified: DateTime!
     type: TaskType!
-    company: Company
-    hirer: Hirer
-    completed: Hirer
+    person: Person!
+    completed: Boolean!
+  }
+
+  type CompanyTask {
+    id: ID! @isUnique
+    created: DateTime!
+    modified: DateTime!
+    type: TaskType!
+    company: Company!
+    completed: Boolean!
+    completedBy: Person
+  }
+
+  type Role {
+    id: ID! @isUnique
+    created: DateTime!
+    modified: DateTime!
+    name: String!
   }
 `

@@ -3,19 +3,27 @@ const pluralize = require('pluralize')
 const some = require('lodash/some')
 const { merge } = require('@nudj/library')
 
-module.exports = ({
-  customTypeDefs,
-  customResolvers,
-  store
-}) => {
+module.exports = ({ customTypeDefs, customResolvers, store }) => {
   function getRelationsFor (typeResolvers, typeName, field, fieldName, isList) {
     switch (field.kind) {
       case 'FieldDefinition':
       case 'NonNullType':
-        typeResolvers = getRelationsFor(typeResolvers, typeName, field.type, fieldName, isList)
+        typeResolvers = getRelationsFor(
+          typeResolvers,
+          typeName,
+          field.type,
+          fieldName,
+          isList
+        )
         break
       case 'ListType':
-        typeResolvers = getRelationsFor(typeResolvers, typeName, field.type, fieldName, true)
+        typeResolvers = getRelationsFor(
+          typeResolvers,
+          typeName,
+          field.type,
+          fieldName,
+          true
+        )
         break
       case 'NamedType':
         if (isCustomType(field.name.value)) {
@@ -33,49 +41,66 @@ module.exports = ({
                 return store.readAll({
                   type: targetName.plural,
                   filters: {
-                    [`${typeName.singular}`]: parent.id
+                    [typeName.singular]: parent.id
                   }
                 })
               }
             }
-            typeResolvers[`${fieldName.singular}ById`] = (parent, args, context) => {
+            typeResolvers[`${fieldName.singular}ById`] = (
+              parent,
+              args,
+              context
+            ) => {
               if (args.id) {
                 return store.readOne({
                   type: targetName.plural,
                   filters: {
                     id: args.id,
-                    [`${typeName.singular}`]: parent.id
+                    [typeName.singular]: parent.id
                   }
                 })
               } else {
                 return null
               }
             }
-            typeResolvers[`${fieldName.singular}ByFilters`] = (parent, args, context) => {
+            typeResolvers[`${fieldName.singular}ByFilters`] = (
+              parent,
+              args,
+              context
+            ) => {
               return store.readOne({
                 type: targetName.plural,
                 filters: merge(args.filters, {
-                  [`${typeName.singular}`]: parent.id
+                  [typeName.singular]: parent.id
                 })
               })
             }
-            typeResolvers[`${fieldName.plural}ByFilters`] = (parent, args, context) => {
+            typeResolvers[`${fieldName.plural}ByFilters`] = (
+              parent,
+              args,
+              context
+            ) => {
               return store.readAll({
                 type: targetName.plural,
                 filters: merge(args.filters, {
-                  [`${typeName.singular}`]: parent.id
+                  [typeName.singular]: parent.id
                 })
               })
             }
           } else {
             typeResolvers[fieldName.singular] = (parent, args, context) => {
-              if (parent[`${fieldName.singular}`] || parent[fieldName.original]) {
+              if (parent[fieldName.singular] || parent[fieldName.original]) {
                 return store.readOne({
                   type: targetName.plural,
-                  id: parent[`${fieldName.singular}`] || parent[fieldName.original]
+                  id: parent[fieldName.singular] || parent[fieldName.original]
                 })
               } else {
-                return null
+                return store.readOne({
+                  type: targetName.plural,
+                  filters: {
+                    [typeName.singular]: parent.id
+                  }
+                })
               }
             }
           }
@@ -87,9 +112,13 @@ module.exports = ({
   function getPluralisms (original) {
     return {
       original,
-      singular: pluralize.singular(original[0].toLowerCase() + original.slice(1)),
+      singular: pluralize.singular(
+        original[0].toLowerCase() + original.slice(1)
+      ),
       plural: pluralize.plural(original[0].toLowerCase() + original.slice(1)),
-      Singular: pluralize.singular(original[0].toUpperCase() + original.slice(1)),
+      Singular: pluralize.singular(
+        original[0].toUpperCase() + original.slice(1)
+      ),
       Plural: pluralize.plural(original[0].toUpperCase() + original.slice(1))
     }
   }
@@ -98,27 +127,30 @@ module.exports = ({
   }
 
   let parsedDefinitions = parse(customTypeDefs).definitions
-  let tally = parsedDefinitions.reduce((tally, definition) => {
-    switch (definition.kind) {
-      case 'ScalarTypeDefinition':
-        tally.scalars.push(definition.name.value)
-        break
-      case 'EnumTypeDefinition':
-        tally.enums.push(definition.name.value)
-        break
-      case 'ObjectTypeDefinition':
-        if (!tally.root.includes(definition.name.value)) {
-          tally.types.push(definition.name.value)
-        }
-        break
+  let tally = parsedDefinitions.reduce(
+    (tally, definition) => {
+      switch (definition.kind) {
+        case 'ScalarTypeDefinition':
+          tally.scalars.push(definition.name.value)
+          break
+        case 'EnumTypeDefinition':
+          tally.enums.push(definition.name.value)
+          break
+        case 'ObjectTypeDefinition':
+          if (!tally.root.includes(definition.name.value)) {
+            tally.types.push(definition.name.value)
+          }
+          break
+      }
+      return tally
+    },
+    {
+      root: ['Query', 'Mutation'],
+      scalars: [],
+      enums: [],
+      types: []
     }
-    return tally
-  }, {
-    root: [ 'Query', 'Mutation' ],
-    scalars: [],
-    enums: [],
-    types: []
-  })
+  )
   let resolvers = {
     Query: {},
     Mutation: {}
@@ -127,14 +159,14 @@ module.exports = ({
     scalars: [],
     enums: {},
     types: {
-      Query: ['referralDepth(id: ID): Int'],
+      Query: [],
       Mutation: []
     },
     inputs: {}
   }
 
   // main loop
-  parsedDefinitions.forEach((definition) => {
+  parsedDefinitions.forEach(definition => {
     const type = definition.name.value
     const typeName = getPluralisms(type)
 
@@ -148,8 +180,11 @@ module.exports = ({
       case 'ObjectTypeDefinition':
         // root resolver schemas
         schema.types.Query.push(`${typeName.singular}(id: ID): ${type}`)
+        schema.types.Mutation.push(`${typeName.singular}(id: ID): ${type}`)
         schema.types.Query.push(`${typeName.singular}ByFilters(filters: ${type}FilterInput): ${type}`)
+        schema.types.Mutation.push(`${typeName.singular}ByFilters(filters: ${type}FilterInput): ${type}`)
         schema.types.Query.push(`${typeName.plural}(filters: ${type}FilterInput): [${type}]`)
+        schema.types.Mutation.push(`${typeName.plural}(filters: ${type}FilterInput): [${type}]`)
         schema.types.Mutation.push(`delete${type}(id: ID!): ${type}`)
 
         // custom type definitions and inputs
@@ -159,9 +194,12 @@ module.exports = ({
           update: [],
           filter: []
         }
-        definition.fields.forEach((field) => {
+        definition.fields.forEach(field => {
           let typeConfig = {
-            unique: some(field.directives, directive => directive.name.value === 'isUnique')
+            unique: some(
+              field.directives,
+              directive => directive.name.value === 'isUnique'
+            )
           }
           let setting = field
           while (setting.type) {
@@ -190,38 +228,66 @@ module.exports = ({
               typeConfig.string = `${typeConfig.string}!`
             }
           }
-          fieldStrings.type.push(`${field.name.value}: ${typeConfig.string}${typeConfig.unique ? ' @isUnique' : ''}`)
+          fieldStrings.type.push(
+            `${field.name.value}: ${typeConfig.string}${
+              typeConfig.unique ? ' @isUnique' : ''
+            }`
+          )
 
           // add field to filter input schema
           if (!['id'].includes(field.name.value) && !typeConfig.list) {
             if (tally.types.includes(typeConfig.name)) {
               fieldStrings.filter.push(`${field.name.value}: ID`)
             } else {
-              fieldStrings.filter.push(`${field.name.value}: ${typeConfig.name}`)
+              fieldStrings.filter.push(
+                `${field.name.value}: ${typeConfig.name}`
+              )
             }
           }
 
           // add field to update input schema
-          if (!['id', 'created', 'modified'].includes(field.name.value) && !typeConfig.list) {
+          if (
+            !['id', 'created', 'modified'].includes(field.name.value) &&
+            !typeConfig.list
+          ) {
             if (tally.types.includes(typeConfig.name)) {
               fieldStrings.update.push(`${field.name.value}: ID`)
             } else {
-              fieldStrings.update.push(`${field.name.value}: ${typeConfig.name}`)
+              fieldStrings.update.push(
+                `${field.name.value}: ${typeConfig.name}`
+              )
             }
           }
 
           // add [field]By[Id|Filters] to schema
           if (typeConfig.list && tally.types.includes(typeConfig.name)) {
             let fieldNamePluralisms = getPluralisms(field.name.value)
-            fieldStrings.type.push(`${fieldNamePluralisms.singular}ById(id: ID): ${typeConfig.name}`)
-            fieldStrings.type.push(`${fieldNamePluralisms.singular}ByFilters(filters: ${typeConfig.name}FilterInput): ${typeConfig.name}`)
-            fieldStrings.type.push(`${fieldNamePluralisms.plural}ByFilters(filters: ${typeConfig.name}FilterInput): [${typeConfig.name}!]`)
+            fieldStrings.type.push(
+              `${fieldNamePluralisms.singular}ById(id: ID): ${typeConfig.name}`
+            )
+            fieldStrings.type.push(
+              `${fieldNamePluralisms.singular}ByFilters(filters: ${
+                typeConfig.name
+              }FilterInput): ${typeConfig.name}`
+            )
+            fieldStrings.type.push(
+              `${fieldNamePluralisms.plural}ByFilters(filters: ${
+                typeConfig.name
+              }FilterInput): [${typeConfig.name}!]`
+            )
           }
-          if (!['id', 'created', 'modified'].includes(field.name.value) && !typeConfig.list) {
+          if (
+            !['id', 'created', 'modified'].includes(field.name.value) &&
+            !typeConfig.list
+          ) {
             if (tally.types.includes(typeConfig.name)) {
-              fieldStrings.create.push(`${field.name.value}: ID${typeConfig.required ? '!' : ''}`)
+              fieldStrings.create.push(
+                `${field.name.value}: ID${typeConfig.required ? '!' : ''}`
+              )
             } else {
-              fieldStrings.create.push(`${field.name.value}: ${typeConfig.string}`)
+              fieldStrings.create.push(
+                `${field.name.value}: ${typeConfig.string}`
+              )
             }
           }
         })
@@ -240,73 +306,104 @@ module.exports = ({
 
         // get one (by id)
         resolvers.Query[typeName.singular] = (obj, args, context) => args.id ? store.readOne({ type: typeName.plural, id: args.id }) : null
+        resolvers.Mutation[typeName.singular] = resolvers.Query[typeName.singular]
 
         // get one (by filters)
         resolvers.Query[`${typeName.singular}ByFilters`] = (obj, args, context) => store.readOne({ type: typeName.plural, filters: args.filters })
+        resolvers.Mutation[`${typeName.singular}ByFilters`] = resolvers.Query[`${typeName.singular}ByFilters`]
 
         // get all (filterable)
         resolvers.Query[typeName.plural] = (obj, args, context) => store.readAll({ type: typeName.plural, filters: args.filters })
+        resolvers.Mutation[typeName.plural] = resolvers.Query[typeName.plural]
 
         // delete (by id)
         resolvers.Mutation[`delete${typeName.original}`] = (obj, args, context) => store.delete({ type: typeName.plural, id: args.id })
 
         // custom type resolvers
-        resolvers[type] = definition.fields.reduce((typeResolvers, field) => getRelationsFor(typeResolvers, typeName, field, getPluralisms(field.name.value)), {
-          _depth: (obj, args, context) => {
-            let count = null
-            function fetchItem (id) {
-              return store.readOne({ type: typeName.plural, id }).then(item => {
-                count = count === null ? 0 : count + 1
-                if (item.parent) {
-                  return fetchItem(item.parent)
-                } else {
-                  return count
-                }
-              })
-            }
-            return fetchItem(obj.id)
-          }
-        })
+        resolvers[type] = definition.fields.reduce(
+          (typeResolvers, field) =>
+            getRelationsFor(
+              typeResolvers,
+              typeName,
+              field,
+              getPluralisms(field.name.value)
+            ),
+          {}
+        )
         break
     }
   })
 
+  schema.types.Query.push(`user(id: ID!): Person`)
+  schema.types.Mutation.push(`user(id: ID!): Person`)
+  schema.types.Person.push(
+    `getOrCreateConnection(to: PersonCreateInput!, source: String!): Connection`
+  )
+  schema.types.Person.push(
+    `getOrCreateConnections(to: [PersonCreateInput!]!, source: String!): [Connection]`
+  )
+  schema.types.Person.push(
+    `getOrCreateFormerEmployer(formerEmployer: CompanyCreateInput!, source: String!): FormerEmployer`
+  )
+  schema.types.Person.push(
+    `updateTaskByFilters(filters: PersonTaskFilterInput!, data: PersonTaskUpdateInput!): PersonTask`
+  )
+  schema.types.Hirer.push(
+    `setOnboarded: HirerOnboardedEvent`
+  )
+
   let typeDefs = ''
 
   // add scalars
-  typeDefs += schema.scalars.map(type => `
+  typeDefs += schema.scalars
+    .map(
+      type => `
     scalar ${type}
-  `).join('')
+  `
+    )
+    .join('')
 
   // add enums
-  typeDefs += Object.keys(schema.enums).map(name => `
+  typeDefs += Object.keys(schema.enums)
+    .map(
+      name => `
     enum ${name} {
       ${schema.enums[name].join(`
       `)}
     }
-  `).join('')
+  `
+    )
+    .join('')
 
   // add types
-  typeDefs += Object.keys(schema.types).map(type => `
+  typeDefs += Object.keys(schema.types)
+    .map(
+      type => `
     type ${type} {
       ${schema.types[type].join(`
       `)}
     }
-  `).join('')
+  `
+    )
+    .join('')
 
   // add inputs
-  typeDefs += Object.keys(schema.inputs).map(input => `
+  typeDefs += Object.keys(schema.inputs)
+    .map(
+      input => `
     input ${input} {
       ${schema.inputs[input].join(`
       `)}
     }
-  `).join('')
+  `
+    )
+    .join('')
 
   // custom resolvers
   resolvers = merge(resolvers, customResolvers)
 
-  // console.log(typeDefs)
-  // console.log(resolvers)
+  console.log(typeDefs)
+  console.log(resolvers)
 
   return {
     typeDefs,

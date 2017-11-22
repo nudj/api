@@ -293,9 +293,16 @@ module.exports = `
     person: Person!
     firstName: String
     lastName: String
-    title: String
-    company: String
-    source: String!
+    role: Role
+    company: Company
+    source: ConnectionSource!
+  }
+
+  type ConnectionSource {
+    id: ID! @isUnique
+    created: DateTime!
+    modified: DateTime!
+    name: String!
   }
 
   type EmployeeSurvey {
@@ -324,5 +331,12 @@ module.exports = `
     company: Company!
     completed: Boolean!
     completedBy: Person
+  }
+
+  type Role {
+    id: ID! @isUnique
+    created: DateTime!
+    modified: DateTime!
+    name: String!
   }
 `

@@ -87,14 +87,14 @@ const StoreAdaptor = ({
     data
   }) => {
     try {
-      let item = await request(`${baseURL}/simple/first-example`, {
+      let response = await request(`${baseURL}/simple/first-example`, {
         method: 'put',
         data: {
           collection: type,
           example: filters
         }
       })
-      return normaliseData(item)
+      return normaliseData(response.document)
     } catch (error) {
       try {
         if ((error.status || (error.response && error.response.status)) === 404) {

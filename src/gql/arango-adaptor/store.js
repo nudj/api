@@ -60,5 +60,40 @@ module.exports = {
     } else {
       return db[type].all().toArray().map(normaliseData)
     }
+  },
+  update: ({
+    type,
+    id,
+    data
+  }) => {
+    const db = require('@arangodb').db
+    const response = db[type].update(id, Object.assign(data, {
+      modified: newISODate()
+    }), { returnNew: true })
+    return normaliseData(response.new)
+  },
+  delete: ({
+    type,
+    id
+  }) => {
+    const db = require('@arangodb').db
+    const response = db[type].remove(id, { returnOld: true })
+    return normaliseData(response.old)
+  },
+  readOneOrCreate: ({
+    type,
+    filters,
+    data
+  }) => {
+    const db = require('@arangodb').db
+    let item = db[type].firstExample(filters)
+    if (!item) {
+      const response = db[type].save(Object.assign(data, {
+        created: newISODate(),
+        modified: newISODate()
+      }), { returnNew: true })
+      item = response.new
+    }
+    return normaliseData(item)
   }
 }

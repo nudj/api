@@ -12,6 +12,8 @@ chai.use(sinonChai)
 
 const DOCUMENT_RESPONSE = { _key: 'id', '_id': 123, '_rev': 123, prop: 'value' }
 const NEW_RESPONSE = { new: { _key: 'id', '_id': 123, '_rev': 123, prop: 'value' } }
+const OLD_RESPONSE = { old: { _key: 'id', '_id': 123, '_rev': 123, prop: 'value' } }
+const FILTER_NO_MATCH = null
 
 describe.only('ArangoAdaptor Store', () => {
   let Store
@@ -25,7 +27,9 @@ describe.only('ArangoAdaptor Store', () => {
           document: sinon.stub(),
           firstExample: sinon.stub().returns(DOCUMENT_RESPONSE),
           all: sinon.stub().returns({ toArray: () => [DOCUMENT_RESPONSE, DOCUMENT_RESPONSE] }),
-          byExample: sinon.stub().returns({ toArray: () => [DOCUMENT_RESPONSE, DOCUMENT_RESPONSE] })
+          byExample: sinon.stub().returns({ toArray: () => [DOCUMENT_RESPONSE, DOCUMENT_RESPONSE] }),
+          update: sinon.stub().returns(NEW_RESPONSE),
+          remove: sinon.stub().returns(OLD_RESPONSE)
         }
       }
     }
@@ -38,6 +42,11 @@ describe.only('ArangoAdaptor Store', () => {
   afterEach(() => {
     dbStub.db.collectionName.save.reset()
     dbStub.db.collectionName.document.reset()
+    dbStub.db.collectionName.firstExample.reset()
+    dbStub.db.collectionName.all.reset()
+    dbStub.db.collectionName.byExample.reset()
+    dbStub.db.collectionName.update.reset()
+    dbStub.db.collectionName.remove.reset()
   })
 
   it('to be an object', () => {
@@ -229,6 +238,216 @@ describe.only('ArangoAdaptor Store', () => {
           id: 'id',
           prop: 'value'
         }])
+      })
+    })
+  })
+
+  describe('update', () => {
+    it('should pass the entity id', () => {
+      Store.update({
+        type: 'collectionName',
+        id: 456,
+        data: {
+          prop: 'value'
+        }
+      })
+      const id = dbStub.db.collectionName.update.firstCall.args[0]
+      expect(id).to.equal(456)
+    })
+
+    it('should pass the patch data', () => {
+      Store.update({
+        type: 'collectionName',
+        id: 456,
+        data: {
+          prop: 'value'
+        }
+      })
+      const dataArgument = dbStub.db.collectionName.update.firstCall.args[1]
+      expect(dataArgument).to.have.property('prop', 'value')
+    })
+
+    it('should append modified date', () => {
+      Store.update({
+        type: 'collectionName',
+        id: 456,
+        data: {
+          prop: 'value'
+        }
+      })
+      const dataArgument = dbStub.db.collectionName.update.firstCall.args[1]
+      expect(dataArgument).to.have.property('modified')
+      expect(isDate(new Date(dataArgument.modified)), 'Modified is not date').to.be.true()
+      expect(differenceInMinutes(new Date(dataArgument.modified), new Date()) < 1, 'Modified is not recent date').to.be.true()
+    })
+
+    it('should request updated entity is returned', () => {
+      Store.update({
+        type: 'collectionName',
+        id: 456,
+        data: {
+          prop: 'value'
+        }
+      })
+      const optionsArgument = dbStub.db.collectionName.update.firstCall.args[2]
+      expect(optionsArgument).to.have.property('returnNew', true)
+    })
+
+    it('should return normalised entity', () => {
+      expect(Store.update({
+        type: 'collectionName',
+        id: 456,
+        data: {
+          prop: 'value'
+        }
+      })).to.deep.equal({
+        id: 'id',
+        prop: 'value'
+      })
+    })
+  })
+
+  describe('delete', () => {
+    it('should pass the entity id', () => {
+      Store.delete({
+        type: 'collectionName',
+        id: 456
+      })
+      const id = dbStub.db.collectionName.remove.firstCall.args[0]
+      expect(id).to.equal(456)
+    })
+
+    it('should request deleted entity is returned', () => {
+      Store.delete({
+        type: 'collectionName',
+        id: 456
+      })
+      const optionsArgument = dbStub.db.collectionName.remove.firstCall.args[1]
+      expect(optionsArgument).to.have.property('returnOld', true)
+    })
+
+    it('should return normalised entity', () => {
+      expect(Store.delete({
+        type: 'collectionName',
+        id: 456
+      })).to.deep.equal({
+        id: 'id',
+        prop: 'value'
+      })
+    })
+  })
+
+  describe('readOneOrCreate', () => {
+    describe('if filter finds a match', () => {
+      it('checks for existing', () => {
+        Store.readOneOrCreate({
+          type: 'collectionName',
+          filters: {
+            test: 'value'
+          },
+          data: {
+            key: 'value'
+          }
+        })
+        const dataArgument = dbStub.db.collectionName.firstExample.firstCall.args[0]
+        expect(dataArgument).to.have.property('test', 'value')
+        expect(dbStub.db.collectionName.save).to.not.have.been.called()
+      })
+
+      it('should return existing entity', () => {
+        expect(Store.readOneOrCreate({
+          type: 'collectionName',
+          filters: {
+            test: 'value'
+          },
+          data: {
+            key: 'value'
+          }
+        })).to.deep.equal({
+          id: 'id',
+          prop: 'value'
+        })
+      })
+    })
+
+    describe('if filter matches nothing', () => {
+      beforeEach(() => {
+        dbStub.db.collectionName.firstExample.returns(FILTER_NO_MATCH)
+      })
+
+      it('should save the data', () => {
+        Store.readOneOrCreate({
+          type: 'collectionName',
+          filters: {
+            test: 'value'
+          },
+          data: {
+            prop: 'value'
+          }
+        })
+        const dataArgument = dbStub.db.collectionName.save.firstCall.args[0]
+        expect(dataArgument).to.have.property('prop', 'value')
+      })
+
+      it('should append created date', () => {
+        Store.readOneOrCreate({
+          type: 'collectionName',
+          filters: {
+            test: 'value'
+          },
+          data: {
+            prop: 'value'
+          }
+        })
+        const dataArgument = dbStub.db.collectionName.save.firstCall.args[0]
+        expect(dataArgument).to.have.property('created')
+        expect(isDate(new Date(dataArgument.created)), 'Created is not date').to.be.true()
+        expect(differenceInMinutes(new Date(dataArgument.created), new Date()) < 1, 'Created is not recent date').to.be.true()
+      })
+
+      it('should append modified date', () => {
+        Store.readOneOrCreate({
+          type: 'collectionName',
+          filters: {
+            test: 'value'
+          },
+          data: {
+            prop: 'value'
+          }
+        })
+        const dataArgument = dbStub.db.collectionName.save.firstCall.args[0]
+        expect(dataArgument).to.have.property('modified')
+        expect(isDate(new Date(dataArgument.modified)), 'Modified is not date').to.be.true()
+        expect(differenceInMinutes(new Date(dataArgument.modified), new Date()) < 1, 'Modified is not recent date').to.be.true()
+      })
+
+      it('should request newly created entity is returned', () => {
+        Store.readOneOrCreate({
+          type: 'collectionName',
+          filters: {
+            test: 'value'
+          },
+          data: {
+            prop: 'value'
+          }
+        })
+        const optionsArgument = dbStub.db.collectionName.save.firstCall.args[1]
+        expect(optionsArgument).to.have.property('returnNew', true)
+      })
+
+      it('should return normalised entity', () => {
+        expect(Store.readOneOrCreate({
+          type: 'collectionName',
+          filters: {
+            test: 'value'
+          },
+          data: {
+            prop: 'value'
+          }
+        })).to.deep.equal({
+          id: 'id',
+          prop: 'value'
+        })
       })
     })
   })

@@ -1,7 +1,11 @@
 const libRequest = require('@nudj/library/lib/request')
+const errors = require('@nudj/library/errors')
 const { logger, merge } = require('@nudj/library')
 const reduce = require('lodash/reduce')
 
+const {
+  NotFound
+} = errors
 const StoreError = require('../lib/errors').StoreError
 const newISODate = () => (new Date()).toISOString()
 const authHash = new Buffer(process.env.DB_USER + ':' + process.env.DB_PASS).toString('base64')
@@ -13,7 +17,7 @@ const request = (uri, options = {}) => libRequest(uri, merge({
 
 const errorHandler = (details) => (error) => {
   const code = error.status || (error.response && error.response.status) || 500
-  if (code === 404) {
+  if (error.name === NotFound.name) {
     return null
   }
   logger('error', (new Date()).toISOString(), details, error)
@@ -97,7 +101,7 @@ const StoreAdaptor = ({
       return normaliseData(response.document)
     } catch (error) {
       try {
-        if ((error.status || (error.response && error.response.status)) === 404) {
+        if (error.name === NotFound.name) {
           const item = await request(`${baseURL}/document/${type}?returnNew=true`, {
             method: 'post',
             data: Object.assign({

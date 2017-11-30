@@ -119,23 +119,4 @@ describe('ArangoStoreAdaptor.create', () => {
       }
     })).to.be.rejectedWith(StoreError)
   })
-  it('passes through error code', () => {
-    server
-      .post('/document/test', { prop: 'value' })
-      .query({
-        returnNew: true
-      })
-      .reply(400, {
-        error: true,
-        errorMessage: 'Error message',
-        code: 400,
-        errorNum: 600
-      })
-    return expect(StoreAdaptor.create({
-      type: 'test',
-      data: {
-        prop: 'value'
-      }
-    }).catch(error => error.code)).to.become(400)
-  })
 })

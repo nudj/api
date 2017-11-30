@@ -86,21 +86,4 @@ describe('ArangoStoreAdaptor.delete', () => {
       id: 1
     })).to.be.rejectedWith(StoreError)
   })
-  it('passes through error code', () => {
-    server
-      .delete('/document/test/1')
-      .query({
-        returnOld: true
-      })
-      .reply(400, {
-        error: true,
-        errorMessage: 'Error message',
-        code: 400,
-        errorNum: 600
-      })
-    return expect(StoreAdaptor.delete({
-      type: 'test',
-      id: 1
-    }).catch(error => error.code)).to.become(400)
-  })
 })

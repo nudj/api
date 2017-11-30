@@ -40,6 +40,37 @@ module.exports = ({ store }) => ({
         type: 'people',
         id: args.id
       })
+    },
+    createSurvey: (obj, args) => {
+      const surveySections = []
+      return store.create({
+        type: 'surveys',
+        data: merge(args.input, { surveySections })
+      })
+    },
+    createSurveySection: (obj, args) => {
+      const surveyQuestions = []
+      return store.create({
+        type: 'surveySections',
+        data: merge(args.input, { surveyQuestions })
+      })
+      .then(section => {
+        return store.readOne({
+          type: 'surveys',
+          id: section.survey
+        })
+        .then(survey => {
+          const { surveySections = [] } = survey
+          return store.update({
+            type: 'surveys',
+            id: section.survey,
+            data: {
+              surveySections: surveySections.concat(section.id)
+            }
+          })
+        })
+        .then(() => section)
+      })
     }
   },
   Person: {

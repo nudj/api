@@ -85,11 +85,11 @@ const StoreAdaptor = ({
       filters
     }))
   },
-  readOneOrCreate: async ({
+  readOneOrCreate: async function ({
     type,
     filters,
     data
-  }) => {
+  }) {
     try {
       let response = await request(`${baseURL}/simple/first-example`, {
         method: 'put',

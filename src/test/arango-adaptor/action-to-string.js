@@ -5,7 +5,36 @@ const expect = chai.expect
 
 const ActionToString = require('../../gql/arango-adaptor/action-to-string')
 
-describe('ArangoAdaptor ActionToString', () => {
+// const store = require('../../gql/arango-adaptor/store')
+// const action = ActionToString(store, (store, params) => {
+//   const job = store.create({
+//     type: 'jobs',
+//     data: {
+//       title: params.jobTitle
+//     }
+//   })
+//   let company = store.create({
+//     type: 'companies',
+//     data: {
+//       name: 'company'
+//     }
+//   })
+//   company = store.update({
+//     type: 'companies',
+//     id: company.id,
+//     data: {
+//       location: 'London'
+//     }
+//   })
+//   return company
+// })
+// const semi = require('semi')
+// console.log(semi.add(`(${action})`).replace(/\n/g, ' ').replace(/\s\s+/g, ' ').slice(1, -2))
+
+const STORE_NOOP = () => {}
+const ACTION_NOOP = () => {}
+
+describe.only('ArangoAdaptor ActionToString', () => {
   it('to be a function', () => {
     expect(ActionToString).to.be.a('function')
   })
@@ -15,33 +44,36 @@ describe('ArangoAdaptor ActionToString', () => {
   })
 
   it('should take an action', () => {
-    expect(() => ActionToString({})).to.throw('No action supplied')
+    expect(() => ActionToString(STORE_NOOP)).to.throw('No action supplied')
   })
 
   describe('return value', () => {
     it('should be a string', () => {
-      expect(ActionToString({}, () => {})).to.be.a('string')
+      expect(ActionToString(STORE_NOOP, ACTION_NOOP)).to.be.a('string')
     })
 
     it('should start with a function declaration with single "params" arg', () => {
-      expect(ActionToString({}, () => {}).slice(0, 19)).to.equal('function (params) {')
+      expect(ActionToString(STORE_NOOP, ACTION_NOOP).slice(0, 19)).to.equal('function (params) {')
     })
 
     it('should end with a function closure', () => {
-      const result = ActionToString({}, () => {})
-      expect(result[result.length - 1]).to.equal('}')
+      const result = ActionToString(STORE_NOOP, ACTION_NOOP)
+      expect(result.slice(-1)).to.equal('}')
     })
 
     it('should contain a stringified version of the store', () => {
-      const result = ActionToString({
+      const result = ActionToString(() => ({
         key1: (arg1) => { return 'value1' },
         key2: (arg2) => { return 'value2' }
-      }, () => {})
-      expect(result).to.contain.string(`const store = { key1: (arg1) => { return 'value1' }, key2: (arg2) => { return 'value2' } }`)
+      }), ACTION_NOOP)
+      expect(result).to.contain.string(`const store = () => ({
+        key1: (arg1) => { return 'value1' },
+        key2: (arg2) => { return 'value2' }
+      })`)
     })
 
     it('should contain a stringified version of the action', () => {
-      const result = ActionToString({}, (args) => {
+      const result = ActionToString(STORE_NOOP, (args) => {
         return args.test
       })
       expect(result).to.contain.string(`const action = (args) => {
@@ -49,9 +81,9 @@ describe('ArangoAdaptor ActionToString', () => {
       }`)
     })
 
-    it('should contain a stringified invocation of action with store as the argument', () => {
-      const result = ActionToString({}, () => {})
-      expect(result).to.contain.string('return action(store)')
+    it('should contain a stringified invocation of action with initialised store and params passed in', () => {
+      const result = ActionToString(STORE_NOOP, ACTION_NOOP)
+      expect(result).to.contain.string('return action(store(), params)')
     })
   })
 })

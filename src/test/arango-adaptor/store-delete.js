@@ -10,7 +10,7 @@ chai.use(sinonChai)
 
 const OLD_RESPONSE = { old: { _key: 'id', '_id': 123, '_rev': 123, prop: 'value' } }
 
-describe('ArangoAdaptor Store.delete', () => {
+describe('ArangoAdaptor Store().delete', () => {
   let Store
   let dbStub
 
@@ -31,7 +31,7 @@ describe('ArangoAdaptor Store.delete', () => {
   })
 
   it('should pass the entity id', () => {
-    Store.delete({
+    Store().delete({
       type: 'collectionName',
       id: 456
     })
@@ -40,7 +40,7 @@ describe('ArangoAdaptor Store.delete', () => {
   })
 
   it('should request deleted entity is returned', () => {
-    Store.delete({
+    Store().delete({
       type: 'collectionName',
       id: 456
     })
@@ -49,7 +49,7 @@ describe('ArangoAdaptor Store.delete', () => {
   })
 
   it('should return normalised entity', () => {
-    expect(Store.delete({
+    expect(Store().delete({
       type: 'collectionName',
       id: 456
     })).to.deep.equal({

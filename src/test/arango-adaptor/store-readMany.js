@@ -10,7 +10,7 @@ chai.use(sinonChai)
 
 const DOCUMENT_RESPONSE = { _key: 'id', '_id': 123, '_rev': 123, prop: 'value' }
 
-describe('ArangoAdaptor Store.readMany', () => {
+describe('ArangoAdaptor Store().readMany', () => {
   let Store
   let dbStub
 
@@ -31,7 +31,7 @@ describe('ArangoAdaptor Store.readMany', () => {
   })
 
   it('should read the data by ids', () => {
-    Store.readMany({
+    Store().readMany({
       type: 'collectionName',
       ids: [1, 2]
     })
@@ -40,7 +40,7 @@ describe('ArangoAdaptor Store.readMany', () => {
   })
 
   it('should return normalised entities', () => {
-    expect(Store.readMany({
+    expect(Store().readMany({
       type: 'collectionName',
       ids: [1, 2]
     })).to.deep.equal([{

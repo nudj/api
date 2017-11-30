@@ -14,7 +14,7 @@ const DOCUMENT_RESPONSE = { _key: 'id', '_id': 123, '_rev': 123, prop: 'value' }
 const NEW_RESPONSE = { new: { _key: 'id', '_id': 123, '_rev': 123, prop: 'value' } }
 const FILTER_NO_MATCH = null
 
-describe('ArangoAdaptor Store.readOneOrCreate', () => {
+describe('ArangoAdaptor Store().readOneOrCreate', () => {
   let Store
   let dbStub
 
@@ -38,7 +38,7 @@ describe('ArangoAdaptor Store.readOneOrCreate', () => {
 
   describe('if filter finds a match', () => {
     it('checks for existing', () => {
-      Store.readOneOrCreate({
+      Store().readOneOrCreate({
         type: 'collectionName',
         filters: {
           test: 'value'
@@ -53,7 +53,7 @@ describe('ArangoAdaptor Store.readOneOrCreate', () => {
     })
 
     it('should return existing entity', () => {
-      expect(Store.readOneOrCreate({
+      expect(Store().readOneOrCreate({
         type: 'collectionName',
         filters: {
           test: 'value'
@@ -74,7 +74,7 @@ describe('ArangoAdaptor Store.readOneOrCreate', () => {
     })
 
     it('should save the data', () => {
-      Store.readOneOrCreate({
+      Store().readOneOrCreate({
         type: 'collectionName',
         filters: {
           test: 'value'
@@ -88,7 +88,7 @@ describe('ArangoAdaptor Store.readOneOrCreate', () => {
     })
 
     it('should append created date', () => {
-      Store.readOneOrCreate({
+      Store().readOneOrCreate({
         type: 'collectionName',
         filters: {
           test: 'value'
@@ -104,7 +104,7 @@ describe('ArangoAdaptor Store.readOneOrCreate', () => {
     })
 
     it('should append modified date', () => {
-      Store.readOneOrCreate({
+      Store().readOneOrCreate({
         type: 'collectionName',
         filters: {
           test: 'value'
@@ -120,7 +120,7 @@ describe('ArangoAdaptor Store.readOneOrCreate', () => {
     })
 
     it('should request newly created entity is returned', () => {
-      Store.readOneOrCreate({
+      Store().readOneOrCreate({
         type: 'collectionName',
         filters: {
           test: 'value'
@@ -134,7 +134,7 @@ describe('ArangoAdaptor Store.readOneOrCreate', () => {
     })
 
     it('should return normalised entity', () => {
-      expect(Store.readOneOrCreate({
+      expect(Store().readOneOrCreate({
         type: 'collectionName',
         filters: {
           test: 'value'

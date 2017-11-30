@@ -12,7 +12,7 @@ chai.use(sinonChai)
 
 const NEW_RESPONSE = { new: { _key: 'id', '_id': 123, '_rev': 123, prop: 'value' } }
 
-describe('ArangoAdaptor Store.create', () => {
+describe('ArangoAdaptor Store().create', () => {
   let Store
   let dbStub
 
@@ -33,7 +33,7 @@ describe('ArangoAdaptor Store.create', () => {
   })
 
   it('should save the data', () => {
-    Store.create({
+    Store().create({
       type: 'collectionName',
       data: {
         prop: 'value'
@@ -44,7 +44,7 @@ describe('ArangoAdaptor Store.create', () => {
   })
 
   it('should append created date', () => {
-    Store.create({
+    Store().create({
       type: 'collectionName',
       data: {
         prop: 'value'
@@ -57,7 +57,7 @@ describe('ArangoAdaptor Store.create', () => {
   })
 
   it('should append modified date', () => {
-    Store.create({
+    Store().create({
       type: 'collectionName',
       data: {
         prop: 'value'
@@ -70,7 +70,7 @@ describe('ArangoAdaptor Store.create', () => {
   })
 
   it('should request newly created entity is returned', () => {
-    Store.create({
+    Store().create({
       type: 'collectionName',
       data: {
         prop: 'value'
@@ -81,7 +81,7 @@ describe('ArangoAdaptor Store.create', () => {
   })
 
   it('should return normalised entity', () => {
-    expect(Store.create({
+    expect(Store().create({
       type: 'collectionName',
       data: {
         prop: 'value'

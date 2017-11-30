@@ -1,5 +1,3 @@
-const map = require('lodash/map')
-
 module.exports = (store, action) => {
   if (!store) {
     throw new Error('No store supplied')
@@ -8,8 +6,8 @@ module.exports = (store, action) => {
     throw new Error('No action supplied')
   }
   return `function (params) {
-    const store = { ${map(store, (value, key) => `${key}: ${value.toString()}`).join(', ')} }
+    const store = ${store.toString()}
     const action = ${action.toString()}
-    return action(store)
+    return action(store(), params)
   }`
 }

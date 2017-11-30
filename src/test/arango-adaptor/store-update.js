@@ -12,7 +12,7 @@ chai.use(sinonChai)
 
 const NEW_RESPONSE = { new: { _key: 'id', '_id': 123, '_rev': 123, prop: 'value' } }
 
-describe('ArangoAdaptor Store.update', () => {
+describe('ArangoAdaptor Store().update', () => {
   let Store
   let dbStub
 
@@ -33,7 +33,7 @@ describe('ArangoAdaptor Store.update', () => {
   })
 
   it('should pass the entity id', () => {
-    Store.update({
+    Store().update({
       type: 'collectionName',
       id: 456,
       data: {
@@ -45,7 +45,7 @@ describe('ArangoAdaptor Store.update', () => {
   })
 
   it('should pass the patch data', () => {
-    Store.update({
+    Store().update({
       type: 'collectionName',
       id: 456,
       data: {
@@ -57,7 +57,7 @@ describe('ArangoAdaptor Store.update', () => {
   })
 
   it('should append modified date', () => {
-    Store.update({
+    Store().update({
       type: 'collectionName',
       id: 456,
       data: {
@@ -71,7 +71,7 @@ describe('ArangoAdaptor Store.update', () => {
   })
 
   it('should request updated entity is returned', () => {
-    Store.update({
+    Store().update({
       type: 'collectionName',
       id: 456,
       data: {
@@ -83,7 +83,7 @@ describe('ArangoAdaptor Store.update', () => {
   })
 
   it('should return normalised entity', () => {
-    expect(Store.update({
+    expect(Store().update({
       type: 'collectionName',
       id: 456,
       data: {

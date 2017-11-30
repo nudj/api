@@ -17,10 +17,12 @@ nock.emitter.on('no match', function (req) {
   console.log('No match for request:', req)
 })
 
-const ACTION_STRING_RESPONSE = 'actionString'
+const ACTION_STRING_RESPONSE = `function () {
+  return 'test'
+}`
 const COLLECTION_LOCK_RESPONSE = 'collectionLock'
 
-describe('ArangoAdaptor Transaction', () => {
+describe.only('ArangoAdaptor Transaction', () => {
   let server
   let Transaction
   let actionToStringStub = sinon.stub().returns(ACTION_STRING_RESPONSE)
@@ -55,7 +57,7 @@ describe('ArangoAdaptor Transaction', () => {
           collections: {
             write: COLLECTION_LOCK_RESPONSE
           },
-          action: ACTION_STRING_RESPONSE
+          action: `function () { return 'test'; }`
         })
         .reply(200, RESPONSE)
       transaction = Transaction(STORE)

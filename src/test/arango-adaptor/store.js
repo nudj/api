@@ -13,7 +13,11 @@ describe('ArangoAdaptor Store', () => {
     })
   })
 
-  it('to be an object', () => {
-    expect(Store).to.be.an('object')
+  it('to be an function', () => {
+    expect(Store).to.be.a('function')
+  })
+
+  it('should return an object', () => {
+    expect(Store()).to.be.an('object')
   })
 })

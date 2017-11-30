@@ -5,32 +5,6 @@ const expect = chai.expect
 
 const ActionToString = require('../../gql/arango-adaptor/action-to-string')
 
-// const store = require('../../gql/arango-adaptor/store')
-// const action = ActionToString(store, (store, params) => {
-//   const job = store.create({
-//     type: 'jobs',
-//     data: {
-//       title: params.jobTitle
-//     }
-//   })
-//   let company = store.create({
-//     type: 'companies',
-//     data: {
-//       name: 'company'
-//     }
-//   })
-//   company = store.update({
-//     type: 'companies',
-//     id: company.id,
-//     data: {
-//       location: 'London'
-//     }
-//   })
-//   return company
-// })
-// const semi = require('semi')
-// console.log(semi.add(`(${action})`).replace(/\n/g, ' ').replace(/\s\s+/g, ' ').slice(1, -2))
-
 const STORE_NOOP = () => {}
 const ACTION_NOOP = () => {}
 

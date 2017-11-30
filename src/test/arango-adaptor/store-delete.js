@@ -31,28 +31,32 @@ describe('ArangoAdaptor Store().delete', () => {
   })
 
   it('should pass the entity id', () => {
-    Store().delete({
+    return Store().delete({
       type: 'collectionName',
       id: 456
     })
-    const id = dbStub.db.collectionName.remove.firstCall.args[0]
-    expect(id).to.equal(456)
+    .then(() => {
+      const id = dbStub.db.collectionName.remove.firstCall.args[0]
+      expect(id).to.equal(456)
+    })
   })
 
   it('should request deleted entity is returned', () => {
-    Store().delete({
+    return Store().delete({
       type: 'collectionName',
       id: 456
     })
-    const optionsArgument = dbStub.db.collectionName.remove.firstCall.args[1]
-    expect(optionsArgument).to.have.property('returnOld', true)
+    .then(() => {
+      const optionsArgument = dbStub.db.collectionName.remove.firstCall.args[1]
+      expect(optionsArgument).to.have.property('returnOld', true)
+    })
   })
 
   it('should return normalised entity', () => {
-    expect(Store().delete({
+    return expect(Store().delete({
       type: 'collectionName',
       id: 456
-    })).to.deep.equal({
+    })).to.eventually.deep.equal({
       id: 'id',
       prop: 'value'
     })

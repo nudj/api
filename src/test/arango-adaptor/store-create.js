@@ -33,62 +33,71 @@ describe('ArangoAdaptor Store().create', () => {
   })
 
   it('should save the data', () => {
-    Store().create({
+    return Store().create({
       type: 'collectionName',
       data: {
         prop: 'value'
       }
     })
-    const dataArgument = dbStub.db.collectionName.save.firstCall.args[0]
-    expect(dataArgument).to.have.property('prop', 'value')
+    .then(() => {
+      const dataArgument = dbStub.db.collectionName.save.firstCall.args[0]
+      expect(dataArgument).to.have.property('prop', 'value')
+    })
   })
 
   it('should append created date', () => {
-    Store().create({
+    return Store().create({
       type: 'collectionName',
       data: {
         prop: 'value'
       }
     })
-    const dataArgument = dbStub.db.collectionName.save.firstCall.args[0]
-    expect(dataArgument).to.have.property('created')
-    expect(isDate(new Date(dataArgument.created)), 'Created is not date').to.be.true()
-    expect(differenceInMinutes(new Date(dataArgument.created), new Date()) < 1, 'Created is not recent date').to.be.true()
+    .then(() => {
+      const dataArgument = dbStub.db.collectionName.save.firstCall.args[0]
+      expect(dataArgument).to.have.property('created')
+      expect(isDate(new Date(dataArgument.created)), 'Created is not date').to.be.true()
+      expect(differenceInMinutes(new Date(dataArgument.created), new Date()) < 1, 'Created is not recent date').to.be.true()
+    })
   })
 
   it('should append modified date', () => {
-    Store().create({
+    return Store().create({
       type: 'collectionName',
       data: {
         prop: 'value'
       }
     })
-    const dataArgument = dbStub.db.collectionName.save.firstCall.args[0]
-    expect(dataArgument).to.have.property('modified')
-    expect(isDate(new Date(dataArgument.modified)), 'Modified is not date').to.be.true()
-    expect(differenceInMinutes(new Date(dataArgument.modified), new Date()) < 1, 'Modified is not recent date').to.be.true()
+    .then(() => {
+      const dataArgument = dbStub.db.collectionName.save.firstCall.args[0]
+      expect(dataArgument).to.have.property('modified')
+      expect(isDate(new Date(dataArgument.modified)), 'Modified is not date').to.be.true()
+      expect(differenceInMinutes(new Date(dataArgument.modified), new Date()) < 1, 'Modified is not recent date').to.be.true()
+    })
   })
 
   it('should request newly created entity is returned', () => {
-    Store().create({
+    return Store().create({
       type: 'collectionName',
       data: {
         prop: 'value'
       }
     })
-    const optionsArgument = dbStub.db.collectionName.save.firstCall.args[1]
-    expect(optionsArgument).to.have.property('returnNew', true)
+    .then(() => {
+      const optionsArgument = dbStub.db.collectionName.save.firstCall.args[1]
+      expect(optionsArgument).to.have.property('returnNew', true)
+    })
   })
 
   it('should return normalised entity', () => {
-    expect(Store().create({
+    return Store().create({
       type: 'collectionName',
       data: {
         prop: 'value'
       }
-    })).to.deep.equal({
+    })
+    .then(result => expect(result).to.deep.equal({
       id: 'id',
       prop: 'value'
-    })
+    }))
   })
 })

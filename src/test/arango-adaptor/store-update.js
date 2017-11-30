@@ -33,63 +33,71 @@ describe('ArangoAdaptor Store().update', () => {
   })
 
   it('should pass the entity id', () => {
-    Store().update({
+    return Store().update({
       type: 'collectionName',
       id: 456,
       data: {
         prop: 'value'
       }
     })
-    const id = dbStub.db.collectionName.update.firstCall.args[0]
-    expect(id).to.equal(456)
+    .then(() => {
+      const id = dbStub.db.collectionName.update.firstCall.args[0]
+      expect(id).to.equal(456)
+    })
   })
 
   it('should pass the patch data', () => {
-    Store().update({
+    return Store().update({
       type: 'collectionName',
       id: 456,
       data: {
         prop: 'value'
       }
     })
-    const dataArgument = dbStub.db.collectionName.update.firstCall.args[1]
-    expect(dataArgument).to.have.property('prop', 'value')
+    .then(() => {
+      const dataArgument = dbStub.db.collectionName.update.firstCall.args[1]
+      expect(dataArgument).to.have.property('prop', 'value')
+    })
   })
 
   it('should append modified date', () => {
-    Store().update({
+    return Store().update({
       type: 'collectionName',
       id: 456,
       data: {
         prop: 'value'
       }
     })
-    const dataArgument = dbStub.db.collectionName.update.firstCall.args[1]
-    expect(dataArgument).to.have.property('modified')
-    expect(isDate(new Date(dataArgument.modified)), 'Modified is not date').to.be.true()
-    expect(differenceInMinutes(new Date(dataArgument.modified), new Date()) < 1, 'Modified is not recent date').to.be.true()
+    .then(() => {
+      const dataArgument = dbStub.db.collectionName.update.firstCall.args[1]
+      expect(dataArgument).to.have.property('modified')
+      expect(isDate(new Date(dataArgument.modified)), 'Modified is not date').to.be.true()
+      expect(differenceInMinutes(new Date(dataArgument.modified), new Date()) < 1, 'Modified is not recent date').to.be.true()
+    })
   })
 
   it('should request updated entity is returned', () => {
-    Store().update({
+    return Store().update({
       type: 'collectionName',
       id: 456,
       data: {
         prop: 'value'
       }
     })
-    const optionsArgument = dbStub.db.collectionName.update.firstCall.args[2]
-    expect(optionsArgument).to.have.property('returnNew', true)
+    .then(() => {
+      const optionsArgument = dbStub.db.collectionName.update.firstCall.args[2]
+      expect(optionsArgument).to.have.property('returnNew', true)
+    })
   })
 
   it('should return normalised entity', () => {
-    expect(Store().update({
+    return expect(Store().update({
       type: 'collectionName',
       id: 456,
       data: {
         prop: 'value'
       }
-    })).to.deep.equal({
+    })).to.eventually.deep.equal({
       id: 'id',
       prop: 'value'
     })

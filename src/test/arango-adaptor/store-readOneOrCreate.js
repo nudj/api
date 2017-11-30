@@ -38,7 +38,7 @@ describe('ArangoAdaptor Store().readOneOrCreate', () => {
 
   describe('if filter finds a match', () => {
     it('checks for existing', () => {
-      Store().readOneOrCreate({
+      return Store().readOneOrCreate({
         type: 'collectionName',
         filters: {
           test: 'value'
@@ -47,13 +47,15 @@ describe('ArangoAdaptor Store().readOneOrCreate', () => {
           key: 'value'
         }
       })
-      const dataArgument = dbStub.db.collectionName.firstExample.firstCall.args[0]
-      expect(dataArgument).to.have.property('test', 'value')
-      expect(dbStub.db.collectionName.save).to.not.have.been.called()
+      .then(() => {
+        const dataArgument = dbStub.db.collectionName.firstExample.firstCall.args[0]
+        expect(dataArgument).to.have.property('test', 'value')
+        expect(dbStub.db.collectionName.save).to.not.have.been.called()
+      })
     })
 
     it('should return existing entity', () => {
-      expect(Store().readOneOrCreate({
+      return expect(Store().readOneOrCreate({
         type: 'collectionName',
         filters: {
           test: 'value'
@@ -61,7 +63,7 @@ describe('ArangoAdaptor Store().readOneOrCreate', () => {
         data: {
           key: 'value'
         }
-      })).to.deep.equal({
+      })).to.eventually.deep.equal({
         id: 'id',
         prop: 'value'
       })
@@ -74,7 +76,7 @@ describe('ArangoAdaptor Store().readOneOrCreate', () => {
     })
 
     it('should save the data', () => {
-      Store().readOneOrCreate({
+      return Store().readOneOrCreate({
         type: 'collectionName',
         filters: {
           test: 'value'
@@ -83,12 +85,14 @@ describe('ArangoAdaptor Store().readOneOrCreate', () => {
           prop: 'value'
         }
       })
-      const dataArgument = dbStub.db.collectionName.save.firstCall.args[0]
-      expect(dataArgument).to.have.property('prop', 'value')
+      .then(() => {
+        const dataArgument = dbStub.db.collectionName.save.firstCall.args[0]
+        expect(dataArgument).to.have.property('prop', 'value')
+      })
     })
 
     it('should append created date', () => {
-      Store().readOneOrCreate({
+      return Store().readOneOrCreate({
         type: 'collectionName',
         filters: {
           test: 'value'
@@ -97,14 +101,16 @@ describe('ArangoAdaptor Store().readOneOrCreate', () => {
           prop: 'value'
         }
       })
-      const dataArgument = dbStub.db.collectionName.save.firstCall.args[0]
-      expect(dataArgument).to.have.property('created')
-      expect(isDate(new Date(dataArgument.created)), 'Created is not date').to.be.true()
-      expect(differenceInMinutes(new Date(dataArgument.created), new Date()) < 1, 'Created is not recent date').to.be.true()
+      .then(() => {
+        const dataArgument = dbStub.db.collectionName.save.firstCall.args[0]
+        expect(dataArgument).to.have.property('created')
+        expect(isDate(new Date(dataArgument.created)), 'Created is not date').to.be.true()
+        expect(differenceInMinutes(new Date(dataArgument.created), new Date()) < 1, 'Created is not recent date').to.be.true()
+      })
     })
 
     it('should append modified date', () => {
-      Store().readOneOrCreate({
+      return Store().readOneOrCreate({
         type: 'collectionName',
         filters: {
           test: 'value'
@@ -113,14 +119,16 @@ describe('ArangoAdaptor Store().readOneOrCreate', () => {
           prop: 'value'
         }
       })
-      const dataArgument = dbStub.db.collectionName.save.firstCall.args[0]
-      expect(dataArgument).to.have.property('modified')
-      expect(isDate(new Date(dataArgument.modified)), 'Modified is not date').to.be.true()
-      expect(differenceInMinutes(new Date(dataArgument.modified), new Date()) < 1, 'Modified is not recent date').to.be.true()
+      .then(() => {
+        const dataArgument = dbStub.db.collectionName.save.firstCall.args[0]
+        expect(dataArgument).to.have.property('modified')
+        expect(isDate(new Date(dataArgument.modified)), 'Modified is not date').to.be.true()
+        expect(differenceInMinutes(new Date(dataArgument.modified), new Date()) < 1, 'Modified is not recent date').to.be.true()
+      })
     })
 
     it('should request newly created entity is returned', () => {
-      Store().readOneOrCreate({
+      return Store().readOneOrCreate({
         type: 'collectionName',
         filters: {
           test: 'value'
@@ -129,12 +137,14 @@ describe('ArangoAdaptor Store().readOneOrCreate', () => {
           prop: 'value'
         }
       })
-      const optionsArgument = dbStub.db.collectionName.save.firstCall.args[1]
-      expect(optionsArgument).to.have.property('returnNew', true)
+      .then(() => {
+        const optionsArgument = dbStub.db.collectionName.save.firstCall.args[1]
+        expect(optionsArgument).to.have.property('returnNew', true)
+      })
     })
 
     it('should return normalised entity', () => {
-      expect(Store().readOneOrCreate({
+      return expect(Store().readOneOrCreate({
         type: 'collectionName',
         filters: {
           test: 'value'
@@ -142,7 +152,7 @@ describe('ArangoAdaptor Store().readOneOrCreate', () => {
         data: {
           prop: 'value'
         }
-      })).to.deep.equal({
+      })).to.eventually.deep.equal({
         id: 'id',
         prop: 'value'
       })

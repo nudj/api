@@ -34,16 +34,18 @@ describe('ArangoAdaptor Store().readAll', () => {
 
   describe('with no filters', () => {
     it('should fetch the data', () => {
-      Store().readAll({
+      return Store().readAll({
         type: 'collectionName'
       })
-      expect(dbStub.db.collectionName.all).to.have.been.called()
+      .then(() => {
+        expect(dbStub.db.collectionName.all).to.have.been.called()
+      })
     })
 
     it('should return normalised entities', () => {
-      expect(Store().readAll({
+      return expect(Store().readAll({
         type: 'collectionName'
-      })).to.deep.equal([{
+      })).to.eventually.deep.equal([{
         id: 'id',
         prop: 'value'
       }, {
@@ -55,25 +57,27 @@ describe('ArangoAdaptor Store().readAll', () => {
 
   describe('with filters', () => {
     it('should fetch the data', () => {
-      Store().readAll({
+      return Store().readAll({
         type: 'collectionName',
         filters: {
           test: 'value'
         }
       })
-      const dataArgument = dbStub.db.collectionName.byExample.firstCall.args[0]
-      expect(dataArgument).to.deep.equal({
-        test: 'value'
+      .then(() => {
+        const dataArgument = dbStub.db.collectionName.byExample.firstCall.args[0]
+        expect(dataArgument).to.deep.equal({
+          test: 'value'
+        })
       })
     })
 
     it('should return normalised entities', () => {
-      expect(Store().readAll({
+      return expect(Store().readAll({
         type: 'collectionName',
         filters: {
           test: 'value'
         }
-      })).to.deep.equal([{
+      })).to.eventually.deep.equal([{
         id: 'id',
         prop: 'value'
       }, {

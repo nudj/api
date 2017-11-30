@@ -31,19 +31,21 @@ describe('ArangoAdaptor Store().readMany', () => {
   })
 
   it('should read the data by ids', () => {
-    Store().readMany({
+    return Store().readMany({
       type: 'collectionName',
       ids: [1, 2]
     })
-    const dataArgument = dbStub.db.collectionName.document.firstCall.args[0]
-    expect(dataArgument).to.deep.equal([1, 2])
+    .then(() => {
+      const dataArgument = dbStub.db.collectionName.document.firstCall.args[0]
+      expect(dataArgument).to.deep.equal([1, 2])
+    })
   })
 
   it('should return normalised entities', () => {
-    expect(Store().readMany({
+    return expect(Store().readMany({
       type: 'collectionName',
       ids: [1, 2]
-    })).to.deep.equal([{
+    })).to.eventually.deep.equal([{
       id: 'id',
       prop: 'value'
     }, {

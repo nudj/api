@@ -15,6 +15,6 @@ module.exports = (action) => {
     updateOrCreate: accumulator,
     delete: accumulator
   }
-  action(store)
+  action(store, {})
   return collections
 }

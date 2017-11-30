@@ -34,19 +34,21 @@ describe('ArangoAdaptor Store().readOne', () => {
 
   describe('by id', () => {
     it('should read the data by id', () => {
-      Store().readOne({
+      return Store().readOne({
         type: 'collectionName',
         id: 123
       })
-      const dataArgument = dbStub.db.collectionName.document.firstCall.args[0]
-      expect(dataArgument).to.equal(123)
+      .then(() => {
+        const dataArgument = dbStub.db.collectionName.document.firstCall.args[0]
+        expect(dataArgument).to.equal(123)
+      })
     })
 
     it('should return normalised entity', () => {
-      expect(Store().readOne({
+      return expect(Store().readOne({
         type: 'collectionName',
         id: 123
-      })).to.deep.equal({
+      })).to.eventually.deep.equal({
         id: 'id',
         prop: 'value'
       })
@@ -55,25 +57,27 @@ describe('ArangoAdaptor Store().readOne', () => {
 
   describe('by filters', () => {
     it('should read the data by filters', () => {
-      Store().readOne({
+      return Store().readOne({
         type: 'collectionName',
         filters: {
           test: 'value'
         }
       })
-      const dataArgument = dbStub.db.collectionName.firstExample.firstCall.args[0]
-      expect(dataArgument).to.deep.equal({
-        test: 'value'
+      .then(() => {
+        const dataArgument = dbStub.db.collectionName.firstExample.firstCall.args[0]
+        expect(dataArgument).to.deep.equal({
+          test: 'value'
+        })
       })
     })
 
     it('should return normalised entity', () => {
-      expect(Store().readOne({
+      return expect(Store().readOne({
         type: 'collectionName',
         filters: {
           test: 'value'
         }
-      })).to.deep.equal({
+      })).to.eventually.deep.equal({
         id: 'id',
         prop: 'value'
       })

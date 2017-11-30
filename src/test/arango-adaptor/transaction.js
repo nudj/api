@@ -22,7 +22,7 @@ const ACTION_STRING_RESPONSE = `function () {
 }`
 const COLLECTION_LOCK_RESPONSE = 'collectionLock'
 
-describe.only('ArangoAdaptor Transaction', () => {
+describe('ArangoAdaptor Transaction', () => {
   let server
   let Transaction
   let actionToStringStub = sinon.stub().returns(ACTION_STRING_RESPONSE)

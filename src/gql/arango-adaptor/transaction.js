@@ -1,9 +1,16 @@
-const request = require('@nudj/library/request')
+const libRequest = require('@nudj/library/request')
 const semi = require('semi')
 
 const store = require('./store')
 const actionToCollectionLock = require('./action-to-collection-lock')
 const actionToString = require('./action-to-string')
+
+const authHash = new Buffer(process.env.DB_USER + ':' + process.env.DB_PASS).toString('base64')
+const request = (uri, options = {}) => libRequest(uri, Object.assign({
+  headers: {
+    'Authorization': 'Basic ' + authHash
+  }
+}, options))
 
 module.exports = (action, params) => {
   // semi does not accept raw functions wrapping in parentheses
@@ -15,7 +22,7 @@ module.exports = (action, params) => {
   // strip parentheses and trailing semicolon
   actionString = actionString.slice(1, -2)
 
-  return request('https://local.db.nudj.co/_db/nudj/_api/transaction', {
+  return request('http://db:8529/_db/nudj/_api/transaction', {
     method: 'post',
     data: {
       collections: {

@@ -5,7 +5,7 @@ const store = require('./store')
 const actionToCollectionLock = require('./action-to-collection-lock')
 const actionToString = require('./action-to-string')
 
-const authHash = new Buffer(process.env.DB_USER + ':' + process.env.DB_PASS).toString('base64')
+const authHash = Buffer.from(process.env.DB_USER + ':' + process.env.DB_PASS).toString('base64')
 const request = (uri, options = {}) => libRequest(uri, Object.assign({
   headers: {
     'Authorization': 'Basic ' + authHash

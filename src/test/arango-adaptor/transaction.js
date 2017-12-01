@@ -21,19 +21,24 @@ const ACTION_STRING_RESPONSE = `function () {
   return 'test'
 }`
 const COLLECTION_LOCK_RESPONSE = 'collectionLock'
+const STORE = () => 'store'
+const ACTION = 'action'
+const RESPONSE = 'OK'
+const PARAMS = { param: 'param' }
 
-describe('ArangoAdaptor Transaction', () => {
+describe('ArangoAdaptor transaction', () => {
   let server
-  let Transaction
+  let transaction
   let actionToStringStub = sinon.stub().returns(ACTION_STRING_RESPONSE)
   let actionToCollectionLockStub = sinon.stub().returns(COLLECTION_LOCK_RESPONSE)
 
   before(() => {
-    Transaction = proxyquire('../../gql/arango-adaptor/transaction', {
+    transaction = proxyquire('../../gql/arango-adaptor/transaction', {
+      './store': STORE,
       './action-to-string': actionToStringStub,
       './action-to-collection-lock': actionToCollectionLockStub
     })
-    server = nock('http://localhost:82/_api')
+    server = nock('http://db:8529/_db/nudj/_api')
   })
   afterEach(() => {
     actionToStringStub.reset()
@@ -41,40 +46,31 @@ describe('ArangoAdaptor Transaction', () => {
     nock.cleanAll()
   })
 
-  it('during setup returns a function', () => {
-    expect(Transaction()).to.be.a('function')
-  })
-
   describe('when called with good data', () => {
-    let transaction
-    const STORE = 'store'
-    const ACTION = 'action'
-    const RESPONSE = 'OK'
-
     beforeEach(() => {
       server
         .post('/transaction', {
           collections: {
             write: COLLECTION_LOCK_RESPONSE
           },
-          action: `function () { return 'test'; }`
+          action: `function () { return 'test'; }`,
+          params: PARAMS
         })
         .reply(200, RESPONSE)
-      transaction = Transaction(STORE)
     })
 
     it('calls actionToCollectionLock with action', () => {
-      return transaction(ACTION).then(() => {
+      return transaction(ACTION, PARAMS).then(() => {
         expect(actionToCollectionLockStub).to.have.been.calledWith(ACTION)
       })
     })
     it('calls actionToString with store and action', () => {
-      return transaction(ACTION).then(() => {
+      return transaction(ACTION, PARAMS).then(() => {
         expect(actionToStringStub).to.have.been.calledWith(STORE, ACTION)
       })
     })
-    it('responds with the result of a transaction', () => {
-      return expect(transaction(ACTION)).to.eventually.equal(RESPONSE)
+    it('passes params through and responds with the result of a transaction', () => {
+      return expect(transaction(ACTION, PARAMS)).to.eventually.equal(RESPONSE)
     })
   })
 })

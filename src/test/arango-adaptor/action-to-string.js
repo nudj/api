@@ -8,7 +8,7 @@ const ActionToString = require('../../gql/arango-adaptor/action-to-string')
 const STORE_NOOP = () => {}
 const ACTION_NOOP = () => {}
 
-describe.only('ArangoAdaptor ActionToString', () => {
+describe('ArangoAdaptor ActionToString', () => {
   it('to be a function', () => {
     expect(ActionToString).to.be.a('function')
   })

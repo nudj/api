@@ -165,23 +165,4 @@ describe('ArangoStoreAdaptor.readAll', () => {
       }
     })).to.be.rejectedWith(StoreError)
   })
-  it('passes through error code', () => {
-    server.put('/simple/by-example', {
-      collection: 'test',
-      example: {
-        filter: true
-      }
-    }).reply(400, {
-      error: true,
-      errorMessage: 'Error message',
-      code: 400,
-      errorNum: 600
-    })
-    return expect(StoreAdaptor.readAll({
-      type: 'test',
-      filters: {
-        filter: true
-      }
-    }).catch(error => error.code)).to.become(400)
-  })
 })

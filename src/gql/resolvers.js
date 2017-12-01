@@ -3,6 +3,8 @@ const { merge } = require('@nudj/library')
 const pick = require('lodash/pick')
 const omit = require('lodash/omit')
 
+const transaction = require('./arango-adaptor')
+
 const DateTime = new GraphQLScalarType({
   name: 'DateTime',
   description: 'Graphcool DateTime emulated type',
@@ -22,9 +24,13 @@ const Data = new GraphQLScalarType({
 module.exports = ({ store }) => ({
   Query: {
     user: (obj, args) => {
-      return store.readOne({
-        type: 'people',
-        id: args.id
+      return transaction((store, params) => {
+        return store.readOne({
+          type: 'people',
+          id: params.personId
+        })
+      }, {
+        personId: args.id
       })
     }
   },

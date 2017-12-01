@@ -109,29 +109,5 @@ describe('ArangoStoreAdaptor.readOneOrCreate', () => {
         }
       })).to.be.rejectedWith(StoreError)
     })
-
-    it('passes through error code', () => {
-      server.put('/simple/first-example', {
-        collection: 'test',
-        example: {
-          filterKey: 'filterValue'
-        }
-      })
-      .reply(400, {
-        error: true,
-        errorMessage: 'Error message',
-        code: 400,
-        errorNum: 600
-      })
-      return expect(StoreAdaptor.readOneOrCreate({
-        type: 'test',
-        filters: {
-          filterKey: 'filterValue'
-        },
-        data: {
-          dataKey: 'dataValue'
-        }
-      }).catch(error => error.code)).to.become(400)
-    })
   })
 })

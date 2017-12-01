@@ -66,17 +66,4 @@ describe('ArangoStoreAdaptor.readMany', () => {
       ids: ['id1', 'id2']
     })).to.be.rejectedWith(StoreError)
   })
-  it('passes through error code', () => {
-    server.get('/document/test/id1').reply(200, { prop: 'value1' })
-    server.get('/document/test/id2').reply(400, {
-      error: true,
-      errorMessage: 'Error message',
-      code: 400,
-      errorNum: 600
-    })
-    return expect(StoreAdaptor.readMany({
-      type: 'test',
-      ids: ['id1', 'id2']
-    }).catch(error => error.code)).to.become(400)
-  })
 })

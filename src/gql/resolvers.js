@@ -3,8 +3,6 @@ const { merge } = require('@nudj/library')
 const pick = require('lodash/pick')
 const omit = require('lodash/omit')
 
-const transaction = require('./json-server-adaptor')
-
 const DateTime = new GraphQLScalarType({
   name: 'DateTime',
   description: 'Graphcool DateTime emulated type',
@@ -21,7 +19,7 @@ const Data = new GraphQLScalarType({
   parseLiteral: ast => ast.value
 })
 
-module.exports = ({ store }) => ({
+module.exports = ({ transaction }) => ({
   Query: {
     user: (obj, args) => {
       return transaction((store, params) => {
@@ -196,11 +194,14 @@ module.exports = ({ store }) => ({
     getOrCreateConnections: async (obj, args) => {
       const from = obj.id
       const { to, source } = args
-      const connectionSource = await store.readOneOrCreate({
-        type: 'connectionSources',
-        filters: { name: source },
-        data: { name: source }
-      })
+      const connectionSource = await transaction((store, params) => {
+        const { source } = params
+        return store.readOneOrCreate({
+          type: 'connectionSources',
+          filters: { name: source },
+          data: { name: source }
+        })
+      }, { source })
       if (!connectionSource) {
         throw new Error('Unable to create ConnectionSource')
       }
@@ -251,7 +252,6 @@ module.exports = ({ store }) => ({
       }))
     },
     connections: (person, args) => {
-      const from = person.id
       return transaction((store, params) => {
         const { from } = params
         return store.readAll({
@@ -259,14 +259,17 @@ module.exports = ({ store }) => ({
           filters: { from }
         })
       }, {
-        from
+        from: person.id
       })
     },
     getOrCreateFormerEmployer: (obj, args) => {
-      const person = obj.id
-      const { formerEmployer: newFormerEmployer, source } = args
-      return store
-        .readOne({
+      return transaction((store, params) => {
+        const {
+          person,
+          newFormerEmployer,
+          source
+        } = params
+        return store.readOne({
           type: 'companies',
           filters: { name: newFormerEmployer.name }
         })
@@ -280,38 +283,31 @@ module.exports = ({ store }) => ({
         })
         .then(storedCompany => {
           const company = storedCompany.id
-          return store
-            .readOne({
-              type: 'formerEmployers',
-              filters: {
-                person,
-                company
-              }
-            })
-            .then(formerEmployer => {
-              if (formerEmployer) return formerEmployer
-              return store.create({
-                type: 'formerEmployers',
-                data: merge(
-                  {
-                    person,
-                    source,
-                    company
-                  },
-                  newFormerEmployer
-                )
-              })
-            })
+          return store.readOneOrCreate({
+            type: 'formerEmployers',
+            filters: {
+              person,
+              company
+            },
+            data: merge({
+              person,
+              source,
+              company
+            }, newFormerEmployer)
+          })
         })
+      }, {
+        person: obj.id,
+        newFormerEmployer: args.formerEmployer,
+        source: args.source
+      })
     },
     updateTaskByFilters: (person, args) => {
-      const { filters, data } = args
-      return store
-        .readOne({
+      return transaction((store, params) => {
+        const { person, filters, data } = params
+        return store.readOne({
           type: 'personTasks',
-          filters: merge(filters, {
-            person: person.id
-          })
+          filters: merge(filters, { person })
         })
         .then(task => {
           if (!task) {
@@ -323,41 +319,25 @@ module.exports = ({ store }) => ({
             data
           })
         })
+      }, {
+        person: person.id,
+        filters: args.filters,
+        data: args.data
+      })
     }
   },
   Hirer: {
     setOnboarded: async (hirer, args) => {
-      let onboarded = await store.readOne({
-        type: 'hirerOnboardedEvents',
-        filters: {
-          hirer: hirer.id
-        }
-      })
-      if (!onboarded) {
-        onboarded = await store.create({
+      return transaction((store, params) => {
+        const { hirer } = params
+        return store.readOneOrCreate({
           type: 'hirerOnboardedEvents',
-          data: {
-            hirer: hirer.id
-          }
+          filters: { hirer },
+          data: { hirer }
         })
-      }
-      return onboarded
-    }
-  },
-  Referral: {
-    _depth: (obj, args) => {
-      let count = null
-      function fetchItem (id) {
-        return store.readOne({ type: 'referrals', id }).then(item => {
-          count = count === null ? 0 : count + 1
-          if (item.parent) {
-            return fetchItem(item.parent)
-          } else {
-            return count
-          }
-        })
-      }
-      return fetchItem(obj.id)
+      }, {
+        hirer: hirer.id
+      })
     }
   },
   DateTime,

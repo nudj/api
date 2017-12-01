@@ -3,7 +3,7 @@ const toQs = require('@nudj/library/lib/to-qs')
 const logger = require('@nudj/library/lib/logger')
 const merge = require('@nudj/library/lib/merge')
 
-const StoreError = require('../../lib/errors').StoreError
+const StoreError = require('../../../lib/errors').StoreError
 
 const takeFirst = (result) => result[0]
 const newISODate = () => (new Date()).toISOString()
@@ -17,8 +17,9 @@ const errorHandler = (details) => (error) => {
   logger('error', (new Date()).toISOString(), details, error)
   throw new StoreError({ code })
 }
+const baseURL = process.env.DB_API_URL
 
-module.exports = ({baseURL}) => ({
+module.exports = () => ({
   create: ({
     type,
     data

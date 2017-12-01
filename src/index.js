@@ -1,8 +1,8 @@
 const rest = require('./rest')
 const gql = require('./gql')
-const arangoStoreAdaptor = require('./gql/arango-store-adaptor')
+const Transaction = require('./gql/arango-adaptor')
 
 rest.listen(81, () => console.log('Rest running on http://localhost:81/'))
 gql({
-  storeAdaptor: arangoStoreAdaptor({ baseURL: 'http://db:8529/_db/nudj/_api' })
+  transaction: Transaction({ baseURL: process.env.DB_API_URL })
 }).listen(82, () => console.log('GQL running on http://localhost:82/'))

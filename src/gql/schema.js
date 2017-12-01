@@ -57,6 +57,11 @@ module.exports = `
     CONNECTIONS
   }
 
+  type Notification {
+    type: String!
+    message: String!
+  }
+
   type Company {
     id: ID! @isUnique
     created: DateTime!

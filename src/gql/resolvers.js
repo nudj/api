@@ -32,6 +32,9 @@ module.exports = ({ store }) => ({
       }, {
         personId: args.id
       })
+    },
+    setNotification: (ob, args) => {
+      return { type: args.type, message: args.message }
     }
   },
   Mutation: {
@@ -40,6 +43,9 @@ module.exports = ({ store }) => ({
         type: 'people',
         id: args.id
       })
+    },
+    setNotification: (ob, args) => {
+      return { type: args.type, message: args.message }
     },
     createSurvey: (obj, args) => {
       const surveySections = []
@@ -73,19 +79,16 @@ module.exports = ({ store }) => ({
       })
     },
     createSurveyQuestion: (obj, args) => {
-      console.log(args.input)
       return store.create({
         type: 'surveyQuestions',
         data: args.input
       })
       .then(question => {
-        console.log('QUESTION HERE', question)
         return store.readOne({
           type: 'surveySections',
           id: question.surveySection
         })
         .then(section => {
-          console.log('SECTION HERE', section)
           const { surveyQuestions = [] } = section
           return store.update({
             type: 'surveySections',

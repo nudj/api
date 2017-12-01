@@ -1,22 +1,4 @@
-const Promise = () => {
-  function Promise (cb) {
-    const resolve = (result) => {
-      this.result = result
-    }
-    cb(resolve)
-    return this
-  }
-  Promise.prototype.then = function (cb) {
-    return cb(this.result)
-  }
-  Promise.resolve = function (value) {
-    return new Promise((resolve) => resolve(value))
-  }
-  Promise.all = function (values) {
-    return Promise.resolve(values.map(value => value && value.then ? value.result : value))
-  }
-  return Promise
-}
+const PromiseOverride = require('./promise-override')
 
 module.exports = (store, action) => {
   if (!store) {
@@ -26,7 +8,7 @@ module.exports = (store, action) => {
     throw new Error('No action supplied')
   }
   return `function (params) {
-    const Promise = (${Promise.toString()})()
+    const Promise = (${PromiseOverride.toString()})()
     const store = ${store.toString()}
     const action = ${action.toString()}
     return action(store(), params).then(data => data)

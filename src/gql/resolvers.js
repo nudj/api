@@ -3,7 +3,7 @@ const { merge } = require('@nudj/library')
 const pick = require('lodash/pick')
 const omit = require('lodash/omit')
 
-const transaction = require('./arango-adaptor')
+const transaction = require('./json-server-adaptor')
 
 const DateTime = new GraphQLScalarType({
   name: 'DateTime',
@@ -27,10 +27,10 @@ module.exports = ({ store }) => ({
       return transaction((store, params) => {
         return store.readOne({
           type: 'people',
-          id: params.personId
+          id: params.person
         })
       }, {
-        personId: args.id
+        person: args.id
       })
     },
     setNotification: (obj, args) => {
@@ -39,9 +39,13 @@ module.exports = ({ store }) => ({
   },
   Mutation: {
     user: (obj, args) => {
-      return store.readOne({
-        type: 'people',
-        id: args.id
+      return transaction((store, params) => {
+        return store.readOne({
+          type: 'people',
+          id: params.person
+        })
+      }, {
+        person: args.id
       })
     },
     setNotification: (obj, args) => {
@@ -103,77 +107,91 @@ module.exports = ({ store }) => ({
     }
   },
   Person: {
-    incompleteTaskCount: (obj, args, context) => {
+    incompleteTaskCount: (obj, args) => {
       const person = obj.id
-      return store
-        .readOne({
-          type: 'hirers',
-          filters: { person }
-        })
-        .then(hirer =>
-          store.readOne({
-            type: 'companies',
-            id: hirer.company
+      return transaction((store, params) => {
+        const { person } = params
+        return store
+          .readOne({
+            type: 'hirers',
+            filters: { person }
           })
-        )
-        .then(company =>
-          Promise.all([
-            store.readAll({
-              type: 'companyTasks',
-              filters: { company: company.id, completed: false }
-            }),
-            store.readAll({
-              type: 'personTasks',
-              filters: { person, completed: false }
+          .then(hirer =>
+            store.readOne({
+              type: 'companies',
+              id: hirer.company
             })
-          ])
-        )
-        .then(tasks => [].concat(...tasks).length)
+          )
+          .then(company =>
+            Promise.all([
+              store.readAll({
+                type: 'companyTasks',
+                filters: { company: company.id, completed: false }
+              }),
+              store.readAll({
+                type: 'personTasks',
+                filters: { person, completed: false }
+              })
+            ])
+          )
+          .then(tasks => [].concat(...tasks).length)
+      }, {
+        person
+      })
     },
-    getOrCreateConnection: async (obj, args) => {
+    getOrCreateConnection: (obj, args) => {
       const from = obj.id
       const { to, source } = args
-      const connectionSource = await store.readOneOrCreate({
-        type: 'connectionSources',
-        filters: { name: source },
-        data: { name: source }
-      })
-      let role
-      if (to.title) {
-        role = await store.readOneOrCreate({
-          type: 'roles',
-          filters: { name: to.title },
-          data: { name: to.title }
+      return transaction((store, params) => {
+        const { from, to, source } = params
+        return Promise.all([
+          store.readOneOrCreate({
+            type: 'connectionSources',
+            filters: { name: source },
+            data: { name: source }
+          }),
+          to.title && store.readOneOrCreate({
+            type: 'roles',
+            filters: { name: to.title },
+            data: { name: to.title }
+          }),
+          to.company && store.readOneOrCreate({
+            type: 'companies',
+            filters: { name: to.company },
+            data: { name: to.company }
+          }),
+          store.readOneOrCreate({
+            type: 'people',
+            filters: { email: to.email },
+            data: pick(to, ['email'])
+          })
+        ])
+        .then(([
+          connectionSource,
+          role,
+          company,
+          person
+        ]) => {
+          return store.readOneOrCreate({
+            type: 'connections',
+            filters: {
+              from,
+              person: person.id
+            },
+            data: merge(omit(to, ['email', 'title']), {
+              from,
+              source: connectionSource.id,
+              role: role && role.id,
+              company: company && company.id,
+              person: person.id
+            })
+          })
         })
-      }
-      let company
-      if (to.company) {
-        company = await store.readOneOrCreate({
-          type: 'companies',
-          filters: { name: to.company },
-          data: { name: to.company }
-        })
-      }
-      let person = await store.readOneOrCreate({
-        type: 'people',
-        filters: { email: to.email },
-        data: pick(to, ['email'])
+      }, {
+        from,
+        to,
+        source
       })
-      let connection = await store.readOneOrCreate({
-        type: 'connections',
-        filters: {
-          from,
-          person: person.id
-        },
-        data: merge(omit(to, ['email', 'title']), {
-          from,
-          source: connectionSource.id,
-          role: role && role.id,
-          company: company.id,
-          person: person.id
-        })
-      })
-      return connection
     },
     getOrCreateConnections: async (obj, args) => {
       const from = obj.id
@@ -293,7 +311,7 @@ module.exports = ({ store }) => ({
     }
   },
   Hirer: {
-    setOnboarded: async (hirer, args, context) => {
+    setOnboarded: async (hirer, args) => {
       let onboarded = await store.readOne({
         type: 'hirerOnboardedEvents',
         filters: {
@@ -312,7 +330,7 @@ module.exports = ({ store }) => ({
     }
   },
   Referral: {
-    _depth: (obj, args, context) => {
+    _depth: (obj, args) => {
       let count = null
       function fetchItem (id) {
         return store.readOne({ type: 'referrals', id }).then(item => {

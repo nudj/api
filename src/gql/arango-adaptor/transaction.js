@@ -13,7 +13,7 @@ const request = (uri, options = {}) => libRequest(uri, Object.assign({
 }, options))
 
 module.exports = (action, params) => {
-  // semi does not accept raw functions wrapping in parentheses
+  // semi does not accept raw functions so wrapping in parentheses
   let actionString = `(${actionToString(store, action)})`
   // add semi colons
   actionString = semi.add(actionString)
@@ -22,7 +22,7 @@ module.exports = (action, params) => {
   // strip parentheses and trailing semicolon
   actionString = actionString.slice(1, -2)
 
-  return request('http://db:8529/_db/nudj/_api/transaction', {
+  return request(`${process.env.DB_API_URL}/transaction`, {
     method: 'post',
     data: {
       collections: {

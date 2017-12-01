@@ -38,7 +38,7 @@ describe('ArangoAdaptor transaction', () => {
       './action-to-string': actionToStringStub,
       './action-to-collection-lock': actionToCollectionLockStub
     })
-    server = nock('http://db:8529/_db/nudj/_api')
+    server = nock(process.env.DB_API_URL)
   })
   afterEach(() => {
     actionToStringStub.reset()

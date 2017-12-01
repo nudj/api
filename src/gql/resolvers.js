@@ -201,50 +201,65 @@ module.exports = ({ store }) => ({
         filters: { name: source },
         data: { name: source }
       })
+      if (!connectionSource) {
+        throw new Error('Unable to create ConnectionSource')
+      }
       return Promise.all(to.map(async data => {
-        let role
-        if (data.title) {
-          role = await store.readOneOrCreate({
-            type: 'roles',
-            filters: { name: data.title },
-            data: { name: data.title }
+        await transaction((store, params) => {
+          const { from, connectionSource } = params
+          return Promise.all([
+            data.title && store.readOneOrCreate({
+              type: 'roles',
+              filters: { name: data.title },
+              data: { name: data.title }
+            }),
+            data.company && store.readOneOrCreate({
+              type: 'companies',
+              filters: { name: data.company },
+              data: { name: data.company }
+            }),
+            store.readOneOrCreate({
+              type: 'people',
+              filters: { email: data.email },
+              data: pick(data, ['email'])
+            })
+          ])
+          .then(([
+            role,
+            company,
+            person
+          ]) => {
+            return store.readOneOrCreate({
+              type: 'connections',
+              filters: {
+                from,
+                person: person.id
+              },
+              data: merge(omit(data, ['email', 'title']), {
+                from,
+                source: connectionSource.id,
+                role: role && role.id,
+                company: company && company.id,
+                person: person.id
+              })
+            })
           })
-        }
-        let company
-        if (data.company) {
-          company = await store.readOneOrCreate({
-            type: 'companies',
-            filters: { name: data.company },
-            data: { name: data.company }
-          })
-        }
-        let person = await store.readOneOrCreate({
-          type: 'people',
-          filters: { email: data.email },
-          data: pick(data, ['email'])
+        }, {
+          from,
+          connectionSource
         })
-        let connection = await store.readOneOrCreate({
-          type: 'connections',
-          filters: {
-            from,
-            person: person.id
-          },
-          data: merge(omit(data, ['email', 'title']), {
-            from,
-            source: connectionSource.id,
-            role: role && role.id,
-            company: company.id,
-            person: person.id
-          })
-        })
-        return connection
       }))
     },
     connections: (person, args) => {
       const from = person.id
-      return store.readAll({
-        type: 'connections',
-        filters: { from }
+      return transaction((store, params) => {
+        const { from } = params
+        return store.readAll({
+          type: 'connections',
+          filters: { from }
+        })
+      }, {
+        from
       })
     },
     getOrCreateFormerEmployer: (obj, args) => {

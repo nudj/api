@@ -54,9 +54,8 @@ module.exports = () => {
     }) => {
       if (filters) {
         return Promise.resolve(db[type].byExample(filters).toArray().map(normaliseData))
-      } else {
-        return Promise.resolve(db[type].all().toArray().map(normaliseData))
       }
+      return Promise.resolve(db[type].all().toArray().map(normaliseData))
     },
     update: ({
       type,

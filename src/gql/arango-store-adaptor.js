@@ -17,7 +17,7 @@ const request = (uri, options = {}) => libRequest(uri, merge({
 
 const errorHandler = (details) => (error) => {
   const code = error.status || (error.response && error.response.status) || 500
-  if (error.name === NotFound.name) {
+  if (error.name === NotFound.prototype.name) {
     return null
   }
   logger('error', (new Date()).toISOString(), details, error)
@@ -101,7 +101,7 @@ const StoreAdaptor = ({
       return normaliseData(response.document)
     } catch (error) {
       try {
-        if (error.name === NotFound.name) {
+        if (error.name === NotFound.prototype.name) {
           const item = await request(`${baseURL}/document/${type}?returnNew=true`, {
             method: 'post',
             data: Object.assign({

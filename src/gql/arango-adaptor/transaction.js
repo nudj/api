@@ -32,5 +32,4 @@ module.exports = (action, params) => {
       params
     }
   })
-  .catch(error => console.log(...error.log))
 }

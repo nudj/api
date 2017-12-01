@@ -24,17 +24,6 @@ const Data = new GraphQLScalarType({
 module.exports = ({ store }) => ({
   Query: {
     user: (obj, args) => {
-      console.log(`
-
-
-
-
-        Transaction for person ${args.id}
-
-
-
-
-      `)
       return transaction((store, params) => {
         return store.readOne({
           type: 'people',

@@ -8,7 +8,7 @@ const {
 } = errors
 const StoreError = require('../lib/errors').StoreError
 const newISODate = () => (new Date()).toISOString()
-const authHash = new Buffer(process.env.DB_USER + ':' + process.env.DB_PASS).toString('base64')
+const authHash = Buffer.from(process.env.DB_USER + ':' + process.env.DB_PASS).toString('base64')
 const request = (uri, options = {}) => libRequest(uri, merge({
   headers: {
     'Authorization': 'Basic ' + authHash

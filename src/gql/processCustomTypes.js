@@ -247,11 +247,14 @@ module.exports = ({ customTypeDefs, customResolvers, store }) => {
 
           // add field to update input schema
           if (
-            !['id', 'created', 'modified'].includes(field.name.value) &&
-            !typeConfig.list
+            !['id', 'created', 'modified'].includes(field.name.value)
           ) {
             if (tally.types.includes(typeConfig.name)) {
-              fieldStrings.update.push(`${field.name.value}: ID`)
+              if (typeConfig.list) {
+                fieldStrings.update.push(`${field.name.value}: [ID!]`)
+              } else {
+                fieldStrings.update.push(`${field.name.value}: ID`)
+              }
             } else {
               fieldStrings.update.push(
                 `${field.name.value}: ${typeConfig.name}`
@@ -336,6 +339,8 @@ module.exports = ({ customTypeDefs, customResolvers, store }) => {
 
   schema.types.Query.push(`user(id: ID!): Person`)
   schema.types.Mutation.push(`user(id: ID!): Person`)
+  schema.types.Mutation.push(`setNotification(type: NotificationType! message: String!): Notification`)
+  schema.types.Query.push(`setNotification(type: NotificationType! message: String!): Notification`)
   schema.types.Person.push(
     `getOrCreateConnection(to: PersonCreateInput!, source: String!): Connection`
   )
@@ -401,9 +406,6 @@ module.exports = ({ customTypeDefs, customResolvers, store }) => {
 
   // custom resolvers
   resolvers = merge(resolvers, customResolvers)
-
-  console.log(typeDefs)
-  console.log(resolvers)
 
   return {
     typeDefs,

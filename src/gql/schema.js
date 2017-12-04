@@ -57,6 +57,17 @@ module.exports = `
     CONNECTIONS
   }
 
+  enum NotificationType {
+    success
+    error
+    info
+  }
+
+  type Notification {
+    type: String!
+    message: String!
+  }
+
   type Company {
     id: ID! @isUnique
     created: DateTime!

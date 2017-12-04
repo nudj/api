@@ -407,9 +407,6 @@ module.exports = ({ customTypeDefs, customResolvers, store }) => {
   // custom resolvers
   resolvers = merge(resolvers, customResolvers)
 
-  // console.log(typeDefs)
-  // console.log(resolvers)
-
   return {
     typeDefs,
     resolvers

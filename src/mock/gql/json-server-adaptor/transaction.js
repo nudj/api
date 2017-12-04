@@ -1,5 +1,3 @@
 const store = require('./store')
 
-module.exports = (action, params) => {
-  return action(store(), params)
-}
+module.exports = (action, params) => action(store(), params)

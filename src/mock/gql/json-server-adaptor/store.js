@@ -1,15 +1,16 @@
+const first = require('lodash/first')
 const request = require('@nudj/library/lib/request')
-const toQs = require('@nudj/library/lib/to-qs')
-const logger = require('@nudj/library/lib/logger')
-const merge = require('@nudj/library/lib/merge')
+const {
+  toQs,
+  logger,
+  merge
+} = require('@nudj/library/lib/to-qs')
 
-const StoreError = require('../../../lib/errors').StoreError
+const { StoreError } = require('../../../lib/errors')
 
-const takeFirst = (result) => result[0]
 const newISODate = () => (new Date()).toISOString()
 
 const errorHandler = (details) => (error) => {
-  console.log(error.message)
   const code = error.status || (error.response && error.response.status) || 500
   if (code === 404) {
     return null
@@ -23,19 +24,21 @@ module.exports = () => ({
   create: ({
     type,
     data
-  }) => request(`/${type}`, {
-    baseURL,
-    method: 'post',
-    data: merge(data, {
-      created: newISODate(),
-      modified: newISODate()
+  }) => {
+    return request(`/${type}`, {
+      baseURL,
+      method: 'post',
+      data: merge(data, {
+        created: newISODate(),
+        modified: newISODate()
+      })
     })
-  })
-  .catch(errorHandler({
-    action: 'create',
-    type,
-    data
-  })),
+    .catch(errorHandler({
+      action: 'create',
+      type,
+      data
+    }))
+  },
   readOne: ({
     type,
     id,
@@ -46,7 +49,7 @@ module.exports = () => ({
     if (id) {
       response = request(`/${type}/${id}`, {baseURL})
     } else {
-      response = request(`/${type}${filterString.length ? `?${filterString}` : ''}`, {baseURL}).then(takeFirst)
+      response = request(`/${type}${filterString.length ? `?${filterString}` : ''}`, {baseURL}).then(first)
     }
     return response.catch(errorHandler({
       action: 'readOne',
@@ -63,7 +66,7 @@ module.exports = () => ({
     try {
       const filterString = toQs(filters)
       const matches = await request(`/${type}${filterString.length ? `?${filterString}` : ''}`, {baseURL})
-      let item = takeFirst(matches)
+      let item = first(matches)
       if (!item) {
         item = await request(`/${type}`, {
           baseURL,
@@ -99,40 +102,47 @@ module.exports = () => ({
   readMany: ({
     type,
     ids
-  }) => Promise.all(ids.map(id => request(`/${type}/${id}`, {baseURL})))
-  .catch(errorHandler({
-    action: 'readMany',
-    type,
-    ids
-  })),
+  }) => {
+    return Promise.all(ids.map(id => request(`/${type}/${id}`, {baseURL})))
+    .catch(errorHandler({
+      action: 'readMany',
+      type,
+      ids
+    }))
+  },
   update: ({
     type,
     id,
     data
-  }) => request(`/${type}/${id}`, {
-    baseURL,
-    method: 'patch',
-    data: merge(data, {
-      modified: newISODate()
+  }) => {
+    return request(`/${type}/${id}`, {
+      baseURL,
+      method: 'patch',
+      data: merge(data, {
+        modified: newISODate()
+      })
     })
-  })
-  .catch(errorHandler({
-    action: 'update',
-    type,
-    id,
-    data
-  })),
+    .catch(errorHandler({
+      action: 'update',
+      type,
+      id,
+      data
+    }))
+  },
   delete: ({
     type,
     id
-  }) => request(`/${type}/${id}`).then(item => request(`/${type}/${id}`, {
-    baseURL,
-    method: 'delete'
-  })
-  .then(() => item))
-  .catch(errorHandler({
-    action: 'delete',
-    type,
-    id
-  }))
+  }) => {
+    return request(`/${type}/${id}`)
+    .then(item => request(`/${type}/${id}`, {
+      baseURL,
+      method: 'delete'
+    })
+    .then(() => item))
+    .catch(errorHandler({
+      action: 'delete',
+      type,
+      id
+    }))
+  }
 })

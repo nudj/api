@@ -33,7 +33,7 @@ module.exports = ({ store }) => ({
         personId: args.id
       })
     },
-    setNotification: (ob, args) => {
+    setNotification: (obj, args) => {
       return { type: args.type, message: args.message }
     }
   },
@@ -44,7 +44,7 @@ module.exports = ({ store }) => ({
         id: args.id
       })
     },
-    setNotification: (ob, args) => {
+    setNotification: (obj, args) => {
       return { type: args.type, message: args.message }
     },
     createSurvey: (obj, args) => {

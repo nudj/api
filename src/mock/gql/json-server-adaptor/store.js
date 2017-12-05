@@ -4,7 +4,7 @@ const {
   toQs,
   logger,
   merge
-} = require('@nudj/library/lib/to-qs')
+} = require('@nudj/library')
 
 const { StoreError } = require('../../../lib/errors')
 

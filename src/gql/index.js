@@ -6,12 +6,12 @@ const schema = require('./schema')
 const resolvers = require('./resolvers')
 const processCustomTypes = require('./processCustomTypes')
 
-module.exports = ({ storeAdaptor }) => {
+module.exports = ({ transaction }) => {
   const executableSchema = makeExecutableSchema(
     processCustomTypes({
       customTypeDefs: schema,
-      customResolvers: resolvers({ store: storeAdaptor }),
-      store: storeAdaptor
+      customResolvers: resolvers({ transaction }),
+      transaction
     })
   )
   const app = express()

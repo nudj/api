@@ -11,6 +11,7 @@ const request = (uri, options = {}) => libRequest(uri, Object.assign({
     'Authorization': 'Basic ' + authHash
   }
 }, options))
+const baseURL = process.env.DB_API_URL
 
 module.exports = (action, params) => {
   // semi does not accept raw functions so wrapping in parentheses
@@ -22,7 +23,7 @@ module.exports = (action, params) => {
   // strip parentheses and trailing semicolon
   actionString = actionString.slice(1, -2)
 
-  return request(`${process.env.DB_API_URL}/transaction`, {
+  return request(`${baseURL}/transaction`, {
     method: 'post',
     data: {
       collections: {

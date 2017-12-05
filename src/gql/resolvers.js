@@ -32,7 +32,7 @@ module.exports = ({ transaction }) => ({
       })
     },
     setNotification: (obj, args) => {
-      return { type: args.type, message: args.message }
+      return Promise.resolve({ type: args.type, message: args.message })
     }
   },
   Mutation: {
@@ -47,60 +47,75 @@ module.exports = ({ transaction }) => ({
       })
     },
     setNotification: (obj, args) => {
-      return { type: args.type, message: args.message }
+      return Promise.resolve({ type: args.type, message: args.message })
     },
     createSurvey: (obj, args) => {
-      const surveySections = []
-      return store.create({
-        type: 'surveys',
-        data: merge(args.input, { surveySections })
+      const { input } = args
+      return transaction((store, params) => {
+        const surveySections = []
+        return store.create({
+          type: 'surveys',
+          data: merge(params.input, { surveySections })
+        })
+      }, {
+        input
       })
     },
     createSurveySection: (obj, args) => {
-      const surveyQuestions = []
-      return store.create({
-        type: 'surveySections',
-        data: merge(args.input, { surveyQuestions })
-      })
-      .then(section => {
-        return store.readOne({
-          type: 'surveys',
-          id: section.survey
+      const { input } = args
+      return transaction((store, params) => {
+        const surveyQuestions = []
+        return store.create({
+          type: 'surveySections',
+          data: merge(params.input, { surveyQuestions })
         })
-        .then(survey => {
-          const { surveySections = [] } = survey
-          return store.update({
+        .then(section => {
+          return store.readOne({
             type: 'surveys',
-            id: section.survey,
-            data: {
-              surveySections: surveySections.concat(section.id)
-            }
+            id: section.survey
           })
+          .then(survey => {
+            const { surveySections = [] } = survey
+            return store.update({
+              type: 'surveys',
+              id: section.survey,
+              data: {
+                surveySections: surveySections.concat(section.id)
+              }
+            })
+          })
+          .then(() => Promise.resolve(section))
         })
-        .then(() => section)
+      }, {
+        input
       })
     },
     createSurveyQuestion: (obj, args) => {
-      return store.create({
-        type: 'surveyQuestions',
-        data: args.input
-      })
-      .then(question => {
-        return store.readOne({
-          type: 'surveySections',
-          id: question.surveySection
+      const { input } = args
+      return transaction((store, params) => {
+        return store.create({
+          type: 'surveyQuestions',
+          data: params.input
         })
-        .then(section => {
-          const { surveyQuestions = [] } = section
-          return store.update({
+        .then(question => {
+          return store.readOne({
             type: 'surveySections',
-            id: question.surveySection,
-            data: {
-              surveyQuestions: surveyQuestions.concat(question.id)
-            }
+            id: question.surveySection
           })
+          .then(section => {
+            const { surveyQuestions = [] } = section
+            return store.update({
+              type: 'surveySections',
+              id: question.surveySection,
+              data: {
+                surveyQuestions: surveyQuestions.concat(question.id)
+              }
+            })
+          })
+          .then(() => Promise.resolve(question))
         })
-        .then(() => question)
+      }, {
+        input
       })
     }
   },
@@ -132,7 +147,7 @@ module.exports = ({ transaction }) => ({
               })
             ])
           )
-          .then(tasks => [].concat(...tasks).length)
+          .then(tasks => Promise.resolve([].concat(...tasks).length))
       }, {
         person
       })

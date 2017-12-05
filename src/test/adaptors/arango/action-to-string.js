@@ -3,7 +3,7 @@
 const chai = require('chai')
 const expect = chai.expect
 
-const ActionToString = require('../../gql/arango-adaptor/action-to-string')
+const ActionToString = require('../../../gql/adaptors/arango/action-to-string')
 
 const STORE_NOOP = () => {}
 const ACTION_NOOP = () => {}

@@ -33,7 +33,7 @@ describe('ArangoAdaptor transaction', () => {
   let actionToCollectionLockStub = sinon.stub().returns(COLLECTION_LOCK_RESPONSE)
 
   before(() => {
-    transaction = proxyquire('../../gql/arango-adaptor/transaction', {
+    transaction = proxyquire('../../../gql/adaptors/arango/transaction', {
       './store': STORE,
       './action-to-string': actionToStringStub,
       './action-to-collection-lock': actionToCollectionLockStub

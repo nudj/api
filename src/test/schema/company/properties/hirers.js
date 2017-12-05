@@ -4,7 +4,7 @@ const { merge } = require('@nudj/library')
 const expect = chai.expect
 
 const schema = require('../../../../gql/schema')
-const { executeQueryOnDataUsingSchema } = require('../../../helpers')
+const { executeQueryOnDbUsingSchema } = require('../../../helpers')
 const query = `
   query {
     companies {
@@ -24,7 +24,7 @@ const baseData = {
 
 describe('Company.hirers', () => {
   it('should fetch all hirers relating to the company', async () => {
-    const data = merge(baseData, {
+    const db = merge(baseData, {
       hirers: [
         {
           id: 'hirer1',
@@ -40,7 +40,7 @@ describe('Company.hirers', () => {
         }
       ]
     })
-    return expect(executeQueryOnDataUsingSchema({ query, data, schema })).to.eventually.deep.equal({
+    return expect(executeQueryOnDbUsingSchema({ query, db, schema })).to.eventually.deep.equal({
       data: {
         companies: [
           {
@@ -59,7 +59,7 @@ describe('Company.hirers', () => {
   })
 
   it('should return empty array if no matches', async () => {
-    const data = merge(baseData, {
+    const db = merge(baseData, {
       hirers: [
         {
           id: 'hirer1',
@@ -67,7 +67,7 @@ describe('Company.hirers', () => {
         }
       ]
     })
-    return expect(executeQueryOnDataUsingSchema({ query, data, schema })).to.eventually.deep.equal({
+    return expect(executeQueryOnDbUsingSchema({ query, db, schema })).to.eventually.deep.equal({
       data: {
         companies: [
           {

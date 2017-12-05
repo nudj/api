@@ -2,10 +2,10 @@ const { graphql } = require('graphql')
 const chai = require('chai')
 const expect = chai.expect
 
-const transaction = require('../../gql/lodash-adaptor')
+const transaction = require('../../gql/adaptors/lodash')
 
-async function executeQueryOnDataUsingSchema ({ schema, query, data }) {
-  const testContext = { transaction: transaction({ data }) }
+async function executeQueryOnDbUsingSchema ({ schema, query, db }) {
+  const testContext = { transaction: transaction({ db }) }
   return await graphql(schema, query, undefined, testContext)
 }
 
@@ -15,14 +15,14 @@ async function expectPropertyReceivesValue (schema, type, typePlural, property, 
       ${property}
     }
   }`
-  const data = {
+  const db = {
     [typePlural]: [
       {
         [property]: value
       }
     ]
   }
-  const result = await executeQueryOnDataUsingSchema({ query, data, schema })
+  const result = await executeQueryOnDbUsingSchema({ query, db, schema })
   expect(result, `Expected "${type}" schema to include "${property}" property`).to.deep.equal({
     data: {
       [typePlural]: [
@@ -40,14 +40,14 @@ async function expectPropertyIsRequired (schema, type, typePlural, property) {
       ${property}
     }
   }`
-  const data = {
+  const db = {
     [typePlural]: [
       {
         [property]: null
       }
     ]
   }
-  const result = await executeQueryOnDataUsingSchema({ query, data, schema })
+  const result = await executeQueryOnDbUsingSchema({ query, db, schema })
   expect(result, `Property "${property}" should be required`).to.have.deep.property('errors[0].message', `Cannot return null for non-nullable field ${type}.${property}.`)
   expect(result).to.have.deep.property('errors[0].path').to.deep.equal([
     typePlural,
@@ -57,7 +57,7 @@ async function expectPropertyIsRequired (schema, type, typePlural, property) {
 }
 
 module.exports = {
-  executeQueryOnDataUsingSchema,
+  executeQueryOnDbUsingSchema,
   expectPropertyReceivesValue,
   expectPropertyIsRequired
 }

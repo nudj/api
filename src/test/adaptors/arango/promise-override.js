@@ -3,7 +3,7 @@
 const chai = require('chai')
 const expect = chai.expect
 
-const PromiseOverride = require('../../gql/arango-adaptor/promise-override')
+const PromiseOverride = require('../../../gql/adaptors/arango/promise-override')
 
 describe('ArangoAdaptor PromiseOverride', () => {
   it('to be a function', () => {

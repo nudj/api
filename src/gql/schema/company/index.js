@@ -1,7 +1,7 @@
-const properties = require('./properties')
+const typeDefs = require('./typeDefs')
 const resolvers = require('./resolvers')
 
 module.exports = {
-  typeDefs: [properties],
+  typeDefs,
   resolvers
 }

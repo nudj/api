@@ -39,10 +39,11 @@ describe('LodashAdaptor transaction', () => {
         }
       })
     }).then(result => {
+      expect(result).to.have.property('id')
       expect(result).to.have.property('breed').to.equal('Schnauzer')
       expect(db.dogs.length).to.equal(4)
+      expect(db.dogs[3]).to.have.property('id')
       expect(db.dogs[3]).to.have.property('breed', 'Schnauzer')
-      expect(db.dogs[3]).to.have.property('id').to.match(/dogs[0-9]+/)
     })
   })
 
@@ -171,6 +172,46 @@ describe('LodashAdaptor transaction', () => {
           breed: 'Alsatian'
         }
       ])
+    })
+  })
+
+  it('readOneOrCreate when match found', () => {
+    return transaction({ db })(store => {
+      return store.readOneOrCreate({
+        type: 'dogs',
+        filters: {
+          breed: 'Dalmatian'
+        },
+        data: {
+          breed: 'Dalmatian'
+        }
+      })
+    })
+    .then(result => {
+      expect(result).to.have.property('id')
+      expect(result).to.have.property('breed').to.equal('Dalmatian')
+      expect(db.dogs.length).to.equal(3)
+    })
+  })
+
+  it('readOneOrCreate when no match found', () => {
+    return transaction({ db })(store => {
+      return store.readOneOrCreate({
+        type: 'dogs',
+        filters: {
+          breed: 'CavapooFilter'
+        },
+        data: {
+          breed: 'CavapooData'
+        }
+      })
+    })
+    .then(result => {
+      expect(result).to.have.property('id')
+      expect(result).to.have.property('breed').to.equal('CavapooData')
+      expect(db.dogs.length).to.equal(4)
+      expect(db.dogs[3]).to.have.property('id')
+      expect(db.dogs[3]).to.have.property('breed', 'CavapooData')
     })
   })
 })

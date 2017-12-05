@@ -67,6 +67,21 @@ module.exports = ({ db }) => {
       const all = get(db, type)
       const index = findIndex(all, { id })
       return Promise.resolve(first(all.splice(index, 1)))
+    },
+    readOneOrCreate: ({
+      type,
+      data,
+      filters
+    }) => {
+      const all = get(db, type)
+      let entity = find(all, filters)
+      if (entity) {
+        return Promise.resolve(entity)
+      }
+      const id = `${type}${generateId()}`
+      entity = merge(data, { id })
+      db[type].push(entity)
+      return Promise.resolve(entity)
     }
   }
 }

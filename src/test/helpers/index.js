@@ -1,15 +1,16 @@
 const { graphql } = require('graphql')
 const chai = require('chai')
+const curry = require('lodash/curry')
 const expect = chai.expect
 
 const transaction = require('../../gql/adaptors/lodash')
 
-async function executeQueryOnDbUsingSchema ({ schema, query, db }) {
+function executeQueryOnDbUsingSchema ({ schema, query, db }) {
   const testContext = { transaction: transaction({ db }) }
-  return await graphql(schema, query, undefined, testContext)
+  return graphql(schema, query, undefined, testContext)
 }
 
-async function expectPropertyReceivesValue (schema, type, typePlural, property, value) {
+const expectPropertyReceivesValue = curry(async (schema, type, typePlural, property, value) => {
   const query = `{
     ${typePlural} {
       ${property}
@@ -32,9 +33,9 @@ async function expectPropertyReceivesValue (schema, type, typePlural, property, 
       ]
     }
   })
-}
+})
 
-async function expectPropertyIsRequired (schema, type, typePlural, property) {
+const expectPropertyIsRequired = curry(async (schema, type, typePlural, property) => {
   const query = `{
     ${typePlural} {
       ${property}
@@ -54,7 +55,7 @@ async function expectPropertyIsRequired (schema, type, typePlural, property) {
     0,
     property
   ])
-}
+})
 
 module.exports = {
   executeQueryOnDbUsingSchema,

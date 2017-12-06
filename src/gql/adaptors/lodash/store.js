@@ -5,19 +5,13 @@ const find = require('lodash/find')
 const findIndex = require('lodash/findIndex')
 const merge = require('lodash/merge')
 
-function generateId () {
-  const min = Math.ceil(1000)
-  const max = Math.floor(9999)
-  return Math.floor(Math.random() * (max - min)) + min
-}
-
 module.exports = ({ db }) => {
   return {
     create: ({
       type,
       data
     }) => {
-      const id = `${type}${generateId()}`
+      const id = 'newId'
       const entity = merge(data, { id })
       db[type].push(entity)
       return Promise.resolve(entity)
@@ -78,7 +72,7 @@ module.exports = ({ db }) => {
       if (entity) {
         return Promise.resolve(entity)
       }
-      const id = `${type}${generateId()}`
+      const id = 'newId'
       entity = merge(data, { id })
       db[type].push(entity)
       return Promise.resolve(entity)

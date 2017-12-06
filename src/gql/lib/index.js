@@ -1,6 +1,6 @@
 const { merge } = require('@nudj/library')
 
-function definitionMerger (...definitions) {
+function mergeDefinitions (...definitions) {
   let typeDefs = []
   let resolvers = {}
   definitions.forEach((def) => {
@@ -11,5 +11,5 @@ function definitionMerger (...definitions) {
 }
 
 module.exports = {
-  definitionMerger
+  mergeDefinitions
 }

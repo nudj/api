@@ -1,5 +1,5 @@
-const { definitionMerger } = require('../../lib')
+const { mergeDefinitions } = require('../../lib')
 
-module.exports = definitionMerger(
+module.exports = mergeDefinitions(
   require('./datetime')
 )

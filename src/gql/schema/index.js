@@ -1,8 +1,8 @@
 const { makeExecutableSchema } = require('graphql-tools')
 
-const { definitionMerger } = require('../lib')
+const { mergeDefinitions } = require('../lib')
 
-const definitions = definitionMerger(
+const definitions = mergeDefinitions(
   require('./scalars'),
   require('./query'),
   require('./mutation'),

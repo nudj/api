@@ -2,7 +2,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const { graphqlExpress } = require('graphql-server-express')
 const { makeExecutableSchema } = require('graphql-tools')
-const schema = require('./schema')
+const schema = require('./schema-old')
 const resolvers = require('./resolvers')
 const processCustomTypes = require('./processCustomTypes')
 

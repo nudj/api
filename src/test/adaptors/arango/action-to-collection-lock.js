@@ -3,7 +3,7 @@
 const chai = require('chai')
 const expect = chai.expect
 
-const ActionToCollectionLock = require('../../gql/arango-adaptor/action-to-collection-lock')
+const ActionToCollectionLock = require('../../../gql/adaptors/arango/action-to-collection-lock')
 
 describe('ArangoAdaptor ActionToCollectionLock', () => {
   it('to be a function', () => {

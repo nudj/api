@@ -27,7 +27,7 @@ describe('ArangoAdaptor Store().readOneOrCreate', () => {
         }
       }
     }
-    Store = proxyquire('../../gql/arango-adaptor/store', {
+    Store = proxyquire('../../../gql/adaptors/arango/store', {
       '@arangodb': dbStub
     })
   })

@@ -65,9 +65,36 @@ const expectPropertyIsRequired = curry(async (schema, type, typePlural, property
     }))
 })
 
+const expectPropertyContentsIsRequired = curry(async (schema, type, typePlural, property) => {
+  const query = `{
+    ${typePlural} {
+      ${property}
+    }
+  }`
+  const db = {
+    [typePlural]: [
+      {
+        [property]: [null]
+      }
+    ]
+  }
+  return executeQueryOnDbUsingSchema({ query, db, schema })
+    .then(shouldRespondWithGqlError({
+      message: `Cannot return null for non-nullable field ${type}.${property}.`,
+      path: [
+        typePlural,
+        0,
+        property,
+        0
+      ],
+      response: `Property contents "${property}" should be required`
+    }))
+})
+
 module.exports = {
   executeQueryOnDbUsingSchema,
   expectPropertyReceivesValue,
   expectPropertyIsRequired,
+  expectPropertyContentsIsRequired,
   shouldRespondWithGqlError
 }

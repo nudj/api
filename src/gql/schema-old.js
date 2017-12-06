@@ -69,7 +69,7 @@ module.exports = `
   }
 
   type Company {
-    id: ID! @isUnique
+    id: ID!
     created: DateTime!
     modified: DateTime!
     description: String
@@ -92,14 +92,14 @@ module.exports = `
   }
 
   type CompanyOnboardedEvent {
-    id: ID! @isUnique
+    id: ID!
     created: DateTime!
     modified: DateTime!
     company: Company!
   }
 
   type FormerEmployer {
-    id: ID! @isUnique
+    id: ID!
     created: DateTime!
     modified: DateTime!
     name: String!
@@ -109,26 +109,27 @@ module.exports = `
   }
 
   type Job {
-    bonus: Int!
-    company: Company!
+    id: ID!
     created: DateTime!
+    modified: DateTime!
+    title: String!
+    slug: String!
     description: String!
+    bonus: Int!
     roleDescription: String!
     candidateDescription: String!
-    experience: String
-    id: ID! @isUnique
     location: String!
-    relatedJobs: [Job!]!
     remuneration: String!
-    requirements: String
-    slug: String!
     status: String!
-    tags: [String!]!
     templateTags: [String!]!
-    title: String!
     type: String!
-    modified: DateTime!
     url: String!
+    experience: String
+    requirements: String
+
+    tags: [String!]!
+    company: Company!
+    relatedJobs: [Job!]!
     applications: [Application!]!
     internalMessages: [InternalMessage!]!
     externalMessages: [ExternalMessage!]!
@@ -141,7 +142,7 @@ module.exports = `
     created: DateTime!
     email: String!
     firstName: String
-    id: ID! @isUnique
+    id: ID!
     lastName: String
     status: String
     title: String
@@ -161,7 +162,7 @@ module.exports = `
 
   type Application {
     created: DateTime!
-    id: ID! @isUnique
+    id: ID!
     job: Job!
     person: Person!
     referral: Referral
@@ -170,14 +171,14 @@ module.exports = `
 
   type Message {
     created: DateTime!
-    id: ID! @isUnique
+    id: ID!
     pixelToken: String!
     readCount: Int!
     modified: DateTime!
   }
 
   type InternalMessage {
-    id: ID! @isUnique
+    id: ID!
     created: DateTime!
     modified: DateTime!
     recipients: [String]!
@@ -193,7 +194,7 @@ module.exports = `
     composeMessage: String
     created: DateTime!
     hirer: Hirer!
-    id: ID! @isUnique
+    id: ID!
     job: Job!
     person: Person!
     selectLength: ExternalLength
@@ -206,7 +207,7 @@ module.exports = `
     company: Company!
     created: DateTime!
     externalMessages: [ExternalMessage!]!
-    id: ID! @isUnique
+    id: ID!
     person: Person!
     recommendations: [Recommendation!]!
     modified: DateTime!
@@ -214,7 +215,7 @@ module.exports = `
   }
 
   type HirerOnboardedEvent {
-    id: ID! @isUnique
+    id: ID!
     created: DateTime!
     modified: DateTime!
     hirer: Hirer!
@@ -223,7 +224,7 @@ module.exports = `
   type Recommendation {
     created: DateTime!
     hirer: Hirer!
-    id: ID! @isUnique
+    id: ID!
     job: Job!
     person: Person!
     source: RecommendationSource!
@@ -234,7 +235,7 @@ module.exports = `
     applications: [Application!]!
     created: DateTime!
     parent: Referral
-    id: ID! @isUnique
+    id: ID!
     job: Job!
     person: Person!
     referrals: [Referral!]!
@@ -243,7 +244,7 @@ module.exports = `
 
   type Token {
     created: DateTime!
-    id: ID! @isUnique
+    id: ID!
     modified: DateTime!
     type: TokenType
     token: String
@@ -252,14 +253,14 @@ module.exports = `
 
   type Employee {
     created: DateTime!
-    id: ID! @isUnique
+    id: ID!
     modified: DateTime!
     company: Company!
     person: Person!
   }
 
   type Survey {
-    id: ID! @isUnique
+    id: ID!
     created: DateTime!
     modified: DateTime!
     company: Company!
@@ -272,7 +273,7 @@ module.exports = `
   }
 
   type SurveySection {
-    id: ID! @isUnique
+    id: ID!
     created: DateTime!
     modified: DateTime!
     survey: Survey!
@@ -282,7 +283,7 @@ module.exports = `
   }
 
   type SurveyQuestion {
-    id: ID! @isUnique
+    id: ID!
     created: DateTime!
     modified: DateTime!
     surveySection: SurveySection!
@@ -296,7 +297,7 @@ module.exports = `
   }
 
   type Connection {
-    id: ID! @isUnique
+    id: ID!
     created: DateTime!
     modified: DateTime!
     from: Person!
@@ -309,14 +310,14 @@ module.exports = `
   }
 
   type ConnectionSource {
-    id: ID! @isUnique
+    id: ID!
     created: DateTime!
     modified: DateTime!
     name: String!
   }
 
   type EmployeeSurvey {
-    id: ID! @isUnique
+    id: ID!
     created: DateTime!
     modified: DateTime!
     employee: Employee!
@@ -325,7 +326,7 @@ module.exports = `
   }
 
   type PersonTask {
-    id: ID! @isUnique
+    id: ID!
     created: DateTime!
     modified: DateTime!
     type: TaskType!
@@ -334,7 +335,7 @@ module.exports = `
   }
 
   type CompanyTask {
-    id: ID! @isUnique
+    id: ID!
     created: DateTime!
     modified: DateTime!
     type: TaskType!
@@ -344,7 +345,7 @@ module.exports = `
   }
 
   type Role {
-    id: ID! @isUnique
+    id: ID!
     created: DateTime!
     modified: DateTime!
     name: String!

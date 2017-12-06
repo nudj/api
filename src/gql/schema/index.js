@@ -7,6 +7,7 @@ const mutation = require('./mutation')
 const company = require('./company')
 const person = require('./person')
 const hirer = require('./hirer')
+const job = require('./job')
 
 const typeDefs = [
   ...scalars.typeDefs,
@@ -14,7 +15,8 @@ const typeDefs = [
   ...mutation.typeDefs,
   ...company.typeDefs,
   ...person.typeDefs,
-  ...hirer.typeDefs
+  ...hirer.typeDefs,
+  ...job.typeDefs
 ]
 const resolvers = merge(
   scalars.resolvers,
@@ -22,7 +24,8 @@ const resolvers = merge(
   mutation.resolvers,
   company.resolvers,
   person.resolvers,
-  hirer.resolvers
+  hirer.resolvers,
+  job.resolvers
 )
 
 const schema = makeExecutableSchema({

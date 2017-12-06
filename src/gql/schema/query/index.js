@@ -6,6 +6,7 @@ const companies = require('./companies')
 const people = require('./people')
 const hirers = require('./hirers')
 const jobs = require('./jobs')
+const applications = require('./applications')
 
 const typeDefs = [
   properties.typeDefs,
@@ -13,7 +14,8 @@ const typeDefs = [
   companies.typeDefs,
   people.typeDefs,
   hirers.typeDefs,
-  jobs.typeDefs
+  jobs.typeDefs,
+  applications.typeDefs
 ]
 const resolvers = merge(
   properties.resolvers,
@@ -21,7 +23,8 @@ const resolvers = merge(
   companies.resolvers,
   people.resolvers,
   hirers.resolvers,
-  jobs.resolvers
+  jobs.resolvers,
+  applications.resolvers
 )
 
 module.exports = {

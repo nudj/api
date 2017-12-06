@@ -161,12 +161,12 @@ module.exports = `
   }
 
   type Application {
-    created: DateTime!
     id: ID!
+    created: DateTime!
+    modified: DateTime!
     job: Job!
     person: Person!
     referral: Referral
-    modified: DateTime!
   }
 
   type Message {

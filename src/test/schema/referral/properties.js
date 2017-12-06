@@ -5,14 +5,14 @@ let {
   expectPropertyIsRequired
 } = require('../../helpers')
 
-const TYPE = 'Application'
-const TYPE_PLURAL = 'applications'
+const TYPE = 'Referral'
+const TYPE_PLURAL = 'referrals'
 const DUMMY_ID = '123'
 const DUMMY_DATETIME = '2000-01-17T02:51:58.000+00:00'
 expectPropertyReceivesValue = expectPropertyReceivesValue(schema, TYPE, TYPE_PLURAL)
 expectPropertyIsRequired = expectPropertyIsRequired(schema, TYPE, TYPE_PLURAL)
 
-describe('Application properties', () => {
+describe('Referral properties', () => {
   it('should be queriable by the following properties', async () => {
     await expectPropertyReceivesValue('id', DUMMY_ID)
     await expectPropertyReceivesValue('created', DUMMY_DATETIME)

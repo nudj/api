@@ -300,10 +300,10 @@ module.exports = `
     id: ID!
     created: DateTime!
     modified: DateTime!
-    from: Person!
-    person: Person!
     firstName: String
     lastName: String
+    from: Person!
+    person: Person!
     role: Role
     company: Company
     source: ConnectionSource!

@@ -10,6 +10,7 @@ const hirer = require('./hirer')
 const job = require('./job')
 const application = require('./application')
 const referral = require('./referral')
+const connection = require('./connection')
 
 const typeDefs = [
   ...scalars.typeDefs,
@@ -20,7 +21,8 @@ const typeDefs = [
   ...hirer.typeDefs,
   ...job.typeDefs,
   ...application.typeDefs,
-  ...referral.typeDefs
+  ...referral.typeDefs,
+  ...connection.typeDefs
 ]
 const resolvers = merge(
   scalars.resolvers,
@@ -31,7 +33,8 @@ const resolvers = merge(
   hirer.resolvers,
   job.resolvers,
   application.resolvers,
-  referral.resolvers
+  referral.resolvers,
+  connection.resolvers
 )
 
 const schema = makeExecutableSchema({

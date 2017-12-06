@@ -10,5 +10,6 @@ module.exports = mergeDefinitions(
   require('./applications'),
   require('./referrals'),
   require('./connections'),
-  require('./connection-sources')
+  require('./connection-sources'),
+  require('./surveys')
 )

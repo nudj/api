@@ -263,12 +263,12 @@ module.exports = `
     id: ID!
     created: DateTime!
     modified: DateTime!
-    company: Company!
     slug: String!
     introTitle: String
     introDescription: String
     outroTitle: String
     outroDescription: String
+    company: Company!
     surveySections: [SurveySection!]!
   }
 

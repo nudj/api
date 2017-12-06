@@ -1,15 +1,5 @@
-const { merge } = require('@nudj/library')
+const { definitionMerger } = require('../../lib')
 
-const properties = require('./properties')
-
-const typeDefs = [
-  properties.typeDefs
-]
-const resolvers = merge(
-  properties.resolvers
+module.exports = definitionMerger(
+  require('./properties')
 )
-
-module.exports = {
-  typeDefs,
-  resolvers
-}

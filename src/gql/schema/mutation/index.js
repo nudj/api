@@ -1,42 +1,14 @@
-const { merge } = require('@nudj/library')
+const { definitionMerger } = require('../../lib')
 
-const properties = require('./properties')
-const user = require('./user')
-const people = require('./people')
-const companies = require('./companies')
-const hirers = require('./hirers')
-const jobs = require('./jobs')
-const applications = require('./applications')
-const referrals = require('./referrals')
-const connections = require('./connections')
-const connectionSources = require('./connection-sources')
-
-const typeDefs = [
-  properties.typeDefs,
-  user.typeDefs,
-  people.typeDefs,
-  companies.typeDefs,
-  hirers.typeDefs,
-  jobs.typeDefs,
-  applications.typeDefs,
-  referrals.typeDefs,
-  connections.typeDefs,
-  connectionSources.typeDefs
-]
-const resolvers = merge(
-  properties.resolvers,
-  user.resolvers,
-  people.resolvers,
-  companies.resolvers,
-  hirers.resolvers,
-  jobs.resolvers,
-  applications.resolvers,
-  referrals.resolvers,
-  connections.resolvers,
-  connectionSources.resolvers
+module.exports = definitionMerger(
+  require('./properties'),
+  require('./user'),
+  require('./people'),
+  require('./companies'),
+  require('./hirers'),
+  require('./jobs'),
+  require('./applications'),
+  require('./referrals'),
+  require('./connections'),
+  require('./connection-sources')
 )
-
-module.exports = {
-  typeDefs,
-  resolvers
-}

@@ -5,9 +5,9 @@ const expect = chai.expect
 
 const transaction = require('../../gql/adaptors/lodash')
 
-function executeQueryOnDbUsingSchema ({ schema, query, db }) {
+function executeQueryOnDbUsingSchema ({ schema, variables = {}, query, db }) {
   const testContext = { transaction: transaction({ db }) }
-  return graphql(schema, query, undefined, testContext)
+  return graphql(schema, query, undefined, testContext, variables)
 }
 
 const expectPropertyReceivesValue = curry(async (schema, type, typePlural, property, value) => {
@@ -35,6 +35,11 @@ const expectPropertyReceivesValue = curry(async (schema, type, typePlural, prope
   })
 })
 
+const shouldRespondWithGqlError = ({ message, path, response }) => result => {
+  expect(result, response).to.have.deep.property('errors[0].message', message)
+  expect(result).to.have.deep.property('errors[0].path').to.deep.equal(path)
+}
+
 const expectPropertyIsRequired = curry(async (schema, type, typePlural, property) => {
   const query = `{
     ${typePlural} {
@@ -48,17 +53,21 @@ const expectPropertyIsRequired = curry(async (schema, type, typePlural, property
       }
     ]
   }
-  const result = await executeQueryOnDbUsingSchema({ query, db, schema })
-  expect(result, `Property "${property}" should be required`).to.have.deep.property('errors[0].message', `Cannot return null for non-nullable field ${type}.${property}.`)
-  expect(result).to.have.deep.property('errors[0].path').to.deep.equal([
-    typePlural,
-    0,
-    property
-  ])
+  return executeQueryOnDbUsingSchema({ query, db, schema })
+    .then(shouldRespondWithGqlError({
+      message: `Cannot return null for non-nullable field ${type}.${property}.`,
+      path: [
+        typePlural,
+        0,
+        property
+      ],
+      response: `Property "${property}" should be required`
+    }))
 })
 
 module.exports = {
   executeQueryOnDbUsingSchema,
   expectPropertyReceivesValue,
-  expectPropertyIsRequired
+  expectPropertyIsRequired,
+  shouldRespondWithGqlError
 }

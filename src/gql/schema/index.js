@@ -5,6 +5,7 @@ const scalars = require('./scalars')
 const query = require('./query')
 const mutation = require('./mutation')
 const company = require('./company')
+const person = require('./person')
 const hirer = require('./hirer')
 
 const typeDefs = [
@@ -12,6 +13,7 @@ const typeDefs = [
   ...query.typeDefs,
   ...mutation.typeDefs,
   ...company.typeDefs,
+  ...person.typeDefs,
   ...hirer.typeDefs
 ]
 const resolvers = merge(
@@ -19,6 +21,7 @@ const resolvers = merge(
   query.resolvers,
   mutation.resolvers,
   company.resolvers,
+  person.resolvers,
   hirer.resolvers
 )
 

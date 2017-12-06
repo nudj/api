@@ -10,10 +10,10 @@ describe('Mutation.hirers', () => {
     const db = {
       hirers: [
         {
-          id: 'company1'
+          id: 'hirer1'
         },
         {
-          id: 'company2'
+          id: 'hirer2'
         }
       ]
     }
@@ -28,10 +28,10 @@ describe('Mutation.hirers', () => {
       data: {
         hirers: [
           {
-            id: 'company1'
+            id: 'hirer1'
           },
           {
-            id: 'company2'
+            id: 'hirer2'
           }
         ]
       }

@@ -2,30 +2,22 @@ const { makeExecutableSchema } = require('graphql-tools')
 const { merge } = require('@nudj/library')
 
 const scalars = require('./scalars')
+const query = require('./query')
+const mutation = require('./mutation')
 const company = require('./company')
 const hirer = require('./hirer')
 
 const typeDefs = [
-  `type Query {
-    version: Int!
-  }`,
-  `type Mutation {
-    version: Int!
-  }`,
   ...scalars.typeDefs,
+  ...query.typeDefs,
+  ...mutation.typeDefs,
   ...company.typeDefs,
   ...hirer.typeDefs
 ]
 const resolvers = merge(
-  {
-    Query: {
-      version: () => process.env.npm_package_version
-    },
-    Mutation: {
-      version: () => process.env.npm_package_version
-    }
-  },
   scalars.resolvers,
+  query.resolvers,
+  mutation.resolvers,
   company.resolvers,
   hirer.resolvers
 )

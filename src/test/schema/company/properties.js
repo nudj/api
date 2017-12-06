@@ -1,9 +1,9 @@
 /* eslint-env mocha */
-const schema = require('../../../../gql/schema')
+const schema = require('../../../gql/schema')
 let {
   expectPropertyReceivesValue,
   expectPropertyIsRequired
-} = require('../../../helpers')
+} = require('../../helpers')
 
 const TYPE = 'Company'
 const TYPE_PLURAL = 'companies'

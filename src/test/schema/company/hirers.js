@@ -3,8 +3,8 @@ const chai = require('chai')
 const { merge } = require('@nudj/library')
 const expect = chai.expect
 
-const schema = require('../../../../gql/schema')
-const { executeQueryOnDbUsingSchema } = require('../../../helpers')
+const schema = require('../../../gql/schema')
+const { executeQueryOnDbUsingSchema } = require('../../helpers')
 const query = `
   query {
     companies {

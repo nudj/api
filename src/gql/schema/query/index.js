@@ -9,6 +9,7 @@ const jobs = require('./jobs')
 const applications = require('./applications')
 const referrals = require('./referrals')
 const connections = require('./connections')
+const connectionSources = require('./connection-sources')
 
 const typeDefs = [
   properties.typeDefs,
@@ -19,7 +20,8 @@ const typeDefs = [
   jobs.typeDefs,
   applications.typeDefs,
   referrals.typeDefs,
-  connections.typeDefs
+  connections.typeDefs,
+  connectionSources.typeDefs
 ]
 const resolvers = merge(
   properties.resolvers,
@@ -30,7 +32,8 @@ const resolvers = merge(
   jobs.resolvers,
   applications.resolvers,
   referrals.resolvers,
-  connections.resolvers
+  connections.resolvers,
+  connectionSources.resolvers
 )
 
 module.exports = {

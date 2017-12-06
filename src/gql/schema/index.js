@@ -1,48 +1,21 @@
 const { makeExecutableSchema } = require('graphql-tools')
-const { merge } = require('@nudj/library')
 
-const scalars = require('./scalars')
-const query = require('./query')
-const mutation = require('./mutation')
-const company = require('./company')
-const person = require('./person')
-const hirer = require('./hirer')
-const job = require('./job')
-const application = require('./application')
-const referral = require('./referral')
-const connection = require('./connection')
-const connectionSource = require('./connection-source')
+const { mergeDefinitions } = require('../lib')
 
-const typeDefs = [
-  ...scalars.typeDefs,
-  ...query.typeDefs,
-  ...mutation.typeDefs,
-  ...company.typeDefs,
-  ...person.typeDefs,
-  ...hirer.typeDefs,
-  ...job.typeDefs,
-  ...application.typeDefs,
-  ...referral.typeDefs,
-  ...connection.typeDefs,
-  ...connectionSource.typeDefs
-]
-const resolvers = merge(
-  scalars.resolvers,
-  query.resolvers,
-  mutation.resolvers,
-  company.resolvers,
-  person.resolvers,
-  hirer.resolvers,
-  job.resolvers,
-  application.resolvers,
-  referral.resolvers,
-  connection.resolvers,
-  connectionSource.resolvers
+const definitions = mergeDefinitions(
+  require('./scalars'),
+  require('./query'),
+  require('./mutation'),
+  require('./company'),
+  require('./person'),
+  require('./hirer'),
+  require('./job'),
+  require('./application'),
+  require('./referral'),
+  require('./connection'),
+  require('./connection-source')
 )
 
-const schema = makeExecutableSchema({
-  typeDefs,
-  resolvers
-})
+const schema = makeExecutableSchema(definitions)
 
 module.exports = schema

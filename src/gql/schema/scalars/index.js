@@ -1,10 +1,5 @@
-const DateTime = require('./datetime')
+const { mergeDefinitions } = require('../../lib')
 
-module.exports = {
-  typeDefs: [
-    DateTime.typeDef
-  ],
-  resolvers: {
-    DateTime: DateTime.resolver
-  }
-}
+module.exports = mergeDefinitions(
+  require('./datetime')
+)

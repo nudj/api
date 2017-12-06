@@ -5,33 +5,33 @@ const expect = chai.expect
 const schema = require('../../../gql/schema')
 const { executeQueryOnDbUsingSchema } = require('../../helpers')
 
-describe('Query.hirers', () => {
-  it('should fetch all hirers', async () => {
+describe('Mutation.people', () => {
+  it('should fetch all people', async () => {
     const db = {
-      hirers: [
+      people: [
         {
-          id: 'hirer1'
+          id: 'person1'
         },
         {
-          id: 'hirer2'
+          id: 'person2'
         }
       ]
     }
     const query = `
-      query {
-        hirers {
+      mutation {
+        people {
           id
         }
       }
     `
     return expect(executeQueryOnDbUsingSchema({ query, db, schema })).to.eventually.deep.equal({
       data: {
-        hirers: [
+        people: [
           {
-            id: 'hirer1'
+            id: 'person1'
           },
           {
-            id: 'hirer2'
+            id: 'person2'
           }
         ]
       }
@@ -40,18 +40,18 @@ describe('Query.hirers', () => {
 
   it('should return empty array if no matches', async () => {
     const db = {
-      hirers: []
+      people: []
     }
     const query = `
-      query {
-        hirers {
+      mutation {
+        people {
           id
         }
       }
     `
     return expect(executeQueryOnDbUsingSchema({ query, db, schema })).to.eventually.deep.equal({
       data: {
-        hirers: []
+        people: []
       }
     })
   })

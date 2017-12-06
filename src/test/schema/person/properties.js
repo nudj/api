@@ -5,11 +5,11 @@ const {
   expectPropertyIsRequired
 } = require('../../helpers')
 
-const TYPE = 'Hirer'
-const TYPE_PLURAL = 'hirers'
+const TYPE = 'Person'
+const TYPE_PLURAL = 'people'
 const DUMMY_ID = '123'
 
-describe('Hirer properties', () => {
+describe('Person properties', () => {
   it('should be queriable by the following properties', async () => {
     await expectPropertyReceivesValue(schema, TYPE, TYPE_PLURAL, 'id', DUMMY_ID)
   })

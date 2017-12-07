@@ -13,14 +13,14 @@ describe('defineEnum', () => {
     expect(() => defineEnum({ name: 'TestEnum' })).to.throw('defineEnum requires some values')
   })
 
-  it('should return an object', async () => {
+  it('should return an object', () => {
     expect(defineEnum({
       name: 'TestEnum',
       values: [ 'testValue1', 'testValue2' ]
     })).to.be.an('object')
   })
 
-  it('should return the typeDefs', async () => {
+  it('should return the typeDefs', () => {
     expect(defineEnum({
       name: 'TestEnum',
       values: [ 'testValue1', 'testValue2' ]
@@ -32,14 +32,14 @@ describe('defineEnum', () => {
     `)
   })
 
-  it('should return no resolvers', async () => {
+  it('should return no resolvers', () => {
     expect(defineEnum({
       name: 'TestEnum',
       values: [ 'testValue1', 'testValue2' ]
     })).to.have.property('resolvers').to.deep.equal({})
   })
 
-  it('should return the values as a map', async () => {
+  it('should return the values as a map', () => {
     expect(defineEnum({
       name: 'TestEnum',
       values: [ 'testValue1', 'testValue2' ]

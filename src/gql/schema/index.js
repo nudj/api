@@ -22,7 +22,8 @@ const definitions = mergeDefinitions(
   require('./role'),
   require('./person-task'),
   require('./company-task'),
-  require('./recommendation')
+  require('./recommendation'),
+  require('./employment')
 )
 
 const schema = makeExecutableSchema(definitions)

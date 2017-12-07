@@ -18,5 +18,6 @@ module.exports = mergeDefinitions(
   require('./roles'),
   require('./person-tasks'),
   require('./company-tasks'),
-  require('./recommendations')
+  require('./recommendations'),
+  require('./employments')
 )

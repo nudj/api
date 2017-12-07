@@ -20,7 +20,8 @@ const definitions = mergeDefinitions(
   require('./survey-question'),
   require('./employee'),
   require('./role'),
-  require('./person-task')
+  require('./person-task'),
+  require('./company-task')
 )
 
 const schema = makeExecutableSchema(definitions)

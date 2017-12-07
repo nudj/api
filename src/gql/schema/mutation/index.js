@@ -15,5 +15,6 @@ module.exports = mergeDefinitions(
   require('./survey-sections'),
   require('./survey-questions'),
   require('./employees'),
-  require('./roles')
+  require('./roles'),
+  require('./person-tasks')
 )

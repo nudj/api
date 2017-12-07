@@ -329,8 +329,8 @@ module.exports = `
     created: DateTime!
     modified: DateTime!
     type: TaskType!
-    person: Person!
     completed: Boolean!
+    person: Person!
   }
 
   type CompanyTask {

@@ -13,7 +13,7 @@ const DUMMY_DATETIME = '2000-01-17T02:51:58.000+00:00'
 expectPropertyReceivesValue = expectPropertyReceivesValue(schema, TYPE, TYPE_PLURAL)
 expectPropertyIsRequired = expectPropertyIsRequired(schema, TYPE, TYPE_PLURAL)
 
-describe('Application properties', () => {
+describe('ConnectionSource properties', () => {
   it('should be queriable by the following properties', async () => {
     await expectPropertyReceivesValue('id', DUMMY_ID)
     await expectPropertyReceivesValue('created', DUMMY_DATETIME)

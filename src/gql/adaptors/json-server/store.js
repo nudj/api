@@ -6,8 +6,6 @@ const {
   merge
 } = require('@nudj/library')
 
-const { StoreError } = require('../../../lib/errors')
-
 const newISODate = () => (new Date()).toISOString()
 
 const errorHandler = (details) => (error) => {
@@ -15,8 +13,8 @@ const errorHandler = (details) => (error) => {
   if (code === 404) {
     return null
   }
-  logger('error', (new Date()).toISOString(), details, error)
-  throw new StoreError({ code })
+  logger('error', (new Date()).toISOString(), details, ...error.log)
+  throw error
 }
 const baseURL = process.env.DB_API_URL
 

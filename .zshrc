@@ -24,8 +24,10 @@ function tdd {
 		-x "./node_modules/.bin/mocha --recursive test || exit 1"
 	export ENVIRONMENT=local
 }
+alias run="nodemon mock/run.js"
 
 alias ll="ls -la"
+alias nodemon="/usr/src/node_modules/.bin/nodemon"
 
 # changes hex 0x15 to delete everything to the left of the cursor,
 # rather than the whole line

@@ -276,9 +276,9 @@ module.exports = `
     id: ID!
     created: DateTime!
     modified: DateTime!
-    survey: Survey!
     title: String!
     description: String
+    survey: Survey!
     surveyQuestions: [SurveyQuestion!]!
   }
 

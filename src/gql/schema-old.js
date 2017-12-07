@@ -286,14 +286,13 @@ module.exports = `
     id: ID!
     created: DateTime!
     modified: DateTime!
-    surveySection: SurveySection!
     title: String!
     description: String
     name: String!
     type: SurveyQuestionType!
     required: Boolean!
-    options: Data
     tags: [String!]!
+    surveySection: SurveySection!
   }
 
   type Connection {

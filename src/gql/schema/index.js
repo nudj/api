@@ -4,6 +4,7 @@ const { mergeDefinitions } = require('../lib')
 
 const definitions = mergeDefinitions(
   require('./scalars'),
+  require('./enums'),
   require('./query'),
   require('./mutation'),
   require('./company'),
@@ -15,7 +16,8 @@ const definitions = mergeDefinitions(
   require('./connection'),
   require('./connection-source'),
   require('./survey'),
-  require('./survey-section')
+  require('./survey-section'),
+  require('./survey-question')
 )
 
 const schema = makeExecutableSchema(definitions)

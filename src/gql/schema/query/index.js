@@ -13,5 +13,6 @@ module.exports = mergeDefinitions(
   require('./connection-sources'),
   require('./surveys'),
   require('./survey-sections'),
-  require('./survey-questions')
+  require('./survey-questions'),
+  require('./employees'),
 )

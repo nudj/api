@@ -17,7 +17,8 @@ const definitions = mergeDefinitions(
   require('./connection-source'),
   require('./survey'),
   require('./survey-section'),
-  require('./survey-question')
+  require('./survey-question'),
+  require('./employee')
 )
 
 const schema = makeExecutableSchema(definitions)

@@ -1,6 +1,6 @@
 const gql = require('../../gql')
 const rest = require('../rest')
-const transaction = require('./json-server-adaptor')
+const transaction = require('../../gql/adaptors/json-server')
 
 module.exports = ({ data, addCustomHandlers }) => {
   return {

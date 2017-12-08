@@ -16,9 +16,10 @@ ssh:
 	@docker run --rm -it \
 		--name api-dev \
 		-e NPM_TOKEN=${NPM_TOKEN} \
-		-e DB_API_URL=http://db:8529/_db/nudj/_api \
+		-e DB_API_URL=http://localhost:81 \
 		-p 0.0.0.0:60:80 \
 		-p 0.0.0.0:61:81 \
+		-p 0.0.0.0:62:82 \
 		-v $(CWD)/.zshrc:/root/.zshrc \
 		-v $(CWD)/src/gql:/usr/src/gql \
 		-v $(CWD)/src/lib:/usr/src/lib \
@@ -39,7 +40,7 @@ test:
 	@docker run --rm -it \
 		--name api-test \
 		-e ENVIRONMENT=test \
-		-e DB_API_URL=http://db:8529/_db/nudj/_api \
+		-e DB_API_URL=http://localhost:81 \
 		-v $(CWD)/src/gql:/usr/src/gql \
 		-v $(CWD)/src/lib:/usr/src/lib \
 		-v $(CWD)/src/mock:/usr/src/mock \

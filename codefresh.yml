@@ -37,19 +37,24 @@ steps:
     dockerfile: Dockerfile
     build_arguments:
       - NPM_TOKEN=${{NPM_TOKEN}}
+    when:
+      branch:
+        only:
+          - LEGACY-V1
+          - master
 
   push_latest:
     title: Push Latest
     type: push
     candidate: '${{build}}'
-    tag: latest
+    tag: LEGACY-V1
     credentials:
       username: '${{dockerUsername}}'
       password: '${{dockerPassword}}'
     when:
       branch:
         only:
-          - develop
+          - LEGACY-V1
 
   push_image:
     title: Push Release

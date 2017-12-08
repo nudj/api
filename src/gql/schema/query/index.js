@@ -8,6 +8,7 @@ module.exports = mergeDefinitions(
   require('./hirers'),
   require('./jobs'),
   require('./applications'),
+  require('./applications-by-filters'),
   require('./referrals'),
   require('./connections'),
   require('./connection-sources'),

@@ -52,7 +52,7 @@ describe('defineSingularRelation', () => {
     `)
   })
 
-  it('should return resolver patch for Query.jobs', () => {
+  it('should return resolver patch for Query.singular', () => {
     expect(defineSingularRelation({
       parentType: 'Query',
       name: 'job',

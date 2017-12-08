@@ -59,6 +59,40 @@ function definePluralRelation ({
   }
 }
 
+function definePluralByFiltersRelation ({
+  parentType,
+  name,
+  type,
+  collection,
+  filterType
+} = {}) {
+  if (!parentType) throw new Error('definePluralByFiltersRelation requires a parentType')
+  if (!name) throw new Error('definePluralByFiltersRelation requires a name')
+  if (!type) throw new Error('definePluralByFiltersRelation requires a type')
+  if (!collection) throw new Error('definePluralByFiltersRelation requires a collection')
+  if (!filterType) throw new Error('definePluralByFiltersRelation requires a filterType')
+
+  return {
+    typeDefs: `
+      extend type ${parentType} {
+        ${name}(filters: ${filterType}): [${type}!]!
+      }
+    `,
+    resolvers: {
+      [parentType]: {
+        [name]: (root, args, context) => {
+          return context.transaction((store, params) => {
+            return store.readAll({
+              type: collection,
+              filters: params.filters
+            })
+          }, args)
+        }
+      }
+    }
+  }
+}
+
 function defineSingularRelation ({
   parentType,
   name,
@@ -84,9 +118,7 @@ function defineSingularRelation ({
               type: collection,
               id: params.id
             })
-          }, {
-            id: args.id
-          })
+          }, args)
         }
       }
     }
@@ -97,5 +129,6 @@ module.exports = {
   mergeDefinitions,
   defineEnum,
   definePluralRelation,
+  definePluralByFiltersRelation,
   defineSingularRelation
 }

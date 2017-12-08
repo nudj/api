@@ -5,6 +5,12 @@ module.exports = {
       created: DateTime!
       modified: DateTime!
     }
+
+    input ApplicationFilterInput {
+      id: ID
+      created: DateTime
+      modified: DateTime
+    }
   `,
   resolvers: {}
 }

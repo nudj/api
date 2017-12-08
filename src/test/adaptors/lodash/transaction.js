@@ -2,6 +2,7 @@
 
 const chai = require('chai')
 const chaiAsPromised = require('chai-as-promised')
+const { NotFound } = require('@nudj/library/errors')
 const expect = chai.expect
 
 chai.use(chaiAsPromised)
@@ -59,6 +60,15 @@ describe('LodashAdaptor transaction', () => {
     })
   })
 
+  it('readOne when no match found', () => {
+    return expect(transaction({ db })(store => {
+      return store.readOne({
+        type: 'dogs',
+        id: 'dog4'
+      })
+    })).to.be.rejectedWith(NotFound)
+  })
+
   it('readOne by filters', () => {
     return expect(transaction({ db })(store => {
       return store.readOne({
@@ -71,6 +81,17 @@ describe('LodashAdaptor transaction', () => {
       id: 'dog1',
       breed: 'Cocker Spaniel'
     })
+  })
+
+  it('readOne by filters when no match found', () => {
+    return expect(transaction({ db })(store => {
+      return store.readOne({
+        type: 'dogs',
+        filters: {
+          breed: 'Chihuahua'
+        }
+      })
+    })).to.be.rejectedWith(NotFound)
   })
 
   it('readAll', () => {
@@ -128,6 +149,15 @@ describe('LodashAdaptor transaction', () => {
     ])
   })
 
+  it('readMany when an item not found', () => {
+    return expect(transaction({ db })(store => {
+      return store.readMany({
+        type: 'dogs',
+        ids: ['dog2', 'dog4']
+      })
+    })).to.be.rejectedWith(NotFound)
+  })
+
   it('update', () => {
     return transaction({ db })(store => {
       return store.update({
@@ -148,6 +178,18 @@ describe('LodashAdaptor transaction', () => {
         breed: 'Pug'
       })
     })
+  })
+
+  it('update when no match', () => {
+    return expect(transaction({ db })(store => {
+      return store.update({
+        type: 'dogs',
+        id: 'dog4',
+        data: {
+          breed: 'Pug'
+        }
+      })
+    })).to.be.rejectedWith(NotFound)
   })
 
   it('delete', () => {
@@ -173,6 +215,15 @@ describe('LodashAdaptor transaction', () => {
         }
       ])
     })
+  })
+
+  it('delete when no match', () => {
+    return expect(transaction({ db })(store => {
+      return store.delete({
+        type: 'dogs',
+        id: 'dog4'
+      })
+    })).to.be.rejectedWith(NotFound)
   })
 
   it('readOneOrCreate when match found', () => {

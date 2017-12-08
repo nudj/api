@@ -47,7 +47,7 @@ describe('defineSingularRelation', () => {
       collection: 'jobs'
     })).to.have.property('typeDefs').to.equal(`
       extend type Query {
-        job(id: ID!): Job!
+        job(id: ID!): Job
       }
     `)
   })

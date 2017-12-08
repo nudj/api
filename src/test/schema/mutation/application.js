@@ -8,60 +8,56 @@ const {
   shouldRespondWithGqlError
 } = require('../../helpers')
 
-describe('Mutation.user', () => {
-  it('should fetch the user', async () => {
+describe('Mutation.application', () => {
+  it('should fetch a single application', async () => {
     const db = {
-      people: [
+      applications: [
         {
-          id: 'person1'
+          id: 'application1'
         },
         {
-          id: 'person2'
+          id: 'application2'
         }
       ]
     }
     const query = `
-      mutation ($person: ID!) {
-        user (id: $person) {
+      mutation ($id: ID!) {
+        application(id: $id) {
           id
         }
       }
     `
     const variables = {
-      person: 'person2'
+      id: 'application2'
     }
     return expect(executeQueryOnDbUsingSchema({ query, variables, db, schema })).to.eventually.deep.equal({
       data: {
-        user: {
-          id: 'person2'
+        application: {
+          id: 'application2'
         }
       }
     })
   })
 
-  it('should return null if no match', async () => {
+  it('should return null and error if no match', async () => {
     const db = {
-      people: [
-        {
-          id: 'person1'
-        }
-      ]
+      applications: []
     }
     const query = `
-      mutation ($person: ID!) {
-        user (id: $person) {
+      mutation ($id: ID!) {
+        application(id: $id) {
           id
         }
       }
     `
     const variables = {
-      person: 'person2'
+      id: 'application2'
     }
 
     return executeQueryOnDbUsingSchema({ query, variables, db, schema })
       .then(shouldRespondWithGqlError({
         message: 'NotFound',
-        path: ['user']
+        path: ['application']
       }))
   })
 })

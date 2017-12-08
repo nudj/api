@@ -107,7 +107,7 @@ function defineSingularRelation ({
   return {
     typeDefs: `
       extend type ${parentType} {
-        ${name}(id: ID!): ${type}!
+        ${name}(id: ID!): ${type}
       }
     `,
     resolvers: {

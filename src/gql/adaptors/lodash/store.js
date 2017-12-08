@@ -4,6 +4,7 @@ const first = require('lodash/first')
 const find = require('lodash/find')
 const findIndex = require('lodash/findIndex')
 const merge = require('lodash/merge')
+const { NotFound } = require('@nudj/library/errors')
 
 module.exports = ({ db }) => {
   return {
@@ -21,11 +22,17 @@ module.exports = ({ db }) => {
       id,
       filters
     }) => {
-      const all = get(db, type)
-      if (filters) {
-        return Promise.resolve(filter(all, filters)).then((result) => Promise.resolve(first(result)))
-      }
-      return Promise.resolve(find(all, { id }))
+      return new Promise((resolve, reject) => {
+        const all = get(db, type)
+        let item
+        if (filters) {
+          item = first(filter(all, filters))
+        } else {
+          item = find(all, { id })
+        }
+        if (!item) return reject(new NotFound(`${type} with id ${id} not found`))
+        return resolve(item)
+      })
     },
     readAll: ({
       type,
@@ -42,25 +49,35 @@ module.exports = ({ db }) => {
       ids
     }) => {
       const all = get(db, type)
-      return Promise.all(ids.map(id => find(all, { id })))
+      return Promise.all(ids.map(id => {
+        const item = find(all, { id })
+        if (!item) return Promise.reject(new NotFound(`${type} with id ${id} not found`))
+        return item
+      }))
     },
     update: ({
       type,
       id,
       data
     }) => {
-      const all = get(db, type)
-      const entity = find(all, { id })
-      Object.assign(entity, data)
-      return Promise.resolve(entity)
+      return new Promise((resolve, reject) => {
+        const all = get(db, type)
+        const entity = find(all, { id })
+        if (!entity) return reject(new NotFound(`${type} with id ${id} not found`))
+        Object.assign(entity, data)
+        resolve(entity)
+      })
     },
     delete: ({
       type,
       id
     }) => {
-      const all = get(db, type)
-      const index = findIndex(all, { id })
-      return Promise.resolve(first(all.splice(index, 1)))
+      return new Promise((resolve, reject) => {
+        const all = get(db, type)
+        const index = findIndex(all, { id })
+        if (index < 0) return reject(new NotFound(`${type} with id ${id} not found`))
+        resolve(first(all.splice(index, 1)))
+      })
     },
     readOneOrCreate: ({
       type,

@@ -39,7 +39,7 @@ describe('Query.user', () => {
     })
   })
 
-  it('should error if no matches', async () => {
+  it('should return null if no match', async () => {
     const db = {
       people: [
         {
@@ -57,10 +57,11 @@ describe('Query.user', () => {
     const variables = {
       person: 'person2'
     }
+
     return executeQueryOnDbUsingSchema({ query, variables, db, schema })
       .then(shouldRespondWithGqlError({
-        message: 'Cannot return null for non-nullable field Query.user.',
-        path: [ 'user' ]
+        message: 'NotFound',
+        path: ['user']
       }))
   })
 })

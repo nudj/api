@@ -1,18 +1,8 @@
-module.exports = {
-  typeDefs: `
-    extend type Query {
-      surveys: [Survey!]!
-    }
-  `,
-  resolvers: {
-    Query: {
-      surveys: (root, args, context) => {
-        return context.transaction((store) => {
-          return store.readAll({
-            type: 'surveys'
-          })
-        })
-      }
-    }
-  }
-}
+const { definePluralRelation } = require('../../lib')
+
+module.exports = definePluralRelation({
+  parentType: 'Query',
+  name: 'surveys',
+  type: 'Survey',
+  collection: 'surveys'
+})

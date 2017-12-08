@@ -48,10 +48,14 @@ const expectTypeIsFilterableBy = curry(async (schema, type, typePlural, property
     ]
   }
   await Promise.all(['query', 'mutation'].map(async queryType => {
+    let valueForQuery = value
+    if (typeof value === 'string') {
+      valueForQuery = `"${value}"`
+    }
     const query = `
       ${queryType} {
         ${typePlural}ByFilters(filters: {
-          ${property}: "${value}"
+          ${property}: ${valueForQuery}
         }) {
           ${property}
         }

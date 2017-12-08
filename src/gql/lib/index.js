@@ -28,7 +28,64 @@ function defineEnum ({ name, values } = {}) {
   }
 }
 
+function definePluralRelation ({
+  parentType,
+  name,
+  type,
+  collection
+}) {
+  return {
+    typeDefs: `
+      extend type ${parentType} {
+        ${name}: [${type}!]!
+      }
+    `,
+    resolvers: {
+      [parentType]: {
+        [name]: (root, args, context) => {
+          return context.transaction((store) => {
+            return store.readAll({
+              type: collection
+            })
+          })
+        }
+      }
+    }
+  }
+}
+
+function defineSingularRelation ({
+  parentType,
+  name,
+  type,
+  collection
+}) {
+  return {
+    typeDefs: `
+      extend type ${parentType} {
+        ${name}(id: ID!): ${type}!
+      }
+    `,
+    resolvers: {
+      [parentType]: {
+        [name]: (root, args, context) => {
+          return context.transaction((store, params) => {
+            return store.readOne({
+              type: collection,
+              id: params.id
+            })
+          }, {
+            id: args.id
+          })
+        }
+      }
+    }
+  }
+}
+
 module.exports = {
   mergeDefinitions,
-  defineEnum
+  defineEnum,
+  definePluralRelation,
+  defineSingularRelation
 }

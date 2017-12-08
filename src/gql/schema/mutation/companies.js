@@ -1,18 +1,8 @@
-module.exports = {
-  typeDefs: `
-    extend type Mutation {
-      companies: [Company!]!
-    }
-  `,
-  resolvers: {
-    Mutation: {
-      companies: (root, args, context) => {
-        return context.transaction((store) => {
-          return store.readAll({
-            type: 'companies'
-          })
-        })
-      }
-    }
-  }
-}
+const { definePluralRelation } = require('../../lib')
+
+module.exports = definePluralRelation({
+  parentType: 'Mutation',
+  name: 'companies',
+  type: 'Company',
+  collection: 'companies'
+})

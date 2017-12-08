@@ -1,21 +1,8 @@
-module.exports = {
-  typeDefs: `
-    extend type Mutation {
-      user(id: ID!): Person!
-    }
-  `,
-  resolvers: {
-    Mutation: {
-      user: (root, args, context) => {
-        return context.transaction((store, params) => {
-          return store.readOne({
-            type: 'people',
-            id: params.id
-          })
-        }, {
-          id: args.id
-        })
-      }
-    }
-  }
-}
+const { defineSingularRelation } = require('../../lib')
+
+module.exports = defineSingularRelation({
+  parentType: 'Mutation',
+  name: 'user',
+  type: 'Person',
+  collection: 'people'
+})

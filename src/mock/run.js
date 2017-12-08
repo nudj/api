@@ -403,4 +403,4 @@ data.connectionSources = data.connectionSources.concat([
   }
 ])
 
-server = mock.gql({ data }).listen(81, 82, () => console.log('info', 'Mock GQL API running'))
+mock.gql({ data }).listen(81, 82, () => console.log('info', 'Mock GQL API running'))

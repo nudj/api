@@ -33,7 +33,12 @@ function definePluralRelation ({
   name,
   type,
   collection
-}) {
+} = {}) {
+  if (!parentType) throw new Error('definePluralRelation requires a parentType')
+  if (!name) throw new Error('definePluralRelation requires a name')
+  if (!type) throw new Error('definePluralRelation requires a type')
+  if (!collection) throw new Error('definePluralRelation requires a collection')
+
   return {
     typeDefs: `
       extend type ${parentType} {
@@ -59,7 +64,12 @@ function defineSingularRelation ({
   name,
   type,
   collection
-}) {
+} = {}) {
+  if (!parentType) throw new Error('defineSingularRelation requires a parentType')
+  if (!name) throw new Error('defineSingularRelation requires a name')
+  if (!type) throw new Error('defineSingularRelation requires a type')
+  if (!collection) throw new Error('defineSingularRelation requires a collection')
+
   return {
     typeDefs: `
       extend type ${parentType} {

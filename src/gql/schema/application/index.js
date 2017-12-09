@@ -1,6 +1,10 @@
-const { mergeDefinitions } = require('../../lib')
-
-module.exports = mergeDefinitions(
-  require('./properties'),
-  require('./filter-properties')
-)
+module.exports = {
+  typeDefs: `
+    type Application {
+      id: ID!
+      created: DateTime!
+      modified: DateTime!
+    }
+  `,
+  resolvers: {}
+}

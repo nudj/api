@@ -1,7 +1,22 @@
-const { mergeDefinitions } = require('../../lib')
-
-module.exports = mergeDefinitions(
-  require('./properties'),
-  require('./filter-properties'),
-  require('./hirers')
-)
+module.exports = {
+  typeDefs: `
+    type Company {
+      id: ID!
+      created: DateTime!
+      modified: DateTime!
+      name: String!
+      slug: String!
+      description: String
+      mission: String
+      facebook: String
+      industry: String
+      linkedin: String
+      location: String
+      logo: String
+      size: String
+      twitter: String
+      url: String
+    }
+  `,
+  resolvers: {}
+}

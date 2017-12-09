@@ -11,11 +11,6 @@ function executeQueryOnDbUsingSchema ({ schema, variables = {}, query, db }) {
 }
 
 const expectPropertyReceivesValue = curry(async (schema, type, typePlural, property, value) => {
-  const query = `{
-    ${typePlural} {
-      ${property}
-    }
-  }`
   const db = {
     [typePlural]: [
       {
@@ -23,26 +18,28 @@ const expectPropertyReceivesValue = curry(async (schema, type, typePlural, prope
       }
     ]
   }
-  const result = await executeQueryOnDbUsingSchema({ query, db, schema })
-  expect(result, `Expected "${type}" schema to include "${property}" property`).to.deep.equal({
-    data: {
-      [typePlural]: [
-        {
-          [property]: value
+  await Promise.all(['query', 'mutation'].map(async queryType => {
+    const query = `
+      ${queryType} {
+        ${typePlural} {
+          ${property}
         }
-      ]
-    }
-  })
+      }
+    `
+    const result = await executeQueryOnDbUsingSchema({ query, db, schema })
+    expect(result, `Expected "${type}" schema to include "${property}" property`).to.deep.equal({
+      data: {
+        [typePlural]: [
+          {
+            [property]: value
+          }
+        ]
+      }
+    })
+  }))
 })
 
 const expectTypeIsFilterableBy = curry(async (schema, type, typePlural, property, value) => {
-  const query = `{
-    ${typePlural}ByFilters(filters: {
-      ${property}: "${value}"
-    }) {
-      ${property}
-    }
-  }`
   const db = {
     [typePlural]: [
       {
@@ -50,16 +47,31 @@ const expectTypeIsFilterableBy = curry(async (schema, type, typePlural, property
       }
     ]
   }
-  const result = await executeQueryOnDbUsingSchema({ query, db, schema })
-  expect(result, `Expected "${type}" to be filterable by "${property}" property`).to.deep.equal({
-    data: {
-      [`${typePlural}ByFilters`]: [
-        {
-          [property]: value
-        }
-      ]
+  await Promise.all(['query', 'mutation'].map(async queryType => {
+    let valueForQuery = value
+    if (typeof value === 'string') {
+      valueForQuery = `"${value}"`
     }
-  })
+    const query = `
+      ${queryType} {
+        ${typePlural}ByFilters(filters: {
+          ${property}: ${valueForQuery}
+        }) {
+          ${property}
+        }
+      }
+    `
+    const result = await executeQueryOnDbUsingSchema({ query, db, schema })
+    expect(result, `Expected "${queryType}.${typePlural}ByFilters" to be filterable by "${property}" property`).to.deep.equal({
+      data: {
+        [`${typePlural}ByFilters`]: [
+          {
+            [property]: value
+          }
+        ]
+      }
+    })
+  }))
 })
 
 const shouldRespondWithGqlError = ({ message, path, response }) => result => {
@@ -68,11 +80,6 @@ const shouldRespondWithGqlError = ({ message, path, response }) => result => {
 }
 
 const expectPropertyIsRequired = curry(async (schema, type, typePlural, property) => {
-  const query = `{
-    ${typePlural} {
-      ${property}
-    }
-  }`
   const db = {
     [typePlural]: [
       {
@@ -80,24 +87,28 @@ const expectPropertyIsRequired = curry(async (schema, type, typePlural, property
       }
     ]
   }
-  return executeQueryOnDbUsingSchema({ query, db, schema })
-    .then(shouldRespondWithGqlError({
-      message: `Cannot return null for non-nullable field ${type}.${property}.`,
-      path: [
-        typePlural,
-        0,
-        property
-      ],
-      response: `Property "${property}" should be required`
-    }))
+  await Promise.all(['query', 'mutation'].map(async queryType => {
+    const query = `
+      ${queryType} {
+        ${typePlural} {
+          ${property}
+        }
+      }
+    `
+    return executeQueryOnDbUsingSchema({ query, db, schema })
+      .then(shouldRespondWithGqlError({
+        message: `Cannot return null for non-nullable field ${type}.${property}.`,
+        path: [
+          typePlural,
+          0,
+          property
+        ],
+        response: `Property "${property}" should be required`
+      }))
+  }))
 })
 
 const expectPropertyContentsIsRequired = curry(async (schema, type, typePlural, property) => {
-  const query = `{
-    ${typePlural} {
-      ${property}
-    }
-  }`
   const db = {
     [typePlural]: [
       {
@@ -105,17 +116,26 @@ const expectPropertyContentsIsRequired = curry(async (schema, type, typePlural, 
       }
     ]
   }
-  return executeQueryOnDbUsingSchema({ query, db, schema })
-    .then(shouldRespondWithGqlError({
-      message: `Cannot return null for non-nullable field ${type}.${property}.`,
-      path: [
-        typePlural,
-        0,
-        property,
-        0
-      ],
-      response: `Property contents "${property}" should be required`
-    }))
+  await Promise.all(['query', 'mutation'].map(async queryType => {
+    const query = `
+      ${queryType} {
+        ${typePlural} {
+          ${property}
+        }
+      }
+    `
+    return executeQueryOnDbUsingSchema({ query, db, schema })
+      .then(shouldRespondWithGqlError({
+        message: `Cannot return null for non-nullable field ${type}.${property}.`,
+        path: [
+          typePlural,
+          0,
+          property,
+          0
+        ],
+        response: `Property contents "${property}" should be required`
+      }))
+  }))
 })
 
 module.exports = {

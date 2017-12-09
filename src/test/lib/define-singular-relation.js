@@ -134,7 +134,6 @@ describe('defineSingularRelation', () => {
     })
 
     describe('the resolver', () => {
-
       it('should call store.readOne with a collection that is a pluralisation of the type', () => {
         const resolver = defineSingularRelation({
           parentType: 'Query',

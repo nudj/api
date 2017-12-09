@@ -1,4 +1,5 @@
 const { merge } = require('@nudj/library')
+const camelCase = require('lodash/camelCase')
 
 function mergeDefinitions (...definitions) {
   let typeDefs = []
@@ -100,9 +101,9 @@ function defineSingularRelation ({
   collection
 } = {}) {
   if (!parentType) throw new Error('defineSingularRelation requires a parentType')
-  if (!name) throw new Error('defineSingularRelation requires a name')
   if (!type) throw new Error('defineSingularRelation requires a type')
-  if (!collection) throw new Error('defineSingularRelation requires a collection')
+  name = name || camelCase(type)
+  collection = collection || `${camelCase(type)}s`
 
   return {
     typeDefs: `

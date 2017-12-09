@@ -17,14 +17,14 @@ describe('Mutation.roles', () => {
         }
       ]
     }
-    const query = `
+    const mutation = `
       mutation {
         roles {
           id
         }
       }
     `
-    return expect(executeQueryOnDbUsingSchema({ query, db, schema })).to.eventually.deep.equal({
+    return expect(executeQueryOnDbUsingSchema({ mutation, db, schema })).to.eventually.deep.equal({
       data: {
         roles: [
           {
@@ -42,14 +42,14 @@ describe('Mutation.roles', () => {
     const db = {
       roles: []
     }
-    const query = `
+    const mutation = `
       mutation {
         roles {
           id
         }
       }
     `
-    return expect(executeQueryOnDbUsingSchema({ query, db, schema })).to.eventually.deep.equal({
+    return expect(executeQueryOnDbUsingSchema({ mutation, db, schema })).to.eventually.deep.equal({
       data: {
         roles: []
       }

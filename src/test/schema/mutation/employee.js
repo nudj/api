@@ -3,56 +3,61 @@ const chai = require('chai')
 const expect = chai.expect
 
 const schema = require('../../../gql/schema')
-const { executeQueryOnDbUsingSchema } = require('../../helpers')
+const {
+  executeQueryOnDbUsingSchema,
+  shouldRespondWithGqlError
+} = require('../../helpers')
 
-describe('Mutation.employees', () => {
-  it('should fetch all employees', async () => {
+describe('Mutation.employee', () => {
+  it('should fetch a single employee', async () => {
     const db = {
-      applications: [
+      employees: [
         {
-          id: 'application1'
+          id: 'employee1'
         },
         {
-          id: 'application2'
+          id: 'employee2'
         }
       ]
     }
-    const query = `
-      mutation {
-        applications {
+    const mutation = `
+      mutation ($id: ID!) {
+        employee(id: $id) {
           id
         }
       }
     `
-    return expect(executeQueryOnDbUsingSchema({ query, db, schema })).to.eventually.deep.equal({
+    const variables = {
+      id: 'employee2'
+    }
+    return expect(executeQueryOnDbUsingSchema({ mutation, variables, db, schema })).to.eventually.deep.equal({
       data: {
-        applications: [
-          {
-            id: 'application1'
-          },
-          {
-            id: 'application2'
-          }
-        ]
+        employee: {
+          id: 'employee2'
+        }
       }
     })
   })
 
-  it('should return empty array if no matches', async () => {
+  it('should return null and error if no match', async () => {
     const db = {
-      applications: []
+      employees: []
     }
-    const query = `
-      mutation {
-        applications {
+    const mutation = `
+      mutation ($id: ID!) {
+        employee(id: $id) {
           id
         }
       }
     `
-    return expect(executeQueryOnDbUsingSchema({ query, db, schema })).to.eventually.deep.equal({
-      data: {
-        applications: []
-      }
-    })
+    const variables = {
+      id: 'employee2'
+    }
+
+    return executeQueryOnDbUsingSchema({ mutation, variables, db, schema })
+      .then(shouldRespondWithGqlError({
+        message: 'NotFound',
+        path: ['employee']
+      }))
   })
 })

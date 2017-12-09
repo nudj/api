@@ -17,14 +17,14 @@ describe('Mutation.referrals', () => {
         }
       ]
     }
-    const query = `
+    const mutation = `
       mutation {
         referrals {
           id
         }
       }
     `
-    return expect(executeQueryOnDbUsingSchema({ query, db, schema })).to.eventually.deep.equal({
+    return expect(executeQueryOnDbUsingSchema({ mutation, db, schema })).to.eventually.deep.equal({
       data: {
         referrals: [
           {
@@ -42,14 +42,14 @@ describe('Mutation.referrals', () => {
     const db = {
       referrals: []
     }
-    const query = `
+    const mutation = `
       mutation {
         referrals {
           id
         }
       }
     `
-    return expect(executeQueryOnDbUsingSchema({ query, db, schema })).to.eventually.deep.equal({
+    return expect(executeQueryOnDbUsingSchema({ mutation, db, schema })).to.eventually.deep.equal({
       data: {
         referrals: []
       }

@@ -5,9 +5,9 @@ const expect = chai.expect
 
 const transaction = require('../../gql/adaptors/lodash')
 
-function executeQueryOnDbUsingSchema ({ schema, variables = {}, query, db }) {
+function executeQueryOnDbUsingSchema ({ schema, variables = {}, query, mutation, db }) {
   const testContext = { transaction: transaction({ db }) }
-  return graphql(schema, query, undefined, testContext, variables)
+  return graphql(schema, query || mutation, undefined, testContext, variables)
 }
 
 const expectPropertyReceivesValue = curry(async (schema, type, typePlural, property, value) => {

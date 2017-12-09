@@ -120,40 +120,26 @@ describe('defineSingularRelation', () => {
     })
   })
 
-  describe('when the collection is missing', () => {
-    it('should return resolver patch for Query.singular', () => {
-      expect(defineSingularRelation({
+  describe('when the collection is missing the resolver', () => {
+    it('should call store.readOne with a collection that is a pluralisation of the type', () => {
+      const resolver = defineSingularRelation({
         parentType: 'Query',
         name: 'job',
-        type: 'Job',
-        collection: 'jobs'
-      }))
-      .to.have.property('resolvers')
-      .to.have.property('Query')
-      .to.have.property('job')
-    })
-
-    describe('the resolver', () => {
-      it('should call store.readOne with a collection that is a pluralisation of the type', () => {
-        const resolver = defineSingularRelation({
-          parentType: 'Query',
-          name: 'job',
-          type: 'SomeLongObscureType'
-        }).resolvers.Query.job
-        const type = 'someLongObscureTypes'
-        const id = 'jobId'
-        const args = { id }
-        const params = { id }
-        const store = {
-          readOne: ({ type, id }) => ({ type, id })
+        type: 'SomeLongObscureType'
+      }).resolvers.Query.job
+      const type = 'someLongObscureTypes'
+      const id = 'jobId'
+      const args = { id }
+      const params = { id }
+      const store = {
+        readOne: ({ type, id }) => ({ type, id })
+      }
+      const fakeContext = {
+        transaction: (action) => {
+          return action(store, params)
         }
-        const fakeContext = {
-          transaction: (action) => {
-            return action(store, params)
-          }
-        }
-        expect(resolver(null, args, fakeContext)).to.deep.equal({ type, id })
-      })
+      }
+      expect(resolver(null, args, fakeContext)).to.deep.equal({ type, id })
     })
   })
 })

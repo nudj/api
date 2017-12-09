@@ -126,10 +126,45 @@ function defineSingularRelation ({
   }
 }
 
+function defineSingularByFiltersRelation ({
+  parentType,
+  name,
+  type,
+  collection,
+  filterType
+} = {}) {
+  if (!parentType) throw new Error('defineSingularByFiltersRelation requires a parentType')
+  if (!type) throw new Error('defineSingularByFiltersRelation requires a type')
+  name = name || `${camelCase(type)}ByFilters`
+  collection = collection || `${camelCase(type)}s`
+  filterType = filterType || `${type}FilterInput`
+
+  return {
+    typeDefs: `
+      extend type ${parentType} {
+        ${name}(filters: ${filterType}!): ${type}
+      }
+    `,
+    resolvers: {
+      [parentType]: {
+        [name]: (root, args, context) => {
+          return context.transaction((store, params) => {
+            return store.readOne({
+              type: collection,
+              filters: params.filters
+            })
+          }, args)
+        }
+      }
+    }
+  }
+}
+
 module.exports = {
   mergeDefinitions,
   defineEnum,
   definePluralRelation,
   definePluralByFiltersRelation,
-  defineSingularRelation
+  defineSingularRelation,
+  defineSingularByFiltersRelation
 }

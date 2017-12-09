@@ -1,31 +1,14 @@
 const { makeExecutableSchema } = require('graphql-tools')
+const glob = require('glob')
+const path = require('path')
 
 const { mergeDefinitions } = require('../lib')
+const requireFile = file => require(path.resolve(file))
 
-const definitions = mergeDefinitions(
-  require('./scalars'),
-  require('./enums'),
-  require('./query'),
-  require('./mutation'),
-  require('./company'),
-  require('./person'),
-  require('./hirer'),
-  require('./job'),
-  require('./application'),
-  require('./referral'),
-  require('./connection'),
-  require('./connection-source'),
-  require('./survey'),
-  require('./survey-section'),
-  require('./survey-question'),
-  require('./employee'),
-  require('./role'),
-  require('./person-task'),
-  require('./company-task'),
-  require('./recommendation'),
-  require('./employment')
-)
+const modules = glob.sync('./gql/schema/**/*.js', {
+  ignore: './gql/schema/index.js'
+}).map(requireFile)
 
-const schema = makeExecutableSchema(definitions)
+const definitions = mergeDefinitions(...modules)
 
-module.exports = schema
+module.exports = makeExecutableSchema(definitions)

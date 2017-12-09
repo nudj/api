@@ -1,6 +1,14 @@
-const { mergeDefinitions } = require('../../lib')
+module.exports = {
+  typeDefs: `
+    type ConnectionSource {
+      id: ID!
+      created: DateTime!
+      modified: DateTime!
+      name: String!
+    }
 
-module.exports = mergeDefinitions(
-  require('./properties'),
-  require('./filter-properties')
-)
+    input ConnectionSourceFilterInput {
+      id: ID
+    }
+  `
+}

@@ -1,6 +1,18 @@
-const { mergeDefinitions } = require('../../lib')
+module.exports = {
+  typeDefs: `
+    type Survey {
+      id: ID!
+      created: DateTime!
+      modified: DateTime!
+      slug: String!
+      introTitle: String
+      introDescription: String
+      outroTitle: String
+      outroDescription: String
+    }
 
-module.exports = mergeDefinitions(
-  require('./properties'),
-  require('./filter-properties')
-)
+    input SurveyFilterInput {
+      id: ID
+    }
+  `
+}

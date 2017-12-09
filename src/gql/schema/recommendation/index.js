@@ -1,6 +1,14 @@
-const { mergeDefinitions } = require('../../lib')
+module.exports = {
+  typeDefs: `
+    type Recommendation {
+      id: ID!
+      created: DateTime!
+      modified: DateTime!
+      source: RecommendationSource!
+    }
 
-module.exports = mergeDefinitions(
-  require('./properties'),
-  require('./filter-properties')
-)
+    input RecommendationFilterInput {
+      id: ID
+    }
+  `
+}

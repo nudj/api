@@ -1,6 +1,18 @@
-const { mergeDefinitions } = require('../../lib')
+module.exports = {
+  typeDefs: `
+    type Person {
+      id: ID!
+      created: DateTime!
+      modified: DateTime!
+      email: String!
+      firstName: String
+      lastName: String
+      url: String
+    }
 
-module.exports = mergeDefinitions(
-  require('./properties'),
-  require('./filter-properties')
-)
+    input PersonFilterInput {
+      id: ID
+      email: String
+    }
+  `
+}

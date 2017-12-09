@@ -1,6 +1,15 @@
-const { mergeDefinitions } = require('../../lib')
+module.exports = {
+  typeDefs: `
+    type CompanyTask {
+      id: ID!
+      created: DateTime!
+      modified: DateTime!
+      completed: Boolean!
+    }
 
-module.exports = mergeDefinitions(
-  require('./properties'),
-  require('./filter-properties')
-)
+    input CompanyTaskFilterInput {
+      id: ID
+      completed: Boolean
+    }
+  `
+}

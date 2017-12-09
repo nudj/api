@@ -1,6 +1,13 @@
-const { mergeDefinitions } = require('../../lib')
+module.exports = {
+  typeDefs: `
+    type Referral {
+      id: ID!
+      created: DateTime!
+      modified: DateTime!
+    }
 
-module.exports = mergeDefinitions(
-  require('./properties'),
-  require('./filter-properties')
-)
+    input ReferralFilterInput {
+      id: ID
+    }
+  `
+}

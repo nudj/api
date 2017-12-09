@@ -1,4 +1,3 @@
-const { printSchema } = require('graphql')
 const { makeExecutableSchema } = require('graphql-tools')
 const glob = require('glob')
 const path = require('path')

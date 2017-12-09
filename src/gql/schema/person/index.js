@@ -9,6 +9,5 @@ module.exports = {
       lastName: String
       url: String
     }
-  `,
-  resolvers: {}
+  `
 }

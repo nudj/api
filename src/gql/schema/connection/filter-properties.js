@@ -3,6 +3,5 @@ module.exports = {
     input ConnectionFilterInput {
       id: ID
     }
-  `,
-  resolvers: {}
+  `
 }

@@ -6,6 +6,5 @@ module.exports = {
       modified: DateTime!
       name: String!
     }
-  `,
-  resolvers: {}
+  `
 }

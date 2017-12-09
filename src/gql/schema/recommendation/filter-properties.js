@@ -3,6 +3,5 @@ module.exports = {
     input RecommendationFilterInput {
       id: ID
     }
-  `,
-  resolvers: {}
+  `
 }

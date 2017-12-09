@@ -4,6 +4,5 @@ module.exports = {
       id: ID
       email: String
     }
-  `,
-  resolvers: {}
+  `
 }

@@ -3,6 +3,5 @@ module.exports = {
     input ApplicationFilterInput {
       id: ID
     }
-  `,
-  resolvers: {}
+  `
 }

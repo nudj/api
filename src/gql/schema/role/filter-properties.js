@@ -3,6 +3,5 @@ module.exports = {
     input RoleFilterInput {
       id: ID
     }
-  `,
-  resolvers: {}
+  `
 }

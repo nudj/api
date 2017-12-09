@@ -10,6 +10,5 @@ module.exports = {
       outroTitle: String
       outroDescription: String
     }
-  `,
-  resolvers: {}
+  `
 }

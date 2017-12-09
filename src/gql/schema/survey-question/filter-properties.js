@@ -3,6 +3,5 @@ module.exports = {
     input SurveyQuestionFilterInput {
       id: ID
     }
-  `,
-  resolvers: {}
+  `
 }

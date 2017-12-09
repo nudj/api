@@ -6,6 +6,5 @@ module.exports = {
       modified: DateTime!
       completed: Boolean!
     }
-  `,
-  resolvers: {}
+  `
 }

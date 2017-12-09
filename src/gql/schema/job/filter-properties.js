@@ -4,6 +4,5 @@ module.exports = {
       id: ID
       slug: String
     }
-  `,
-  resolvers: {}
+  `
 }

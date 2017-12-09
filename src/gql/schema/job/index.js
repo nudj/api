@@ -19,6 +19,5 @@ module.exports = {
       experience: String
       requirements: String
     }
-  `,
-  resolvers: {}
+  `
 }

@@ -10,6 +10,5 @@ module.exports = {
       required: Boolean!
       type: SurveyQuestionType!
     }
-  `,
-  resolvers: {}
+  `
 }

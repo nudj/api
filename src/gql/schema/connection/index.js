@@ -7,6 +7,5 @@ module.exports = {
       firstName: String!
       lastName: String!
     }
-  `,
-  resolvers: {}
+  `
 }

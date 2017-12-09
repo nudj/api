@@ -17,6 +17,5 @@ module.exports = {
       twitter: String
       url: String
     }
-  `,
-  resolvers: {}
+  `
 }

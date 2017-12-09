@@ -3,6 +3,5 @@ module.exports = {
     input EmployeeFilterInput {
       id: ID
     }
-  `,
-  resolvers: {}
+  `
 }

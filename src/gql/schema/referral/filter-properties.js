@@ -3,6 +3,5 @@ module.exports = {
     input ReferralFilterInput {
       id: ID
     }
-  `,
-  resolvers: {}
+  `
 }

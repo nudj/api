@@ -10,5 +10,9 @@ module.exports = {
       required: Boolean!
       type: SurveyQuestionType!
     }
+
+    input SurveyQuestionFilterInput {
+      id: ID
+    }
   `
 }

@@ -17,5 +17,10 @@ module.exports = {
       twitter: String
       url: String
     }
+
+    input CompanyFilterInput {
+      id: ID
+      slug: String
+    }
   `
 }

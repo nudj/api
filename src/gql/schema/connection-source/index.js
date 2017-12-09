@@ -6,5 +6,9 @@ module.exports = {
       modified: DateTime!
       name: String!
     }
+
+    input ConnectionSourceFilterInput {
+      id: ID
+    }
   `
 }

@@ -6,5 +6,10 @@ module.exports = {
       modified: DateTime!
       completed: Boolean!
     }
+
+    input PersonTaskFilterInput {
+      id: ID
+      completed: Boolean
+    }
   `
 }

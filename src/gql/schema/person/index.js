@@ -9,5 +9,10 @@ module.exports = {
       lastName: String
       url: String
     }
+
+    input PersonFilterInput {
+      id: ID
+      email: String
+    }
   `
 }

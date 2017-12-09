@@ -6,5 +6,10 @@ module.exports = {
       modified: DateTime!
       completed: Boolean!
     }
+
+    input CompanyTaskFilterInput {
+      id: ID
+      completed: Boolean
+    }
   `
 }

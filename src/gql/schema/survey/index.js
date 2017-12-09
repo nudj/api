@@ -10,5 +10,9 @@ module.exports = {
       outroTitle: String
       outroDescription: String
     }
+
+    input SurveyFilterInput {
+      id: ID
+    }
   `
 }

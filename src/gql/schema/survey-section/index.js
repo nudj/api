@@ -7,5 +7,9 @@ module.exports = {
       title: String!
       description: String
     }
+
+    input SurveySectionFilterInput {
+      id: ID
+    }
   `
 }

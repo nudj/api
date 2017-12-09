@@ -7,5 +7,9 @@ module.exports = {
       firstName: String!
       lastName: String!
     }
+
+    input ConnectionFilterInput {
+      id: ID
+    }
   `
 }

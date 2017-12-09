@@ -19,5 +19,10 @@ module.exports = {
       experience: String
       requirements: String
     }
+
+    input JobFilterInput {
+      id: ID
+      slug: String
+    }
   `
 }

@@ -6,5 +6,9 @@ module.exports = {
       modified: DateTime!
       name: String!
     }
+
+    input RoleFilterInput {
+      id: ID
+    }
   `
 }

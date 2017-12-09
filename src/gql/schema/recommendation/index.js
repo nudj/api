@@ -6,5 +6,9 @@ module.exports = {
       modified: DateTime!
       source: RecommendationSource!
     }
+
+    input RecommendationFilterInput {
+      id: ID
+    }
   `
 }

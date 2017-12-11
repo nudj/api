@@ -20,7 +20,7 @@ describe('Mutation.hirer', () => {
         }
       ]
     }
-    const mutation = `
+    const operation = `
       mutation ($id: ID!) {
         hirer(id: $id) {
           id
@@ -30,7 +30,7 @@ describe('Mutation.hirer', () => {
     const variables = {
       id: 'hirer2'
     }
-    return expect(executeQueryOnDbUsingSchema({ mutation, variables, db, schema })).to.eventually.deep.equal({
+    return expect(executeQueryOnDbUsingSchema({ operation, variables, db, schema })).to.eventually.deep.equal({
       data: {
         hirer: {
           id: 'hirer2'
@@ -43,7 +43,7 @@ describe('Mutation.hirer', () => {
     const db = {
       hirers: []
     }
-    const mutation = `
+    const operation = `
       mutation ($id: ID!) {
         hirer(id: $id) {
           id
@@ -54,7 +54,7 @@ describe('Mutation.hirer', () => {
       id: 'hirer2'
     }
 
-    return executeQueryOnDbUsingSchema({ mutation, variables, db, schema })
+    return executeQueryOnDbUsingSchema({ operation, variables, db, schema })
       .then(shouldRespondWithGqlError({
         message: 'NotFound',
         path: ['hirer']

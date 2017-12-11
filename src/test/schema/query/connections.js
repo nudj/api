@@ -17,14 +17,14 @@ describe('Query.connections', () => {
         }
       ]
     }
-    const query = `
+    const operation = `
       query {
         connections {
           id
         }
       }
     `
-    return expect(executeQueryOnDbUsingSchema({ query, db, schema })).to.eventually.deep.equal({
+    return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
         connections: [
           {
@@ -42,14 +42,14 @@ describe('Query.connections', () => {
     const db = {
       connections: []
     }
-    const query = `
+    const operation = `
       query {
         connections {
           id
         }
       }
     `
-    return expect(executeQueryOnDbUsingSchema({ query, db, schema })).to.eventually.deep.equal({
+    return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
         connections: []
       }

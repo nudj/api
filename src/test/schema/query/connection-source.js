@@ -20,7 +20,7 @@ describe('Query.connectionSource', () => {
         }
       ]
     }
-    const query = `
+    const operation = `
       query ($id: ID!) {
         connectionSource(id: $id) {
           id
@@ -30,7 +30,7 @@ describe('Query.connectionSource', () => {
     const variables = {
       id: 'connectionSource2'
     }
-    return expect(executeQueryOnDbUsingSchema({ query, variables, db, schema })).to.eventually.deep.equal({
+    return expect(executeQueryOnDbUsingSchema({ operation, variables, db, schema })).to.eventually.deep.equal({
       data: {
         connectionSource: {
           id: 'connectionSource2'
@@ -43,7 +43,7 @@ describe('Query.connectionSource', () => {
     const db = {
       connectionSources: []
     }
-    const query = `
+    const operation = `
       query ($id: ID!) {
         connectionSource(id: $id) {
           id
@@ -54,7 +54,7 @@ describe('Query.connectionSource', () => {
       id: 'connectionSource2'
     }
 
-    return executeQueryOnDbUsingSchema({ query, variables, db, schema })
+    return executeQueryOnDbUsingSchema({ operation, variables, db, schema })
       .then(shouldRespondWithGqlError({
         message: 'NotFound',
         path: ['connectionSource']

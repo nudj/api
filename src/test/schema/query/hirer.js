@@ -20,7 +20,7 @@ describe('Query.hirer', () => {
         }
       ]
     }
-    const query = `
+    const operation = `
       query ($id: ID!) {
         hirer(id: $id) {
           id
@@ -30,7 +30,7 @@ describe('Query.hirer', () => {
     const variables = {
       id: 'hirer2'
     }
-    return expect(executeQueryOnDbUsingSchema({ query, variables, db, schema })).to.eventually.deep.equal({
+    return expect(executeQueryOnDbUsingSchema({ operation, variables, db, schema })).to.eventually.deep.equal({
       data: {
         hirer: {
           id: 'hirer2'
@@ -43,7 +43,7 @@ describe('Query.hirer', () => {
     const db = {
       hirers: []
     }
-    const query = `
+    const operation = `
       query ($id: ID!) {
         hirer(id: $id) {
           id
@@ -54,7 +54,7 @@ describe('Query.hirer', () => {
       id: 'hirer2'
     }
 
-    return executeQueryOnDbUsingSchema({ query, variables, db, schema })
+    return executeQueryOnDbUsingSchema({ operation, variables, db, schema })
       .then(shouldRespondWithGqlError({
         message: 'NotFound',
         path: ['hirer']

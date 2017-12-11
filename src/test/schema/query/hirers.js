@@ -17,14 +17,14 @@ describe('Query.hirers', () => {
         }
       ]
     }
-    const query = `
+    const operation = `
       query {
         hirers {
           id
         }
       }
     `
-    return expect(executeQueryOnDbUsingSchema({ query, db, schema })).to.eventually.deep.equal({
+    return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
         hirers: [
           {
@@ -42,14 +42,14 @@ describe('Query.hirers', () => {
     const db = {
       hirers: []
     }
-    const query = `
+    const operation = `
       query {
         hirers {
           id
         }
       }
     `
-    return expect(executeQueryOnDbUsingSchema({ query, db, schema })).to.eventually.deep.equal({
+    return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
         hirers: []
       }

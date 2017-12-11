@@ -17,14 +17,14 @@ describe('Mutation.connectionSources', () => {
         }
       ]
     }
-    const mutation = `
+    const operation = `
       mutation {
         connectionSources {
           id
         }
       }
     `
-    return expect(executeQueryOnDbUsingSchema({ mutation, db, schema })).to.eventually.deep.equal({
+    return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
         connectionSources: [
           {
@@ -42,14 +42,14 @@ describe('Mutation.connectionSources', () => {
     const db = {
       connectionSources: []
     }
-    const mutation = `
+    const operation = `
       mutation {
         connectionSources {
           id
         }
       }
     `
-    return expect(executeQueryOnDbUsingSchema({ mutation, db, schema })).to.eventually.deep.equal({
+    return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
         connectionSources: []
       }

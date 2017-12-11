@@ -20,7 +20,7 @@ describe('Query.surveyQuestion', () => {
         }
       ]
     }
-    const query = `
+    const operation = `
       query ($id: ID!) {
         surveyQuestion(id: $id) {
           id
@@ -30,7 +30,7 @@ describe('Query.surveyQuestion', () => {
     const variables = {
       id: 'surveyQuestion2'
     }
-    return expect(executeQueryOnDbUsingSchema({ query, variables, db, schema })).to.eventually.deep.equal({
+    return expect(executeQueryOnDbUsingSchema({ operation, variables, db, schema })).to.eventually.deep.equal({
       data: {
         surveyQuestion: {
           id: 'surveyQuestion2'
@@ -43,7 +43,7 @@ describe('Query.surveyQuestion', () => {
     const db = {
       surveyQuestions: []
     }
-    const query = `
+    const operation = `
       query ($id: ID!) {
         surveyQuestion(id: $id) {
           id
@@ -54,7 +54,7 @@ describe('Query.surveyQuestion', () => {
       id: 'surveyQuestion2'
     }
 
-    return executeQueryOnDbUsingSchema({ query, variables, db, schema })
+    return executeQueryOnDbUsingSchema({ operation, variables, db, schema })
       .then(shouldRespondWithGqlError({
         message: 'NotFound',
         path: ['surveyQuestion']

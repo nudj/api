@@ -17,14 +17,14 @@ describe('Query.surveys', () => {
         }
       ]
     }
-    const query = `
+    const operation = `
       query {
         surveys {
           id
         }
       }
     `
-    return expect(executeQueryOnDbUsingSchema({ query, db, schema })).to.eventually.deep.equal({
+    return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
         surveys: [
           {
@@ -42,14 +42,14 @@ describe('Query.surveys', () => {
     const db = {
       surveys: []
     }
-    const query = `
+    const operation = `
       query {
         surveys {
           id
         }
       }
     `
-    return expect(executeQueryOnDbUsingSchema({ query, db, schema })).to.eventually.deep.equal({
+    return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
         surveys: []
       }

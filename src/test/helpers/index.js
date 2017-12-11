@@ -5,9 +5,9 @@ const expect = chai.expect
 
 const transaction = require('../../gql/adaptors/lodash')
 
-function executeQueryOnDbUsingSchema ({ schema, variables = {}, query, mutation, db }) {
+function executeQueryOnDbUsingSchema ({ schema, variables = {}, operation, db }) {
   const testContext = { transaction: transaction({ db }) }
-  return graphql(schema, query || mutation, undefined, testContext, variables)
+  return graphql(schema, operation, undefined, testContext, variables)
 }
 
 const expectPropertyReceivesValue = curry(async (schema, type, typePlural, property, value) => {
@@ -18,15 +18,15 @@ const expectPropertyReceivesValue = curry(async (schema, type, typePlural, prope
       }
     ]
   }
-  await Promise.all(['query', 'mutation'].map(async queryType => {
-    const query = `
-      ${queryType} {
+  await Promise.all(['query', 'mutation'].map(async operationType => {
+    const operation = `
+      ${operationType} {
         ${typePlural} {
           ${property}
         }
       }
     `
-    const result = await executeQueryOnDbUsingSchema({ query, db, schema })
+    const result = await executeQueryOnDbUsingSchema({ operation, db, schema })
     expect(result, `Expected "${type}" schema to include "${property}" property`).to.deep.equal({
       data: {
         [typePlural]: [
@@ -47,13 +47,13 @@ const expectTypeIsFilterableBy = curry(async (schema, type, typePlural, property
       }
     ]
   }
-  await Promise.all(['query', 'mutation'].map(async queryType => {
+  await Promise.all(['query', 'mutation'].map(async operationType => {
     let valueForQuery = value
     if (typeof value === 'string') {
       valueForQuery = `"${value}"`
     }
-    const query = `
-      ${queryType} {
+    const operation = `
+      ${operationType} {
         ${typePlural}ByFilters(filters: {
           ${property}: ${valueForQuery}
         }) {
@@ -61,8 +61,8 @@ const expectTypeIsFilterableBy = curry(async (schema, type, typePlural, property
         }
       }
     `
-    const result = await executeQueryOnDbUsingSchema({ query, db, schema })
-    expect(result, `Expected "${queryType}.${typePlural}ByFilters" to be filterable by "${property}" property`).to.deep.equal({
+    const result = await executeQueryOnDbUsingSchema({ operation, db, schema })
+    expect(result, `Expected "${operationType}.${typePlural}ByFilters" to be filterable by "${property}" property`).to.deep.equal({
       data: {
         [`${typePlural}ByFilters`]: [
           {
@@ -87,15 +87,15 @@ const expectPropertyIsRequired = curry(async (schema, type, typePlural, property
       }
     ]
   }
-  await Promise.all(['query', 'mutation'].map(async queryType => {
-    const query = `
-      ${queryType} {
+  await Promise.all(['query', 'mutation'].map(async operationType => {
+    const operation = `
+      ${operationType} {
         ${typePlural} {
           ${property}
         }
       }
     `
-    return executeQueryOnDbUsingSchema({ query, db, schema })
+    return executeQueryOnDbUsingSchema({ operation, db, schema })
       .then(shouldRespondWithGqlError({
         message: `Cannot return null for non-nullable field ${type}.${property}.`,
         path: [
@@ -116,15 +116,15 @@ const expectPropertyContentsIsRequired = curry(async (schema, type, typePlural, 
       }
     ]
   }
-  await Promise.all(['query', 'mutation'].map(async queryType => {
-    const query = `
-      ${queryType} {
+  await Promise.all(['query', 'mutation'].map(async operationType => {
+    const operation = `
+      ${operationType} {
         ${typePlural} {
           ${property}
         }
       }
     `
-    return executeQueryOnDbUsingSchema({ query, db, schema })
+    return executeQueryOnDbUsingSchema({ operation, db, schema })
       .then(shouldRespondWithGqlError({
         message: `Cannot return null for non-nullable field ${type}.${property}.`,
         path: [

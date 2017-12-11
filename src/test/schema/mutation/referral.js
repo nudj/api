@@ -20,7 +20,7 @@ describe('Mutation.referral', () => {
         }
       ]
     }
-    const mutation = `
+    const operation = `
       mutation ($id: ID!) {
         referral(id: $id) {
           id
@@ -30,7 +30,7 @@ describe('Mutation.referral', () => {
     const variables = {
       id: 'referral2'
     }
-    return expect(executeQueryOnDbUsingSchema({ mutation, variables, db, schema })).to.eventually.deep.equal({
+    return expect(executeQueryOnDbUsingSchema({ operation, variables, db, schema })).to.eventually.deep.equal({
       data: {
         referral: {
           id: 'referral2'
@@ -43,7 +43,7 @@ describe('Mutation.referral', () => {
     const db = {
       referrals: []
     }
-    const mutation = `
+    const operation = `
       mutation ($id: ID!) {
         referral(id: $id) {
           id
@@ -54,7 +54,7 @@ describe('Mutation.referral', () => {
       id: 'referral2'
     }
 
-    return executeQueryOnDbUsingSchema({ mutation, variables, db, schema })
+    return executeQueryOnDbUsingSchema({ operation, variables, db, schema })
       .then(shouldRespondWithGqlError({
         message: 'NotFound',
         path: ['referral']

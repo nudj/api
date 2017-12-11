@@ -20,7 +20,7 @@ describe('Mutation.connectionSource', () => {
         }
       ]
     }
-    const mutation = `
+    const operation = `
       mutation ($id: ID!) {
         connectionSource(id: $id) {
           id
@@ -30,7 +30,7 @@ describe('Mutation.connectionSource', () => {
     const variables = {
       id: 'connectionSource2'
     }
-    return expect(executeQueryOnDbUsingSchema({ mutation, variables, db, schema })).to.eventually.deep.equal({
+    return expect(executeQueryOnDbUsingSchema({ operation, variables, db, schema })).to.eventually.deep.equal({
       data: {
         connectionSource: {
           id: 'connectionSource2'
@@ -43,7 +43,7 @@ describe('Mutation.connectionSource', () => {
     const db = {
       connectionSources: []
     }
-    const mutation = `
+    const operation = `
       mutation ($id: ID!) {
         connectionSource(id: $id) {
           id
@@ -54,7 +54,7 @@ describe('Mutation.connectionSource', () => {
       id: 'connectionSource2'
     }
 
-    return executeQueryOnDbUsingSchema({ mutation, variables, db, schema })
+    return executeQueryOnDbUsingSchema({ operation, variables, db, schema })
       .then(shouldRespondWithGqlError({
         message: 'NotFound',
         path: ['connectionSource']

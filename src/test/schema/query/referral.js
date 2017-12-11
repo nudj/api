@@ -20,7 +20,7 @@ describe('Query.referral', () => {
         }
       ]
     }
-    const query = `
+    const operation = `
       query ($id: ID!) {
         referral(id: $id) {
           id
@@ -30,7 +30,7 @@ describe('Query.referral', () => {
     const variables = {
       id: 'referral2'
     }
-    return expect(executeQueryOnDbUsingSchema({ query, variables, db, schema })).to.eventually.deep.equal({
+    return expect(executeQueryOnDbUsingSchema({ operation, variables, db, schema })).to.eventually.deep.equal({
       data: {
         referral: {
           id: 'referral2'
@@ -43,7 +43,7 @@ describe('Query.referral', () => {
     const db = {
       referrals: []
     }
-    const query = `
+    const operation = `
       query ($id: ID!) {
         referral(id: $id) {
           id
@@ -54,7 +54,7 @@ describe('Query.referral', () => {
       id: 'referral2'
     }
 
-    return executeQueryOnDbUsingSchema({ query, variables, db, schema })
+    return executeQueryOnDbUsingSchema({ operation, variables, db, schema })
       .then(shouldRespondWithGqlError({
         message: 'NotFound',
         path: ['referral']

@@ -23,7 +23,19 @@ const ACTION_STRING_RESPONSE = `function () {
 const COLLECTION_LOCK_RESPONSE = 'collectionLock'
 const STORE = () => 'store'
 const ACTION = 'action'
-const RESPONSE = 'OK'
+const OK = 'OK'
+const GOOD_RESPONSE = {
+  result: OK
+}
+const BAD_RESPONSE = {
+  exception: 'Some exception message',
+  stacktrace: [],
+  message: 'Some error message',
+  error: true,
+  code: 400,
+  errorNum: 10,
+  errorMessage: 'Some error message'
+}
 const PARAMS = { param: 'param' }
 
 describe('ArangoAdaptor transaction', () => {
@@ -56,7 +68,7 @@ describe('ArangoAdaptor transaction', () => {
           action: `function () { return 'test'; }`,
           params: PARAMS
         })
-        .reply(200, RESPONSE)
+        .reply(200, GOOD_RESPONSE)
     })
 
     it('calls actionToCollectionLock with action', () => {
@@ -70,7 +82,27 @@ describe('ArangoAdaptor transaction', () => {
       })
     })
     it('passes params through and responds with the result of a transaction', () => {
-      return expect(transaction(ACTION, PARAMS)).to.eventually.equal(RESPONSE)
+      return expect(transaction(ACTION, PARAMS)).to.eventually.equal(OK)
+    })
+  })
+
+  describe('when called with bad data', () => {
+    beforeEach(() => {
+      server
+        .post('/transaction', {
+          collections: {
+            write: COLLECTION_LOCK_RESPONSE
+          },
+          action: `function () { return 'test'; }`,
+          params: PARAMS
+        })
+        .reply(400, BAD_RESPONSE)
+    })
+
+    it('throws with error from Arango', () => {
+      return transaction(ACTION, PARAMS).catch(error => {
+        expect(error).to.deep.equal(BAD_RESPONSE)
+      })
     })
   })
 })

@@ -19,6 +19,7 @@
   "dependencies": {
     "@nudj/library": "2.0.0",
     "apollo-server-express": "^1.2.0",
+    "axios": "^0.17.1",
     "body-parser": "1.17.2",
     "date-fns": "1.28.2",
     "express": "4.15.3",

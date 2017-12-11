@@ -81,7 +81,7 @@ describe('definePluralRelation', () => {
         transaction: (action) => {
           return action({
             readAll: () => 'all_the_jobs'
-          })
+          }, {})
         }
       }
       expect(resolver(null, null, fakeContext)).to.equal('all_the_jobs')
@@ -92,6 +92,8 @@ describe('definePluralRelation', () => {
         transaction: (action) => {
           return action({
             readAll: ({ type }) => type
+          }, {
+            collection: 'jobs'
           })
         }
       }

@@ -11,6 +11,8 @@ module.exports = (store, action) => {
     const Promise = (${PromiseOverride.toString()})()
     const store = ${store.toString()}
     const action = ${action.toString()}
-    return action(store(), params).then(data => data)
+    const result = action(store(), params)
+    if (result.error) { throw error }
+    return result.resolution
   }`
 }

@@ -89,44 +89,44 @@ describe('definePluralByFiltersRelation', () => {
       expect(resolver).to.be.a('function')
     })
 
-    it('should pass the args through to the transaction', () => {
+    it('should pass the queryArgs through to the transaction', () => {
       const filters = { name: 'abc' }
-      const args = { filters }
+      const queryArgs = { filters }
       const fakeContext = {
-        transaction: (action, params) => params
+        transaction: (action, transactionParams) => transactionParams
       }
-      expect(resolver(null, args, fakeContext)).to.deep.equal(args)
+      expect(resolver(null, queryArgs, fakeContext)).to.deep.equal(queryArgs)
     })
 
     it('should call store.readAll with the collection type and item id', () => {
       const type = 'jobs'
       const filters = { name: 'abc' }
-      const args = { filters }
-      const params = { filters }
+      const queryArgs = { filters }
+      const transactionParams = { filters }
       const store = {
         readAll: ({ type, filters }) => ({ type, filters })
       }
       const fakeContext = {
         transaction: (action) => {
-          return action(store, params)
+          return action(store, transactionParams)
         }
       }
-      expect(resolver(null, args, fakeContext)).to.deep.equal({ type, filters })
+      expect(resolver(null, queryArgs, fakeContext)).to.deep.equal({ type, filters })
     })
 
     it('should return the result of the store.readAll call', () => {
       const id = 'jobId'
-      const args = { id }
-      const params = { id }
+      const queryArgs = { id }
+      const transactionParams = { id }
       const store = {
         readAll: () => 'the_filtered_jobs'
       }
       const fakeContext = {
         transaction: (action) => {
-          return action(store, params)
+          return action(store, transactionParams)
         }
       }
-      expect(resolver(null, args, fakeContext)).to.equal('the_filtered_jobs')
+      expect(resolver(null, queryArgs, fakeContext)).to.equal('the_filtered_jobs')
     })
   })
 })

@@ -1,5 +1,6 @@
 const first = require('lodash/first')
 const request = require('@nudj/library/lib/request')
+const { NotFound } = require('@nudj/library/errors')
 const {
   toQs,
   logger,
@@ -49,7 +50,12 @@ module.exports = () => ({
     } else {
       response = request(`/${type}${filterString.length ? `?${filterString}` : ''}`, {baseURL}).then(first)
     }
-    return response.catch(errorHandler({
+    return response
+    .then(result => {
+      if (!result) throw new NotFound('Item not found')
+      return result
+    })
+    .catch(errorHandler({
       action: 'readOne',
       type,
       id,

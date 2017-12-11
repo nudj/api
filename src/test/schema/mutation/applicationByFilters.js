@@ -20,7 +20,7 @@ describe('Mutation.applicationByFilters', () => {
         }
       ]
     }
-    const query = `
+    const operation = `
       mutation ($id: ID!) {
         applicationByFilters (filters: {
           id: $id
@@ -32,7 +32,7 @@ describe('Mutation.applicationByFilters', () => {
     const variables = {
       id: 'application2'
     }
-    return expect(executeQueryOnDbUsingSchema({ query, variables, db, schema })).to.eventually.deep.equal({
+    return expect(executeQueryOnDbUsingSchema({ operation, variables, db, schema })).to.eventually.deep.equal({
       data: {
         applicationByFilters: {
           id: 'application2'
@@ -45,7 +45,7 @@ describe('Mutation.applicationByFilters', () => {
     const db = {
       applications: []
     }
-    const query = `
+    const operation = `
       mutation ($id: ID!) {
         applicationByFilters (filters: {
           id: $id
@@ -57,7 +57,7 @@ describe('Mutation.applicationByFilters', () => {
     const variables = {
       id: 'application2'
     }
-    return executeQueryOnDbUsingSchema({ query, variables, db, schema })
+    return executeQueryOnDbUsingSchema({ operation, variables, db, schema })
       .then(shouldRespondWithGqlError({
         message: 'NotFound',
         path: ['applicationByFilters']

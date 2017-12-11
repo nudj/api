@@ -64,44 +64,44 @@ describe('defineSingularRelation', () => {
         expect(resolver).to.be.a('function')
       })
 
-      it('should pass the args through to the transaction', () => {
+      it('should pass the queryArgs through to the transaction', () => {
         const id = 'jobId'
-        const args = { id }
+        const queryArgs = { id }
         const fakeContext = {
-          transaction: (action, params) => params
+          transaction: (action, transactionParams) => transactionParams
         }
-        expect(resolver(null, args, fakeContext)).to.deep.equal({ id })
+        expect(resolver(null, queryArgs, fakeContext)).to.deep.equal({ id })
       })
 
       it('should call store.readOne with the collection type and item id', () => {
         const type = 'jobs'
         const id = 'jobId'
-        const args = { id }
-        const params = { id }
+        const queryArgs = { id }
+        const transactionParams = { id }
         const store = {
           readOne: ({ type, id }) => ({ type, id })
         }
         const fakeContext = {
           transaction: (action) => {
-            return action(store, params)
+            return action(store, transactionParams)
           }
         }
-        expect(resolver(null, args, fakeContext)).to.deep.equal({ type, id })
+        expect(resolver(null, queryArgs, fakeContext)).to.deep.equal({ type, id })
       })
 
       it('should return the result of the store.readOne call', () => {
         const id = 'jobId'
-        const args = { id }
-        const params = { id }
+        const queryArgs = { id }
+        const transactionParams = { id }
         const store = {
           readOne: () => 'the_job'
         }
         const fakeContext = {
           transaction: (action) => {
-            return action(store, params)
+            return action(store, transactionParams)
           }
         }
-        expect(resolver(null, args, fakeContext)).to.equal('the_job')
+        expect(resolver(null, queryArgs, fakeContext)).to.equal('the_job')
       })
     })
   })
@@ -129,17 +129,17 @@ describe('defineSingularRelation', () => {
       }).resolvers.Query.job
       const type = 'someLongObscureTypes'
       const id = 'jobId'
-      const args = { id }
-      const params = { id }
+      const queryArgs = { id }
+      const transactionParams = { id }
       const store = {
         readOne: ({ type, id }) => ({ type, id })
       }
       const fakeContext = {
         transaction: (action) => {
-          return action(store, params)
+          return action(store, transactionParams)
         }
       }
-      expect(resolver(null, args, fakeContext)).to.deep.equal({ type, id })
+      expect(resolver(null, queryArgs, fakeContext)).to.deep.equal({ type, id })
     })
   })
 })

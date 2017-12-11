@@ -17,14 +17,14 @@ describe('Mutation.applicationsByFilters', () => {
         }
       ]
     }
-    const query = `
+    const operation = `
       mutation {
         applicationsByFilters {
           id
         }
       }
     `
-    return expect(executeQueryOnDbUsingSchema({ query, db, schema })).to.eventually.deep.equal({
+    return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
         applicationsByFilters: [
           {
@@ -42,14 +42,14 @@ describe('Mutation.applicationsByFilters', () => {
     const db = {
       applications: []
     }
-    const query = `
+    const operation = `
       mutation {
         applicationsByFilters {
           id
         }
       }
     `
-    return expect(executeQueryOnDbUsingSchema({ query, db, schema })).to.eventually.deep.equal({
+    return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
         applicationsByFilters: []
       }

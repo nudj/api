@@ -3,10 +3,13 @@ const chai = require('chai')
 const expect = chai.expect
 
 const schema = require('../../../gql/schema')
-const { executeQueryOnDbUsingSchema } = require('../../helpers')
+const {
+  executeQueryOnDbUsingSchema,
+  shouldRespondWithGqlError
+} = require('../../helpers')
 
-describe('Query.employees', () => {
-  it('should fetch all employees', async () => {
+describe('Query.employee', () => {
+  it('should fetch a single employee', async () => {
     const db = {
       employees: [
         {
@@ -17,42 +20,44 @@ describe('Query.employees', () => {
         }
       ]
     }
-    const query = `
-      query {
-        employees {
+    const operation = `
+      query ($id: ID!) {
+        employee(id: $id) {
           id
         }
       }
     `
-    return expect(executeQueryOnDbUsingSchema({ query, db, schema })).to.eventually.deep.equal({
+    const variables = {
+      id: 'employee2'
+    }
+    return expect(executeQueryOnDbUsingSchema({ operation, variables, db, schema })).to.eventually.deep.equal({
       data: {
-        employees: [
-          {
-            id: 'employee1'
-          },
-          {
-            id: 'employee2'
-          }
-        ]
+        employee: {
+          id: 'employee2'
+        }
       }
     })
   })
 
-  it('should return empty array if no matches', async () => {
+  it('should return null and error if no match', async () => {
     const db = {
       employees: []
     }
-    const query = `
-      query {
-        employees {
+    const operation = `
+      query ($id: ID!) {
+        employee(id: $id) {
           id
         }
       }
     `
-    return expect(executeQueryOnDbUsingSchema({ query, db, schema })).to.eventually.deep.equal({
-      data: {
-        employees: []
-      }
-    })
+    const variables = {
+      id: 'employee2'
+    }
+
+    return executeQueryOnDbUsingSchema({ operation, variables, db, schema })
+      .then(shouldRespondWithGqlError({
+        message: 'NotFound',
+        path: ['employee']
+      }))
   })
 })

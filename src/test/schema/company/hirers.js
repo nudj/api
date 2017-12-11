@@ -5,7 +5,7 @@ const expect = chai.expect
 
 const schema = require('../../../gql/schema')
 const { executeQueryOnDbUsingSchema } = require('../../helpers')
-const query = `
+const operation = `
   query {
     companies {
       hirers {
@@ -40,7 +40,7 @@ describe('Company.hirers', () => {
         }
       ]
     })
-    return expect(executeQueryOnDbUsingSchema({ query, db, schema })).to.eventually.deep.equal({
+    return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
         companies: [
           {
@@ -67,7 +67,7 @@ describe('Company.hirers', () => {
         }
       ]
     })
-    return expect(executeQueryOnDbUsingSchema({ query, db, schema })).to.eventually.deep.equal({
+    return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
         companies: [
           {

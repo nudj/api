@@ -49,10 +49,12 @@ function definePluralRelation ({
     resolvers: {
       [parentType]: {
         [name]: (root, args, context) => {
-          return context.transaction((store) => {
+          return context.transaction((store, params) => {
             return store.readAll({
-              type: collection
+              type: params.collection
             })
+          }, {
+            collection
           })
         }
       }
@@ -84,10 +86,12 @@ function definePluralByFiltersRelation ({
         [name]: (root, args, context) => {
           return context.transaction((store, params) => {
             return store.readAll({
-              type: collection,
+              type: params.collection,
               filters: params.filters
             })
-          }, args)
+          }, merge({
+            collection
+          }, args))
         }
       }
     }
@@ -116,10 +120,12 @@ function defineSingularRelation ({
         [name]: (root, args, context) => {
           return context.transaction((store, params) => {
             return store.readOne({
-              type: collection,
+              type: params.collection,
               id: params.id
             })
-          }, args)
+          }, merge({
+            collection
+          }, args))
         }
       }
     }
@@ -150,10 +156,12 @@ function defineSingularByFiltersRelation ({
         [name]: (root, args, context) => {
           return context.transaction((store, params) => {
             return store.readOne({
-              type: collection,
+              type: params.collection,
               filters: params.filters
             })
-          }, args)
+          }, merge({
+            collection
+          }, args))
         }
       }
     }

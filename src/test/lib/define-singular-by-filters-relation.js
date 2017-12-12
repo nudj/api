@@ -69,15 +69,17 @@ describe('defineSingularByFiltersRelation', () => {
         expect(resolver).to.be.a('function')
       })
 
-      it('should pass the queryArgs through to the transaction', () => {
+      it('should pass the args through to the transaction', () => {
         const filters = {
           id: 'jobId'
         }
-        const queryArgs = { filters }
+        const args = { filters }
         const fakeContext = {
           transaction: (action, transactionParams) => transactionParams
         }
-        expect(resolver(null, queryArgs, fakeContext)).to.deep.equal({ filters })
+        expect(resolver(null, args, fakeContext)).to.deep.equal(Object.assign({
+          collection: 'jobs'
+        }, args))
       })
 
       it('should call store.readOne with the collection type and filters', () => {
@@ -85,34 +87,32 @@ describe('defineSingularByFiltersRelation', () => {
         const filters = {
           id: 'jobId'
         }
-        const queryArgs = { filters }
-        const transactionParams = { filters }
+        const args = { filters }
         const store = {
           readOne: ({ type, filters }) => ({ type, filters })
         }
         const fakeContext = {
-          transaction: (action) => {
-            return action(store, transactionParams)
+          transaction: (action, params) => {
+            return action(store, params)
           }
         }
-        expect(resolver(null, queryArgs, fakeContext)).to.deep.equal({ type, filters })
+        expect(resolver(null, args, fakeContext)).to.deep.equal({ type, filters })
       })
 
       it('should return the result of the store.readOne call', () => {
         const filters = {
           id: 'jobId'
         }
-        const queryArgs = { filters }
-        const transactionParams = { filters }
+        const args = { filters }
         const store = {
           readOne: () => 'the_job'
         }
         const fakeContext = {
-          transaction: (action) => {
-            return action(store, transactionParams)
+          transaction: (action, params) => {
+            return action(store, params)
           }
         }
-        expect(resolver(null, queryArgs, fakeContext)).to.equal('the_job')
+        expect(resolver(null, args, fakeContext)).to.equal('the_job')
       })
     })
   })
@@ -163,17 +163,16 @@ describe('defineSingularByFiltersRelation', () => {
       const filters = {
         id: 'jobId'
       }
-      const queryArgs = { filters }
-      const transactionParams = { filters }
+      const args = { filters }
       const store = {
         readOne: ({ type, filters }) => ({ type, filters })
       }
       const fakeContext = {
-        transaction: (action) => {
-          return action(store, transactionParams)
+        transaction: (action, params) => {
+          return action(store, params)
         }
       }
-      expect(resolver(null, queryArgs, fakeContext)).to.deep.equal({ type, filters })
+      expect(resolver(null, args, fakeContext)).to.deep.equal({ type, filters })
     })
   })
 

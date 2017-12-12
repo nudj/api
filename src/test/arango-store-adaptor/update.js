@@ -12,7 +12,7 @@ chai.use(chaiAsPromised)
 chai.use(dirtyChai)
 
 const StoreError = require('../../lib/errors').StoreError
-let StoreAdaptor = require('../../gql/arango-store-adaptor')
+let StoreAdaptor = require('../../gql-old/arango-store-adaptor')
 let server
 
 describe('ArangoStoreAdaptor.update', () => {

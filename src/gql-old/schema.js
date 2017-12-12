@@ -86,7 +86,7 @@ module.exports = `
     twitter: String
     url: String
     hirers: [Hirer!]!
-    onboarded: CompanyOnboardedEvent
+    onboarded: Boolean!
     tasks: [CompanyTask!]!
     surveys: [Survey!]!
   }
@@ -211,7 +211,7 @@ module.exports = `
     person: Person!
     recommendations: [Recommendation!]!
     modified: DateTime!
-    onboarded: HirerOnboardedEvent
+    onboarded: Boolean!
   }
 
   type HirerOnboardedEvent {

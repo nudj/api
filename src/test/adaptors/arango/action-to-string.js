@@ -57,7 +57,17 @@ describe('ArangoAdaptor ActionToString', () => {
 
     it('should contain a stringified invocation of action with initialised store and params passed in', () => {
       const result = ActionToString(STORE_NOOP, ACTION_NOOP)
-      expect(result).to.contain.string('return action(store(), params)')
+      expect(result).to.contain.string('const result = action(store(), params)')
+    })
+
+    it('should contain a stringified check for an error', () => {
+      const result = ActionToString(STORE_NOOP, ACTION_NOOP)
+      expect(result).to.contain.string('if (result.error) { throw error }')
+    })
+
+    it('should contain a stringified return of the resolution', () => {
+      const result = ActionToString(STORE_NOOP, ACTION_NOOP)
+      expect(result).to.contain.string('return result.resolution')
     })
   })
 })

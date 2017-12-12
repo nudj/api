@@ -1,17 +1,22 @@
-const libRequest = require('@nudj/library/request')
+const axios = require('axios')
 const semi = require('semi')
+const logger = require('@nudj/library/lib/logger')
 
 const store = require('./store')
 const actionToCollectionLock = require('./action-to-collection-lock')
 const actionToString = require('./action-to-string')
 
 const authHash = Buffer.from(process.env.DB_USER + ':' + process.env.DB_PASS).toString('base64')
-const request = (uri, options = {}) => libRequest(uri, Object.assign({
-  headers: {
-    'Authorization': 'Basic ' + authHash
-  }
-}, options))
 const baseURL = process.env.DB_API_URL
+const request = (options = {}) => {
+  return axios(Object.assign({
+    url: `${baseURL}/transaction`,
+    method: 'post',
+    headers: {
+      'Authorization': 'Basic ' + authHash
+    }
+  }, options))
+}
 
 module.exports = (action, params) => {
   // semi does not accept raw functions so wrapping in parentheses
@@ -23,8 +28,7 @@ module.exports = (action, params) => {
   // strip parentheses and trailing semicolon
   actionString = actionString.slice(1, -2)
 
-  return request(`${baseURL}/transaction`, {
-    method: 'post',
+  return request({
     data: {
       collections: {
         write: actionToCollectionLock(action)
@@ -32,5 +36,10 @@ module.exports = (action, params) => {
       action: actionString,
       params
     }
+  })
+  .then(response => response.data.result)
+  .catch(error => {
+    logger('error', error.response.data)
+    throw error.response.data
   })
 }

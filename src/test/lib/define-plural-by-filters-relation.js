@@ -89,44 +89,44 @@ describe('definePluralByFiltersRelation', () => {
       expect(resolver).to.be.a('function')
     })
 
-    it('should pass the queryArgs through to the transaction', () => {
+    it('should pass the args and collection through to the transaction', () => {
       const filters = { name: 'abc' }
-      const queryArgs = { filters }
+      const args = { filters }
       const fakeContext = {
-        transaction: (action, transactionParams) => transactionParams
+        transaction: (action, params) => params
       }
-      expect(resolver(null, queryArgs, fakeContext)).to.deep.equal(queryArgs)
+      expect(resolver(null, args, fakeContext)).to.deep.equal(Object.assign({
+        collection: 'jobs'
+      }, args))
     })
 
     it('should call store.readAll with the collection type and item id', () => {
       const type = 'jobs'
       const filters = { name: 'abc' }
-      const queryArgs = { filters }
-      const transactionParams = { filters }
+      const args = { filters }
       const store = {
         readAll: ({ type, filters }) => ({ type, filters })
       }
       const fakeContext = {
-        transaction: (action) => {
-          return action(store, transactionParams)
+        transaction: (action, params) => {
+          return action(store, params)
         }
       }
-      expect(resolver(null, queryArgs, fakeContext)).to.deep.equal({ type, filters })
+      expect(resolver(null, args, fakeContext)).to.deep.equal({ type, filters })
     })
 
     it('should return the result of the store.readAll call', () => {
       const id = 'jobId'
-      const queryArgs = { id }
-      const transactionParams = { id }
+      const args = { id }
       const store = {
         readAll: () => 'the_filtered_jobs'
       }
       const fakeContext = {
-        transaction: (action) => {
-          return action(store, transactionParams)
+        transaction: (action, params) => {
+          return action(store, params)
         }
       }
-      expect(resolver(null, queryArgs, fakeContext)).to.equal('the_filtered_jobs')
+      expect(resolver(null, args, fakeContext)).to.equal('the_filtered_jobs')
     })
   })
 })

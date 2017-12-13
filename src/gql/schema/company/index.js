@@ -16,6 +16,7 @@ module.exports = {
       size: String
       twitter: String
       url: String
+      onboarded: Boolean!
     }
 
     input CompanyFilterInput {

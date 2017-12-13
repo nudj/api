@@ -10,6 +10,7 @@ const TYPE_PLURAL = 'companies'
 const DUMMY_ID = '123'
 const DUMMY_STRING = 'abc'
 const DUMMY_DATETIME = '2000-01-17T02:51:58.000+00:00'
+const DUMMY_BOOLEAN = true
 expectPropertyReceivesValue = expectPropertyReceivesValue(schema, TYPE, TYPE_PLURAL)
 expectPropertyIsRequired = expectPropertyIsRequired(schema, TYPE, TYPE_PLURAL)
 
@@ -30,6 +31,7 @@ describe('Company properties', () => {
     await expectPropertyReceivesValue('size', DUMMY_STRING)
     await expectPropertyReceivesValue('twitter', DUMMY_STRING)
     await expectPropertyReceivesValue('url', DUMMY_STRING)
+    await expectPropertyReceivesValue('onboarded', DUMMY_BOOLEAN)
   })
   it('should have the following required properties', async () => {
     await expectPropertyIsRequired('id')
@@ -37,5 +39,6 @@ describe('Company properties', () => {
     await expectPropertyIsRequired('modified')
     await expectPropertyIsRequired('name')
     await expectPropertyIsRequired('slug')
+    await expectPropertyIsRequired('onboarded')
   })
 })

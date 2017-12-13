@@ -69,6 +69,7 @@ steps:
       branch:
         only:
           - master
+          - publish
 
   push_image:
     title: Push Release

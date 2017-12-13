@@ -19,7 +19,9 @@ describe('Query.employeesByFilters', () => {
     }
     const operation = `
       query {
-        employeesByFilters {
+        employeesByFilters(filters: {
+          id: "employee2"
+        }) {
           id
         }
       }
@@ -27,9 +29,6 @@ describe('Query.employeesByFilters', () => {
     return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
         employeesByFilters: [
-          {
-            id: 'employee1'
-          },
           {
             id: 'employee2'
           }
@@ -44,7 +43,9 @@ describe('Query.employeesByFilters', () => {
     }
     const operation = `
       query {
-        employeesByFilters {
+        employeesByFilters(filters: {
+          id: "employee2"
+        }) {
           id
         }
       }

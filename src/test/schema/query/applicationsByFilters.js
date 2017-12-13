@@ -19,7 +19,9 @@ describe('Query.applicationsByFilters', () => {
     }
     const operation = `
       query {
-        applicationsByFilters {
+        applicationsByFilters(filters: {
+          id: "application2"
+        }) {
           id
         }
       }
@@ -27,9 +29,6 @@ describe('Query.applicationsByFilters', () => {
     return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
         applicationsByFilters: [
-          {
-            id: 'application1'
-          },
           {
             id: 'application2'
           }
@@ -44,7 +43,9 @@ describe('Query.applicationsByFilters', () => {
     }
     const operation = `
       query {
-        applicationsByFilters {
+        applicationsByFilters(filters: {
+          id: "application2"
+        }) {
           id
         }
       }

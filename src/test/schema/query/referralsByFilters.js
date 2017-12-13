@@ -19,7 +19,9 @@ describe('Query.referralsByFilters', () => {
     }
     const operation = `
       query {
-        referralsByFilters {
+        referralsByFilters(filters: {
+          id: "referral2"
+        }) {
           id
         }
       }
@@ -27,9 +29,6 @@ describe('Query.referralsByFilters', () => {
     return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
         referralsByFilters: [
-          {
-            id: 'referral1'
-          },
           {
             id: 'referral2'
           }
@@ -44,7 +43,9 @@ describe('Query.referralsByFilters', () => {
     }
     const operation = `
       query {
-        referralsByFilters {
+        referralsByFilters(filters: {
+          id: "referral2"
+        }) {
           id
         }
       }

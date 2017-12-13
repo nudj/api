@@ -19,7 +19,9 @@ describe('Mutation.jobsByFilters', () => {
     }
     const operation = `
       mutation {
-        jobsByFilters {
+        jobsByFilters(filters: {
+          id: "job2"
+        }) {
           id
         }
       }
@@ -27,9 +29,6 @@ describe('Mutation.jobsByFilters', () => {
     return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
         jobsByFilters: [
-          {
-            id: 'job1'
-          },
           {
             id: 'job2'
           }
@@ -44,7 +43,9 @@ describe('Mutation.jobsByFilters', () => {
     }
     const operation = `
       mutation {
-        jobsByFilters {
+        jobsByFilters(filters: {
+          id: "job2"
+        }) {
           id
         }
       }

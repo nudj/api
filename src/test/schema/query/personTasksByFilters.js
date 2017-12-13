@@ -19,7 +19,9 @@ describe('Query.personTasksByFilters', () => {
     }
     const operation = `
       query {
-        personTasksByFilters {
+        personTasksByFilters(filters: {
+          id: "personTask2"
+        }) {
           id
         }
       }
@@ -27,9 +29,6 @@ describe('Query.personTasksByFilters', () => {
     return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
         personTasksByFilters: [
-          {
-            id: 'personTask1'
-          },
           {
             id: 'personTask2'
           }
@@ -44,7 +43,9 @@ describe('Query.personTasksByFilters', () => {
     }
     const operation = `
       query {
-        personTasksByFilters {
+        personTasksByFilters(filters: {
+          id: "personTask2"
+        }) {
           id
         }
       }

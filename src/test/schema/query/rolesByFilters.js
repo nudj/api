@@ -19,7 +19,9 @@ describe('Query.rolesByFilters', () => {
     }
     const operation = `
       query {
-        rolesByFilters {
+        rolesByFilters(filters: {
+          id: "role2"
+        }) {
           id
         }
       }
@@ -27,9 +29,6 @@ describe('Query.rolesByFilters', () => {
     return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
         rolesByFilters: [
-          {
-            id: 'role1'
-          },
           {
             id: 'role2'
           }
@@ -44,7 +43,9 @@ describe('Query.rolesByFilters', () => {
     }
     const operation = `
       query {
-        rolesByFilters {
+        rolesByFilters(filters: {
+          id: "role2"
+        }) {
           id
         }
       }

@@ -6,32 +6,31 @@ const schema = require('../../../gql/schema')
 const { executeQueryOnDbUsingSchema } = require('../../helpers')
 
 describe('Mutation.connectionSourcesByFilters', () => {
-  it('should fetch filtered applications', async () => {
+  it('should fetch filtered connectionSources', async () => {
     const db = {
-      applications: [
+      connectionSources: [
         {
-          id: 'application1'
+          id: 'connectionSource1'
         },
         {
-          id: 'application2'
+          id: 'connectionSource2'
         }
       ]
     }
     const operation = `
       mutation {
-        applicationsByFilters {
+        connectionSourcesByFilters(filters: {
+          id: "connectionSource2"
+        }) {
           id
         }
       }
     `
     return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
-        applicationsByFilters: [
+        connectionSourcesByFilters: [
           {
-            id: 'application1'
-          },
-          {
-            id: 'application2'
+            id: 'connectionSource2'
           }
         ]
       }
@@ -40,18 +39,20 @@ describe('Mutation.connectionSourcesByFilters', () => {
 
   it('should return empty array if no matches', async () => {
     const db = {
-      applications: []
+      connectionSources: []
     }
     const operation = `
       mutation {
-        applicationsByFilters {
+        connectionSourcesByFilters(filters: {
+          id: "connectionSource2"
+        }) {
           id
         }
       }
     `
     return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
-        applicationsByFilters: []
+        connectionSourcesByFilters: []
       }
     })
   })

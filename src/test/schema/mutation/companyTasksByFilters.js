@@ -19,7 +19,9 @@ describe('Mutation.companyTasksByFilters', () => {
     }
     const operation = `
       mutation {
-        companyTasksByFilters {
+        companyTasksByFilters(filters: {
+          id: "companyTask2"
+        }) {
           id
         }
       }
@@ -27,9 +29,6 @@ describe('Mutation.companyTasksByFilters', () => {
     return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
         companyTasksByFilters: [
-          {
-            id: 'companyTask1'
-          },
           {
             id: 'companyTask2'
           }
@@ -44,7 +43,9 @@ describe('Mutation.companyTasksByFilters', () => {
     }
     const operation = `
       mutation {
-        companyTasksByFilters {
+        companyTasksByFilters(filters: {
+          id: "companyTask2"
+        }) {
           id
         }
       }

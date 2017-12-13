@@ -19,7 +19,9 @@ describe('Mutation.surveysByFilters', () => {
     }
     const operation = `
       mutation {
-        surveysByFilters {
+        surveysByFilters(filters: {
+          id: "survey2"
+        }) {
           id
         }
       }
@@ -27,9 +29,6 @@ describe('Mutation.surveysByFilters', () => {
     return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
         surveysByFilters: [
-          {
-            id: 'survey1'
-          },
           {
             id: 'survey2'
           }
@@ -44,7 +43,9 @@ describe('Mutation.surveysByFilters', () => {
     }
     const operation = `
       mutation {
-        surveysByFilters {
+        surveysByFilters(filters: {
+          id: "survey2"
+        }) {
           id
         }
       }

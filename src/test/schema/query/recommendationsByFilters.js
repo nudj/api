@@ -19,7 +19,9 @@ describe('Query.recommendationsByFilters', () => {
     }
     const operation = `
       query {
-        recommendationsByFilters {
+        recommendationsByFilters(filters: {
+          id: "recommendation2"
+        }) {
           id
         }
       }
@@ -27,9 +29,6 @@ describe('Query.recommendationsByFilters', () => {
     return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
         recommendationsByFilters: [
-          {
-            id: 'recommendation1'
-          },
           {
             id: 'recommendation2'
           }
@@ -44,7 +43,9 @@ describe('Query.recommendationsByFilters', () => {
     }
     const operation = `
       query {
-        recommendationsByFilters {
+        recommendationsByFilters(filters: {
+          id: "recommendation2"
+        }) {
           id
         }
       }

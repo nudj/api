@@ -19,7 +19,9 @@ describe('Mutation.connectionsByFilters', () => {
     }
     const operation = `
       mutation {
-        connectionsByFilters {
+        connectionsByFilters(filters: {
+          id: "connection2"
+        }) {
           id
         }
       }
@@ -27,9 +29,6 @@ describe('Mutation.connectionsByFilters', () => {
     return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
         connectionsByFilters: [
-          {
-            id: 'connection1'
-          },
           {
             id: 'connection2'
           }
@@ -44,7 +43,9 @@ describe('Mutation.connectionsByFilters', () => {
     }
     const operation = `
       mutation {
-        connectionsByFilters {
+        connectionsByFilters(filters: {
+          id: "connection2"
+        }) {
           id
         }
       }

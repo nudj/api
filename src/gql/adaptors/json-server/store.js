@@ -1,5 +1,7 @@
 const first = require('lodash/first')
-const request = require('@nudj/library/lib/request')
+const uniqBy = require('lodash/uniqBy')
+const flatten = require('lodash/flatten')
+const axios = require('axios')
 const { NotFound } = require('@nudj/library/errors')
 const {
   toQs,
@@ -9,23 +11,29 @@ const {
 
 const newISODate = () => (new Date()).toISOString()
 
+const request = (options = {}) => {
+  return axios(Object.assign({
+    baseURL: 'http://localhost:81'
+  }, options))
+  .then(response => response.data)
+}
+
 const errorHandler = (details) => (error) => {
   const code = error.status || (error.response && error.response.status) || 500
   if (code === 404) {
     return null
   }
-  logger('error', (new Date()).toISOString(), details, ...error.log)
+  logger('error', (new Date()).toISOString(), details, error.log || error)
   throw error
 }
-const baseURL = process.env.DB_API_URL
 
 module.exports = () => ({
   create: ({
     type,
     data
   }) => {
-    return request(`/${type}`, {
-      baseURL,
+    return request({
+      url: `/${type}`,
       method: 'post',
       data: merge(data, {
         created: newISODate(),
@@ -46,9 +54,14 @@ module.exports = () => ({
     const filterString = toQs(filters)
     let response
     if (id) {
-      response = request(`/${type}/${id}`, {baseURL})
+      response = request({
+        url: `/${type}/${id}`
+      })
     } else {
-      response = request(`/${type}${filterString.length ? `?${filterString}` : ''}`, {baseURL}).then(first)
+      response = request({
+        url: `/${type}${filterString.length ? `?${filterString}` : ''}`
+      })
+      .then(first)
     }
     return response
     .then(result => {
@@ -69,11 +82,13 @@ module.exports = () => ({
   }) => {
     try {
       const filterString = toQs(filters)
-      const matches = await request(`/${type}${filterString.length ? `?${filterString}` : ''}`, {baseURL})
+      const matches = await request({
+        url: `/${type}${filterString.length ? `?${filterString}` : ''}`
+      })
       let item = first(matches)
       if (!item) {
-        item = await request(`/${type}`, {
-          baseURL,
+        item = await request({
+          url: `/${type}`,
           method: 'post',
           data: merge(data, {
             created: newISODate(),
@@ -96,7 +111,9 @@ module.exports = () => ({
     filters
   }) => {
     const filterString = toQs(filters)
-    return request(`/${type}${filterString.length ? `?${filterString}` : ''}`, {baseURL})
+    return request({
+      url: `/${type}${filterString.length ? `?${filterString}` : ''}`
+    })
       .catch(errorHandler({
         action: 'readAll',
         type,
@@ -107,7 +124,9 @@ module.exports = () => ({
     type,
     ids
   }) => {
-    return Promise.all(ids.map(id => request(`/${type}/${id}`, {baseURL})))
+    return Promise.all(ids.map(id => request({
+      url: `/${type}/${id}`
+    })))
     .catch(errorHandler({
       action: 'readMany',
       type,
@@ -119,8 +138,8 @@ module.exports = () => ({
     id,
     data
   }) => {
-    return request(`/${type}/${id}`, {
-      baseURL,
+    return request({
+      url: `/${type}/${id}`,
       method: 'patch',
       data: merge(data, {
         modified: newISODate()
@@ -137,16 +156,38 @@ module.exports = () => ({
     type,
     id
   }) => {
-    return request(`/${type}/${id}`)
-    .then(item => request(`/${type}/${id}`, {
-      baseURL,
-      method: 'delete'
+    return request({
+      url: `/${type}/${id}`
     })
-    .then(() => item))
+    .then(item => {
+      return request({
+        url: `/${type}/${id}`,
+        method: 'delete'
+      })
+      .then(() => item)
+    })
     .catch(errorHandler({
       action: 'delete',
       type,
       id
+    }))
+  },
+  search: ({
+    type,
+    query,
+    fields
+  }) => {
+    return Promise.all(fields.map(field => {
+      return request({
+        url: `/${type}?${field}_like=${query}`
+      })
+    }))
+    .then(connections => uniqBy(flatten(connections, 'id')))
+    .catch(errorHandler({
+      action: 'search',
+      type,
+      query,
+      fields
     }))
   }
 })

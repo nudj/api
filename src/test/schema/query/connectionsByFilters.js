@@ -5,22 +5,22 @@ const expect = chai.expect
 const schema = require('../../../gql/schema')
 const { executeQueryOnDbUsingSchema } = require('../../helpers')
 
-describe('Query.applicationsByFilters', () => {
-  it('should fetch filtered applications', async () => {
+describe('Query.connectionsByFilters', () => {
+  it('should fetch filtered connections', async () => {
     const db = {
-      applications: [
+      connections: [
         {
-          id: 'application1'
+          id: 'connection1'
         },
         {
-          id: 'application2'
+          id: 'connection2'
         }
       ]
     }
     const operation = `
       query {
-        applicationsByFilters(filters: {
-          id: "application2"
+        connectionsByFilters(filters: {
+          id: "connection2"
         }) {
           id
         }
@@ -28,9 +28,9 @@ describe('Query.applicationsByFilters', () => {
     `
     return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
-        applicationsByFilters: [
+        connectionsByFilters: [
           {
-            id: 'application2'
+            id: 'connection2'
           }
         ]
       }
@@ -39,12 +39,12 @@ describe('Query.applicationsByFilters', () => {
 
   it('should return empty array if no matches', async () => {
     const db = {
-      applications: []
+      connections: []
     }
     const operation = `
       query {
-        applicationsByFilters(filters: {
-          id: "application2"
+        connectionsByFilters(filters: {
+          id: "connection2"
         }) {
           id
         }
@@ -52,7 +52,7 @@ describe('Query.applicationsByFilters', () => {
     `
     return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
-        applicationsByFilters: []
+        connectionsByFilters: []
       }
     })
   })

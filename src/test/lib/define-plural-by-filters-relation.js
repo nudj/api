@@ -9,34 +9,11 @@ describe('definePluralByFiltersRelation', () => {
     expect(() => definePluralByFiltersRelation()).to.throw('definePluralByFiltersRelation requires a parentType')
   })
 
-  it('should throw if no name is given', () => {
-    expect(() => definePluralByFiltersRelation({
-      parentType: 'Query'
-    })).to.throw('definePluralByFiltersRelation requires a name')
-  })
-
   it('should throw if no type is given', () => {
     expect(() => definePluralByFiltersRelation({
       parentType: 'Query',
       name: 'jobsByFilters'
     })).to.throw('definePluralByFiltersRelation requires a type')
-  })
-
-  it('should throw if no collection is given', () => {
-    expect(() => definePluralByFiltersRelation({
-      parentType: 'Query',
-      name: 'jobsByFilters',
-      type: 'Job'
-    })).to.throw('definePluralByFiltersRelation requires a collection')
-  })
-
-  it('should throw if no filterType is given', () => {
-    expect(() => definePluralByFiltersRelation({
-      parentType: 'Query',
-      name: 'jobsByFilters',
-      type: 'Job',
-      collection: 'jobs'
-    })).to.throw('definePluralByFiltersRelation requires a filterType')
   })
 
   it('should return an object', () => {
@@ -127,6 +104,42 @@ describe('definePluralByFiltersRelation', () => {
         }
       }
       expect(resolver(null, args, fakeContext)).to.equal('the_filtered_jobs')
+    })
+  })
+
+  describe('when the name and filterType is missing', () => {
+    it('should generate a name and filter type based on the type', () => {
+      expect(definePluralByFiltersRelation({
+        parentType: 'Query',
+        type: 'SomeLongObscureType',
+        collection: 'jobs'
+      })).to.have.property('typeDefs').to.equal(`
+      extend type Query {
+        someLongObscureTypesByFilters(filters: SomeLongObscureTypeFilterInput): [SomeLongObscureType!]!
+      }
+    `)
+    })
+  })
+
+  describe('when the collection is missing the resolver', () => {
+    it('should call store.readAll with a collection that is a pluralisation of the type', () => {
+      const resolver = definePluralByFiltersRelation({
+        parentType: 'Query',
+        name: 'job',
+        type: 'SomeLongObscureType'
+      }).resolvers.Query.job
+      const type = 'someLongObscureTypes'
+      const filters = { name: 'abc' }
+      const args = { filters }
+      const store = {
+        readAll: ({ type, filters }) => ({ type, filters })
+      }
+      const fakeContext = {
+        transaction: (action, params) => {
+          return action(store, params)
+        }
+      }
+      expect(resolver(null, args, fakeContext)).to.deep.equal({ type, filters })
     })
   })
 })

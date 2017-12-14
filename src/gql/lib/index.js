@@ -73,16 +73,18 @@ function definePluralRelation ({
 
 function definePluralByFiltersRelation ({
   parentType,
+  parentName,
   name,
   type,
   collection,
   filterType
 } = {}) {
   if (!parentType) throw new Error('definePluralByFiltersRelation requires a parentType')
-  if (!name) throw new Error('definePluralByFiltersRelation requires a name')
   if (!type) throw new Error('definePluralByFiltersRelation requires a type')
-  if (!collection) throw new Error('definePluralByFiltersRelation requires a collection')
-  if (!filterType) throw new Error('definePluralByFiltersRelation requires a filterType')
+  parentName = parentName || camelCase(parentType)
+  name = name || `${camelCase(type)}sByFilters`
+  collection = collection || `${camelCase(type)}s`
+  filterType = filterType || `${type}FilterInput`
 
   return {
     typeDefs: `
@@ -92,8 +94,11 @@ function definePluralByFiltersRelation ({
     `,
     resolvers: {
       [parentType]: {
-        [name]: (root, args, context) => {
+        [name]: (parent, args, context) => {
           return context.transaction((store, params) => {
+            if (parent) {
+              params.filters[parentName] = parent.id
+            }
             return store.readAll({
               type: params.collection,
               filters: params.filters

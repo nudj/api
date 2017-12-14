@@ -31,14 +31,16 @@ function defineEnum ({ name, values } = {}) {
 
 function definePluralRelation ({
   parentType,
+  parentName,
   name,
   type,
   collection
 } = {}) {
   if (!parentType) throw new Error('definePluralRelation requires a parentType')
-  if (!name) throw new Error('definePluralRelation requires a name')
   if (!type) throw new Error('definePluralRelation requires a type')
-  if (!collection) throw new Error('definePluralRelation requires a collection')
+  parentName = parentName || camelCase(parentType)
+  name = name || `${camelCase(type)}s`
+  collection = collection || `${camelCase(type)}s`
 
   return {
     typeDefs: `
@@ -48,10 +50,17 @@ function definePluralRelation ({
     `,
     resolvers: {
       [parentType]: {
-        [name]: (root, args, context) => {
+        [name]: (parent, args, context) => {
+          let filters
+          if (parent) {
+            filters = {
+              [parentName]: parent.id
+            }
+          }
           return context.transaction((store, params) => {
             return store.readAll({
-              type: params.collection
+              type: params.collection,
+              filters
             })
           }, {
             collection

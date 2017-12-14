@@ -9,25 +9,11 @@ describe('definePluralRelation', () => {
     expect(() => definePluralRelation()).to.throw('definePluralRelation requires a parentType')
   })
 
-  it('should throw if no name is given', () => {
-    expect(() => definePluralRelation({
-      parentType: 'Query'
-    })).to.throw('definePluralRelation requires a name')
-  })
-
   it('should throw if no type is given', () => {
     expect(() => definePluralRelation({
       parentType: 'Query',
       name: 'jobs'
     })).to.throw('definePluralRelation requires a type')
-  })
-
-  it('should throw if no collection is given', () => {
-    expect(() => definePluralRelation({
-      parentType: 'Query',
-      name: 'jobs',
-      type: 'Job'
-    })).to.throw('definePluralRelation requires a collection')
   })
 
   it('should return an object', () => {
@@ -98,6 +84,42 @@ describe('definePluralRelation', () => {
         }
       }
       expect(resolver(null, null, fakeContext)).to.equal('jobs')
+    })
+  })
+
+  describe('when the name is missing', () => {
+    it('should generate a name based on the type', () => {
+      expect(definePluralRelation({
+        parentType: 'Query',
+        type: 'SomeLongObscureType',
+        collection: 'jobs'
+      })).to.have.property('typeDefs').to.equal(`
+      extend type Query {
+        someLongObscureTypes: [SomeLongObscureType!]!
+      }
+    `)
+    })
+  })
+
+  describe('when the collection is missing the resolver', () => {
+    it('should call store.readOne with a collection that is a pluralisation of the type', () => {
+      const resolver = definePluralRelation({
+        parentType: 'Query',
+        name: 'job',
+        type: 'SomeLongObscureType'
+      }).resolvers.Query.job
+      const type = 'someLongObscureTypes'
+      const id = 'jobId'
+      const args = { id }
+      const store = {
+        readAll: ({ type }) => type
+      }
+      const fakeContext = {
+        transaction: (action, params) => {
+          return action(store, params)
+        }
+      }
+      expect(resolver(null, args, fakeContext)).to.deep.equal(type)
     })
   })
 })

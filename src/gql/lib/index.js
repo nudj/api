@@ -148,6 +148,7 @@ function defineSingularRelation ({
 
 function defineSingularByFiltersRelation ({
   parentType,
+  parentName,
   name,
   type,
   collection,
@@ -155,6 +156,7 @@ function defineSingularByFiltersRelation ({
 } = {}) {
   if (!parentType) throw new Error('defineSingularByFiltersRelation requires a parentType')
   if (!type) throw new Error('defineSingularByFiltersRelation requires a type')
+  parentName = parentName || camelCase(parentType)
   name = name || `${camelCase(type)}ByFilters`
   collection = collection || `${camelCase(type)}s`
   filterType = filterType || `${type}FilterInput`
@@ -167,14 +169,21 @@ function defineSingularByFiltersRelation ({
     `,
     resolvers: {
       [parentType]: {
-        [name]: (root, args, context) => {
+        [name]: (parent, args, context) => {
+          let filters
+          if (parent) {
+            filters = {
+              [parentName]: parent.id
+            }
+          }
           return context.transaction((store, params) => {
             return store.readOne({
               type: params.collection,
               filters: params.filters
             })
           }, merge({
-            collection
+            collection,
+            filters
           }, args))
         }
       }

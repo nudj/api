@@ -190,4 +190,31 @@ describe('defineSingularByFiltersRelation', () => {
     `)
     })
   })
+
+  describe('when parent is defined', () => {
+    it('should add the parent id to the readOne filters', () => {
+      const resolver = defineSingularByFiltersRelation({
+        parentType: 'Company',
+        type: 'Job'
+      }).resolvers.Company.jobByFilters
+      const company = {
+        id: 'company1'
+      }
+      const collection = 'jobs'
+      const filters = {}
+      const args = { filters }
+      const store = {
+        readOne: ({ type, filters }) => ({ type, filters })
+      }
+      const fakeContext = {
+        transaction: (action, params) => {
+          return action(store, params)
+        }
+      }
+      expect(resolver(company, args, fakeContext)).to.deep.equal({
+        type: collection,
+        filters: { company: company.id }
+      })
+    })
+  })
 })

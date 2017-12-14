@@ -10,7 +10,7 @@ chai.use(sinonChai)
 const transaction = require('../../../gql/adaptors/json-server')
 const server = nock('http://localhost:81/')
 
-describe('JSON-Server Store().search', () => {
+describe.only('JSON-Server Store().search', () => {
   beforeEach(() => {
     server
       .get('/connections')
@@ -33,7 +33,7 @@ describe('JSON-Server Store().search', () => {
         {
           id: 2,
           firstName: 'Juan',
-          lastName: 'Arango'
+          lastName: 'Testango'
         }
       ])
   })
@@ -77,7 +77,7 @@ describe('JSON-Server Store().search', () => {
         {
           id: 2,
           firstName: 'Juan',
-          lastName: 'Arango'
+          lastName: 'Testango'
         }
       ])
     })

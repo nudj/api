@@ -23,7 +23,7 @@ const errorHandler = (details) => (error) => {
   if (code === 404) {
     return null
   }
-  logger('error', (new Date()).toISOString(), details, error.log || error)
+  logger('error', (new Date()).toISOString(), details, error)
   throw error
 }
 

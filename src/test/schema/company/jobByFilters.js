@@ -58,7 +58,7 @@ describe('Company.jobByFilters', () => {
     })
   })
 
-  it('should return empty array and error if no matches', async () => {
+  it('should return null and error if no matches', async () => {
     const db = {
       companies: [
         {

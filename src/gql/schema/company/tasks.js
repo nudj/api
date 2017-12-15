@@ -1,6 +1,6 @@
-const { definePluralRelation } = require('../../lib')
+const { defineEntityPluralRelation } = require('../../lib')
 
-module.exports = definePluralRelation({
+module.exports = defineEntityPluralRelation({
   parentType: 'Company',
   type: 'CompanyTask',
   name: 'tasks'

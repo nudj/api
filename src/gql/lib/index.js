@@ -31,14 +31,12 @@ function defineEnum ({ name, values } = {}) {
 
 function definePluralRelation ({
   parentType,
-  parentName,
-  name,
   type,
+  name,
   collection
 } = {}) {
   if (!parentType) throw new Error('definePluralRelation requires a parentType')
   if (!type) throw new Error('definePluralRelation requires a type')
-  parentName = parentName || camelCase(parentType)
   name = name || `${camelCase(type)}s`
   collection = collection || `${camelCase(type)}s`
 
@@ -50,20 +48,53 @@ function definePluralRelation ({
     `,
     resolvers: {
       [parentType]: {
+        [name]: (root, args, context) => {
+          return context.transaction((store, params) => {
+            return store.readAll({
+              type: params.collection
+            })
+          }, {
+            collection
+          })
+        }
+      }
+    }
+  }
+}
+
+function defineEntityPluralRelation ({
+  parentType,
+  type,
+  name,
+  collection,
+  parentName
+} = {}) {
+  if (!parentType) throw new Error('defineEntityPluralRelation requires a parentType')
+  if (!type) throw new Error('defineEntityPluralRelation requires a type')
+  name = name || `${camelCase(type)}s`
+  collection = collection || `${camelCase(type)}s`
+  parentName = parentName || camelCase(parentType)
+
+  return {
+    typeDefs: `
+      extend type ${parentType} {
+        ${name}: [${type}!]!
+      }
+    `,
+    resolvers: {
+      [parentType]: {
         [name]: (parent, args, context) => {
-          let filters
-          if (parent) {
-            filters = {
-              [parentName]: parent.id
-            }
+          const filters = {
+            [parentName]: parent.id
           }
           return context.transaction((store, params) => {
             return store.readAll({
               type: params.collection,
-              filters
+              filters: params.filters
             })
           }, {
-            collection
+            collection,
+            filters
           })
         }
       }
@@ -209,5 +240,6 @@ module.exports = {
   definePluralRelation,
   definePluralByFiltersRelation,
   defineSingularRelation,
-  defineSingularByFiltersRelation
+  defineSingularByFiltersRelation,
+  defineEntityPluralRelation
 }

@@ -2,29 +2,29 @@
 const chai = require('chai')
 const expect = chai.expect
 
-const { definePluralRelation } = require('../../gql/lib')
+const { defineEntityPluralRelation } = require('../../gql/lib')
 const { generateFakeContextWithStore } = require('../helpers')
 
-describe('definePluralRelation', () => {
+describe('defineEntityPluralRelation', () => {
   it('should throw if no parentType is given', () => {
-    expect(() => definePluralRelation()).to.throw('definePluralRelation requires a parentType')
+    expect(() => defineEntityPluralRelation()).to.throw('defineEntityPluralRelation requires a parentType')
   })
 
   it('should throw if no type is given', () => {
-    expect(() => definePluralRelation({
+    expect(() => defineEntityPluralRelation({
       parentType: 'Parent'
-    })).to.throw('definePluralRelation requires a type')
+    })).to.throw('defineEntityPluralRelation requires a type')
   })
 
   it('should return an object', () => {
-    expect(definePluralRelation({
+    expect(defineEntityPluralRelation({
       parentType: 'Parent',
       type: 'Relation'
     })).to.be.an('object')
   })
 
   it('should return the typeDefs', () => {
-    expect(definePluralRelation({
+    expect(defineEntityPluralRelation({
       parentType: 'Parent',
       type: 'Relation'
     })).to.have.property('typeDefs').to.equal(`
@@ -35,7 +35,7 @@ describe('definePluralRelation', () => {
   })
 
   it('should return resolver for Parent.relations', () => {
-    expect(definePluralRelation({
+    expect(defineEntityPluralRelation({
       parentType: 'Parent',
       type: 'Relation'
     }))
@@ -48,7 +48,7 @@ describe('definePluralRelation', () => {
     let resolver
 
     beforeEach(() => {
-      resolver = definePluralRelation({
+      resolver = defineEntityPluralRelation({
         parentType: 'Parent',
         type: 'Relation'
       }).resolvers.Parent.relations
@@ -59,17 +59,35 @@ describe('definePluralRelation', () => {
     })
 
     it('should return the result of a store.readAll call', () => {
+      const parent = {
+        id: 'parentId'
+      }
       const fakeContext = generateFakeContextWithStore({
         readAll: () => 'all_the_relations'
       })
-      expect(resolver(null, null, fakeContext)).to.equal('all_the_relations')
+      expect(resolver(parent, null, fakeContext)).to.equal('all_the_relations')
     })
 
     it('should call store.readAll with the collection type', () => {
+      const parent = {
+        id: 'parentId'
+      }
       const fakeContext = generateFakeContextWithStore({
         readAll: args => args
       })
-      expect(resolver(null, null, fakeContext).type).to.equal('relations')
+      expect(resolver(parent, null, fakeContext).type).to.equal('relations')
+    })
+
+    it('should call store.readAll with filters based on parent.id', () => {
+      const parent = {
+        id: 'parent1'
+      }
+      const fakeContext = generateFakeContextWithStore({
+        readAll: args => args
+      })
+      expect(resolver(parent, null, fakeContext).filters).to.deep.equal({
+        parent: 'parent1'
+      })
     })
   })
 
@@ -77,7 +95,7 @@ describe('definePluralRelation', () => {
 
   describe('when the name is passed in', () => {
     it('should override the name', () => {
-      expect(definePluralRelation({
+      expect(defineEntityPluralRelation({
         parentType: 'Parent',
         type: 'Relation',
         name: 'aDifferentName'
@@ -92,15 +110,39 @@ describe('definePluralRelation', () => {
   describe('when the collection is passed in', () => {
     describe('the resolver', () => {
       it('should override the type passed to store.readAll', () => {
-        const resolver = definePluralRelation({
+        const resolver = defineEntityPluralRelation({
           parentType: 'Parent',
           type: 'Relation',
           collection: 'aDifferentCollection'
         }).resolvers.Parent.relations
+        const parent = {
+          id: 'parentId'
+        }
         const fakeContext = generateFakeContextWithStore({
           readAll: args => args
         })
-        expect(resolver(null, null, fakeContext).type).to.deep.equal('aDifferentCollection')
+        expect(resolver(parent, null, fakeContext).type).to.deep.equal('aDifferentCollection')
+      })
+    })
+  })
+
+  describe('when parentName is passed in', () => {
+    describe('the resolver', () => {
+      it('should override key in filters for parent.id', () => {
+        const resolver = defineEntityPluralRelation({
+          parentType: 'Parent',
+          parentName: 'aDifferentName',
+          type: 'Relation'
+        }).resolvers.Parent.relations
+        const parent = {
+          id: 'parent1'
+        }
+        const fakeContext = generateFakeContextWithStore({
+          readAll: args => args
+        })
+        expect(resolver(parent, null, fakeContext).filters).to.deep.equal({
+          aDifferentName: 'parent1'
+        })
       })
     })
   })

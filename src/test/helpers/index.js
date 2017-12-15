@@ -138,11 +138,20 @@ const expectPropertyContentsIsRequired = curry(async (schema, type, typePlural, 
   }))
 })
 
+function generateFakeContextWithStore (store) {
+  return {
+    transaction: (action, params) => {
+      return action(store, params)
+    }
+  }
+}
+
 module.exports = {
   executeQueryOnDbUsingSchema,
   expectPropertyReceivesValue,
   expectTypeIsFilterableBy,
   expectPropertyIsRequired,
   expectPropertyContentsIsRequired,
-  shouldRespondWithGqlError
+  shouldRespondWithGqlError,
+  generateFakeContextWithStore
 }

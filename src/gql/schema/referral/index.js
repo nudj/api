@@ -8,6 +8,7 @@ module.exports = {
 
     input ReferralFilterInput {
       id: ID
+      person: ID
     }
   `
 }

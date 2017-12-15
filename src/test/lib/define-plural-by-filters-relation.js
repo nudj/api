@@ -4,6 +4,14 @@ const expect = chai.expect
 
 const { definePluralByFiltersRelation } = require('../../gql/lib')
 
+const fakeContextEchosReadAllArgs = {
+  transaction: (action, params) => {
+    return action({
+      readAll: args => args
+    }, params)
+  }
+}
+
 describe('definePluralByFiltersRelation', () => {
   it('should throw if no parentType is given', () => {
     expect(() => definePluralByFiltersRelation()).to.throw('definePluralByFiltersRelation requires a parentType')
@@ -28,12 +36,12 @@ describe('definePluralByFiltersRelation', () => {
       type: 'Job'
     })).to.have.property('typeDefs').to.equal(`
       extend type Query {
-        jobsByFilters(filters: JobFilterInput): [Job!]!
+        jobsByFilters(filters: JobFilterInput!): [Job!]!
       }
     `)
   })
 
-  it('should return resolver for Query.jobs', () => {
+  it('should return resolver for Query.jobsByFilters', () => {
     expect(definePluralByFiltersRelation({
       parentType: 'Query',
       type: 'Job'
@@ -65,8 +73,8 @@ describe('definePluralByFiltersRelation', () => {
         readAll: () => 'all_the_jobs'
       }
       const fakeContext = {
-        transaction: (action) => {
-          return action(fakeStore, {})
+        transaction: (action, params) => {
+          return action(fakeStore, params)
         }
       }
       expect(resolver(null, { filters }, fakeContext)).to.equal('all_the_jobs')
@@ -76,32 +84,14 @@ describe('definePluralByFiltersRelation', () => {
       const filters = {
         slug: 'someSlug'
       }
-      const fakeStore = {
-        readAll: ({ type }) => type
-      }
-      const fakeContext = {
-        transaction: (action) => {
-          return action(fakeStore, {
-            collection: 'jobs'
-          })
-        }
-      }
-      expect(resolver(null, { filters }, fakeContext)).to.equal('jobs')
+      expect(resolver(null, { filters }, fakeContextEchosReadAllArgs).type).to.equal('jobs')
     })
 
     it('should call store.readAll with the filters passed in args', () => {
       const filters = {
         slug: 'someSlug'
       }
-      const fakeStore = {
-        readAll: ({ filters }) => filters
-      }
-      const fakeContext = {
-        transaction: (action, params) => {
-          return action(fakeStore, params)
-        }
-      }
-      expect(resolver(null, { filters }, fakeContext)).to.deep.equal({
+      expect(resolver(null, { filters }, fakeContextEchosReadAllArgs).filters).to.deep.equal({
         slug: 'someSlug'
       })
     })
@@ -117,7 +107,7 @@ describe('definePluralByFiltersRelation', () => {
         name: 'aDifferentName'
       })).to.have.property('typeDefs').to.equal(`
       extend type Query {
-        aDifferentName(filters: JobFilterInput): [Job!]!
+        aDifferentName(filters: JobFilterInput!): [Job!]!
       }
     `)
     })
@@ -131,7 +121,7 @@ describe('definePluralByFiltersRelation', () => {
         filterType: 'aDifferentFilterType'
       })).to.have.property('typeDefs').to.equal(`
       extend type Query {
-        jobsByFilters(filters: aDifferentFilterType): [Job!]!
+        jobsByFilters(filters: aDifferentFilterType!): [Job!]!
       }
     `)
     })
@@ -148,15 +138,7 @@ describe('definePluralByFiltersRelation', () => {
           type: 'Job',
           collection: 'aDifferentCollection'
         }).resolvers.Query.jobsByFilters
-        const store = {
-          readAll: ({ type }) => type
-        }
-        const fakeContext = {
-          transaction: (action, params) => {
-            return action(store, params)
-          }
-        }
-        expect(resolver(null, { filters }, fakeContext)).to.deep.equal('aDifferentCollection')
+        expect(resolver(null, { filters }, fakeContextEchosReadAllArgs).type).to.deep.equal('aDifferentCollection')
       })
     })
   })
@@ -176,15 +158,7 @@ describe('definePluralByFiltersRelation', () => {
           parentType: 'Company',
           type: 'Job'
         }).resolvers.Company.jobsByFilters
-        const store = {
-          readAll: ({ filters }) => filters
-        }
-        const fakeContext = {
-          transaction: (action, params) => {
-            return action(store, params)
-          }
-        }
-        expect(resolver(parent, { filters }, fakeContext)).to.deep.equal({
+        expect(resolver(parent, { filters }, fakeContextEchosReadAllArgs).filters).to.deep.equal({
           company: 'company1',
           slug: 'someSlug'
         })
@@ -205,15 +179,7 @@ describe('definePluralByFiltersRelation', () => {
             parentName: 'aDifferentName',
             type: 'Job'
           }).resolvers.Company.jobsByFilters
-          const store = {
-            readAll: ({ filters }) => filters
-          }
-          const fakeContext = {
-            transaction: (action, params) => {
-              return action(store, params)
-            }
-          }
-          expect(resolver(parent, { filters }, fakeContext)).to.deep.equal({
+          expect(resolver(parent, { filters }, fakeContextEchosReadAllArgs).filters).to.deep.equal({
             aDifferentName: 'company1',
             slug: 'someSlug'
           })

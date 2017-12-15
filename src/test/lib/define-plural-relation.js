@@ -4,6 +4,14 @@ const expect = chai.expect
 
 const { definePluralRelation } = require('../../gql/lib')
 
+const fakeContextEchosReadAllArgs = {
+  transaction: (action, params) => {
+    return action({
+      readAll: args => args
+    }, params)
+  }
+}
+
 describe('definePluralRelation', () => {
   it('should throw if no parentType is given', () => {
     expect(() => definePluralRelation()).to.throw('definePluralRelation requires a parentType')
@@ -70,17 +78,7 @@ describe('definePluralRelation', () => {
     })
 
     it('should call store.readAll with the collection type', () => {
-      const fakeStore = {
-        readAll: ({ type }) => type
-      }
-      const fakeContext = {
-        transaction: (action) => {
-          return action(fakeStore, {
-            collection: 'jobs'
-          })
-        }
-      }
-      expect(resolver(null, null, fakeContext)).to.equal('jobs')
+      expect(resolver(null, null, fakeContextEchosReadAllArgs).type).to.equal('jobs')
     })
   })
 
@@ -108,15 +106,7 @@ describe('definePluralRelation', () => {
           type: 'Job',
           collection: 'aDifferentCollection'
         }).resolvers.Query.jobs
-        const store = {
-          readAll: ({ type }) => type
-        }
-        const fakeContext = {
-          transaction: (action, params) => {
-            return action(store, params)
-          }
-        }
-        expect(resolver(null, null, fakeContext)).to.deep.equal('aDifferentCollection')
+        expect(resolver(null, null, fakeContextEchosReadAllArgs).type).to.deep.equal('aDifferentCollection')
       })
     })
   })
@@ -133,15 +123,7 @@ describe('definePluralRelation', () => {
         const parent = {
           id: 'company1'
         }
-        const store = {
-          readAll: ({ filters }) => filters
-        }
-        const fakeContext = {
-          transaction: (action, params) => {
-            return action(store, params)
-          }
-        }
-        expect(resolver(parent, null, fakeContext)).to.deep.equal({
+        expect(resolver(parent, null, fakeContextEchosReadAllArgs).filters).to.deep.equal({
           company: 'company1'
         })
       })
@@ -158,15 +140,7 @@ describe('definePluralRelation', () => {
           const parent = {
             id: 'company1'
           }
-          const store = {
-            readAll: ({ filters }) => filters
-          }
-          const fakeContext = {
-            transaction: (action, params) => {
-              return action(store, params)
-            }
-          }
-          expect(resolver(parent, null, fakeContext)).to.deep.equal({
+          expect(resolver(parent, null, fakeContextEchosReadAllArgs).filters).to.deep.equal({
             aDifferentName: 'company1'
           })
         })

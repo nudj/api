@@ -104,14 +104,50 @@ function defineEntityPluralRelation ({
 
 function definePluralByFiltersRelation ({
   parentType,
+  type,
+  name,
+  collection,
+  filterType
+} = {}) {
+  if (!parentType) throw new Error('definePluralByFiltersRelation requires a parentType')
+  if (!type) throw new Error('definePluralByFiltersRelation requires a type')
+  name = name || `${camelCase(type)}sByFilters`
+  collection = collection || `${camelCase(type)}s`
+  filterType = filterType || `${type}FilterInput`
+
+  return {
+    typeDefs: `
+      extend type ${parentType} {
+        ${name}(filters: ${filterType}!): [${type}!]!
+      }
+    `,
+    resolvers: {
+      [parentType]: {
+        [name]: (root, args, context) => {
+          return context.transaction((store, params) => {
+            return store.readAll({
+              type: params.collection,
+              filters: params.filters
+            })
+          }, merge({
+            collection
+          }, args))
+        }
+      }
+    }
+  }
+}
+
+function defineEntityPluralByFiltersRelation ({
+  parentType,
   parentName,
   name,
   type,
   collection,
   filterType
 } = {}) {
-  if (!parentType) throw new Error('definePluralByFiltersRelation requires a parentType')
-  if (!type) throw new Error('definePluralByFiltersRelation requires a type')
+  if (!parentType) throw new Error('defineEntityPluralByFiltersRelation requires a parentType')
+  if (!type) throw new Error('defineEntityPluralByFiltersRelation requires a type')
   parentName = parentName || camelCase(parentType)
   name = name || `${camelCase(type)}sByFilters`
   collection = collection || `${camelCase(type)}s`
@@ -126,17 +162,16 @@ function definePluralByFiltersRelation ({
     resolvers: {
       [parentType]: {
         [name]: (parent, args, context) => {
+          args.filters[parentName] = parent.id
           return context.transaction((store, params) => {
-            if (parent) {
-              params.filters[parentName] = parent.id
-            }
             return store.readAll({
               type: params.collection,
               filters: params.filters
             })
-          }, merge({
-            collection
-          }, args))
+          }, {
+            collection,
+            filters: args.filters
+          })
         }
       }
     }
@@ -241,5 +276,6 @@ module.exports = {
   definePluralByFiltersRelation,
   defineSingularRelation,
   defineSingularByFiltersRelation,
-  defineEntityPluralRelation
+  defineEntityPluralRelation,
+  defineEntityPluralByFiltersRelation
 }

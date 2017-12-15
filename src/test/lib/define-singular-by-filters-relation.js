@@ -29,7 +29,7 @@ describe('defineSingularByFiltersRelation', () => {
       type: 'Relation'
     })).to.have.property('typeDefs').to.equal(`
       extend type Parent {
-        relationByFilters(filters: RelationFilterInput!): Relation!
+        relationByFilters(filters: RelationFilterInput!): Relation
       }
     `)
   })

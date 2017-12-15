@@ -279,7 +279,7 @@ function defineEntitySingularByFiltersRelation ({
   return {
     typeDefs: `
       extend type ${parentType} {
-        ${name}(filters: ${filterType}!): ${type}!
+        ${name}(filters: ${filterType}!): ${type}
       }
     `,
     resolvers: {

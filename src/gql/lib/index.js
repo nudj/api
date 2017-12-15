@@ -180,14 +180,50 @@ function defineEntityPluralByFiltersRelation ({
 
 function defineSingularRelation ({
   parentType,
-  parentName,
-  name,
   type,
+  name,
   collection
 } = {}) {
   if (!parentType) throw new Error('defineSingularRelation requires a parentType')
   if (!type) throw new Error('defineSingularRelation requires a type')
-  parentName = parentName || camelCase(parentType)
+  name = name || camelCase(type)
+  collection = collection || `${camelCase(type)}s`
+
+  return {
+    typeDefs: `
+      extend type ${parentType} {
+        ${name}(id: ID!): ${type}!
+      }
+    `,
+    resolvers: {
+      [parentType]: {
+        [name]: (root, args, context) => {
+          return context.transaction((store, params) => {
+            return store.readOne({
+              type: params.collection,
+              id: params.id,
+              filters: params.filters
+            })
+          }, merge({
+            collection,
+            id: args.id
+          }))
+        }
+      }
+    }
+  }
+}
+
+function defineEntitySingularRelation ({
+  parentType,
+  propertyName,
+  name,
+  type,
+  collection
+} = {}) {
+  if (!parentType) throw new Error('defineEntitySingularRelation requires a parentType')
+  if (!type) throw new Error('defineEntitySingularRelation requires a type')
+  propertyName = propertyName || camelCase(type)
   name = name || camelCase(type)
   collection = collection || `${camelCase(type)}s`
 
@@ -200,13 +236,6 @@ function defineSingularRelation ({
     resolvers: {
       [parentType]: {
         [name]: (parent, args, context) => {
-          let filters
-          if (parent) {
-            filters = {
-              id: args.id,
-              [parentName]: parent.id
-            }
-          }
           return context.transaction((store, params) => {
             return store.readOne({
               type: params.collection,
@@ -215,8 +244,7 @@ function defineSingularRelation ({
             })
           }, merge({
             collection,
-            id: filters ? undefined : args.id,
-            filters
+            id: parent[propertyName]
           }))
         }
       }
@@ -312,5 +340,6 @@ module.exports = {
   defineSingularByFiltersRelation,
   defineEntityPluralRelation,
   defineEntityPluralByFiltersRelation,
+  defineEntitySingularRelation,
   defineEntitySingularByFiltersRelation
 }

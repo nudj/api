@@ -33,7 +33,7 @@ describe('definePluralByFiltersRelation', () => {
     `)
   })
 
-  it('should return resolver for Company.jobs', () => {
+  it('should return resolver for Query.jobs', () => {
     expect(definePluralByFiltersRelation({
       parentType: 'Query',
       type: 'Job'

@@ -2,29 +2,29 @@
 const chai = require('chai')
 const expect = chai.expect
 
-const { defineEntitySingularRelation } = require('../../gql/lib')
+const { defineSingularRelation } = require('../../gql/lib')
 const { generateFakeContextWithStore } = require('../helpers')
 
-describe('defineEntitySingularRelation', () => {
+describe('defineSingularRelation', () => {
   it('should throw if no parentType is given', () => {
-    expect(() => defineEntitySingularRelation()).to.throw('defineEntitySingularRelation requires a parentType')
+    expect(() => defineSingularRelation()).to.throw('defineSingularRelation requires a parentType')
   })
 
   it('should throw if no type is given', () => {
-    expect(() => defineEntitySingularRelation({
+    expect(() => defineSingularRelation({
       parentType: 'Parent'
-    })).to.throw('defineEntitySingularRelation requires a type')
+    })).to.throw('defineSingularRelation requires a type')
   })
 
   it('should return an object', () => {
-    expect(defineEntitySingularRelation({
+    expect(defineSingularRelation({
       parentType: 'Parent',
       type: 'Relation'
     })).to.be.an('object')
   })
 
   it('should return the typeDefs', () => {
-    expect(defineEntitySingularRelation({
+    expect(defineSingularRelation({
       parentType: 'Parent',
       type: 'Relation'
     })).to.have.property('typeDefs').to.equal(`
@@ -35,7 +35,7 @@ describe('defineEntitySingularRelation', () => {
   })
 
   it('should return resolver for Parent.relation', () => {
-    expect(defineEntitySingularRelation({
+    expect(defineSingularRelation({
       parentType: 'Parent',
       type: 'Relation'
     }))
@@ -48,7 +48,7 @@ describe('defineEntitySingularRelation', () => {
     let resolver
 
     beforeEach(() => {
-      resolver = defineEntitySingularRelation({
+      resolver = defineSingularRelation({
         parentType: 'Parent',
         type: 'Relation'
       }).resolvers.Parent.relation
@@ -59,33 +59,33 @@ describe('defineEntitySingularRelation', () => {
     })
 
     it('should return the result of a store.readOne call', () => {
-      const parent = {
-        relation: 'relation1'
+      const args = {
+        id: 'relation1'
       }
       const fakeContext = generateFakeContextWithStore({
         readOne: () => 'the_relation'
       })
-      expect(resolver(parent, null, fakeContext)).to.equal('the_relation')
+      expect(resolver(null, args, fakeContext)).to.equal('the_relation')
     })
 
     it('should call store.readOne with the collection type', () => {
-      const parent = {
-        relation: 'relation1'
+      const args = {
+        id: 'relation1'
       }
       const fakeContext = generateFakeContextWithStore({
         readOne: args => args
       })
-      expect(resolver(parent, null, fakeContext).type).to.equal('relations')
+      expect(resolver(null, args, fakeContext).type).to.equal('relations')
     })
 
     it('should call store.readOne with the id', () => {
-      const parent = {
-        relation: 'relation1'
+      const args = {
+        id: 'relation1'
       }
       const fakeContext = generateFakeContextWithStore({
         readOne: args => args
       })
-      expect(resolver(parent, null, fakeContext).id).to.equal('relation1')
+      expect(resolver(null, args, fakeContext).id).to.equal('relation1')
     })
   })
 
@@ -93,7 +93,7 @@ describe('defineEntitySingularRelation', () => {
 
   describe('when the name is passed in', () => {
     it('should override the name', () => {
-      expect(defineEntitySingularRelation({
+      expect(defineSingularRelation({
         parentType: 'Parent',
         type: 'Relation',
         name: 'aDifferentName'
@@ -108,38 +108,18 @@ describe('defineEntitySingularRelation', () => {
   describe('when the collection is passed in', () => {
     describe('the resolver', () => {
       it('should override the type passed to store.readOne', () => {
-        const resolver = defineEntitySingularRelation({
+        const resolver = defineSingularRelation({
           parentType: 'Parent',
           type: 'Relation',
           collection: 'aDifferentCollection'
         }).resolvers.Parent.relation
-        const parent = {
-          id: 'parent1'
+        const args = {
+          id: 'relation1'
         }
         const fakeContext = generateFakeContextWithStore({
           readOne: args => args
         })
-        expect(resolver(parent, null, fakeContext).type).to.deep.equal('aDifferentCollection')
-      })
-    })
-  })
-
-  describe('when propertyName is passed in', () => {
-    describe('the resolver', () => {
-      it('should override key in filters for parent.id', () => {
-        const resolver = defineEntitySingularRelation({
-          parentType: 'Parent',
-          type: 'Relation',
-          propertyName: 'aDifferentParentName'
-        }).resolvers.Parent.relation
-        const parent = {
-          relation: 'relation1',
-          aDifferentParentName: 'theActualId'
-        }
-        const fakeContext = generateFakeContextWithStore({
-          readOne: args => args
-        })
-        expect(resolver(parent, null, fakeContext).id).to.equal('theActualId')
+        expect(resolver(null, args, fakeContext).type).to.deep.equal('aDifferentCollection')
       })
     })
   })

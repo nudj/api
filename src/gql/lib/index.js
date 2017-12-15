@@ -253,21 +253,22 @@ function defineEntityPluralByFiltersRelation ({
 
 function defineEntitySingularRelation ({
   parentType,
-  propertyName,
   name,
   type,
-  collection
+  collection,
+  propertyName
 } = {}) {
+  const camelType = camelCase(type)
   if (!parentType) throw new Error('defineEntitySingularRelation requires a parentType')
   if (!type) throw new Error('defineEntitySingularRelation requires a type')
-  propertyName = propertyName || camelCase(type)
-  name = name || camelCase(type)
-  collection = collection || `${camelCase(type)}s`
+  name = name || camelType
+  collection = collection || `${camelType}s`
+  propertyName = propertyName || camelType
 
   return {
     typeDefs: `
       extend type ${parentType} {
-        ${name}(id: ID!): ${type}!
+        ${name}: ${type}
       }
     `,
     resolvers: {
@@ -276,13 +277,12 @@ function defineEntitySingularRelation ({
           return context.transaction((store, params) => {
             return store.readOne({
               type: params.collection,
-              id: params.id,
-              filters: params.filters
+              id: params.id
             })
-          }, merge({
+          }, {
             collection,
             id: parent[propertyName]
-          }))
+          })
         }
       }
     }

@@ -226,7 +226,6 @@ function defineSingularRelation ({
 
 function defineSingularByFiltersRelation ({
   parentType,
-  parentName,
   name,
   type,
   collection,
@@ -234,6 +233,44 @@ function defineSingularByFiltersRelation ({
 } = {}) {
   if (!parentType) throw new Error('defineSingularByFiltersRelation requires a parentType')
   if (!type) throw new Error('defineSingularByFiltersRelation requires a type')
+  name = name || `${camelCase(type)}ByFilters`
+  collection = collection || `${camelCase(type)}s`
+  filterType = filterType || `${type}FilterInput`
+
+  return {
+    typeDefs: `
+      extend type ${parentType} {
+        ${name}(filters: ${filterType}!): ${type}!
+      }
+    `,
+    resolvers: {
+      [parentType]: {
+        [name]: (root, args, context) => {
+          return context.transaction((store, params) => {
+            return store.readOne({
+              type: params.collection,
+              filters: params.filters
+            })
+          }, {
+            collection,
+            filters: args.filters
+          })
+        }
+      }
+    }
+  }
+}
+
+function defineEntitySingularByFiltersRelation ({
+  parentType,
+  type,
+  parentName,
+  name,
+  collection,
+  filterType
+} = {}) {
+  if (!parentType) throw new Error('defineEntitySingularByFiltersRelation requires a parentType')
+  if (!type) throw new Error('defineEntitySingularByFiltersRelation requires a type')
   parentName = parentName || camelCase(parentType)
   name = name || `${camelCase(type)}ByFilters`
   collection = collection || `${camelCase(type)}s`
@@ -248,21 +285,18 @@ function defineSingularByFiltersRelation ({
     resolvers: {
       [parentType]: {
         [name]: (parent, args, context) => {
-          let filters
-          if (parent) {
-            filters = {
-              [parentName]: parent.id
-            }
-          }
+          let filters = merge(args.filters, {
+            [parentName]: parent.id
+          })
           return context.transaction((store, params) => {
             return store.readOne({
               type: params.collection,
               filters: params.filters
             })
-          }, merge({
+          }, {
             collection,
             filters
-          }, args))
+          })
         }
       }
     }
@@ -277,5 +311,6 @@ module.exports = {
   defineSingularRelation,
   defineSingularByFiltersRelation,
   defineEntityPluralRelation,
-  defineEntityPluralByFiltersRelation
+  defineEntityPluralByFiltersRelation,
+  defineEntitySingularByFiltersRelation
 }

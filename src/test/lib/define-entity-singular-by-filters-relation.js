@@ -29,7 +29,7 @@ describe('defineEntitySingularByFiltersRelation', () => {
       type: 'Relation'
     })).to.have.property('typeDefs').to.equal(`
       extend type Parent {
-        relationByFilters(filters: RelationFilterInput!): Relation!
+        relationByFilters(filters: RelationFilterInput!): Relation
       }
     `)
   })
@@ -111,7 +111,7 @@ describe('defineEntitySingularByFiltersRelation', () => {
         name: 'aDifferentName'
       })).to.have.property('typeDefs').to.equal(`
       extend type Parent {
-        aDifferentName(filters: RelationFilterInput!): Relation!
+        aDifferentName(filters: RelationFilterInput!): Relation
       }
     `)
     })
@@ -125,7 +125,7 @@ describe('defineEntitySingularByFiltersRelation', () => {
         filterType: 'aDifferentFilterType'
       })).to.have.property('typeDefs').to.equal(`
       extend type Parent {
-        relationByFilters(filters: aDifferentFilterType!): Relation!
+        relationByFilters(filters: aDifferentFilterType!): Relation
       }
     `)
     })

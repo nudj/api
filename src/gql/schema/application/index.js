@@ -8,6 +8,7 @@ module.exports = {
 
     input ApplicationFilterInput {
       id: ID
+      person: ID
     }
   `
 }

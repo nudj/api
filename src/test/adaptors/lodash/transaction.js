@@ -9,7 +9,7 @@ chai.use(chaiAsPromised)
 
 const transaction = require('../../../gql/adaptors/lodash')
 
-describe('LodashAdaptor transaction', () => {
+describe.only('LodashAdaptor transaction', () => {
   let db
 
   beforeEach(() => {
@@ -270,8 +270,8 @@ describe('LodashAdaptor transaction', () => {
     return transaction({ db })(store => {
       return store.search({
         type: 'dogs',
-        query: 'l',
-        fields: ['temperament']
+        query: 'ie',
+        fields: ['breed']
       })
     })
     .then(result => {

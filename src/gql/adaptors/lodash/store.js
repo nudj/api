@@ -104,7 +104,7 @@ module.exports = ({ db }) => {
       query = lowerCase(query)
       const all = get(db, type)
       const entity = fields.map(field => {
-        return filter(all, (entry) => lowerCase(entry[field]).startsWith(query))
+        return filter(all, (entry) => lowerCase(entry[field]).includes(query))
       })
       return Promise.resolve(flatten(entity))
     }

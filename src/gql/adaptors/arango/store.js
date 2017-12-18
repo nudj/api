@@ -88,6 +88,28 @@ module.exports = () => {
         item = response.new
       }
       return Promise.resolve(normaliseData(item))
+    },
+    search: ({
+      type,
+      query,
+      fields
+    }) => {
+      const queries = query.split(' ')
+      const operations = queries.map(query => {
+        return fields.map(field => `
+          (
+            FOR item IN ${type}
+                FILTER CONTAINS(LOWER(item.${field}), LOWER("${query}"))
+                RETURN item
+          )
+        `).join(',')
+      })
+      return Promise.resolve(
+        db
+          ._query(`RETURN UNION_DISTINCT(${operations})`)
+          .toArray()
+          .map(normaliseData)
+      )
     }
   }
 }

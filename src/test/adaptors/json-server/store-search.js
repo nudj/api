@@ -82,6 +82,7 @@ describe('JSON-Server Store().search', () => {
       ])
     })
   })
+
   it('should fetch nothing with empty query', () => {
     return transaction(store => {
       return store.search({
@@ -91,6 +92,61 @@ describe('JSON-Server Store().search', () => {
       })
     }).then(results => {
       expect(results).to.deep.equal([])
+    })
+  })
+
+  it('should fetch data with spaced query', () => {
+    server
+      .get('/connections')
+      .query({
+        firstName_like: 'Emperor'
+      })
+      .reply(200, [
+        {
+          id: 3,
+          firstName: 'Emperor',
+          lastName: 'Palpatine'
+        }
+      ])
+    server
+      .get('/connections')
+      .query({
+        firstName_like: 'Palpatine'
+      })
+      .reply(200, [])
+    server
+      .get('/connections')
+      .query({
+        lastName_like: 'Palpatine'
+      })
+      .reply(200, [
+        {
+          id: 3,
+          firstName: 'Emperor',
+          lastName: 'Palpatine'
+        }
+      ])
+    server
+      .get('/connections')
+      .query({
+        lastName_like: 'Emperor'
+      })
+      .reply(200, [])
+
+    return transaction(store => {
+      return store.search({
+        type: 'connections',
+        fields: ['firstName', 'lastName'],
+        query: 'Emperor Palpatine'
+      })
+    }).then(results => {
+      expect(results).to.deep.equal([
+        {
+          id: 3,
+          firstName: 'Emperor',
+          lastName: 'Palpatine'
+        }
+      ])
     })
   })
 })

@@ -179,12 +179,13 @@ function defineEntityPluralRelation ({
   parentName,
   parentPropertyName
 } = {}) {
+  const camelTypePlural = `${camelCase(type)}s`
   if (!parentType) throw new Error('defineEntityPluralRelation requires a parentType')
   if (!type) throw new Error('defineEntityPluralRelation requires a type')
-  name = name || `${camelCase(type)}s`
-  collection = collection || `${camelCase(type)}s`
+  name = name || camelTypePlural
+  collection = collection || camelTypePlural
   parentName = parentName || camelCase(parentType)
-  parentPropertyName = parentPropertyName || `${camelCase(type)}s`
+  parentPropertyName = parentPropertyName || camelTypePlural
 
   return {
     typeDefs: `

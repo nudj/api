@@ -1,5 +1,6 @@
 const first = require('lodash/first')
 const filter = require('lodash/filter')
+const flatten = require('lodash/flatten')
 const axios = require('axios')
 const { NotFound } = require('@nudj/library/errors')
 const {
@@ -173,15 +174,16 @@ module.exports = () => ({
   },
   search: ({
     type,
-    query
+    query,
+    fields
   }) => {
     return request({ url: `/${type}` })
-      .then(response => {
-        return filter(response, (connection) => {
-          const name = [connection.firstName, connection.lastName].join(' ')
-          return name.includes(query)
-        })
+    .then(response => {
+      const entity = fields.map(field => {
+        return filter(response, (obj) => obj[field].includes(query))
       })
+      return flatten(entity)
+    })
     .catch(errorHandler({
       action: 'search',
       type,

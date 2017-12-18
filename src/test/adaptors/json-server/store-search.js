@@ -17,23 +17,23 @@ describe('JSON-Server Store().search', () => {
       .reply(200, [
         {
           id: 1,
-          firstName: 'Test',
-          lastName: 'Person'
+          name: 'Test Person',
+          status: 'alive'
         },
         {
           id: 2,
-          firstName: 'Juan',
-          lastName: 'Testango'
+          name: 'Juan Testango',
+          status: 'alive'
         },
         {
           id: 3,
-          firstName: 'Emperor',
-          lastName: 'Palpatine'
+          name: 'Emperor Palpatine',
+          status: 'deceased'
         },
         {
           id: 4,
-          firstName: 'Emperor',
-          lastName: 'Caesar'
+          name: 'Emperor Caesar',
+          status: 'deceased'
         }
       ])
   })
@@ -46,19 +46,20 @@ describe('JSON-Server Store().search', () => {
     return transaction(store => {
       return store.search({
         type: 'connections',
-        query: 'Test'
+        query: 'Test',
+        fields: ['name']
       })
     }).then(results => {
       expect(results).to.deep.equal([
         {
           id: 1,
-          firstName: 'Test',
-          lastName: 'Person'
+          name: 'Test Person',
+          status: 'alive'
         },
         {
           id: 2,
-          firstName: 'Juan',
-          lastName: 'Testango'
+          name: 'Juan Testango',
+          status: 'alive'
         }
       ])
     })
@@ -68,14 +69,43 @@ describe('JSON-Server Store().search', () => {
     return transaction(store => {
       return store.search({
         type: 'connections',
-        query: 'Pers'
+        query: 'Pers',
+        fields: ['name']
       })
     }).then(results => {
       expect(results).to.deep.equal([
         {
           id: 1,
-          firstName: 'Test',
-          lastName: 'Person'
+          name: 'Test Person',
+          status: 'alive'
+        }
+      ])
+    })
+  })
+
+  it('should fetch data with multiple fields', () => {
+    return transaction(store => {
+      return store.search({
+        type: 'connections',
+        query: 'al',
+        fields: ['name', 'status']
+      })
+    }).then(results => {
+      expect(results).to.deep.equal([
+        {
+          id: 3,
+          name: 'Emperor Palpatine',
+          status: 'deceased'
+        },
+        {
+          id: 1,
+          name: 'Test Person',
+          status: 'alive'
+        },
+        {
+          id: 2,
+          name: 'Juan Testango',
+          status: 'alive'
         }
       ])
     })
@@ -85,14 +115,16 @@ describe('JSON-Server Store().search', () => {
     return transaction(store => {
       return store.search({
         type: 'connections',
-        query: 'Emperor Palpatine'
+        query: 'Emperor Palpatine',
+        fields: ['name']
       })
-    }).then(results => {
+    })
+    .then(results => {
       expect(results).to.deep.equal([
         {
           id: 3,
-          firstName: 'Emperor',
-          lastName: 'Palpatine'
+          name: 'Emperor Palpatine',
+          status: 'deceased'
         }
       ])
     })

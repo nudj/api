@@ -10,7 +10,7 @@ chai.use(sinonChai)
 
 const DOCUMENT_RESPONSE = { _key: 'id', '_id': 123, '_rev': 123, title: 'halo 1' }
 
-describe.only('ArangoAdaptor Store().search', () => {
+describe('ArangoAdaptor Store().search', () => {
   let Store
   let dbStub
 

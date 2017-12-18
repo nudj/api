@@ -2,8 +2,9 @@ const get = require('lodash/get')
 const filter = require('lodash/filter')
 const first = require('lodash/first')
 const find = require('lodash/find')
+const flatten = require('lodash/flatten')
 const findIndex = require('lodash/findIndex')
-const lowerCase = require('lodash/lowerCase')
+const toLower = require('lodash/toLower')
 const merge = require('lodash/merge')
 const { NotFound } = require('@nudj/library/errors')
 
@@ -97,13 +98,15 @@ module.exports = ({ db }) => {
     },
     search: ({
       type,
-      query
+      query,
+      fields
     }) => {
       const all = get(db, type)
-      return Promise.resolve(filter(all, (connection) => {
-        const name = [connection.firstName, connection.lastName].join(' ')
-        return lowerCase(name).includes(lowerCase(query))
-      }))
+      query = toLower(query)
+      const entity = fields.map(field => {
+        return filter(all, (obj) => toLower(obj[field]).includes(query))
+      })
+      return Promise.resolve(flatten(entity))
     }
   }
 }

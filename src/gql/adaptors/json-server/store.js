@@ -1,5 +1,6 @@
 const first = require('lodash/first')
 const filter = require('lodash/filter')
+const toLower = require('lodash/toLower')
 const flatten = require('lodash/flatten')
 const axios = require('axios')
 const { NotFound } = require('@nudj/library/errors')
@@ -177,10 +178,11 @@ module.exports = () => ({
     query,
     fields
   }) => {
+    query = toLower(query)
     return request({ url: `/${type}` })
     .then(response => {
       const entity = fields.map(field => {
-        return filter(response, (obj) => obj[field].includes(query))
+        return filter(response, (obj) => toLower(obj[field]).includes(query))
       })
       return flatten(entity)
     })

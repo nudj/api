@@ -5,4 +5,4 @@ WORKDIR /usr/src
 COPY src /usr/src
 RUN yarn
 EXPOSE 80 81
-CMD ./node_modules/.bin/standard && ./node_modules/.bin/mocha --recursive test
+CMD ./node_modules/.bin/mocha --recursive test

@@ -9,7 +9,7 @@ chai.use(chaiAsPromised)
 
 const transaction = require('../../../gql/adaptors/lodash')
 
-describe.only('LodashAdaptor transaction', () => {
+describe('LodashAdaptor transaction', () => {
   let db
 
   beforeEach(() => {

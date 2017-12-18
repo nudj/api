@@ -38,12 +38,12 @@ describe('ArangoAdaptor Store().search', () => {
       .then(() => {
         expect(dbStub.db._query).to.have.been.calledWith(
           `RETURN UNION_DISTINCT(
-          (
-            FOR item IN videoGames
-                FILTER CONTAINS(LOWER(item.title), LOWER("halo"))
-                RETURN item
-          )
-        )`
+        (
+          FOR item IN videoGames
+            FILTER CONTAINS(LOWER(item.title), LOWER("halo"))
+            RETURN item
+        )
+      )`
       )
       })
     })
@@ -76,18 +76,18 @@ describe('ArangoAdaptor Store().search', () => {
       .then(() => {
         expect(dbStub.db._query).to.have.been.calledWith(
           `RETURN UNION_DISTINCT(
-          (
-            FOR item IN videoGames
-                FILTER CONTAINS(LOWER(item.title), LOWER("halo"))
-                RETURN item
-          )
-        ,
-          (
-            FOR item IN videoGames
-                FILTER CONTAINS(LOWER(item.franchise), LOWER("halo"))
-                RETURN item
-          )
-        )`
+        (
+          FOR item IN videoGames
+            FILTER CONTAINS(LOWER(item.title), LOWER("halo"))
+            RETURN item
+        )
+      ,
+        (
+          FOR item IN videoGames
+            FILTER CONTAINS(LOWER(item.franchise), LOWER("halo"))
+            RETURN item
+        )
+      )`
       )
       })
     })
@@ -114,36 +114,24 @@ describe('ArangoAdaptor Store().search', () => {
     it('should fetch the data', () => {
       return Store().search({
         type: 'videoGames',
-        query: 'halo game',
+        query: 'halo 1',
         fields: ['title', 'franchise']
       })
       .then(() => {
         expect(dbStub.db._query).to.have.been.calledWith(
           `RETURN UNION_DISTINCT(
-          (
-            FOR item IN videoGames
-                FILTER CONTAINS(LOWER(item.title), LOWER("halo"))
-                RETURN item
-          )
-        ,
-          (
-            FOR item IN videoGames
-                FILTER CONTAINS(LOWER(item.franchise), LOWER("halo"))
-                RETURN item
-          )
-        ,
-          (
-            FOR item IN videoGames
-                FILTER CONTAINS(LOWER(item.title), LOWER("game"))
-                RETURN item
-          )
-        ,
-          (
-            FOR item IN videoGames
-                FILTER CONTAINS(LOWER(item.franchise), LOWER("game"))
-                RETURN item
-          )
-        )`
+        (
+          FOR item IN videoGames
+            FILTER CONTAINS(LOWER(item.title), LOWER("halo 1"))
+            RETURN item
+        )
+      ,
+        (
+          FOR item IN videoGames
+            FILTER CONTAINS(LOWER(item.franchise), LOWER("halo 1"))
+            RETURN item
+        )
+      )`
       )
       })
     })

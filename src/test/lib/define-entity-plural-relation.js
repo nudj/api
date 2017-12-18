@@ -146,4 +146,71 @@ describe('defineEntityPluralRelation', () => {
       })
     })
   })
+
+  describe('when parent has array of child ids', () => {
+    describe('the resolver', () => {
+      let resolver
+
+      beforeEach(() => {
+        resolver = defineEntityPluralRelation({
+          parentType: 'Parent',
+          type: 'Relation'
+        }).resolvers.Parent.relations
+      })
+
+      it('should return the result of a store.readMany call', () => {
+        const parent = {
+          relations: ['relation1']
+        }
+        const fakeContext = generateFakeContextWithStore({
+          readMany: () => 'the_requested_relations'
+        })
+        expect(resolver(parent, null, fakeContext)).to.equal('the_requested_relations')
+      })
+
+      it('should call store.readMany with the collection type', () => {
+        const parent = {
+          relations: ['relation1']
+        }
+        const fakeContext = generateFakeContextWithStore({
+          readMany: args => args
+        })
+        expect(resolver(parent, null, fakeContext).type).to.equal('relations')
+      })
+
+      it('should call store.readMany with ids based on array stored in parent', () => {
+        const parent = {
+          relations: ['relation1']
+        }
+        const fakeContext = generateFakeContextWithStore({
+          readMany: args => args
+        })
+        expect(resolver(parent, null, fakeContext).ids).to.deep.equal(['relation1'])
+      })
+    })
+
+    describe('when parentPropertyName is passed in', () => {
+      describe('the resolver', () => {
+        let resolver
+
+        beforeEach(() => {
+          resolver = defineEntityPluralRelation({
+            parentType: 'Parent',
+            type: 'Relation',
+            parentPropertyName: 'aDifferentParentPropertyName'
+          }).resolvers.Parent.relations
+        })
+
+        it('should call store.readMany with ids based on array stored in parent', () => {
+          const parent = {
+            aDifferentParentPropertyName: ['relation1']
+          }
+          const fakeContext = generateFakeContextWithStore({
+            readMany: args => args
+          })
+          expect(resolver(parent, null, fakeContext).ids).to.deep.equal(['relation1'])
+        })
+      })
+    })
+  })
 })

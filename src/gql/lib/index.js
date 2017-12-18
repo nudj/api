@@ -176,13 +176,15 @@ function defineEntityPluralRelation ({
   type,
   name,
   collection,
-  parentName
+  parentName,
+  parentPropertyName
 } = {}) {
   if (!parentType) throw new Error('defineEntityPluralRelation requires a parentType')
   if (!type) throw new Error('defineEntityPluralRelation requires a type')
   name = name || `${camelCase(type)}s`
   collection = collection || `${camelCase(type)}s`
   parentName = parentName || camelCase(parentType)
+  parentPropertyName = parentPropertyName || `${camelCase(type)}s`
 
   return {
     typeDefs: `
@@ -193,18 +195,25 @@ function defineEntityPluralRelation ({
     resolvers: {
       [parentType]: {
         [name]: (parent, args, context) => {
-          const filters = {
-            [parentName]: parent.id
+          const params = {
+            collection
+          }
+          if (parent[parentPropertyName]) {
+            params.ids = parent[parentPropertyName]
+            params.storeMethod = 'readMany'
+          } else {
+            params.filters = {
+              [parentName]: parent.id
+            }
+            params.storeMethod = 'readAll'
           }
           return context.transaction((store, params) => {
-            return store.readAll({
+            return store[params.storeMethod]({
               type: params.collection,
-              filters: params.filters
+              filters: params.filters,
+              ids: params.ids
             })
-          }, {
-            collection,
-            filters
-          })
+          }, params)
         }
       }
     }

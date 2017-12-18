@@ -4,6 +4,7 @@ module.exports = {
       id: ID!
       created: DateTime!
       modified: DateTime!
+      onboarded: Boolean!
     }
 
     input HirerFilterInput {

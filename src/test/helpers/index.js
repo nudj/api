@@ -43,6 +43,7 @@ const expectTypeIsFilterableBy = curry(async (schema, type, typePlural, property
   const db = {
     [typePlural]: [
       {
+        id: 123,
         [property]: value
       }
     ]
@@ -57,26 +58,24 @@ const expectTypeIsFilterableBy = curry(async (schema, type, typePlural, property
         ${typePlural}ByFilters(filters: {
           ${property}: ${valueForQuery}
         }) {
-          ${property}
+          id
         }
       }
     `
     const result = await executeQueryOnDbUsingSchema({ operation, db, schema })
-    expect(result, `Expected "${operationType}.${typePlural}ByFilters" to be filterable by "${property}" property`).to.deep.equal({
-      data: {
-        [`${typePlural}ByFilters`]: [
-          {
-            [property]: value
-          }
-        ]
-      }
-    })
+    shouldNotRespondWithGqlError({
+      response: `Expected type ${type} to be filterable by property ${property}`
+    })(result)
   }))
 })
 
 const shouldRespondWithGqlError = ({ message, path, response }) => result => {
   expect(result, response).to.have.deep.property('errors[0].message', message)
   expect(result).to.have.deep.property('errors[0].path').to.deep.equal(path)
+}
+
+const shouldNotRespondWithGqlError = ({ response }) => result => {
+  expect(result, response).to.not.have.deep.property('errors')
 }
 
 const expectPropertyIsRequired = curry(async (schema, type, typePlural, property) => {

@@ -3,8 +3,9 @@ const filter = require('lodash/filter')
 const first = require('lodash/first')
 const find = require('lodash/find')
 const findIndex = require('lodash/findIndex')
-const flatten = require('lodash/flatten')
+const flattenDeep = require('lodash/flattenDeep')
 const lowerCase = require('lodash/lowerCase')
+const uniq = require('lodash/uniq')
 const merge = require('lodash/merge')
 const { NotFound } = require('@nudj/library/errors')
 
@@ -101,12 +102,15 @@ module.exports = ({ db }) => {
       query,
       fields
     }) => {
-      query = lowerCase(query)
+      const queries = query.split(' ')
       const all = get(db, type)
-      const entity = fields.map(field => {
-        return filter(all, (entry) => lowerCase(entry[field]).includes(query))
+      const entity = queries.map(query => {
+        query = lowerCase(query)
+        return fields.map(field => {
+          return filter(all, entry => lowerCase(entry[field]).includes(query))
+        })
       })
-      return Promise.resolve(flatten(entity))
+      return Promise.resolve(uniq(flattenDeep(entity)))
     }
   }
 }

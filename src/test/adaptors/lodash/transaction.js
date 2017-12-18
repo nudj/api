@@ -313,4 +313,23 @@ describe.only('LodashAdaptor transaction', () => {
       ])
     })
   })
+
+  it('search with multiple words', () => {
+    return transaction({ db })(store => {
+      return store.search({
+        type: 'dogs',
+        query: 'golden lazy',
+        fields: ['temperament', 'breed']
+      })
+    })
+    .then(result => {
+      expect(result).to.deep.equal([
+        {
+          id: 'dog3',
+          breed: 'Golden Retriever',
+          temperament: 'lazy'
+        }
+      ])
+    })
+  })
 })

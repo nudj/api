@@ -2,90 +2,92 @@
 const chai = require('chai')
 const expect = chai.expect
 
-const { defineEntitySingularRelation } = require('../../gql/lib')
+const { defineEntityPluralRelation } = require('../../gql/lib')
 const { generateFakeContextWithStore } = require('../helpers')
 
-describe('defineEntitySingularRelation', () => {
+describe('defineEntityPluralRelation', () => {
   it('should throw if no parentType is given', () => {
-    expect(() => defineEntitySingularRelation()).to.throw('defineEntitySingularRelation requires a parentType')
+    expect(() => defineEntityPluralRelation()).to.throw('defineEntityPluralRelation requires a parentType')
   })
 
   it('should throw if no type is given', () => {
-    expect(() => defineEntitySingularRelation({
+    expect(() => defineEntityPluralRelation({
       parentType: 'Parent'
-    })).to.throw('defineEntitySingularRelation requires a type')
+    })).to.throw('defineEntityPluralRelation requires a type')
   })
 
   it('should return an object', () => {
-    expect(defineEntitySingularRelation({
+    expect(defineEntityPluralRelation({
       parentType: 'Parent',
       type: 'Relation'
     })).to.be.an('object')
   })
 
   it('should return the typeDefs', () => {
-    expect(defineEntitySingularRelation({
+    expect(defineEntityPluralRelation({
       parentType: 'Parent',
       type: 'Relation'
     })).to.have.property('typeDefs').to.equal(`
       extend type Parent {
-        relation(id: ID!): Relation!
+        relations: [Relation!]!
       }
     `)
   })
 
-  it('should return resolver for Parent.relation', () => {
-    expect(defineEntitySingularRelation({
+  it('should return resolver for Parent.relations', () => {
+    expect(defineEntityPluralRelation({
       parentType: 'Parent',
       type: 'Relation'
     }))
     .to.have.property('resolvers')
     .to.have.property('Parent')
-    .to.have.property('relation')
+    .to.have.property('relations')
   })
 
   describe('the resolver', () => {
     let resolver
 
     beforeEach(() => {
-      resolver = defineEntitySingularRelation({
+      resolver = defineEntityPluralRelation({
         parentType: 'Parent',
         type: 'Relation'
-      }).resolvers.Parent.relation
+      }).resolvers.Parent.relations
     })
 
     it('should be a function', () => {
       expect(resolver).to.be.a('function')
     })
 
-    it('should return the result of a store.readOne call', () => {
+    it('should return the result of a store.readAll call', () => {
       const parent = {
-        relation: 'relation1'
+        id: 'parentId'
       }
       const fakeContext = generateFakeContextWithStore({
-        readOne: () => 'the_relation'
+        readAll: () => 'all_the_relations'
       })
-      expect(resolver(parent, null, fakeContext)).to.equal('the_relation')
+      expect(resolver(parent, null, fakeContext)).to.equal('all_the_relations')
     })
 
-    it('should call store.readOne with the collection type', () => {
+    it('should call store.readAll with the collection type', () => {
       const parent = {
-        relation: 'relation1'
+        id: 'parentId'
       }
       const fakeContext = generateFakeContextWithStore({
-        readOne: args => args
+        readAll: args => args
       })
       expect(resolver(parent, null, fakeContext).type).to.equal('relations')
     })
 
-    it('should call store.readOne with the id', () => {
+    it('should call store.readAll with filters based on parent.id', () => {
       const parent = {
-        relation: 'relation1'
+        id: 'parent1'
       }
       const fakeContext = generateFakeContextWithStore({
-        readOne: args => args
+        readAll: args => args
       })
-      expect(resolver(parent, null, fakeContext).id).to.equal('relation1')
+      expect(resolver(parent, null, fakeContext).filters).to.deep.equal({
+        parent: 'parent1'
+      })
     })
   })
 
@@ -93,13 +95,13 @@ describe('defineEntitySingularRelation', () => {
 
   describe('when the name is passed in', () => {
     it('should override the name', () => {
-      expect(defineEntitySingularRelation({
+      expect(defineEntityPluralRelation({
         parentType: 'Parent',
         type: 'Relation',
         name: 'aDifferentName'
       })).to.have.property('typeDefs').to.equal(`
       extend type Parent {
-        aDifferentName(id: ID!): Relation!
+        aDifferentName: [Relation!]!
       }
     `)
     })
@@ -107,39 +109,40 @@ describe('defineEntitySingularRelation', () => {
 
   describe('when the collection is passed in', () => {
     describe('the resolver', () => {
-      it('should override the type passed to store.readOne', () => {
-        const resolver = defineEntitySingularRelation({
+      it('should override the type passed to store.readAll', () => {
+        const resolver = defineEntityPluralRelation({
           parentType: 'Parent',
           type: 'Relation',
           collection: 'aDifferentCollection'
-        }).resolvers.Parent.relation
+        }).resolvers.Parent.relations
         const parent = {
-          id: 'parent1'
+          id: 'parentId'
         }
         const fakeContext = generateFakeContextWithStore({
-          readOne: args => args
+          readAll: args => args
         })
         expect(resolver(parent, null, fakeContext).type).to.deep.equal('aDifferentCollection')
       })
     })
   })
 
-  describe('when propertyName is passed in', () => {
+  describe('when parentName is passed in', () => {
     describe('the resolver', () => {
       it('should override key in filters for parent.id', () => {
-        const resolver = defineEntitySingularRelation({
+        const resolver = defineEntityPluralRelation({
           parentType: 'Parent',
-          type: 'Relation',
-          propertyName: 'aDifferentParentName'
-        }).resolvers.Parent.relation
+          parentName: 'aDifferentName',
+          type: 'Relation'
+        }).resolvers.Parent.relations
         const parent = {
-          relation: 'relation1',
-          aDifferentParentName: 'theActualId'
+          id: 'parent1'
         }
         const fakeContext = generateFakeContextWithStore({
-          readOne: args => args
+          readAll: args => args
         })
-        expect(resolver(parent, null, fakeContext).id).to.equal('theActualId')
+        expect(resolver(parent, null, fakeContext).filters).to.deep.equal({
+          aDifferentName: 'parent1'
+        })
       })
     })
   })

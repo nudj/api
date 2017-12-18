@@ -76,7 +76,6 @@ module.exports = `
     mission: String
     facebook: String
     industry: String
-    jobs: [Job!]!
     linkedin: String
     location: String
     logo: String
@@ -85,8 +84,9 @@ module.exports = `
     slug: String
     twitter: String
     url: String
-    hirers: [Hirer!]!
     onboarded: Boolean!
+    jobs: [Job!]!
+    hirers: [Hirer!]!
     tasks: [CompanyTask!]!
     surveys: [Survey!]!
   }

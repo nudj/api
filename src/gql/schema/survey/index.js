@@ -13,6 +13,7 @@ module.exports = {
 
     input SurveyFilterInput {
       id: ID
+      slug: String
     }
   `
 }

@@ -31,14 +31,14 @@ function defineEnum ({ name, values } = {}) {
 
 function definePluralRelation ({
   parentType,
-  name,
   type,
+  name,
   collection
 } = {}) {
   if (!parentType) throw new Error('definePluralRelation requires a parentType')
-  if (!name) throw new Error('definePluralRelation requires a name')
   if (!type) throw new Error('definePluralRelation requires a type')
-  if (!collection) throw new Error('definePluralRelation requires a collection')
+  name = name || `${camelCase(type)}s`
+  collection = collection || `${camelCase(type)}s`
 
   return {
     typeDefs: `
@@ -64,21 +64,21 @@ function definePluralRelation ({
 
 function definePluralByFiltersRelation ({
   parentType,
-  name,
   type,
+  name,
   collection,
   filterType
 } = {}) {
   if (!parentType) throw new Error('definePluralByFiltersRelation requires a parentType')
-  if (!name) throw new Error('definePluralByFiltersRelation requires a name')
   if (!type) throw new Error('definePluralByFiltersRelation requires a type')
-  if (!collection) throw new Error('definePluralByFiltersRelation requires a collection')
-  if (!filterType) throw new Error('definePluralByFiltersRelation requires a filterType')
+  name = name || `${camelCase(type)}sByFilters`
+  collection = collection || `${camelCase(type)}s`
+  filterType = filterType || `${type}FilterInput`
 
   return {
     typeDefs: `
       extend type ${parentType} {
-        ${name}(filters: ${filterType}): [${type}!]!
+        ${name}(filters: ${filterType}!): [${type}!]!
       }
     `,
     resolvers: {
@@ -100,8 +100,8 @@ function definePluralByFiltersRelation ({
 
 function defineSingularRelation ({
   parentType,
-  name,
   type,
+  name,
   collection
 } = {}) {
   if (!parentType) throw new Error('defineSingularRelation requires a parentType')
@@ -112,7 +112,7 @@ function defineSingularRelation ({
   return {
     typeDefs: `
       extend type ${parentType} {
-        ${name}(id: ID!): ${type}
+        ${name}(id: ID!): ${type}!
       }
     `,
     resolvers: {
@@ -121,11 +121,13 @@ function defineSingularRelation ({
           return context.transaction((store, params) => {
             return store.readOne({
               type: params.collection,
-              id: params.id
+              id: params.id,
+              filters: params.filters
             })
           }, merge({
-            collection
-          }, args))
+            collection,
+            id: args.id
+          }))
         }
       }
     }
@@ -159,9 +161,170 @@ function defineSingularByFiltersRelation ({
               type: params.collection,
               filters: params.filters
             })
+          }, {
+            collection,
+            filters: args.filters
+          })
+        }
+      }
+    }
+  }
+}
+
+function defineEntityPluralRelation ({
+  parentType,
+  type,
+  name,
+  collection,
+  parentName
+} = {}) {
+  if (!parentType) throw new Error('defineEntityPluralRelation requires a parentType')
+  if (!type) throw new Error('defineEntityPluralRelation requires a type')
+  name = name || `${camelCase(type)}s`
+  collection = collection || `${camelCase(type)}s`
+  parentName = parentName || camelCase(parentType)
+
+  return {
+    typeDefs: `
+      extend type ${parentType} {
+        ${name}: [${type}!]!
+      }
+    `,
+    resolvers: {
+      [parentType]: {
+        [name]: (parent, args, context) => {
+          const filters = {
+            [parentName]: parent.id
+          }
+          return context.transaction((store, params) => {
+            return store.readAll({
+              type: params.collection,
+              filters: params.filters
+            })
+          }, {
+            collection,
+            filters
+          })
+        }
+      }
+    }
+  }
+}
+
+function defineEntityPluralByFiltersRelation ({
+  parentType,
+  parentName,
+  name,
+  type,
+  collection,
+  filterType
+} = {}) {
+  if (!parentType) throw new Error('defineEntityPluralByFiltersRelation requires a parentType')
+  if (!type) throw new Error('defineEntityPluralByFiltersRelation requires a type')
+  parentName = parentName || camelCase(parentType)
+  name = name || `${camelCase(type)}sByFilters`
+  collection = collection || `${camelCase(type)}s`
+  filterType = filterType || `${type}FilterInput`
+
+  return {
+    typeDefs: `
+      extend type ${parentType} {
+        ${name}(filters: ${filterType}!): [${type}!]!
+      }
+    `,
+    resolvers: {
+      [parentType]: {
+        [name]: (parent, args, context) => {
+          args.filters[parentName] = parent.id
+          return context.transaction((store, params) => {
+            return store.readAll({
+              type: params.collection,
+              filters: params.filters
+            })
+          }, {
+            collection,
+            filters: args.filters
+          })
+        }
+      }
+    }
+  }
+}
+
+function defineEntitySingularRelation ({
+  parentType,
+  propertyName,
+  name,
+  type,
+  collection
+} = {}) {
+  if (!parentType) throw new Error('defineEntitySingularRelation requires a parentType')
+  if (!type) throw new Error('defineEntitySingularRelation requires a type')
+  propertyName = propertyName || camelCase(type)
+  name = name || camelCase(type)
+  collection = collection || `${camelCase(type)}s`
+
+  return {
+    typeDefs: `
+      extend type ${parentType} {
+        ${name}(id: ID!): ${type}!
+      }
+    `,
+    resolvers: {
+      [parentType]: {
+        [name]: (parent, args, context) => {
+          return context.transaction((store, params) => {
+            return store.readOne({
+              type: params.collection,
+              id: params.id,
+              filters: params.filters
+            })
           }, merge({
-            collection
-          }, args))
+            collection,
+            id: parent[propertyName]
+          }))
+        }
+      }
+    }
+  }
+}
+
+function defineEntitySingularByFiltersRelation ({
+  parentType,
+  type,
+  parentName,
+  name,
+  collection,
+  filterType
+} = {}) {
+  if (!parentType) throw new Error('defineEntitySingularByFiltersRelation requires a parentType')
+  if (!type) throw new Error('defineEntitySingularByFiltersRelation requires a type')
+  parentName = parentName || camelCase(parentType)
+  name = name || `${camelCase(type)}ByFilters`
+  collection = collection || `${camelCase(type)}s`
+  filterType = filterType || `${type}FilterInput`
+
+  return {
+    typeDefs: `
+      extend type ${parentType} {
+        ${name}(filters: ${filterType}!): ${type}
+      }
+    `,
+    resolvers: {
+      [parentType]: {
+        [name]: (parent, args, context) => {
+          let filters = merge(args.filters, {
+            [parentName]: parent.id
+          })
+          return context.transaction((store, params) => {
+            return store.readOne({
+              type: params.collection,
+              filters: params.filters
+            })
+          }, {
+            collection,
+            filters
+          })
         }
       }
     }
@@ -174,5 +337,9 @@ module.exports = {
   definePluralRelation,
   definePluralByFiltersRelation,
   defineSingularRelation,
-  defineSingularByFiltersRelation
+  defineSingularByFiltersRelation,
+  defineEntityPluralRelation,
+  defineEntityPluralByFiltersRelation,
+  defineEntitySingularRelation,
+  defineEntitySingularByFiltersRelation
 }

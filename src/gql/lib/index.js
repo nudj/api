@@ -273,7 +273,7 @@ function defineEntitySingularRelation ({
   if (!type) throw new Error('defineEntitySingularRelation requires a type')
   name = name || camelType
   collection = collection || `${camelType}s`
-  propertyName = propertyName || camelType
+  propertyName = propertyName || name || camelType
 
   return {
     typeDefs: `

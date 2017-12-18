@@ -103,6 +103,33 @@ describe('defineEntitySingularRelation', () => {
       }
     `)
     })
+
+    describe('the resolver', () => {
+      let resolver
+
+      beforeEach(() => {
+        resolver = defineEntitySingularRelation({
+          parentType: 'Parent',
+          type: 'Relation',
+          name: 'aDifferentName'
+        }).resolvers.Parent.aDifferentName
+      })
+
+      it('should have it\'s name overridden', () => {
+        expect(resolver).to.be.a('function')
+      })
+
+      it('should override property used to get the child id from the parent', () => {
+        const parent = {
+          relation: 'relation1',
+          aDifferentName: 'theActualId'
+        }
+        const fakeContext = generateFakeContextWithStore({
+          readOne: args => args
+        })
+        expect(resolver(parent, null, fakeContext).id).to.equal('theActualId')
+      })
+    })
   })
 
   describe('when the collection is passed in', () => {
@@ -126,12 +153,29 @@ describe('defineEntitySingularRelation', () => {
 
   describe('when propertyName is passed in', () => {
     describe('the resolver', () => {
-      it('should override key in filters for parent.id', () => {
+      it('should override property used to get the child id from the parent', () => {
         const resolver = defineEntitySingularRelation({
           parentType: 'Parent',
           type: 'Relation',
           propertyName: 'aDifferentParentName'
         }).resolvers.Parent.relation
+        const parent = {
+          relation: 'relation1',
+          aDifferentParentName: 'theActualId'
+        }
+        const fakeContext = generateFakeContextWithStore({
+          readOne: args => args
+        })
+        expect(resolver(parent, null, fakeContext).id).to.equal('theActualId')
+      })
+
+      it('should take precidence over the \'name\' property', () => {
+        const resolver = defineEntitySingularRelation({
+          parentType: 'Parent',
+          type: 'Relation',
+          name: 'aDifferentName',
+          propertyName: 'aDifferentParentName'
+        }).resolvers.Parent.aDifferentName
         const parent = {
           relation: 'relation1',
           aDifferentParentName: 'theActualId'

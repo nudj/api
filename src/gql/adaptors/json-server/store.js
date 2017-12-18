@@ -1,6 +1,5 @@
 const first = require('lodash/first')
-const uniqBy = require('lodash/uniqBy')
-const flattenDeep = require('lodash/flattenDeep')
+const filter = require('lodash/filter')
 const axios = require('axios')
 const { NotFound } = require('@nudj/library/errors')
 const {
@@ -174,25 +173,19 @@ module.exports = () => ({
   },
   search: ({
     type,
-    query,
-    fields
+    query
   }) => {
-    const queries = query.split(' ')
-    return Promise.all(
-      flattenDeep(
-        queries.map(query => {
-          return fields.map(field => {
-            return request({ url: `/${type}?${field}_like=${query}` })
-          })
+    return request({ url: `/${type}` })
+      .then(response => {
+        return filter(response, (connection) => {
+          const name = [connection.firstName, connection.lastName].join(' ')
+          return name.includes(query)
         })
-      )
-    )
-    .then(response => uniqBy(flattenDeep(response), 'id'))
+      })
     .catch(errorHandler({
       action: 'search',
       type,
-      query,
-      fields
+      query
     }))
   }
 })

@@ -14,26 +14,26 @@ describe('JSON-Server Store().search', () => {
   beforeEach(() => {
     server
       .get('/connections')
-      .query({
-        firstName_like: 'Tes'
-      })
       .reply(200, [
         {
           id: 1,
           firstName: 'Test',
           lastName: 'Person'
-        }
-      ])
-    server
-      .get('/connections')
-      .query({
-        lastName_like: 'Tes'
-      })
-      .reply(200, [
+        },
         {
           id: 2,
           firstName: 'Juan',
           lastName: 'Testango'
+        },
+        {
+          id: 3,
+          firstName: 'Emperor',
+          lastName: 'Palpatine'
+        },
+        {
+          id: 4,
+          firstName: 'Emperor',
+          lastName: 'Caesar'
         }
       ])
   })
@@ -46,26 +46,7 @@ describe('JSON-Server Store().search', () => {
     return transaction(store => {
       return store.search({
         type: 'connections',
-        fields: ['firstName'],
-        query: 'Tes'
-      })
-    }).then(results => {
-      expect(results).to.deep.equal([
-        {
-          id: 1,
-          firstName: 'Test',
-          lastName: 'Person'
-        }
-      ])
-    })
-  })
-
-  it('should fetch data from multiple fields', () => {
-    return transaction(store => {
-      return store.search({
-        type: 'connections',
-        fields: ['firstName', 'lastName'],
-        query: 'Tes'
+        query: 'Test'
       })
     }).then(results => {
       expect(results).to.deep.equal([
@@ -83,60 +64,27 @@ describe('JSON-Server Store().search', () => {
     })
   })
 
-  it('should fetch nothing with empty query', () => {
+  it('should fetch data from incomplete string', () => {
     return transaction(store => {
       return store.search({
         type: 'connections',
-        fields: [],
-        query: 'Tes'
+        query: 'Pers'
       })
     }).then(results => {
-      expect(results).to.deep.equal([])
+      expect(results).to.deep.equal([
+        {
+          id: 1,
+          firstName: 'Test',
+          lastName: 'Person'
+        }
+      ])
     })
   })
 
   it('should fetch data with spaced query', () => {
-    server
-      .get('/connections')
-      .query({
-        firstName_like: 'Emperor'
-      })
-      .reply(200, [
-        {
-          id: 3,
-          firstName: 'Emperor',
-          lastName: 'Palpatine'
-        }
-      ])
-    server
-      .get('/connections')
-      .query({
-        firstName_like: 'Palpatine'
-      })
-      .reply(200, [])
-    server
-      .get('/connections')
-      .query({
-        lastName_like: 'Palpatine'
-      })
-      .reply(200, [
-        {
-          id: 3,
-          firstName: 'Emperor',
-          lastName: 'Palpatine'
-        }
-      ])
-    server
-      .get('/connections')
-      .query({
-        lastName_like: 'Emperor'
-      })
-      .reply(200, [])
-
     return transaction(store => {
       return store.search({
         type: 'connections',
-        fields: ['firstName', 'lastName'],
         query: 'Emperor Palpatine'
       })
     }).then(results => {

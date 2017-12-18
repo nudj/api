@@ -9,7 +9,7 @@ chai.use(chaiAsPromised)
 
 const transaction = require('../../../gql/adaptors/lodash')
 
-describe('LodashAdaptor transaction', () => {
+describe.only('LodashAdaptor transaction', () => {
   let db
 
   beforeEach(() => {
@@ -18,17 +18,20 @@ describe('LodashAdaptor transaction', () => {
         {
           id: 'dog1',
           breed: 'Cocker Spaniel',
-          temperament: 'loving'
+          firstName: 'Patches',
+          lastName: 'McDoggo'
         },
         {
           id: 'dog2',
           breed: 'Dalmatian',
-          temperament: 'good boy'
+          firstName: 'Spots',
+          lastName: 'McDoggo'
         },
         {
           id: 'dog3',
           breed: 'Golden Retriever',
-          temperament: 'lazy'
+          firstName: 'Fluffy',
+          lastName: 'Von Tailwags'
         }
       ]
     }
@@ -60,7 +63,8 @@ describe('LodashAdaptor transaction', () => {
     })).to.eventually.deep.equal({
       id: 'dog1',
       breed: 'Cocker Spaniel',
-      temperament: 'loving'
+      firstName: 'Patches',
+      lastName: 'McDoggo'
     })
   })
 
@@ -84,7 +88,8 @@ describe('LodashAdaptor transaction', () => {
     })).to.eventually.deep.equal({
       id: 'dog1',
       breed: 'Cocker Spaniel',
-      temperament: 'loving'
+      firstName: 'Patches',
+      lastName: 'McDoggo'
     })
   })
 
@@ -119,7 +124,8 @@ describe('LodashAdaptor transaction', () => {
       {
         id: 'dog1',
         breed: 'Cocker Spaniel',
-        temperament: 'loving'
+        firstName: 'Patches',
+        lastName: 'McDoggo'
       }
     ])
   })
@@ -134,12 +140,14 @@ describe('LodashAdaptor transaction', () => {
       {
         id: 'dog2',
         breed: 'Dalmatian',
-        temperament: 'good boy'
+        firstName: 'Spots',
+        lastName: 'McDoggo'
       },
       {
         id: 'dog1',
         breed: 'Cocker Spaniel',
-        temperament: 'loving'
+        firstName: 'Patches',
+        lastName: 'McDoggo'
       }
     ])
   })
@@ -159,7 +167,9 @@ describe('LodashAdaptor transaction', () => {
         type: 'dogs',
         id: 'dog2',
         data: {
-          breed: 'Pug'
+          breed: 'Pug',
+          firstName: 'Puppers',
+          lastName: 'O\'Woofer'
         }
       })
     })
@@ -167,12 +177,14 @@ describe('LodashAdaptor transaction', () => {
       expect(result).to.deep.equal({
         id: 'dog2',
         breed: 'Pug',
-        temperament: 'good boy'
+        firstName: 'Puppers',
+        lastName: 'O\'Woofer'
       })
       expect(db.dogs[1]).to.deep.equal({
         id: 'dog2',
         breed: 'Pug',
-        temperament: 'good boy'
+        firstName: 'Puppers',
+        lastName: 'O\'Woofer'
       })
     })
   })
@@ -200,18 +212,21 @@ describe('LodashAdaptor transaction', () => {
       expect(result).to.deep.equal({
         id: 'dog2',
         breed: 'Dalmatian',
-        temperament: 'good boy'
+        firstName: 'Spots',
+        lastName: 'McDoggo'
       })
       expect(db.dogs).to.deep.equal([
         {
           id: 'dog1',
           breed: 'Cocker Spaniel',
-          temperament: 'loving'
+          firstName: 'Patches',
+          lastName: 'McDoggo'
         },
         {
           id: 'dog3',
           breed: 'Golden Retriever',
-          temperament: 'lazy'
+          firstName: 'Fluffy',
+          lastName: 'Von Tailwags'
         }
       ])
     })
@@ -270,8 +285,7 @@ describe('LodashAdaptor transaction', () => {
     return transaction({ db })(store => {
       return store.search({
         type: 'dogs',
-        query: 'ie',
-        fields: ['breed']
+        query: 'McDoggo'
       })
     })
     .then(result => {
@@ -279,36 +293,33 @@ describe('LodashAdaptor transaction', () => {
         {
           id: 'dog1',
           breed: 'Cocker Spaniel',
-          temperament: 'loving'
+          firstName: 'Patches',
+          lastName: 'McDoggo'
         },
         {
-          id: 'dog3',
-          breed: 'Golden Retriever',
-          temperament: 'lazy'
+          id: 'dog2',
+          breed: 'Dalmatian',
+          firstName: 'Spots',
+          lastName: 'McDoggo'
         }
       ])
     })
   })
 
-  it('search across multiple fields', () => {
+  it('search with incomplete query', () => {
     return transaction({ db })(store => {
       return store.search({
         type: 'dogs',
-        query: 'go',
-        fields: ['temperament', 'breed']
+        query: 'Pat'
       })
     })
     .then(result => {
       expect(result).to.deep.equal([
         {
-          id: 'dog2',
-          breed: 'Dalmatian',
-          temperament: 'good boy'
-        },
-        {
-          id: 'dog3',
-          breed: 'Golden Retriever',
-          temperament: 'lazy'
+          id: 'dog1',
+          breed: 'Cocker Spaniel',
+          firstName: 'Patches',
+          lastName: 'McDoggo'
         }
       ])
     })
@@ -318,8 +329,7 @@ describe('LodashAdaptor transaction', () => {
     return transaction({ db })(store => {
       return store.search({
         type: 'dogs',
-        query: 'golden lazy',
-        fields: ['temperament', 'breed']
+        query: 'Fluffy Von tailwags'
       })
     })
     .then(result => {
@@ -327,7 +337,8 @@ describe('LodashAdaptor transaction', () => {
         {
           id: 'dog3',
           breed: 'Golden Retriever',
-          temperament: 'lazy'
+          firstName: 'Fluffy',
+          lastName: 'Von Tailwags'
         }
       ])
     })

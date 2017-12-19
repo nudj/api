@@ -115,7 +115,7 @@ describe('defineEntitySingularRelation', () => {
         }).resolvers.Parent.aDifferentName
       })
 
-      it('should have it\'s name overridden', () => {
+      it('should be keyed with the name passed in', () => {
         expect(resolver).to.be.a('function')
       })
 

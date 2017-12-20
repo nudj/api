@@ -21,12 +21,21 @@ const request = (options = {}) => {
 }
 
 const errorHandler = (details) => (error) => {
-  const code = error.status || (error.response && error.response.status) || 500
-  if (code === 404) {
+  if (error.constructor === NotFound) {
+    logger('error', error.name, `JsonServerStore.${details.action}`, details.type, details.ids || details.filters || details.id || '', details.data || '')
     return null
   }
+<<<<<<< HEAD
   logger('error', (new Date()).toISOString(), details, error)
   throw error
+=======
+  error.addBoundaryLogs(
+    `JsonServerStore.${details.action}`,
+    details.type,
+    details.ids || details.filters || details.id || '',
+    details.data || ''
+  )
+>>>>>>> Add BoundaryErrors to key points in data fetching logic
 }
 
 module.exports = () => ({
@@ -67,7 +76,7 @@ module.exports = () => ({
     }
     return response
     .then(result => {
-      if (!result) throw new NotFound('Item not found')
+      if (!result) throw new NotFound(`${type} with ${filters ? `filters ${JSON.stringify(filters)}` : `id ${id}`} not found`)
       return result
     })
     .catch(errorHandler({

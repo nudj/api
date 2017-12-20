@@ -29,7 +29,7 @@ describe('defineSingularRelation', () => {
       type: 'Relation'
     })).to.have.property('typeDefs').to.equal(`
       extend type Parent {
-        relation(id: ID!): Relation!
+        relation(id: ID!): Relation
       }
     `)
   })
@@ -54,10 +54,6 @@ describe('defineSingularRelation', () => {
       }).resolvers.Parent.relation
     })
 
-    it('should be a function', () => {
-      expect(resolver).to.be.a('function')
-    })
-
     it('should return the result of a store.readOne call', () => {
       const args = {
         id: 'relation1'
@@ -65,7 +61,7 @@ describe('defineSingularRelation', () => {
       const fakeContext = generateFakeContextWithStore({
         readOne: () => 'the_relation'
       })
-      expect(resolver(null, args, fakeContext)).to.equal('the_relation')
+      expect(resolver(null, args, fakeContext)).to.eventually.equal('the_relation')
     })
 
     it('should call store.readOne with the collection type', () => {
@@ -75,7 +71,7 @@ describe('defineSingularRelation', () => {
       const fakeContext = generateFakeContextWithStore({
         readOne: args => args
       })
-      expect(resolver(null, args, fakeContext).type).to.equal('relations')
+      expect(resolver(null, args, fakeContext)).to.eventually.have.deep.property('type', 'relations')
     })
 
     it('should call store.readOne with the id', () => {
@@ -85,7 +81,7 @@ describe('defineSingularRelation', () => {
       const fakeContext = generateFakeContextWithStore({
         readOne: args => args
       })
-      expect(resolver(null, args, fakeContext).id).to.equal('relation1')
+      expect(resolver(null, args, fakeContext)).to.eventually.have.deep.property('id', 'relation1')
     })
   })
 
@@ -99,7 +95,7 @@ describe('defineSingularRelation', () => {
         name: 'aDifferentName'
       })).to.have.property('typeDefs').to.equal(`
       extend type Parent {
-        aDifferentName(id: ID!): Relation!
+        aDifferentName(id: ID!): Relation
       }
     `)
     })
@@ -119,7 +115,7 @@ describe('defineSingularRelation', () => {
         const fakeContext = generateFakeContextWithStore({
           readOne: args => args
         })
-        expect(resolver(null, args, fakeContext).type).to.deep.equal('aDifferentCollection')
+        expect(resolver(null, args, fakeContext)).to.eventually.have.property('type', 'aDifferentCollection')
       })
     })
   })

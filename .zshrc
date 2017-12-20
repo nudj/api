@@ -35,6 +35,10 @@ function tdd {
 	export ENVIRONMENT=local
 }
 
+yank () {
+	cd ./@nudj/$1 && yarn link && cd ../.. && yarn link @nudj/$1
+}
+
 # changes hex 0x15 to delete everything to the left of the cursor,
 # rather than the whole line
 bindkey "^U" backward-kill-line

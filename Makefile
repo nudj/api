@@ -32,7 +32,7 @@ ssh:
 		-v $(CWD)/src/nodemon.json:/usr/src/nodemon.json \
 		-v $(CWD)/src/package.json:/usr/src/package.json \
 		-v $(CWD)/src/readme.md:/usr/src/readme.md \
-		-v $(CWD)/../library/src:/usr/src/library \
+		-v $(CWD)/../library/src:/usr/src/@nudj/library \
 		$(IMAGEDEV) \
 		/bin/zsh
 

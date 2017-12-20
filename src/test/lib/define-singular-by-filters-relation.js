@@ -65,7 +65,7 @@ describe('defineSingularByFiltersRelation', () => {
       const fakeContext = generateFakeContextWithStore({
         readOne: () => 'the_relation'
       })
-      expect(resolver(null, { filters }, fakeContext)).to.equal('the_relation')
+      expect(resolver(null, { filters }, fakeContext)).to.eventually.equal('the_relation')
     })
 
     it('should call store.readOne with the collection type', () => {
@@ -75,7 +75,7 @@ describe('defineSingularByFiltersRelation', () => {
       const fakeContext = generateFakeContextWithStore({
         readOne: args => args
       })
-      expect(resolver(null, { filters }, fakeContext).type).to.equal('relations')
+      expect(resolver(null, { filters }, fakeContext)).to.eventually.have.deep.property('type', 'relations')
     })
 
     it('should call store.readOne with the filters passed in args', () => {
@@ -85,7 +85,7 @@ describe('defineSingularByFiltersRelation', () => {
       const fakeContext = generateFakeContextWithStore({
         readOne: args => args
       })
-      expect(resolver(null, { filters }, fakeContext).filters).to.deep.equal({
+      expect(resolver(null, { filters }, fakeContext)).to.eventually.have.deep.property('filters', {
         slug: 'someSlug'
       })
     })
@@ -121,7 +121,7 @@ describe('defineSingularByFiltersRelation', () => {
         const fakeContext = generateFakeContextWithStore({
           readOne: args => args
         })
-        expect(resolver(null, { filters }, fakeContext).type).to.deep.equal('aDifferentCollection')
+        expect(resolver(null, { filters }, fakeContext)).to.eventually.have.deep.property('type', 'aDifferentCollection')
       })
     })
   })

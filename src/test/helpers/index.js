@@ -69,8 +69,8 @@ const expectTypeIsFilterableBy = curry(async (schema, type, typePlural, property
   }))
 })
 
-const shouldRespondWithGqlError = ({ message, path, response }) => result => {
-  expect(result, response).to.have.deep.property('errors[0].message', message)
+const shouldRespondWithGqlError = ({ path, response }) => result => {
+  expect(result, response).to.have.deep.property('errors[0].message')
   expect(result).to.have.deep.property('errors[0].path').to.deep.equal(path)
 }
 

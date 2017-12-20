@@ -1,5 +1,34 @@
-const { merge } = require('@nudj/library')
 const camelCase = require('lodash/camelCase')
+const padRight = require('pad-right')
+const randomWords = require('random-words')
+const { AppError, NotFound } = require('@nudj/library/errors')
+const {
+  merge,
+  logger
+} = require('@nudj/library')
+
+function handleErrors (resolver) {
+  return async (...args) => {
+    try {
+      return await resolver(...args)
+    } catch (error) {
+      const ID = `api_${randomWords({ exactly: 2, join: '_' })}`.toUpperCase()
+      const boundaries = [
+        [error.name, error.message],
+        ...error.log
+      ]
+      const toLog = boundaries.reduce((log, boundary) => {
+        log = log.concat('\n', padRight('', 23, ' '), ...boundary)
+        return log
+      }, [])
+      logger('error', ID, ...toLog, '\n')
+      if (error.constructor === NotFound) {
+        throw error
+      }
+      throw new AppError(`Something went wrong! ${ID}`)
+    }
+  }
+}
 
 function mergeDefinitions (...definitions) {
   let typeDefs = []
@@ -48,15 +77,19 @@ function definePluralRelation ({
     `,
     resolvers: {
       [parentType]: {
-        [name]: (root, args, context) => {
-          return context.transaction((store, params) => {
-            return store.readAll({
-              type: params.collection
+        [name]: handleErrors(async (root, args, context) => {
+          try {
+            return await context.transaction((store, params) => {
+              return store.readAll({
+                type: params.collection
+              })
+            }, {
+              collection
             })
-          }, {
-            collection
-          })
-        }
+          } catch (error) {
+            error.addBoundaryLogs(`Resolver definePluralRelation ${parentType}.${name} [${type}!]!`)
+          }
+        })
       }
     }
   }
@@ -112,23 +145,22 @@ function defineSingularRelation ({
   return {
     typeDefs: `
       extend type ${parentType} {
-        ${name}(id: ID!): ${type}!
+        ${name}(id: ID!): ${type}
       }
     `,
     resolvers: {
       [parentType]: {
-        [name]: (root, args, context) => {
+        [name]: handleErrors((root, args, context) => {
           return context.transaction((store, params) => {
             return store.readOne({
               type: params.collection,
-              id: params.id,
-              filters: params.filters
+              id: params.id
             })
-          }, merge({
+          }, {
             collection,
             id: args.id
-          }))
-        }
+          })
+        })
       }
     }
   }
@@ -155,7 +187,7 @@ function defineSingularByFiltersRelation ({
     `,
     resolvers: {
       [parentType]: {
-        [name]: (root, args, context) => {
+        [name]: handleErrors((root, args, context) => {
           return context.transaction((store, params) => {
             return store.readOne({
               type: params.collection,
@@ -165,7 +197,7 @@ function defineSingularByFiltersRelation ({
             collection,
             filters: args.filters
           })
-        }
+        })
       }
     }
   }
@@ -195,27 +227,31 @@ function defineEntityPluralRelation ({
     `,
     resolvers: {
       [parentType]: {
-        [name]: (parent, args, context) => {
-          const params = {
-            collection
-          }
-          if (parent[parentPropertyName]) {
-            params.ids = parent[parentPropertyName]
-            params.storeMethod = 'readMany'
-          } else {
-            params.filters = {
-              [parentName]: parent.id
+        [name]: handleErrors(async (parent, args, context) => {
+          try {
+            const params = {
+              collection
             }
-            params.storeMethod = 'readAll'
+            if (parent[parentPropertyName]) {
+              params.ids = parent[parentPropertyName]
+              params.storeMethod = 'readMany'
+            } else {
+              params.filters = {
+                [parentName]: parent.id
+              }
+              params.storeMethod = 'readAll'
+            }
+            return await context.transaction((store, params) => {
+              return store[params.storeMethod]({
+                type: params.collection,
+                filters: params.filters,
+                ids: params.ids
+              })
+            }, params)
+          } catch (error) {
+            error.addBoundaryLogs('here')
           }
-          return context.transaction((store, params) => {
-            return store[params.storeMethod]({
-              type: params.collection,
-              filters: params.filters,
-              ids: params.ids
-            })
-          }, params)
-        }
+        })
       }
     }
   }
@@ -244,7 +280,7 @@ function defineEntityPluralByFiltersRelation ({
     `,
     resolvers: {
       [parentType]: {
-        [name]: (parent, args, context) => {
+        [name]: handleErrors((parent, args, context) => {
           args.filters[parentName] = parent.id
           return context.transaction((store, params) => {
             return store.readAll({
@@ -255,7 +291,7 @@ function defineEntityPluralByFiltersRelation ({
             collection,
             filters: args.filters
           })
-        }
+        })
       }
     }
   }
@@ -283,7 +319,7 @@ function defineEntitySingularRelation ({
     `,
     resolvers: {
       [parentType]: {
-        [name]: (parent, args, context) => {
+        [name]: handleErrors((parent, args, context) => {
           return context.transaction((store, params) => {
             return store.readOne({
               type: params.collection,
@@ -293,7 +329,7 @@ function defineEntitySingularRelation ({
             collection,
             id: parent[propertyName]
           })
-        }
+        })
       }
     }
   }
@@ -322,7 +358,7 @@ function defineEntitySingularByFiltersRelation ({
     `,
     resolvers: {
       [parentType]: {
-        [name]: (parent, args, context) => {
+        [name]: handleErrors((parent, args, context) => {
           let filters = merge(args.filters, {
             [parentName]: parent.id
           })
@@ -335,7 +371,7 @@ function defineEntitySingularByFiltersRelation ({
             collection,
             filters
           })
-        }
+        })
       }
     }
   }

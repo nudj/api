@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/nudj/api#readme",
   "dependencies": {
-    "@nudj/library": "2.0.0",
+    "@nudj/library": "3.0.0",
     "apollo-server-express": "^1.2.0",
     "axios": "^0.17.1",
     "body-parser": "1.17.2",

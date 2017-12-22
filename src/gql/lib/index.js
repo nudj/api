@@ -25,7 +25,7 @@ function handleErrors (resolver) {
       if (error.constructor === NotFound) {
         throw error
       }
-      throw new AppError(`Something went wrong! ${ID}`)
+      throw new AppError(`API ERROR: ${ID}`)
     }
   }
 }
@@ -41,8 +41,8 @@ function mergeDefinitions (...definitions) {
 }
 
 function defineEnum ({ name, values } = {}) {
-  if (!name) throw new Error('defineEnum requires a name')
-  if (!values || !values.length) throw new Error('defineEnum requires some values')
+  if (!name) throw new AppError('defineEnum requires a name')
+  if (!values || !values.length) throw new AppError('defineEnum requires some values')
   return {
     typeDefs: `
       enum ${name} {
@@ -64,8 +64,8 @@ function definePluralRelation ({
   name,
   collection
 } = {}) {
-  if (!parentType) throw new Error('definePluralRelation requires a parentType')
-  if (!type) throw new Error('definePluralRelation requires a type')
+  if (!parentType) throw new AppError('definePluralRelation requires a parentType')
+  if (!type) throw new AppError('definePluralRelation requires a type')
   name = name || `${camelCase(type)}s`
   collection = collection || `${camelCase(type)}s`
 
@@ -102,8 +102,8 @@ function definePluralByFiltersRelation ({
   collection,
   filterType
 } = {}) {
-  if (!parentType) throw new Error('definePluralByFiltersRelation requires a parentType')
-  if (!type) throw new Error('definePluralByFiltersRelation requires a type')
+  if (!parentType) throw new AppError('definePluralByFiltersRelation requires a parentType')
+  if (!type) throw new AppError('definePluralByFiltersRelation requires a type')
   name = name || `${camelCase(type)}sByFilters`
   collection = collection || `${camelCase(type)}s`
   filterType = filterType || `${type}FilterInput`
@@ -137,8 +137,8 @@ function defineSingularRelation ({
   name,
   collection
 } = {}) {
-  if (!parentType) throw new Error('defineSingularRelation requires a parentType')
-  if (!type) throw new Error('defineSingularRelation requires a type')
+  if (!parentType) throw new AppError('defineSingularRelation requires a parentType')
+  if (!type) throw new AppError('defineSingularRelation requires a type')
   name = name || camelCase(type)
   collection = collection || `${camelCase(type)}s`
 
@@ -173,8 +173,8 @@ function defineSingularByFiltersRelation ({
   collection,
   filterType
 } = {}) {
-  if (!parentType) throw new Error('defineSingularByFiltersRelation requires a parentType')
-  if (!type) throw new Error('defineSingularByFiltersRelation requires a type')
+  if (!parentType) throw new AppError('defineSingularByFiltersRelation requires a parentType')
+  if (!type) throw new AppError('defineSingularByFiltersRelation requires a type')
   name = name || `${camelCase(type)}ByFilters`
   collection = collection || `${camelCase(type)}s`
   filterType = filterType || `${type}FilterInput`
@@ -211,8 +211,8 @@ function defineEntityPluralRelation ({
   parentName,
   parentPropertyName
 } = {}) {
-  if (!parentType) throw new Error('defineEntityPluralRelation requires a parentType')
-  if (!type) throw new Error('defineEntityPluralRelation requires a type')
+  if (!parentType) throw new AppError('defineEntityPluralRelation requires a parentType')
+  if (!type) throw new AppError('defineEntityPluralRelation requires a type')
   const camelTypePlural = `${camelCase(type)}s`
   name = name || camelTypePlural
   collection = collection || camelTypePlural
@@ -265,8 +265,8 @@ function defineEntityPluralByFiltersRelation ({
   collection,
   filterType
 } = {}) {
-  if (!parentType) throw new Error('defineEntityPluralByFiltersRelation requires a parentType')
-  if (!type) throw new Error('defineEntityPluralByFiltersRelation requires a type')
+  if (!parentType) throw new AppError('defineEntityPluralByFiltersRelation requires a parentType')
+  if (!type) throw new AppError('defineEntityPluralByFiltersRelation requires a type')
   parentName = parentName || camelCase(parentType)
   name = name || `${camelCase(type)}sByFilters`
   collection = collection || `${camelCase(type)}s`
@@ -305,8 +305,8 @@ function defineEntitySingularRelation ({
   propertyName
 } = {}) {
   const camelType = camelCase(type)
-  if (!parentType) throw new Error('defineEntitySingularRelation requires a parentType')
-  if (!type) throw new Error('defineEntitySingularRelation requires a type')
+  if (!parentType) throw new AppError('defineEntitySingularRelation requires a parentType')
+  if (!type) throw new AppError('defineEntitySingularRelation requires a type')
   name = name || camelType
   collection = collection || `${camelType}s`
   propertyName = propertyName || name || camelType
@@ -343,8 +343,8 @@ function defineEntitySingularByFiltersRelation ({
   collection,
   filterType
 } = {}) {
-  if (!parentType) throw new Error('defineEntitySingularByFiltersRelation requires a parentType')
-  if (!type) throw new Error('defineEntitySingularByFiltersRelation requires a type')
+  if (!parentType) throw new AppError('defineEntitySingularByFiltersRelation requires a parentType')
+  if (!type) throw new AppError('defineEntitySingularByFiltersRelation requires a type')
   parentName = parentName || camelCase(parentType)
   name = name || `${camelCase(type)}ByFilters`
   collection = collection || `${camelCase(type)}s`

@@ -54,10 +54,6 @@ describe('defineEntityPluralRelation', () => {
       }).resolvers.Parent.relations
     })
 
-    it('should be a function', () => {
-      expect(resolver).to.be.a('function')
-    })
-
     it('should return the result of a store.readAll call', () => {
       const parent = {
         id: 'parentId'
@@ -65,7 +61,7 @@ describe('defineEntityPluralRelation', () => {
       const fakeContext = generateFakeContextWithStore({
         readAll: () => 'all_the_relations'
       })
-      expect(resolver(parent, null, fakeContext)).to.equal('all_the_relations')
+      expect(resolver(parent, null, fakeContext)).to.eventually.equal('all_the_relations')
     })
 
     it('should call store.readAll with the collection type', () => {
@@ -75,7 +71,7 @@ describe('defineEntityPluralRelation', () => {
       const fakeContext = generateFakeContextWithStore({
         readAll: args => args
       })
-      expect(resolver(parent, null, fakeContext).type).to.equal('relations')
+      expect(resolver(parent, null, fakeContext)).to.eventually.have.deep.property('type', 'relations')
     })
 
     it('should call store.readAll with filters based on parent.id', () => {
@@ -85,7 +81,7 @@ describe('defineEntityPluralRelation', () => {
       const fakeContext = generateFakeContextWithStore({
         readAll: args => args
       })
-      expect(resolver(parent, null, fakeContext).filters).to.deep.equal({
+      expect(resolver(parent, null, fakeContext)).to.eventually.have.deep.property('filters', {
         parent: 'parent1'
       })
     })
@@ -121,7 +117,7 @@ describe('defineEntityPluralRelation', () => {
         const fakeContext = generateFakeContextWithStore({
           readAll: args => args
         })
-        expect(resolver(parent, null, fakeContext).type).to.deep.equal('aDifferentCollection')
+        expect(resolver(parent, null, fakeContext)).to.eventually.have.deep.property('type', 'aDifferentCollection')
       })
     })
   })
@@ -140,7 +136,7 @@ describe('defineEntityPluralRelation', () => {
         const fakeContext = generateFakeContextWithStore({
           readAll: args => args
         })
-        expect(resolver(parent, null, fakeContext).filters).to.deep.equal({
+        expect(resolver(parent, null, fakeContext)).to.eventually.have.deep.property('filters', {
           aDifferentName: 'parent1'
         })
       })
@@ -165,7 +161,7 @@ describe('defineEntityPluralRelation', () => {
         const fakeContext = generateFakeContextWithStore({
           readMany: () => 'the_requested_relations'
         })
-        expect(resolver(parent, null, fakeContext)).to.equal('the_requested_relations')
+        expect(resolver(parent, null, fakeContext)).to.eventually.equal('the_requested_relations')
       })
 
       it('should call store.readMany with the collection type', () => {
@@ -175,7 +171,7 @@ describe('defineEntityPluralRelation', () => {
         const fakeContext = generateFakeContextWithStore({
           readMany: args => args
         })
-        expect(resolver(parent, null, fakeContext).type).to.equal('relations')
+        expect(resolver(parent, null, fakeContext)).to.eventually.have.deep.property('type', 'relations')
       })
 
       it('should call store.readMany with ids based on array stored in parent', () => {
@@ -185,7 +181,7 @@ describe('defineEntityPluralRelation', () => {
         const fakeContext = generateFakeContextWithStore({
           readMany: args => args
         })
-        expect(resolver(parent, null, fakeContext).ids).to.deep.equal(['relation1'])
+        expect(resolver(parent, null, fakeContext)).to.eventually.have.deep.property('ids', ['relation1'])
       })
     })
 
@@ -208,7 +204,7 @@ describe('defineEntityPluralRelation', () => {
           const fakeContext = generateFakeContextWithStore({
             readMany: args => args
           })
-          expect(resolver(parent, null, fakeContext).ids).to.deep.equal(['relation1'])
+          expect(resolver(parent, null, fakeContext)).to.eventually.have.deep.property('ids', ['relation1'])
         })
       })
     })

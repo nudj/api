@@ -54,10 +54,6 @@ describe('defineEntitySingularRelation', () => {
       }).resolvers.Parent.relation
     })
 
-    it('should be a function', () => {
-      expect(resolver).to.be.a('function')
-    })
-
     it('should return the result of a store.readOne call', () => {
       const parent = {
         relation: 'relation1'
@@ -65,7 +61,7 @@ describe('defineEntitySingularRelation', () => {
       const fakeContext = generateFakeContextWithStore({
         readOne: () => 'the_relation'
       })
-      expect(resolver(parent, null, fakeContext)).to.equal('the_relation')
+      expect(resolver(parent, null, fakeContext)).to.eventually.equal('the_relation')
     })
 
     it('should call store.readOne with the collection type', () => {
@@ -75,7 +71,7 @@ describe('defineEntitySingularRelation', () => {
       const fakeContext = generateFakeContextWithStore({
         readOne: args => args
       })
-      expect(resolver(parent, null, fakeContext).type).to.equal('relations')
+      expect(resolver(parent, null, fakeContext)).to.eventually.have.deep.property('type', 'relations')
     })
 
     it('should call store.readOne with the id', () => {
@@ -85,7 +81,7 @@ describe('defineEntitySingularRelation', () => {
       const fakeContext = generateFakeContextWithStore({
         readOne: args => args
       })
-      expect(resolver(parent, null, fakeContext).id).to.equal('relation1')
+      expect(resolver(parent, null, fakeContext)).to.eventually.have.deep.property('id', 'relation1')
     })
   })
 
@@ -115,10 +111,6 @@ describe('defineEntitySingularRelation', () => {
         }).resolvers.Parent.aDifferentName
       })
 
-      it('should be keyed with the name passed in', () => {
-        expect(resolver).to.be.a('function')
-      })
-
       it('should override property used to get the child id from the parent', () => {
         const parent = {
           relation: 'relation1',
@@ -127,7 +119,7 @@ describe('defineEntitySingularRelation', () => {
         const fakeContext = generateFakeContextWithStore({
           readOne: args => args
         })
-        expect(resolver(parent, null, fakeContext).id).to.equal('theActualId')
+        expect(resolver(parent, null, fakeContext)).to.eventually.have.deep.property('id', 'theActualId')
       })
     })
   })
@@ -146,7 +138,7 @@ describe('defineEntitySingularRelation', () => {
         const fakeContext = generateFakeContextWithStore({
           readOne: args => args
         })
-        expect(resolver(parent, null, fakeContext).type).to.deep.equal('aDifferentCollection')
+        expect(resolver(parent, null, fakeContext)).to.eventually.have.deep.property('type', 'aDifferentCollection')
       })
     })
   })
@@ -166,7 +158,7 @@ describe('defineEntitySingularRelation', () => {
         const fakeContext = generateFakeContextWithStore({
           readOne: args => args
         })
-        expect(resolver(parent, null, fakeContext).id).to.equal('theActualId')
+        expect(resolver(parent, null, fakeContext)).to.eventually.have.deep.property('id', 'theActualId')
       })
 
       it('should take precidence over the \'name\' property', () => {
@@ -183,7 +175,7 @@ describe('defineEntitySingularRelation', () => {
         const fakeContext = generateFakeContextWithStore({
           readOne: args => args
         })
-        expect(resolver(parent, null, fakeContext).id).to.equal('theActualId')
+        expect(resolver(parent, null, fakeContext)).to.eventually.have.deep.property('id', 'theActualId')
       })
     })
   })

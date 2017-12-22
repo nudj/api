@@ -54,22 +54,18 @@ describe('definePluralRelation', () => {
       }).resolvers.Parent.relations
     })
 
-    it('should be a function', () => {
-      expect(resolver).to.be.a('function')
-    })
-
     it('should return the result of a store.readAll call', () => {
       const fakeContext = generateFakeContextWithStore({
         readAll: () => 'all_the_relations'
       })
-      expect(resolver(null, null, fakeContext)).to.equal('all_the_relations')
+      expect(resolver(null, null, fakeContext)).to.eventually.equal('all_the_relations')
     })
 
     it('should call store.readAll with the collection type', () => {
       const fakeContext = generateFakeContextWithStore({
         readAll: args => args
       })
-      expect(resolver(null, null, fakeContext).type).to.equal('relations')
+      expect(resolver(null, null, fakeContext)).to.eventually.have.deep.property('type', 'relations')
     })
   })
 
@@ -100,7 +96,7 @@ describe('definePluralRelation', () => {
         const fakeContext = generateFakeContextWithStore({
           readAll: args => args
         })
-        expect(resolver(null, null, fakeContext).type).to.deep.equal('aDifferentCollection')
+        expect(resolver(null, null, fakeContext)).to.eventually.have.deep.property('type', 'aDifferentCollection')
       })
     })
   })

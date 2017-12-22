@@ -54,10 +54,6 @@ describe('defineSingularByFiltersRelation', () => {
       }).resolvers.Parent.relationByFilters
     })
 
-    it('should be a function', () => {
-      expect(resolver).to.be.a('function')
-    })
-
     it('should return the result of a store.readOne call', () => {
       const filters = {
         slug: 'someSlug'

@@ -4,11 +4,19 @@ const chai = require('chai')
 const proxyquire = require('proxyquire').noCallThru()
 const sinon = require('sinon')
 const sinonChai = require('sinon-chai')
+const dedent = require('dedent')
 const expect = chai.expect
 
 chai.use(sinonChai)
 
-const DOCUMENT_RESPONSE = { _key: 'id', '_id': 123, '_rev': 123, title: 'halo 1' }
+const DOCUMENT_RESPONSE = {
+  _key: 'id',
+  '_id': 123,
+  '_rev': 123,
+  title: 'Pacman',
+  creator: 'Namco',
+  genre: 'Arcade'
+}
 
 describe('ArangoAdaptor Store().search', () => {
   let Store
@@ -17,7 +25,7 @@ describe('ArangoAdaptor Store().search', () => {
   before(() => {
     dbStub = {
       db: {
-        _query: sinon.stub().returns({ toArray: () => [DOCUMENT_RESPONSE, DOCUMENT_RESPONSE] })
+        _query: sinon.stub().returns({ toArray: () => [DOCUMENT_RESPONSE] })
       }
     }
     Store = proxyquire('../../../gql/adaptors/arango/store', {
@@ -32,18 +40,26 @@ describe('ArangoAdaptor Store().search', () => {
     it('should fetch the data', () => {
       return Store().search({
         type: 'videoGames',
-        query: 'halo',
-        fields: ['title']
+        query: 'Pacman',
+        fields: [
+          ['title']
+        ]
       })
       .then(() => {
-        expect(dbStub.db._query).to.have.been.calledWith(
-          `RETURN UNION_DISTINCT(
-        (
-          FOR item IN videoGames
-            FILTER CONTAINS(LOWER(item.title), LOWER("halo"))
-            RETURN item
-        )
-      )`
+        const query = dedent(dbStub.db._query.firstCall.args[0])
+        expect(query).to.equal(dedent`
+          RETURN UNION_DISTINCT(
+            (
+              FOR item IN videoGames
+                FILTER(
+                  CONTAINS(
+                    LOWER(CONCAT_SEPARATOR(" ", item.title)), LOWER("Pacman")
+                  )
+                )
+                RETURN item
+            )
+          )
+        `
       )
       })
     })
@@ -51,16 +67,16 @@ describe('ArangoAdaptor Store().search', () => {
     it('should return normalised values', () => {
       return expect(Store().search({
         type: 'videoGames',
-        query: 'halo',
-        fields: ['title']
+        query: 'Pacman',
+        fields: [
+          ['title']
+        ]
       })).to.eventually.deep.equal([
         {
           id: 'id',
-          title: 'halo 1'
-        },
-        {
-          id: 'id',
-          title: 'halo 1'
+          title: 'Pacman',
+          creator: 'Namco',
+          genre: 'Arcade'
         }
       ])
     })
@@ -70,24 +86,37 @@ describe('ArangoAdaptor Store().search', () => {
     it('should fetch the data', () => {
       return Store().search({
         type: 'videoGames',
-        query: 'halo',
-        fields: ['title', 'franchise']
+        query: 'Pacman',
+        fields: [
+          ['title'],
+          ['franchise']
+        ]
       })
       .then(() => {
-        expect(dbStub.db._query).to.have.been.calledWith(
-          `RETURN UNION_DISTINCT(
-        (
-          FOR item IN videoGames
-            FILTER CONTAINS(LOWER(item.title), LOWER("halo"))
-            RETURN item
-        )
-      ,
-        (
-          FOR item IN videoGames
-            FILTER CONTAINS(LOWER(item.franchise), LOWER("halo"))
-            RETURN item
-        )
-      )`
+        const query = dedent(dbStub.db._query.firstCall.args[0])
+        expect(query).to.equal(dedent`
+          RETURN UNION_DISTINCT(
+            (
+              FOR item IN videoGames
+                FILTER(
+                  CONTAINS(
+                    LOWER(CONCAT_SEPARATOR(" ", item.title)), LOWER("Pacman")
+                  )
+                )
+                RETURN item
+            )
+          ,
+            (
+              FOR item IN videoGames
+                FILTER(
+                  CONTAINS(
+                    LOWER(CONCAT_SEPARATOR(" ", item.franchise)), LOWER("Pacman")
+                  )
+                )
+                RETURN item
+            )
+          )
+        `
       )
       })
     })
@@ -95,43 +124,57 @@ describe('ArangoAdaptor Store().search', () => {
     it('should return normalised values', () => {
       return expect(Store().search({
         type: 'videoGames',
-        query: 'halo',
-        fields: ['title', 'franchise']
+        query: 'Pacman',
+        fields: [
+          ['title'],
+          ['franchise']
+        ]
       })).to.eventually.deep.equal([
         {
           id: 'id',
-          title: 'halo 1'
-        },
-        {
-          id: 'id',
-          title: 'halo 1'
+          title: 'Pacman',
+          creator: 'Namco',
+          genre: 'Arcade'
         }
       ])
     })
   })
 
-  describe('with a spaced query', () => {
+  describe('with combined fields', () => {
     it('should fetch the data', () => {
       return Store().search({
         type: 'videoGames',
-        query: 'halo 1',
-        fields: ['title', 'franchise']
+        query: 'Pacman Arcade',
+        fields: [
+          ['title', 'genre'],
+          ['franchise']
+        ]
       })
       .then(() => {
-        expect(dbStub.db._query).to.have.been.calledWith(
-          `RETURN UNION_DISTINCT(
-        (
-          FOR item IN videoGames
-            FILTER CONTAINS(LOWER(item.title), LOWER("halo 1"))
-            RETURN item
-        )
-      ,
-        (
-          FOR item IN videoGames
-            FILTER CONTAINS(LOWER(item.franchise), LOWER("halo 1"))
-            RETURN item
-        )
-      )`
+        const query = dedent(dbStub.db._query.firstCall.args[0])
+        expect(query).to.equal(dedent`
+          RETURN UNION_DISTINCT(
+            (
+              FOR item IN videoGames
+                FILTER(
+                  CONTAINS(
+                    LOWER(CONCAT_SEPARATOR(" ", item.title,item.genre)), LOWER("Pacman Arcade")
+                  )
+                )
+                RETURN item
+            )
+          ,
+            (
+              FOR item IN videoGames
+                FILTER(
+                  CONTAINS(
+                    LOWER(CONCAT_SEPARATOR(" ", item.franchise)), LOWER("Pacman Arcade")
+                  )
+                )
+                RETURN item
+            )
+          )
+        `
       )
       })
     })
@@ -139,16 +182,14 @@ describe('ArangoAdaptor Store().search', () => {
     it('should return normalised values', () => {
       return expect(Store().search({
         type: 'videoGames',
-        query: 'halo game',
-        fields: ['title', 'franchise']
+        query: 'Pacman Arcade',
+        fields: [['title'], ['franchise']]
       })).to.eventually.deep.equal([
         {
           id: 'id',
-          title: 'halo 1'
-        },
-        {
-          id: 'id',
-          title: 'halo 1'
+          title: 'Pacman',
+          creator: 'Namco',
+          genre: 'Arcade'
         }
       ])
     })

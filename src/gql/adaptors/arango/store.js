@@ -94,10 +94,16 @@ module.exports = () => {
       query,
       fields
     }) => {
-      const operations = fields.map(field => `
+      const operations = fields.map(fieldGroup => `
         (
           FOR item IN ${type}
-            FILTER CONTAINS(LOWER(item.${field}), LOWER("${query}"))
+            FILTER(
+              CONTAINS(
+                LOWER(CONCAT_SEPARATOR(" ", ${fieldGroup.map(
+                  field => `item.${field}`
+                )})), LOWER("${query}")
+              )
+            )
             RETURN item
         )
       `).join(',')

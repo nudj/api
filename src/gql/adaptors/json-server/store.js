@@ -181,15 +181,18 @@ module.exports = () => ({
     query = toLower(query)
     return request({ url: `/${type}` })
     .then(response => {
-      const entity = fields.map(field => {
-        return filter(response, (obj) => toLower(obj[field]).includes(query))
-      })
-      return flatten(entity)
+      return flatten(fields.map(fieldGroup => {
+        return filter(response, (obj) => {
+          const field = fieldGroup.map(field => obj[field]).join(' ')
+          return toLower(field).includes(query)
+        })
+      }))
     })
     .catch(errorHandler({
       action: 'search',
       type,
-      query
+      query,
+      fields
     }))
   }
 })

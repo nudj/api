@@ -17,23 +17,27 @@ describe('JSON-Server Store().search', () => {
       .reply(200, [
         {
           id: 1,
-          name: 'Test Person',
-          status: 'alive'
+          name: 'Force Ghost',
+          rank: 'Spirit',
+          allegiance: 'The Force'
         },
         {
           id: 2,
-          name: 'Juan Testango',
-          status: 'alive'
+          name: 'Darth Maul',
+          rank: 'Sith Lord',
+          allegiance: 'Sith'
         },
         {
           id: 3,
-          name: 'Emperor Palpatine',
-          status: 'deceased'
+          name: 'Darth Sidious',
+          rank: 'Emperor',
+          allegiance: 'Sith'
         },
         {
           id: 4,
-          name: 'Emperor Caesar',
-          status: 'deceased'
+          name: 'Aayla Secura',
+          rank: 'Jedi',
+          allegiance: 'Republic'
         }
       ])
   })
@@ -46,20 +50,22 @@ describe('JSON-Server Store().search', () => {
     return transaction(store => {
       return store.search({
         type: 'connections',
-        query: 'Test',
-        fields: ['name']
+        query: 'Sith',
+        fields: [['allegiance']]
       })
     }).then(results => {
       expect(results).to.deep.equal([
         {
-          id: 1,
-          name: 'Test Person',
-          status: 'alive'
+          id: 2,
+          name: 'Darth Maul',
+          rank: 'Sith Lord',
+          allegiance: 'Sith'
         },
         {
-          id: 2,
-          name: 'Juan Testango',
-          status: 'alive'
+          id: 3,
+          name: 'Darth Sidious',
+          rank: 'Emperor',
+          allegiance: 'Sith'
         }
       ])
     })
@@ -69,15 +75,16 @@ describe('JSON-Server Store().search', () => {
     return transaction(store => {
       return store.search({
         type: 'connections',
-        query: 'Pers',
-        fields: ['name']
+        query: 'gh',
+        fields: [['name']]
       })
     }).then(results => {
       expect(results).to.deep.equal([
         {
           id: 1,
-          name: 'Test Person',
-          status: 'alive'
+          name: 'Force Ghost',
+          rank: 'Spirit',
+          allegiance: 'The Force'
         }
       ])
     })
@@ -87,44 +94,48 @@ describe('JSON-Server Store().search', () => {
     return transaction(store => {
       return store.search({
         type: 'connections',
-        query: 'al',
-        fields: ['name', 'status']
+        query: 'or',
+        fields: [['name'], ['rank']]
       })
     }).then(results => {
       expect(results).to.deep.equal([
         {
-          id: 3,
-          name: 'Emperor Palpatine',
-          status: 'deceased'
-        },
-        {
           id: 1,
-          name: 'Test Person',
-          status: 'alive'
+          name: 'Force Ghost',
+          rank: 'Spirit',
+          allegiance: 'The Force'
         },
         {
           id: 2,
-          name: 'Juan Testango',
-          status: 'alive'
+          name: 'Darth Maul',
+          rank: 'Sith Lord',
+          allegiance: 'Sith'
+        },
+        {
+          id: 3,
+          name: 'Darth Sidious',
+          rank: 'Emperor',
+          allegiance: 'Sith'
         }
       ])
     })
   })
 
-  it('should fetch data with spaced query', () => {
+  it('should fetch data with mutliple fields joined', () => {
     return transaction(store => {
       return store.search({
         type: 'connections',
-        query: 'Emperor Palpatine',
-        fields: ['name']
+        query: 'Republic Jedi',
+        fields: [['allegiance', 'rank']]
       })
     })
     .then(results => {
       expect(results).to.deep.equal([
         {
-          id: 3,
-          name: 'Emperor Palpatine',
-          status: 'deceased'
+          id: 4,
+          name: 'Aayla Secura',
+          rank: 'Jedi',
+          allegiance: 'Republic'
         }
       ])
     })

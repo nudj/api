@@ -272,7 +272,9 @@ describe('LodashAdaptor transaction', () => {
       return store.search({
         type: 'dogs',
         query: 'gentle',
-        fields: ['temperament']
+        fields: [
+          ['temperament']
+        ]
       })
     })
     .then(result => {
@@ -291,7 +293,10 @@ describe('LodashAdaptor transaction', () => {
       return store.search({
         type: 'dogs',
         query: 'Go',
-        fields: ['temperament', 'breed']
+        fields: [
+          ['temperament'],
+          ['breed']
+        ]
       })
     })
     .then(result => {
@@ -315,7 +320,9 @@ describe('LodashAdaptor transaction', () => {
       return store.search({
         type: 'dogs',
         query: 'az',
-        fields: ['temperament']
+        fields: [
+          ['temperament']
+        ]
       })
     })
     .then(result => {
@@ -329,12 +336,14 @@ describe('LodashAdaptor transaction', () => {
     })
   })
 
-  it('search with multiple words', () => {
+  it('search with joined fields', () => {
     return transaction({ db })(store => {
       return store.search({
         type: 'dogs',
-        query: 'Golden Retr',
-        fields: ['breed']
+        query: 'lazy golden',
+        fields: [
+          ['temperament', 'breed']
+        ]
       })
     })
     .then(result => {

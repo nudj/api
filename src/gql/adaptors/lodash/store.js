@@ -103,8 +103,11 @@ module.exports = ({ db }) => {
     }) => {
       const all = get(db, type)
       query = toLower(query)
-      const entity = fields.map(field => {
-        return filter(all, (obj) => toLower(obj[field]).includes(query))
+      const entity = fields.map(fieldGroup => {
+        return filter(all, (obj) => {
+          const field = fieldGroup.map(field => obj[field]).join(' ')
+          return toLower(field).includes(query)
+        })
       })
       return Promise.resolve(flatten(entity))
     }

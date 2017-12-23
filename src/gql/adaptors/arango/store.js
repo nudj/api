@@ -1,6 +1,6 @@
 module.exports = () => {
   const reduce = require('lodash/reduce')
-  const db = require('@arangodb').db
+  const { db, aql } = require('@arangodb')
   const normaliseData = (data) => {
     return reduce(data, (result, value, key) => {
       switch (key) {
@@ -109,7 +109,7 @@ module.exports = () => {
       `).join(',')
       return Promise.resolve(
         db
-          ._query(`RETURN UNION_DISTINCT(${operations})`)
+          ._query(aql`RETURN UNION_DISTINCT(${operations})`)
           .toArray()
           .map(normaliseData)
       )

@@ -18,6 +18,9 @@ const DOCUMENT_RESPONSE = {
   genre: 'Arcade'
 }
 
+const aqlTemplateTag = (strings, operations) =>
+  strings[0] + operations + strings[1]
+
 describe('ArangoAdaptor Store().search', () => {
   let Store
   let dbStub
@@ -26,7 +29,8 @@ describe('ArangoAdaptor Store().search', () => {
     dbStub = {
       db: {
         _query: sinon.stub().returns({ toArray: () => [DOCUMENT_RESPONSE] })
-      }
+      },
+      aql: aqlTemplateTag
     }
     Store = proxyquire('../../../gql/adaptors/arango/store', {
       '@arangodb': dbStub

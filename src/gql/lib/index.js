@@ -13,19 +13,20 @@ function handleErrors (resolver) {
       return await resolver(...args)
     } catch (error) {
       const ID = `api_${randomWords({ exactly: 2, join: '_' })}`.toUpperCase()
+      const upstreamLog = error.log || []
       const boundaries = [
         [error.name, error.message],
-        ...error.log
+        ...upstreamLog
       ]
       const toLog = boundaries.reduce((log, boundary) => {
         log = log.concat('\n', padRight('', 23, ' '), ...boundary)
         return log
       }, [])
       logger('error', ID, ...toLog, '\n')
-      if (error.constructor === NotFound) {
-        throw error
+      if (error.constructor !== NotFound) {
+        error.message = `API ERROR: ${ID}`
       }
-      throw new AppError(`API ERROR: ${ID}`)
+      throw error
     }
   }
 }
@@ -227,30 +228,26 @@ function defineEntityPluralRelation ({
     `,
     resolvers: {
       [parentType]: {
-        [name]: handleErrors(async (parent, args, context) => {
-          try {
-            const params = {
-              collection
-            }
-            if (parent[parentPropertyName]) {
-              params.ids = parent[parentPropertyName]
-              params.storeMethod = 'readMany'
-            } else {
-              params.filters = {
-                [parentName]: parent.id
-              }
-              params.storeMethod = 'readAll'
-            }
-            return await context.transaction((store, params) => {
-              return store[params.storeMethod]({
-                type: params.collection,
-                filters: params.filters,
-                ids: params.ids
-              })
-            }, params)
-          } catch (error) {
-            error.addBoundaryLogs('here')
+        [name]: handleErrors((parent, args, context) => {
+          const params = {
+            collection
           }
+          if (parent[parentPropertyName]) {
+            params.ids = parent[parentPropertyName]
+            params.storeMethod = 'readMany'
+          } else {
+            params.filters = {
+              [parentName]: parent.id
+            }
+            params.storeMethod = 'readAll'
+          }
+          return context.transaction((store, params) => {
+            return store[params.storeMethod]({
+              type: params.collection,
+              filters: params.filters,
+              ids: params.ids
+            })
+          }, params)
         })
       }
     }

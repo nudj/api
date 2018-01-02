@@ -29,7 +29,7 @@ const data = {
   accounts: [],
   messages: [],
   connections: [],
-  formerEmployers: [],
+  employments: [],
   roles: [],
   connectionSources: []
 }
@@ -328,7 +328,7 @@ data.personTasks = data.personTasks.concat([
     completed: false
   },
   {
-    id: 'personTask4',
+    id: 'personTask2',
     person: 'person5',
     type: 'HIRER_SURVEY',
     created: '2017-06-08T11:38:19.485+00:00',
@@ -400,6 +400,22 @@ data.connectionSources = data.connectionSources.concat([
     created: '2017-06-08T11:38:19.485+00:00',
     modified: '2017-06-08T11:38:19.485+00:00',
     name: 'linkedin'
+  }
+])
+data.connections = data.connections.concat([
+  {
+    id: 'connection1',
+    created: '2017-06-08T11:38:19.485+00:00',
+    modified: '2017-06-08T11:38:19.485+00:00',
+    from: 'person5',
+    person: 'person2'
+  }
+])
+data.employments = data.employments.concat([
+  {
+    id: 'employment1',
+    created: '2017-06-08T11:38:19.485+00:00',
+    modified: '2017-06-08T11:38:19.485+00:00'
   }
 ])
 

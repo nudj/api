@@ -7,24 +7,24 @@ const { generateFakeContextWithStore } = require('../helpers')
 
 describe('defineEntitySingularByFiltersRelation', () => {
   it('should throw if no parentType is given', () => {
-    expect(() => defineEntitySingularByFiltersRelation()).to.throw('defineEntitySingularByFiltersRelation requires a parentType')
+    return expect(() => defineEntitySingularByFiltersRelation()).to.throw('defineEntitySingularByFiltersRelation requires a parentType')
   })
 
   it('should throw if no type is given', () => {
-    expect(() => defineEntitySingularByFiltersRelation({
+    return expect(() => defineEntitySingularByFiltersRelation({
       parentType: 'Parent'
     })).to.throw('defineEntitySingularByFiltersRelation requires a type')
   })
 
   it('should return an object', () => {
-    expect(defineEntitySingularByFiltersRelation({
+    return expect(defineEntitySingularByFiltersRelation({
       parentType: 'Parent',
       type: 'Relation'
     })).to.be.an('object')
   })
 
   it('should return the typeDefs', () => {
-    expect(defineEntitySingularByFiltersRelation({
+    return expect(defineEntitySingularByFiltersRelation({
       parentType: 'Parent',
       type: 'Relation'
     })).to.have.property('typeDefs').to.equal(`
@@ -35,7 +35,7 @@ describe('defineEntitySingularByFiltersRelation', () => {
   })
 
   it('should return resolver for Parent.relationByFilters', () => {
-    expect(defineEntitySingularByFiltersRelation({
+    return expect(defineEntitySingularByFiltersRelation({
       parentType: 'Parent',
       type: 'Relation'
     }))
@@ -64,7 +64,7 @@ describe('defineEntitySingularByFiltersRelation', () => {
       const fakeContext = generateFakeContextWithStore({
         readOne: () => 'the_relation'
       })
-      expect(resolver(parent, { filters }, fakeContext)).to.eventually.equal('the_relation')
+      return expect(resolver(parent, { filters }, fakeContext)).to.eventually.equal('the_relation')
     })
 
     it('should call store.readOne with the collection type', () => {
@@ -77,7 +77,9 @@ describe('defineEntitySingularByFiltersRelation', () => {
       const fakeContext = generateFakeContextWithStore({
         readOne: args => args
       })
-      expect(resolver(parent, { filters }, fakeContext)).to.eventually.have.deep.property('type', 'relations')
+      return expect(resolver(parent, { filters }, fakeContext))
+        .to.eventually.have.deep.property('type')
+        .to.deep.equal('relations')
     })
 
     it('should call store.readOne with filters merged with parent.id', () => {
@@ -90,10 +92,12 @@ describe('defineEntitySingularByFiltersRelation', () => {
       const fakeContext = generateFakeContextWithStore({
         readOne: args => args
       })
-      expect(resolver(parent, { filters }, fakeContext)).to.eventually.have.deep.property('filters', {
-        parent: 'parent1',
-        slug: 'someSlug'
-      })
+      return expect(resolver(parent, { filters }, fakeContext))
+        .to.eventually.have.deep.property('filters')
+        .to.deep.equal({
+          parent: 'parent1',
+          slug: 'someSlug'
+        })
     })
   })
 
@@ -101,7 +105,7 @@ describe('defineEntitySingularByFiltersRelation', () => {
 
   describe('when the name is passed in', () => {
     it('should override the name', () => {
-      expect(defineEntitySingularByFiltersRelation({
+      return expect(defineEntitySingularByFiltersRelation({
         parentType: 'Parent',
         type: 'Relation',
         name: 'aDifferentName'
@@ -115,7 +119,7 @@ describe('defineEntitySingularByFiltersRelation', () => {
 
   describe('when the filterType is passed in', () => {
     it('should override the filterType', () => {
-      expect(defineEntitySingularByFiltersRelation({
+      return expect(defineEntitySingularByFiltersRelation({
         parentType: 'Parent',
         type: 'Relation',
         filterType: 'aDifferentFilterType'
@@ -144,7 +148,9 @@ describe('defineEntitySingularByFiltersRelation', () => {
         const fakeContext = generateFakeContextWithStore({
           readOne: args => args
         })
-        expect(resolver(parent, { filters }, fakeContext)).to.eventually.have.deep.property('type', 'aDifferentCollection')
+        return expect(resolver(parent, { filters }, fakeContext))
+          .to.eventually.have.deep.property('type')
+          .to.deep.equal('aDifferentCollection')
       })
     })
   })
@@ -166,10 +172,12 @@ describe('defineEntitySingularByFiltersRelation', () => {
         const fakeContext = generateFakeContextWithStore({
           readOne: args => args
         })
-        expect(resolver(parent, { filters }, fakeContext)).to.eventually.have.deep.property('filters', {
-          aDifferentName: 'parent1',
-          slug: 'someSlug'
-        })
+        return expect(resolver(parent, { filters }, fakeContext))
+          .to.eventually.have.deep.property('filters')
+          .to.deep.equal({
+            aDifferentName: 'parent1',
+            slug: 'someSlug'
+          })
       })
     })
   })

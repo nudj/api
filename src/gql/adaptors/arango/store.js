@@ -93,11 +93,16 @@ module.exports = () => {
     search: ({
       type,
       query,
-      fields
+      fields,
+      filters
     }) => {
+      const filter = `FILTER ${Object.keys(filters || {}).map((key) => {
+        return `item.${key} == "${filters[key]}"`
+      }).join(' && ')}`
       const operations = fields.map(fieldGroup => `
         (
           FOR item IN ${type}
+            ${filters ? filter : ''}
             FILTER(
               CONTAINS(
                 LOWER(CONCAT_SEPARATOR(" ", ${fieldGroup.map(

@@ -21,7 +21,7 @@ const DOCUMENT_RESPONSE = {
 const aqlTemplateTag = (strings, operations) =>
   strings[0] + operations + strings[1]
 
-describe('ArangoAdaptor Store().search', () => {
+describe.only('ArangoAdaptor Store().search', () => {
   let Store
   let dbStub
 
@@ -47,7 +47,10 @@ describe('ArangoAdaptor Store().search', () => {
         query: 'Pacman',
         fields: [
           ['title']
-        ]
+        ],
+        filters: {
+          creator: 'Namco'
+        }
       })
       .then(() => {
         const [ query, bindVars ] = dbStub.db._query.firstCall.args
@@ -56,6 +59,7 @@ describe('ArangoAdaptor Store().search', () => {
           RETURN UNION_DISTINCT([],
             (
               FOR item IN videoGames
+                FILTER item.creator == "Namco"
                 FILTER(
                   CONTAINS(
                     LOWER(CONCAT_SEPARATOR(" ", item.title)), LOWER(@query)
@@ -95,7 +99,10 @@ describe('ArangoAdaptor Store().search', () => {
         fields: [
           ['title'],
           ['franchise']
-        ]
+        ],
+        filters: {
+          creator: 'Namco'
+        }
       })
       .then(() => {
         const [ query, bindVars ] = dbStub.db._query.firstCall.args
@@ -104,6 +111,7 @@ describe('ArangoAdaptor Store().search', () => {
           RETURN UNION_DISTINCT([],
             (
               FOR item IN videoGames
+                FILTER item.creator == "Namco"
                 FILTER(
                   CONTAINS(
                     LOWER(CONCAT_SEPARATOR(" ", item.title)), LOWER(@query)
@@ -114,6 +122,7 @@ describe('ArangoAdaptor Store().search', () => {
           ,
             (
               FOR item IN videoGames
+                FILTER item.creator == "Namco"
                 FILTER(
                   CONTAINS(
                     LOWER(CONCAT_SEPARATOR(" ", item.franchise)), LOWER(@query)
@@ -154,7 +163,11 @@ describe('ArangoAdaptor Store().search', () => {
         fields: [
           ['title', 'genre'],
           ['franchise']
-        ]
+        ],
+        filters: {
+          creator: 'Namco',
+          genre: 'Arcade'
+        }
       })
       .then(() => {
         const [ query, bindVars ] = dbStub.db._query.firstCall.args
@@ -163,6 +176,7 @@ describe('ArangoAdaptor Store().search', () => {
           RETURN UNION_DISTINCT([],
             (
               FOR item IN videoGames
+                FILTER item.creator == "Namco" && item.genre == "Arcade"
                 FILTER(
                   CONTAINS(
                     LOWER(CONCAT_SEPARATOR(" ", item.title,item.genre)), LOWER(@query)
@@ -173,6 +187,7 @@ describe('ArangoAdaptor Store().search', () => {
           ,
             (
               FOR item IN videoGames
+                FILTER item.creator == "Namco" && item.genre == "Arcade"
                 FILTER(
                   CONTAINS(
                     LOWER(CONCAT_SEPARATOR(" ", item.franchise)), LOWER(@query)

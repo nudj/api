@@ -4,7 +4,7 @@ const toLower = require('lodash/toLower')
 const flatten = require('lodash/flatten')
 const uniq = require('lodash/uniq')
 const axios = require('axios')
-const { AppError, NotFound } = require('@nudj/library/errors')
+const { logThenThrow, NotFound } = require('@nudj/library/errors')
 const {
   toQs,
   logger,
@@ -25,7 +25,7 @@ const errorHandler = (details) => (error) => {
     logger('error', error.name, `JsonServerStore.${details.action}`, details.type, details.ids || details.filters || details.id || '', details.data || '')
     return null
   }
-  throw new AppError(error,
+  logThenThrow(error,
     `JsonServerStore.${details.action}`,
     details.type,
     details.ids || details.filters || details.id || '',

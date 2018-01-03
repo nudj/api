@@ -21,7 +21,7 @@ const DOCUMENT_RESPONSE = {
 const aqlTemplateTag = (strings, operations) =>
   strings[0] + operations + strings[1]
 
-describe.only('ArangoAdaptor Store().search', () => {
+describe('ArangoAdaptor Store().search', () => {
   let Store
   let dbStub
 

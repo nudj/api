@@ -145,7 +145,7 @@ describe('JSON-Server Store().search', () => {
     return transaction(store => {
       return store.search({
         type: 'connections',
-        query: 'Sith Emperor',
+        query: 'Emperor',
         fields: [['allegiance', 'rank']]
       })
     })

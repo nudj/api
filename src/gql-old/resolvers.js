@@ -277,6 +277,22 @@ module.exports = ({ transaction }) => ({
         from: person.id
       })
     },
+    searchConnections: (person, args) => {
+      const { query, fields } = args
+      return transaction((store, params) => {
+        const { from, query, fields } = params
+        return store.search({
+          type: 'connections',
+          query,
+          fields,
+          filters: { from }
+        })
+      }, {
+        query,
+        fields,
+        from: person.id
+      })
+    },
     getOrCreateFormerEmployer: (obj, args) => {
       return transaction((store, params) => {
         const {

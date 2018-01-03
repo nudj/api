@@ -9,11 +9,11 @@ module.exports = {
       searchConnections: (person, args, context) => {
         const { query, fields } = args
         return context.transaction((store, params) => {
-          const { from } = params
+          const { from, query, fields } = params
           return store.search({
             type: 'connections',
-            query: params.query,
-            fields: params.fields,
+            query,
+            fields,
             filters: { from }
           })
         }, {

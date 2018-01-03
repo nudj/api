@@ -280,11 +280,11 @@ module.exports = ({ transaction }) => ({
     searchConnections: (person, args) => {
       const { query, fields } = args
       return transaction((store, params) => {
-        const { from } = params
+        const { from, query, fields } = params
         return store.search({
           type: 'connections',
-          query: params.query,
-          fields: params.fields,
+          query,
+          fields,
           filters: { from }
         })
       }, {

@@ -1,6 +1,7 @@
 module.exports = () => {
   const reduce = require('lodash/reduce')
-  const { db, aql } = require('@arangodb')
+  const flatten = require('lodash/flatten')
+  const { db } = require('@arangodb')
   const normaliseData = (data) => {
     return reduce(data, (result, value, key) => {
       switch (key) {
@@ -101,18 +102,19 @@ module.exports = () => {
               CONTAINS(
                 LOWER(CONCAT_SEPARATOR(" ", ${fieldGroup.map(
                   field => `item.${field}`
-                )})), LOWER("${query}")
+                )})), LOWER(@query)
               )
             )
             RETURN item
         )
       `).join(',')
       return Promise.resolve(
-        db
-          ._query(aql`RETURN UNION_DISTINCT(${operations})`)
-          .toArray()
-          .map(normaliseData)
-      )
+        flatten(
+          db
+            ._query(`RETURN UNION_DISTINCT([],${operations})`, { query })
+            .toArray()
+        )
+      ).then(response => response.map(data => normaliseData(data)))
     }
   }
 }

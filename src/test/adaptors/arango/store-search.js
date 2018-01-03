@@ -50,14 +50,15 @@ describe('ArangoAdaptor Store().search', () => {
         ]
       })
       .then(() => {
-        const query = dedent(dbStub.db._query.firstCall.args[0])
-        expect(query).to.equal(dedent`
-          RETURN UNION_DISTINCT(
+        const [ query, bindVars ] = dbStub.db._query.firstCall.args
+        expect(bindVars).to.deep.equal({ query: 'Pacman' })
+        expect(dedent(query)).to.equal(dedent`
+          RETURN UNION_DISTINCT([],
             (
               FOR item IN videoGames
                 FILTER(
                   CONTAINS(
-                    LOWER(CONCAT_SEPARATOR(" ", item.title)), LOWER("Pacman")
+                    LOWER(CONCAT_SEPARATOR(" ", item.title)), LOWER(@query)
                   )
                 )
                 RETURN item
@@ -97,14 +98,15 @@ describe('ArangoAdaptor Store().search', () => {
         ]
       })
       .then(() => {
-        const query = dedent(dbStub.db._query.firstCall.args[0])
-        expect(query).to.equal(dedent`
-          RETURN UNION_DISTINCT(
+        const [ query, bindVars ] = dbStub.db._query.firstCall.args
+        expect(bindVars).to.deep.equal({ query: 'Pacman' })
+        expect(dedent(query)).to.equal(dedent`
+          RETURN UNION_DISTINCT([],
             (
               FOR item IN videoGames
                 FILTER(
                   CONTAINS(
-                    LOWER(CONCAT_SEPARATOR(" ", item.title)), LOWER("Pacman")
+                    LOWER(CONCAT_SEPARATOR(" ", item.title)), LOWER(@query)
                   )
                 )
                 RETURN item
@@ -114,7 +116,7 @@ describe('ArangoAdaptor Store().search', () => {
               FOR item IN videoGames
                 FILTER(
                   CONTAINS(
-                    LOWER(CONCAT_SEPARATOR(" ", item.franchise)), LOWER("Pacman")
+                    LOWER(CONCAT_SEPARATOR(" ", item.franchise)), LOWER(@query)
                   )
                 )
                 RETURN item
@@ -155,14 +157,15 @@ describe('ArangoAdaptor Store().search', () => {
         ]
       })
       .then(() => {
-        const query = dedent(dbStub.db._query.firstCall.args[0])
-        expect(query).to.equal(dedent`
-          RETURN UNION_DISTINCT(
+        const [ query, bindVars ] = dbStub.db._query.firstCall.args
+        expect(bindVars).to.deep.equal({ query: 'Pacman Arcade' })
+        expect(dedent(query)).to.equal(dedent`
+          RETURN UNION_DISTINCT([],
             (
               FOR item IN videoGames
                 FILTER(
                   CONTAINS(
-                    LOWER(CONCAT_SEPARATOR(" ", item.title,item.genre)), LOWER("Pacman Arcade")
+                    LOWER(CONCAT_SEPARATOR(" ", item.title,item.genre)), LOWER(@query)
                   )
                 )
                 RETURN item
@@ -172,7 +175,7 @@ describe('ArangoAdaptor Store().search', () => {
               FOR item IN videoGames
                 FILTER(
                   CONTAINS(
-                    LOWER(CONCAT_SEPARATOR(" ", item.franchise)), LOWER("Pacman Arcade")
+                    LOWER(CONCAT_SEPARATOR(" ", item.franchise)), LOWER(@query)
                   )
                 )
                 RETURN item

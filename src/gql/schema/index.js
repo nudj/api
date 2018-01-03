@@ -3,10 +3,11 @@ const glob = require('glob')
 const path = require('path')
 
 const { mergeDefinitions } = require('../lib')
-const requireFile = file => require(path.resolve(file))
+const requireFile = file => require(path.resolve(__dirname, file))
 
-const modules = glob.sync('./gql/schema/**/*.js', {
-  ignore: './gql/schema/index.js'
+const modules = glob.sync('./**/*.js', {
+  ignore: './index.js',
+  cwd: __dirname
 }).map(requireFile)
 
 const definitions = mergeDefinitions(...modules)

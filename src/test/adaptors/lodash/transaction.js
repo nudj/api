@@ -17,15 +17,18 @@ describe('LodashAdaptor transaction', () => {
       dogs: [
         {
           id: 'dog1',
-          breed: 'Cocker Spaniel'
+          breed: 'Cocker Spaniel',
+          temperament: 'gentle'
         },
         {
           id: 'dog2',
-          breed: 'Dalmatian'
+          breed: 'Dalmatian',
+          temperament: 'good boy'
         },
         {
           id: 'dog3',
-          breed: 'Alsatian'
+          breed: 'Golden Retriever',
+          temperament: 'lazy'
         }
       ]
     }
@@ -56,7 +59,8 @@ describe('LodashAdaptor transaction', () => {
       })
     })).to.eventually.deep.equal({
       id: 'dog1',
-      breed: 'Cocker Spaniel'
+      breed: 'Cocker Spaniel',
+      temperament: 'gentle'
     })
   })
 
@@ -79,7 +83,8 @@ describe('LodashAdaptor transaction', () => {
       })
     })).to.eventually.deep.equal({
       id: 'dog1',
-      breed: 'Cocker Spaniel'
+      breed: 'Cocker Spaniel',
+      temperament: 'gentle'
     })
   })
 
@@ -99,20 +104,7 @@ describe('LodashAdaptor transaction', () => {
       return store.readAll({
         type: 'dogs'
       })
-    })).to.eventually.deep.equal([
-      {
-        id: 'dog1',
-        breed: 'Cocker Spaniel'
-      },
-      {
-        id: 'dog2',
-        breed: 'Dalmatian'
-      },
-      {
-        id: 'dog3',
-        breed: 'Alsatian'
-      }
-    ])
+    })).to.eventually.deep.equal(db.dogs)
   })
 
   it('readAll by filters', () => {
@@ -126,7 +118,8 @@ describe('LodashAdaptor transaction', () => {
     })).to.eventually.deep.equal([
       {
         id: 'dog1',
-        breed: 'Cocker Spaniel'
+        breed: 'Cocker Spaniel',
+        temperament: 'gentle'
       }
     ])
   })
@@ -140,11 +133,13 @@ describe('LodashAdaptor transaction', () => {
     })).to.eventually.deep.equal([
       {
         id: 'dog2',
-        breed: 'Dalmatian'
+        breed: 'Dalmatian',
+        temperament: 'good boy'
       },
       {
         id: 'dog1',
-        breed: 'Cocker Spaniel'
+        breed: 'Cocker Spaniel',
+        temperament: 'gentle'
       }
     ])
   })
@@ -164,18 +159,21 @@ describe('LodashAdaptor transaction', () => {
         type: 'dogs',
         id: 'dog2',
         data: {
-          breed: 'Pug'
+          breed: 'Pug',
+          temperament: 'Puppers O\'Woofer'
         }
       })
     })
     .then(result => {
       expect(result).to.deep.equal({
         id: 'dog2',
-        breed: 'Pug'
+        breed: 'Pug',
+        temperament: 'Puppers O\'Woofer'
       })
       expect(db.dogs[1]).to.deep.equal({
         id: 'dog2',
-        breed: 'Pug'
+        breed: 'Pug',
+        temperament: 'Puppers O\'Woofer'
       })
     })
   })
@@ -202,16 +200,19 @@ describe('LodashAdaptor transaction', () => {
     .then(result => {
       expect(result).to.deep.equal({
         id: 'dog2',
-        breed: 'Dalmatian'
+        breed: 'Dalmatian',
+        temperament: 'good boy'
       })
       expect(db.dogs).to.deep.equal([
         {
           id: 'dog1',
-          breed: 'Cocker Spaniel'
+          breed: 'Cocker Spaniel',
+          temperament: 'gentle'
         },
         {
           id: 'dog3',
-          breed: 'Alsatian'
+          breed: 'Golden Retriever',
+          temperament: 'lazy'
         }
       ])
     })
@@ -263,6 +264,141 @@ describe('LodashAdaptor transaction', () => {
       expect(db.dogs.length).to.equal(4)
       expect(db.dogs[3]).to.have.property('id')
       expect(db.dogs[3]).to.have.property('breed', 'CavapooData')
+    })
+  })
+
+  it('search', () => {
+    return transaction({ db })(store => {
+      return store.search({
+        type: 'dogs',
+        query: 'gentle',
+        fields: [
+          ['temperament']
+        ]
+      })
+    })
+    .then(result => {
+      expect(result).to.deep.equal([
+        {
+          id: 'dog1',
+          breed: 'Cocker Spaniel',
+          temperament: 'gentle'
+        }
+      ])
+    })
+  })
+
+  it('search with multiple fields', () => {
+    return transaction({ db })(store => {
+      return store.search({
+        type: 'dogs',
+        query: 'Go',
+        fields: [
+          ['temperament'],
+          ['breed']
+        ]
+      })
+    })
+    .then(result => {
+      expect(result).to.deep.equal([
+        {
+          id: 'dog2',
+          breed: 'Dalmatian',
+          temperament: 'good boy'
+        },
+        {
+          id: 'dog3',
+          breed: 'Golden Retriever',
+          temperament: 'lazy'
+        }
+      ])
+    })
+  })
+
+  it('search with incomplete query', () => {
+    return transaction({ db })(store => {
+      return store.search({
+        type: 'dogs',
+        query: 'az',
+        fields: [
+          ['temperament']
+        ]
+      })
+    })
+    .then(result => {
+      expect(result).to.deep.equal([
+        {
+          id: 'dog3',
+          breed: 'Golden Retriever',
+          temperament: 'lazy'
+        }
+      ])
+    })
+  })
+
+  it('search with joined fields', () => {
+    return transaction({ db })(store => {
+      return store.search({
+        type: 'dogs',
+        query: 'lazy golden',
+        fields: [
+          ['temperament', 'breed']
+        ]
+      })
+    })
+    .then(result => {
+      expect(result).to.deep.equal([
+        {
+          id: 'dog3',
+          breed: 'Golden Retriever',
+          temperament: 'lazy'
+        }
+      ])
+    })
+  })
+
+  it('search with joined fields matching only one field', () => {
+    return transaction({ db })(store => {
+      return store.search({
+        type: 'dogs',
+        query: 'gold',
+        fields: [
+          ['temperament', 'breed']
+        ]
+      })
+    })
+    .then(result => {
+      expect(result).to.deep.equal([
+        {
+          id: 'dog3',
+          breed: 'Golden Retriever',
+          temperament: 'lazy'
+        }
+      ])
+    })
+  })
+
+  it('search with filters', () => {
+    return transaction({ db })(store => {
+      return store.search({
+        type: 'dogs',
+        query: 'o',
+        fields: [
+          ['breed']
+        ],
+        filters: {
+          temperament: 'lazy'
+        }
+      })
+    })
+    .then(result => {
+      expect(result).to.deep.equal([
+        {
+          id: 'dog3',
+          breed: 'Golden Retriever',
+          temperament: 'lazy'
+        }
+      ])
     })
   })
 })

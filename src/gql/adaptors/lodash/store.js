@@ -2,7 +2,9 @@ const get = require('lodash/get')
 const filter = require('lodash/filter')
 const first = require('lodash/first')
 const find = require('lodash/find')
+const flatten = require('lodash/flatten')
 const findIndex = require('lodash/findIndex')
+const toLower = require('lodash/toLower')
 const merge = require('lodash/merge')
 const { NotFound } = require('@nudj/library/errors')
 
@@ -93,6 +95,23 @@ module.exports = ({ db }) => {
       entity = merge(data, { id })
       db[type].push(entity)
       return Promise.resolve(entity)
+    },
+    search: ({
+      type,
+      query,
+      fields,
+      filters = {}
+    }) => {
+      const all = get(db, type)
+      const filteredSearch = filter(all, filters)
+      query = toLower(query)
+      const entity = fields.map(fieldGroup => {
+        return filter(filteredSearch, (obj) => {
+          const field = fieldGroup.map(field => obj[field]).join(' ')
+          return toLower(field).includes(query)
+        })
+      })
+      return Promise.resolve(flatten(entity))
     }
   }
 }

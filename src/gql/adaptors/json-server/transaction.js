@@ -7,10 +7,6 @@ module.exports = async (action, params) => {
   try {
     return await action(store({ baseURL }), params)
   } catch (error) {
-    logThenThrow(error,
-      `JsonServerTransaction`,
-      baseURL,
-      params
-    )
+    logThenThrow(error, `JsonServerTransaction`, baseURL, params)
   }
 }

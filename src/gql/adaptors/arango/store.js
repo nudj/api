@@ -1,6 +1,7 @@
 module.exports = () => {
   const reduce = require('lodash/reduce')
-  const db = require('@arangodb').db
+  const flatten = require('lodash/flatten')
+  const { db } = require('@arangodb')
   const normaliseData = (data) => {
     return reduce(data, (result, value, key) => {
       switch (key) {
@@ -88,6 +89,37 @@ module.exports = () => {
         item = response.new
       }
       return Promise.resolve(normaliseData(item))
+    },
+    search: ({
+      type,
+      query,
+      fields,
+      filters
+    }) => {
+      const filter = `FILTER ${Object.keys(filters || {}).map((key) => {
+        return `item.${key} == "${filters[key]}"`
+      }).join(' && ')}`
+      const operations = fields.map(fieldGroup => `
+        (
+          FOR item IN ${type}
+            ${filters ? filter : ''}
+            FILTER(
+              CONTAINS(
+                LOWER(CONCAT_SEPARATOR(" ", ${fieldGroup.map(
+                  field => `item.${field}`
+                )})), LOWER(@query)
+              )
+            )
+            RETURN item
+        )
+      `).join(',')
+      return Promise.resolve(
+        flatten(
+          db
+            ._query(`RETURN UNION_DISTINCT([],${operations})`, { query })
+            .toArray()
+        )
+      ).then(response => response.map(data => normaliseData(data)))
     }
   }
 }

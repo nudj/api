@@ -141,6 +141,26 @@ describe('JSON-Server Store().search', () => {
     })
   })
 
+  it('should fetch data with mutliple fields joined on one match', () => {
+    return transaction(store => {
+      return store.search({
+        type: 'connections',
+        query: 'Sith Emperor',
+        fields: [['allegiance', 'rank']]
+      })
+    })
+    .then(results => {
+      expect(results).to.deep.equal([
+        {
+          id: 3,
+          name: 'Darth Sidious',
+          rank: 'Emperor',
+          allegiance: 'Sith'
+        }
+      ])
+    })
+  })
+
   it('should fetch data with filters', () => {
     server
       .get('/connections/filter')

@@ -99,12 +99,14 @@ module.exports = ({ db }) => {
     search: ({
       type,
       query,
-      fields
+      fields,
+      filters = {}
     }) => {
       const all = get(db, type)
+      const filteredSearch = filter(all, filters)
       query = toLower(query)
       const entity = fields.map(fieldGroup => {
-        return filter(all, (obj) => {
+        return filter(filteredSearch, (obj) => {
           const field = fieldGroup.map(field => obj[field]).join(' ')
           return toLower(field).includes(query)
         })

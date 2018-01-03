@@ -356,4 +356,28 @@ describe('LodashAdaptor transaction', () => {
       ])
     })
   })
+
+  it('search with filters', () => {
+    return transaction({ db })(store => {
+      return store.search({
+        type: 'dogs',
+        query: 'o',
+        fields: [
+          ['breed']
+        ],
+        filters: {
+          temperament: 'lazy'
+        }
+      })
+    })
+    .then(result => {
+      expect(result).to.deep.equal([
+        {
+          id: 'dog3',
+          breed: 'Golden Retriever',
+          temperament: 'lazy'
+        }
+      ])
+    })
+  })
 })

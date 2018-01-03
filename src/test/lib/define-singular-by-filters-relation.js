@@ -7,24 +7,24 @@ const { generateFakeContextWithStore } = require('../helpers')
 
 describe('defineSingularByFiltersRelation', () => {
   it('should throw if no parentType is given', () => {
-    expect(() => defineSingularByFiltersRelation()).to.throw('defineSingularByFiltersRelation requires a parentType')
+    return expect(() => defineSingularByFiltersRelation()).to.throw('defineSingularByFiltersRelation requires a parentType')
   })
 
   it('should throw if no type is given', () => {
-    expect(() => defineSingularByFiltersRelation({
+    return expect(() => defineSingularByFiltersRelation({
       parentType: 'Parent'
     })).to.throw('defineSingularByFiltersRelation requires a type')
   })
 
   it('should return an object', () => {
-    expect(defineSingularByFiltersRelation({
+    return expect(defineSingularByFiltersRelation({
       parentType: 'Parent',
       type: 'Relation'
     })).to.be.an('object')
   })
 
   it('should return the typeDefs', () => {
-    expect(defineSingularByFiltersRelation({
+    return expect(defineSingularByFiltersRelation({
       parentType: 'Parent',
       type: 'Relation'
     })).to.have.property('typeDefs').to.equal(`
@@ -35,7 +35,7 @@ describe('defineSingularByFiltersRelation', () => {
   })
 
   it('should return resolver for Parent.relationByFilters', () => {
-    expect(defineSingularByFiltersRelation({
+    return expect(defineSingularByFiltersRelation({
       parentType: 'Parent',
       type: 'Relation'
     }))
@@ -54,10 +54,6 @@ describe('defineSingularByFiltersRelation', () => {
       }).resolvers.Parent.relationByFilters
     })
 
-    it('should be a function', () => {
-      expect(resolver).to.be.a('function')
-    })
-
     it('should return the result of a store.readOne call', () => {
       const filters = {
         slug: 'someSlug'
@@ -65,7 +61,7 @@ describe('defineSingularByFiltersRelation', () => {
       const fakeContext = generateFakeContextWithStore({
         readOne: () => 'the_relation'
       })
-      expect(resolver(null, { filters }, fakeContext)).to.equal('the_relation')
+      return expect(resolver(null, { filters }, fakeContext)).to.eventually.equal('the_relation')
     })
 
     it('should call store.readOne with the collection type', () => {
@@ -75,7 +71,9 @@ describe('defineSingularByFiltersRelation', () => {
       const fakeContext = generateFakeContextWithStore({
         readOne: args => args
       })
-      expect(resolver(null, { filters }, fakeContext).type).to.equal('relations')
+      return expect(resolver(null, { filters }, fakeContext))
+        .to.eventually.have.deep.property('type')
+        .to.deep.equal('relations')
     })
 
     it('should call store.readOne with the filters passed in args', () => {
@@ -85,9 +83,11 @@ describe('defineSingularByFiltersRelation', () => {
       const fakeContext = generateFakeContextWithStore({
         readOne: args => args
       })
-      expect(resolver(null, { filters }, fakeContext).filters).to.deep.equal({
-        slug: 'someSlug'
-      })
+      return expect(resolver(null, { filters }, fakeContext))
+        .to.eventually.have.deep.property('filters')
+        .to.deep.equal({
+          slug: 'someSlug'
+        })
     })
   })
 
@@ -95,7 +95,7 @@ describe('defineSingularByFiltersRelation', () => {
 
   describe('when the name is passed in', () => {
     it('should override the name', () => {
-      expect(defineSingularByFiltersRelation({
+      return expect(defineSingularByFiltersRelation({
         parentType: 'Parent',
         type: 'Relation',
         name: 'aDifferentName'
@@ -121,14 +121,16 @@ describe('defineSingularByFiltersRelation', () => {
         const fakeContext = generateFakeContextWithStore({
           readOne: args => args
         })
-        expect(resolver(null, { filters }, fakeContext).type).to.deep.equal('aDifferentCollection')
+        return expect(resolver(null, { filters }, fakeContext))
+          .to.eventually.have.deep.property('type')
+          .to.deep.equal('aDifferentCollection')
       })
     })
   })
 
   describe('when the filterType is passed in', () => {
     it('should override the filterType', () => {
-      expect(defineSingularByFiltersRelation({
+      return expect(defineSingularByFiltersRelation({
         parentType: 'Parent',
         type: 'Relation',
         filterType: 'aDifferentFilterType'

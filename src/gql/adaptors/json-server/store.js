@@ -4,7 +4,7 @@ const toLower = require('lodash/toLower')
 const flatten = require('lodash/flatten')
 const uniq = require('lodash/uniq')
 const axios = require('axios')
-const { NotFound } = require('@nudj/library/errors')
+const { logThenThrow, NotFound } = require('@nudj/library/errors')
 const {
   toQs,
   logger,
@@ -21,12 +21,16 @@ const request = (options = {}) => {
 }
 
 const errorHandler = (details) => (error) => {
-  const code = error.status || (error.response && error.response.status) || 500
-  if (code === 404) {
+  if (error.constructor === NotFound) {
+    logger('error', error.name, `JsonServerStore.${details.action}`, details.type, details.ids || details.filters || details.id || '', details.data || '')
     return null
   }
-  logger('error', (new Date()).toISOString(), details, error)
-  throw error
+  logThenThrow(error,
+    `JsonServerStore.${details.action}`,
+    details.type,
+    details.ids || details.filters || details.id || '',
+    details.data || ''
+  )
 }
 
 module.exports = () => ({
@@ -48,34 +52,33 @@ module.exports = () => ({
       data
     }))
   },
-  readOne: ({
+  readOne: async ({
     type,
     id,
     filters
   }) => {
-    const filterString = toQs(filters)
-    let response
-    if (id) {
-      response = request({
-        url: `/${type}/${id}`
-      })
-    } else {
-      response = request({
-        url: `/${type}${filterString.length ? `?${filterString}` : ''}`
-      })
-      .then(first)
-    }
-    return response
-    .then(result => {
-      if (!result) throw new NotFound('Item not found')
+    try {
+      const filterString = toQs(filters)
+      let result
+      if (id) {
+        result = await request({
+          url: `/${type}/${id}`
+        })
+      } else {
+        result = await request({
+          url: `/${type}${filterString.length ? `?${filterString}` : ''}`
+        }).then(first)
+      }
+      if (!result) throw new NotFound(`${type} with ${filters ? `filters ${JSON.stringify(filters)}` : `id ${id}`} not found`)
       return result
-    })
-    .catch(errorHandler({
-      action: 'readOne',
-      type,
-      id,
-      filters
-    }))
+    } catch (error) {
+      errorHandler({
+        action: 'readOne',
+        type,
+        id,
+        filters
+      })(error)
+    }
   },
   readOneOrCreate: async ({
     type,

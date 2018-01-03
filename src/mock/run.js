@@ -91,7 +91,7 @@ data.jobs = data.jobs.concat([
     location: 'London',
     company: 'company99',
     relatedJobs: [
-      '2'
+      'job2'
     ]
   },
   {
@@ -116,7 +116,7 @@ data.jobs = data.jobs.concat([
     location: 'London',
     company: 'company1',
     relatedJobs: [
-      '1'
+      'job1'
     ]
   }
 ])

@@ -1,5 +1,39 @@
-const { merge } = require('@nudj/library')
 const camelCase = require('lodash/camelCase')
+const padRight = require('pad-right')
+const randomWords = require('random-words')
+const {
+  AppError,
+  NotFound,
+  logThenThrow
+} = require('@nudj/library/errors')
+const {
+  merge,
+  logger
+} = require('@nudj/library')
+
+function handleErrors (resolver) {
+  return async (...args) => {
+    try {
+      return await resolver(...args)
+    } catch (error) {
+      const ID = `api_${randomWords({ exactly: 2, join: '_' })}`.toUpperCase()
+      const upstreamLog = error.log || []
+      const boundaries = [
+        [error.name, error.message],
+        ...upstreamLog
+      ]
+      const toLog = boundaries.reduce((log, boundary) => {
+        log = log.concat('\n', padRight('', 23, ' '), ...boundary)
+        return log
+      }, [])
+      logger('error', ID, ...toLog, '\n')
+      if (error.constructor !== NotFound) {
+        error.message = `API ERROR: ${ID}`
+      }
+      throw error
+    }
+  }
+}
 
 function mergeDefinitions (...definitions) {
   let typeDefs = []
@@ -12,8 +46,8 @@ function mergeDefinitions (...definitions) {
 }
 
 function defineEnum ({ name, values } = {}) {
-  if (!name) throw new Error('defineEnum requires a name')
-  if (!values || !values.length) throw new Error('defineEnum requires some values')
+  if (!name) throw new AppError('defineEnum requires a name')
+  if (!values || !values.length) throw new AppError('defineEnum requires some values')
   return {
     typeDefs: `
       enum ${name} {
@@ -35,8 +69,8 @@ function definePluralRelation ({
   name,
   collection
 } = {}) {
-  if (!parentType) throw new Error('definePluralRelation requires a parentType')
-  if (!type) throw new Error('definePluralRelation requires a type')
+  if (!parentType) throw new AppError('definePluralRelation requires a parentType')
+  if (!type) throw new AppError('definePluralRelation requires a type')
   name = name || `${camelCase(type)}s`
   collection = collection || `${camelCase(type)}s`
 
@@ -48,15 +82,19 @@ function definePluralRelation ({
     `,
     resolvers: {
       [parentType]: {
-        [name]: (root, args, context) => {
-          return context.transaction((store, params) => {
-            return store.readAll({
-              type: params.collection
+        [name]: handleErrors(async (root, args, context) => {
+          try {
+            return await context.transaction((store, params) => {
+              return store.readAll({
+                type: params.collection
+              })
+            }, {
+              collection
             })
-          }, {
-            collection
-          })
-        }
+          } catch (error) {
+            logThenThrow(error, `Resolver definePluralRelation ${parentType}.${name} [${type}!]!`)
+          }
+        })
       }
     }
   }
@@ -69,8 +107,8 @@ function definePluralByFiltersRelation ({
   collection,
   filterType
 } = {}) {
-  if (!parentType) throw new Error('definePluralByFiltersRelation requires a parentType')
-  if (!type) throw new Error('definePluralByFiltersRelation requires a type')
+  if (!parentType) throw new AppError('definePluralByFiltersRelation requires a parentType')
+  if (!type) throw new AppError('definePluralByFiltersRelation requires a type')
   name = name || `${camelCase(type)}sByFilters`
   collection = collection || `${camelCase(type)}s`
   filterType = filterType || `${type}FilterInput`
@@ -104,31 +142,30 @@ function defineSingularRelation ({
   name,
   collection
 } = {}) {
-  if (!parentType) throw new Error('defineSingularRelation requires a parentType')
-  if (!type) throw new Error('defineSingularRelation requires a type')
+  if (!parentType) throw new AppError('defineSingularRelation requires a parentType')
+  if (!type) throw new AppError('defineSingularRelation requires a type')
   name = name || camelCase(type)
   collection = collection || `${camelCase(type)}s`
 
   return {
     typeDefs: `
       extend type ${parentType} {
-        ${name}(id: ID!): ${type}!
+        ${name}(id: ID!): ${type}
       }
     `,
     resolvers: {
       [parentType]: {
-        [name]: (root, args, context) => {
+        [name]: handleErrors((root, args, context) => {
           return context.transaction((store, params) => {
             return store.readOne({
               type: params.collection,
-              id: params.id,
-              filters: params.filters
+              id: params.id
             })
-          }, merge({
+          }, {
             collection,
             id: args.id
-          }))
-        }
+          })
+        })
       }
     }
   }
@@ -141,8 +178,8 @@ function defineSingularByFiltersRelation ({
   collection,
   filterType
 } = {}) {
-  if (!parentType) throw new Error('defineSingularByFiltersRelation requires a parentType')
-  if (!type) throw new Error('defineSingularByFiltersRelation requires a type')
+  if (!parentType) throw new AppError('defineSingularByFiltersRelation requires a parentType')
+  if (!type) throw new AppError('defineSingularByFiltersRelation requires a type')
   name = name || `${camelCase(type)}ByFilters`
   collection = collection || `${camelCase(type)}s`
   filterType = filterType || `${type}FilterInput`
@@ -155,7 +192,7 @@ function defineSingularByFiltersRelation ({
     `,
     resolvers: {
       [parentType]: {
-        [name]: (root, args, context) => {
+        [name]: handleErrors((root, args, context) => {
           return context.transaction((store, params) => {
             return store.readOne({
               type: params.collection,
@@ -165,7 +202,7 @@ function defineSingularByFiltersRelation ({
             collection,
             filters: args.filters
           })
-        }
+        })
       }
     }
   }
@@ -179,8 +216,8 @@ function defineEntityPluralRelation ({
   parentName,
   parentPropertyName
 } = {}) {
-  if (!parentType) throw new Error('defineEntityPluralRelation requires a parentType')
-  if (!type) throw new Error('defineEntityPluralRelation requires a type')
+  if (!parentType) throw new AppError('defineEntityPluralRelation requires a parentType')
+  if (!type) throw new AppError('defineEntityPluralRelation requires a type')
   const camelTypePlural = `${camelCase(type)}s`
   name = name || camelTypePlural
   collection = collection || camelTypePlural
@@ -195,7 +232,7 @@ function defineEntityPluralRelation ({
     `,
     resolvers: {
       [parentType]: {
-        [name]: (parent, args, context) => {
+        [name]: handleErrors((parent, args, context) => {
           const params = {
             collection
           }
@@ -215,7 +252,7 @@ function defineEntityPluralRelation ({
               ids: params.ids
             })
           }, params)
-        }
+        })
       }
     }
   }
@@ -229,8 +266,8 @@ function defineEntityPluralByFiltersRelation ({
   collection,
   filterType
 } = {}) {
-  if (!parentType) throw new Error('defineEntityPluralByFiltersRelation requires a parentType')
-  if (!type) throw new Error('defineEntityPluralByFiltersRelation requires a type')
+  if (!parentType) throw new AppError('defineEntityPluralByFiltersRelation requires a parentType')
+  if (!type) throw new AppError('defineEntityPluralByFiltersRelation requires a type')
   parentName = parentName || camelCase(parentType)
   name = name || `${camelCase(type)}sByFilters`
   collection = collection || `${camelCase(type)}s`
@@ -244,7 +281,7 @@ function defineEntityPluralByFiltersRelation ({
     `,
     resolvers: {
       [parentType]: {
-        [name]: (parent, args, context) => {
+        [name]: handleErrors((parent, args, context) => {
           args.filters[parentName] = parent.id
           return context.transaction((store, params) => {
             return store.readAll({
@@ -255,7 +292,7 @@ function defineEntityPluralByFiltersRelation ({
             collection,
             filters: args.filters
           })
-        }
+        })
       }
     }
   }
@@ -269,8 +306,8 @@ function defineEntitySingularRelation ({
   propertyName
 } = {}) {
   const camelType = camelCase(type)
-  if (!parentType) throw new Error('defineEntitySingularRelation requires a parentType')
-  if (!type) throw new Error('defineEntitySingularRelation requires a type')
+  if (!parentType) throw new AppError('defineEntitySingularRelation requires a parentType')
+  if (!type) throw new AppError('defineEntitySingularRelation requires a type')
   name = name || camelType
   collection = collection || `${camelType}s`
   propertyName = propertyName || name || camelType
@@ -283,7 +320,7 @@ function defineEntitySingularRelation ({
     `,
     resolvers: {
       [parentType]: {
-        [name]: (parent, args, context) => {
+        [name]: handleErrors((parent, args, context) => {
           return context.transaction((store, params) => {
             return store.readOne({
               type: params.collection,
@@ -293,7 +330,7 @@ function defineEntitySingularRelation ({
             collection,
             id: parent[propertyName]
           })
-        }
+        })
       }
     }
   }
@@ -307,8 +344,8 @@ function defineEntitySingularByFiltersRelation ({
   collection,
   filterType
 } = {}) {
-  if (!parentType) throw new Error('defineEntitySingularByFiltersRelation requires a parentType')
-  if (!type) throw new Error('defineEntitySingularByFiltersRelation requires a type')
+  if (!parentType) throw new AppError('defineEntitySingularByFiltersRelation requires a parentType')
+  if (!type) throw new AppError('defineEntitySingularByFiltersRelation requires a type')
   parentName = parentName || camelCase(parentType)
   name = name || `${camelCase(type)}ByFilters`
   collection = collection || `${camelCase(type)}s`
@@ -322,7 +359,7 @@ function defineEntitySingularByFiltersRelation ({
     `,
     resolvers: {
       [parentType]: {
-        [name]: (parent, args, context) => {
+        [name]: handleErrors((parent, args, context) => {
           let filters = merge(args.filters, {
             [parentName]: parent.id
           })
@@ -335,7 +372,7 @@ function defineEntitySingularByFiltersRelation ({
             collection,
             filters
           })
-        }
+        })
       }
     }
   }

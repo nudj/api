@@ -25,7 +25,9 @@ module.exports = ({
 }) => {
   let server = jsonServer.create()
   let router = jsonServer.router(data)
-  let middlewares = jsonServer.defaults()
+  let middlewares = jsonServer.defaults({
+    logger: false
+  })
   server.use(middlewares)
   server.use(jsonServer.bodyParser)
   server.use((req, res, next) => injectDate({req, res, next}))

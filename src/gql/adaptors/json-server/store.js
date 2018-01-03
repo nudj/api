@@ -61,9 +61,13 @@ module.exports = () => ({
       const filterString = toQs(filters)
       let result
       if (id) {
-        result = await request(`/${type}/${id}`)
+        result = await request({
+          url: `/${type}/${id}`
+        })
       } else {
-        result = await request(`/${type}${filterString.length ? `?${filterString}` : ''}`).then(first)
+        result = await request({
+          url: `/${type}${filterString.length ? `?${filterString}` : ''}`
+        }).then(first)
       }
       if (!result) throw new NotFound(`${type} with ${filters ? `filters ${JSON.stringify(filters)}` : `id ${id}`} not found`)
       return result

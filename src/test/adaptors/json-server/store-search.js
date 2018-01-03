@@ -10,7 +10,7 @@ chai.use(sinonChai)
 const transaction = require('../../../gql/adaptors/json-server')
 const server = nock('http://localhost:81/')
 
-describe('JSON-Server Store().search', () => {
+describe.only('JSON-Server Store().search', () => {
   beforeEach(() => {
     server
       .get('/connections')
@@ -38,6 +38,23 @@ describe('JSON-Server Store().search', () => {
           name: 'Aayla Secura',
           rank: 'Jedi',
           allegiance: 'Republic'
+        }
+      ])
+    server
+      .get('/connections/filter')
+      .query({ allegiance: 'Sith' })
+      .reply(200, [
+        {
+          id: 2,
+          name: 'Darth Maul',
+          rank: 'Sith Lord',
+          allegiance: 'Sith'
+        },
+        {
+          id: 3,
+          name: 'Darth Sidious',
+          rank: 'Emperor',
+          allegiance: 'Sith'
         }
       ])
   })
@@ -136,6 +153,28 @@ describe('JSON-Server Store().search', () => {
           name: 'Aayla Secura',
           rank: 'Jedi',
           allegiance: 'Republic'
+        }
+      ])
+    })
+  })
+
+  it('should fetch data with filters', () => {
+    return transaction(store => {
+      return store.search({
+        type: 'connections',
+        query: 'S',
+        fields: [['name']],
+        filters: {
+          allegiance: 'Sith'
+        }
+      })
+    }).then(results => {
+      expect(results).to.deep.equal([
+        {
+          id: 3,
+          name: 'Darth Sidious',
+          rank: 'Emperor',
+          allegiance: 'Sith'
         }
       ])
     })

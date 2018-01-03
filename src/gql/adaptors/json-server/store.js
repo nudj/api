@@ -177,10 +177,14 @@ module.exports = () => ({
   search: ({
     type,
     query,
-    fields
+    fields,
+    filters
   }) => {
     query = toLower(query)
-    return request({ url: `/${type}` })
+    const filterString = toQs(filters)
+    return request({
+      url: `/${type}${filterString ? `/filter?${filterString}` : ''}`
+    })
     .then(response => {
       return uniq(
         flatten(
@@ -197,7 +201,8 @@ module.exports = () => ({
       action: 'search',
       type,
       query,
-      fields
+      fields,
+      filters
     }))
   }
 })

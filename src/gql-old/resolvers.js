@@ -33,19 +33,6 @@ module.exports = ({ transaction }) => ({
     },
     setNotification: (obj, args) => {
       return Promise.resolve({ type: args.type, message: args.message })
-    },
-    searchConnections: (obj, args) => {
-      const { query, fields } = args
-      return transaction((store, params) => {
-        return store.search({
-          type: 'connections',
-          query: params.query,
-          fields: params.fields
-        })
-      }, {
-        query,
-        fields
-      })
     }
   },
   Mutation: {
@@ -287,6 +274,22 @@ module.exports = ({ transaction }) => ({
           filters: { from }
         })
       }, {
+        from: person.id
+      })
+    },
+    searchConnections: (person, args) => {
+      const { query, fields } = args
+      return transaction((store, params) => {
+        const { from } = params
+        return store.search({
+          type: 'connections',
+          query: params.query,
+          fields: params.fields,
+          filters: { from }
+        })
+      }, {
+        query,
+        fields,
         from: person.id
       })
     },

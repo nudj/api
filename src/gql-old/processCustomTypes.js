@@ -408,10 +408,12 @@ module.exports = ({ customTypeDefs, customResolvers, transaction }) => {
   })
 
   schema.types.Query.push(`user(id: ID!): Person`)
-  schema.types.Query.push(`searchConnections(query: String!, fields: [[String!]!]!): [Connection!]!`)
   schema.types.Mutation.push(`user(id: ID!): Person`)
   schema.types.Mutation.push(`setNotification(type: NotificationType! message: String!): Notification`)
   schema.types.Query.push(`setNotification(type: NotificationType! message: String!): Notification`)
+  schema.types.Person.push(
+    `searchConnections(query: String!, fields: [[String!]!]!): [Connection!]!`
+  )
   schema.types.Person.push(
     `getOrCreateConnection(to: PersonCreateInput!, source: String!): Connection`
   )

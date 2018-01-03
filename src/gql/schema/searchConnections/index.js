@@ -1,22 +1,25 @@
 module.exports = {
   typeDefs: `
-    extend type Query {
+    extend type Person {
       searchConnections: [Connection!]!
     }
   `,
   resolvers: {
-    Query: {
-      searchConnections: (root, args, context) => {
+    Person: {
+      searchConnections: (person, args, context) => {
         const { query, fields } = args
         return context.transaction((store, params) => {
+          const { from } = params
           return store.search({
             type: 'connections',
             query: params.query,
-            fields: params.fields
+            fields: params.fields,
+            filters: { from }
           })
         }, {
           query,
-          fields
+          fields,
+          from: person.id
         })
       }
     }

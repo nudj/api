@@ -1,7 +1,11 @@
 const camelCase = require('lodash/camelCase')
 const padRight = require('pad-right')
 const randomWords = require('random-words')
-const { AppError, NotFound } = require('@nudj/library/errors')
+const {
+  AppError,
+  NotFound,
+  logThenThrow
+} = require('@nudj/library/errors')
 const {
   merge,
   logger
@@ -88,7 +92,7 @@ function definePluralRelation ({
               collection
             })
           } catch (error) {
-            error.addBoundaryLogs(`Resolver definePluralRelation ${parentType}.${name} [${type}!]!`)
+            logThenThrow(error, `Resolver definePluralRelation ${parentType}.${name} [${type}!]!`)
           }
         })
       }

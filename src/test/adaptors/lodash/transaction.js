@@ -357,6 +357,27 @@ describe('LodashAdaptor transaction', () => {
     })
   })
 
+  it('search with joined fields matching only one field', () => {
+    return transaction({ db })(store => {
+      return store.search({
+        type: 'dogs',
+        query: 'gold',
+        fields: [
+          ['temperament', 'breed']
+        ]
+      })
+    })
+    .then(result => {
+      expect(result).to.deep.equal([
+        {
+          id: 'dog3',
+          breed: 'Golden Retriever',
+          temperament: 'lazy'
+        }
+      ])
+    })
+  })
+
   it('search with filters', () => {
     return transaction({ db })(store => {
       return store.search({

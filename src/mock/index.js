@@ -1,7 +1,2 @@
-let rest = require('./rest')
-let gql = require('./gql')
-
-module.exports = {
-  rest,
-  gql
-}
+const getMockApiApps = require('./gql')
+module.exports = getMockApiApps

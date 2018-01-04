@@ -8,7 +8,7 @@ const { executeQueryOnDbUsingSchema } = require('../../helpers')
 const operation = `
   query {
     surveys {
-      sections {
+      surveySections {
         id
       }
     }
@@ -44,7 +44,7 @@ describe('Survey.surveySections', () => {
       data: {
         surveys: [
           {
-            sections: [
+            surveySections: [
               {
                 id: 'surveySection1'
               },
@@ -71,7 +71,7 @@ describe('Survey.surveySections', () => {
       data: {
         surveys: [
           {
-            sections: []
+            surveySections: []
           }
         ]
       }

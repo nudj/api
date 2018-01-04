@@ -2,30 +2,42 @@ source /root/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 PROMPT='api» '
 
-alias run="node ."
-alias dev='./node_modules/.bin/nodemon \
-		--config ./nodemon.json \
-		-e js,html,css \
-		--quiet \
-		--watch ./ \
-		--delay 250ms \
-		-x "node ."'
+export PATH=/usr/src/node_modules/.bin:$PATH
+
+alias ll="ls -la"
+alias run='nodemon \
+	--config ./nodemon.json \
+	-e js,html,css \
+	--quiet \
+	--watch ./ \
+	--delay 250ms \
+	-x "node mock/run.js"'
+alias dev='nodemon \
+	--config ./nodemon.json \
+	-e js,html,css \
+	--quiet \
+	--watch ./ \
+	--delay 250ms \
+	-x "node ."'
+
 function test {
 	export ENVIRONMENT=test
-	./node_modules/.bin/standard && ./node_modules/.bin/mocha --recursive test
+	standard && mocha --recursive test
 	export ENVIRONMENT=local
 }
 function tdd {
 	export ENVIRONMENT=test
-	./node_modules/.bin/nodemon \
+	nodemon \
 		--quiet \
 		--watch ./ \
 		--delay 250ms \
-		-x "./node_modules/.bin/mocha --recursive test || exit 1"
+		-x "mocha --recursive test || exit 1"
 	export ENVIRONMENT=local
 }
 
-alias ll="ls -la"
+yank () {
+	cd ./@nudj/$1 && yarn link && cd ../.. && yarn link @nudj/$1
+}
 
 # changes hex 0x15 to delete everything to the left of the cursor,
 # rather than the whole line

@@ -1,26 +1,24 @@
 const express = require('express')
 const bodyParser = require('body-parser')
-const { graphqlExpress } = require('graphql-server-express')
-const { makeExecutableSchema } = require('graphql-tools')
+const { graphqlExpress } = require('apollo-server-express')
 const schema = require('./schema')
-const resolvers = require('./resolvers')
-const processCustomTypes = require('./processCustomTypes')
 
-module.exports = ({ storeAdaptor }) => {
-  const executableSchema = makeExecutableSchema(
-    processCustomTypes({
-      customTypeDefs: schema,
-      customResolvers: resolvers({ store: storeAdaptor }),
-      store: storeAdaptor
-    })
-  )
+module.exports = ({ transaction }) => {
+  const context = { transaction }
   const app = express()
   app.use(
     '/',
-    bodyParser.json({ limit: '5mb' }),
+    bodyParser.json({
+      limit: '5mb'
+    }),
     graphqlExpress({
-      schema: executableSchema
+      schema,
+      context
     })
   )
+  app.use(function (err, req, res, next) {
+    console.error(err.stack)
+    res.status(500).send('Something broke!')
+  })
   return app
 }

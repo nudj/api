@@ -9,7 +9,6 @@ const takeFirst = (result) => result[0]
 const newISODate = () => (new Date()).toISOString()
 
 const errorHandler = (details) => (error) => {
-  console.log(error.message)
   const code = error.status || (error.response && error.response.status) || 500
   if (code === 404) {
     return null

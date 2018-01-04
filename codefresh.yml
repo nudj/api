@@ -16,19 +16,6 @@ steps:
     image: ${{build_test}}
     working_directory: 'IMAGE_WORK_DIR'
 
-  publish:
-    title: Publish package to npm
-    image: ${{build_test}}
-    working_directory: 'IMAGE_WORK_DIR'
-    environment:
-      - NPM_TOKEN=${{NPM_TOKEN}}
-    commands:
-      - npm publish
-    when:
-      branch:
-        only:
-          - master
-
   build:
     title: Build
     type: build
@@ -37,6 +24,12 @@ steps:
     dockerfile: Dockerfile
     build_arguments:
       - NPM_TOKEN=${{NPM_TOKEN}}
+    when:
+      branch:
+        only:
+          - develop
+          - LEGACY-V1
+          - master
 
   push_latest:
     title: Push Latest
@@ -51,11 +44,38 @@ steps:
         only:
           - develop
 
+  push_legacy:
+    title: Push Legacy v1
+    type: push
+    candidate: '${{build}}'
+    tag: LEGACY-V1
+    credentials:
+      username: '${{dockerUsername}}'
+      password: '${{dockerPassword}}'
+    when:
+      branch:
+        only:
+          - LEGACY-V1
+
+  publish:
+    title: Publish package to npm
+    image: ${{build_test}}
+    working_directory: 'IMAGE_WORK_DIR'
+    environment:
+      - NPM_TOKEN=${{NPM_TOKEN}}
+    commands:
+      - npm publish
+    when:
+      branch:
+        only:
+          - master
+          - publish
+
   push_image:
     title: Push Release
     type: push
     candidate: '${{build}}'
-    tag: 4.0.0
+    tag: 4.1.0
     credentials:
       username: '${{dockerUsername}}'
       password: '${{dockerPassword}}'

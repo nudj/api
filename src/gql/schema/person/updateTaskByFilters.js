@@ -1,5 +1,3 @@
-const { merge } = require('@nudj/library')
-
 module.exports = {
   typeDefs: `
     extend type Person {
@@ -13,7 +11,7 @@ module.exports = {
           const { person, filters, data } = params
           return store.readOne({
             type: 'personTasks',
-            filters: merge(filters, { person })
+            filters: Object.assign({}, filters, { person })
           })
           .then(task => {
             if (!task) {

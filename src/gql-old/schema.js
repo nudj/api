@@ -295,6 +295,15 @@ module.exports = `
     surveySection: SurveySection!
   }
 
+  type SurveyAnswer {
+    id: ID!
+    created: DateTime!
+    modified: DateTime!
+    person: Person!
+    selectedConnections: [Connection!]!
+    surveyQuestion: SurveyQuestion!
+  }
+
   type Connection {
     id: ID!
     created: DateTime!

@@ -6,7 +6,7 @@ const schema = require('../../../gql/schema')
 const { executeQueryOnDbUsingSchema } = require('../../helpers')
 
 describe('Mutation.createSurveyAnswer', () => {
-  it.only('should create surveyAnswer', async () => {
+  it('should create surveyAnswer', async () => {
     const db = {
       surveyAnswers: []
     }
@@ -27,23 +27,23 @@ describe('Mutation.createSurveyAnswer', () => {
     return executeQueryOnDbUsingSchema({ operation, db, schema })
       .then(() => {
         return expect(db.surveyAnswers[0]).to.deep.equal({
-          id: "newId",
-          person: "person1",
-          surveyQuestion: "surveyQuestion1",
+          id: 'newId',
+          person: 'person1',
+          surveyQuestion: 'surveyQuestion1',
           connections: [
-            "connection1",
-            "connection2"
+            'connection1',
+            'connection2'
           ]
         })
       })
   })
 
-  it.only('should return created value', async () => {
+  it('should return created value', async () => {
     const db = {
       surveyAnswers: [],
       people: [
         {
-          id: "person1"
+          id: 'person1'
         }
       ]
     }
@@ -67,9 +67,9 @@ describe('Mutation.createSurveyAnswer', () => {
     return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
         createSurveyAnswer: {
-          id: "newId",
+          id: 'newId',
           person: {
-            id: "person1"
+            id: 'person1'
           }
         }
       }

@@ -300,7 +300,7 @@ module.exports = `
     created: DateTime!
     modified: DateTime!
     person: Person!
-    selectedConnections: [Connection!]!
+    connections: [Connection!]!
     surveyQuestion: SurveyQuestion!
   }
 

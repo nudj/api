@@ -117,6 +117,21 @@ module.exports = ({ transaction }) => ({
       }, {
         input
       })
+    },
+    createSurveyAnswer: (obj, args) => {
+      return transaction((store, params) => {
+        const { surveyQuestion, person, connections } = params.args
+        return store.create({
+          type: 'surveyAnswers',
+          data: {
+            surveyQuestion,
+            person,
+            connections
+          }
+        })
+      }, {
+        args
+      })
     }
   },
   Person: {

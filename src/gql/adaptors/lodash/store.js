@@ -32,7 +32,7 @@ module.exports = ({ db }) => {
         } else {
           item = find(all, { id })
         }
-        if (!item) return reject(new NotFound(`${type} with id ${id} not found`))
+        if (!item) return reject(new NotFound(`${type} with filter ${filters ? JSON.stringify(filters) : id} not found`))
         return resolve(item)
       })
     },

@@ -1,7 +1,6 @@
 const { defineEntityPluralRelation } = require('../../lib')
 
 module.exports = defineEntityPluralRelation({
-  parentType: 'Survey',
-  type: 'SurveySection',
-  name: 'sections'
+  parentType: 'SurveySection',
+  type: 'SurveyQuestion'
 })

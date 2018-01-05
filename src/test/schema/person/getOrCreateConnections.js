@@ -25,7 +25,9 @@ describe('Person.getOrCreateConnections', () => {
             company: "CONNECTION_COMPANY2",
             email: "CONNECTION_EMAIL2"
           }],
-          source: "CONNECTION_SOURCE"
+          source: {
+            name: "CONNECTION_SOURCE"
+          }
         ) {
           id
           firstName
@@ -59,7 +61,7 @@ describe('Person.getOrCreateConnections', () => {
             id: 'person1'
           }
         ],
-        connectionSources: [],
+        sources: [],
         roles: [],
         companies: [],
         connections: []
@@ -67,15 +69,15 @@ describe('Person.getOrCreateConnections', () => {
       result = await executeQueryOnDbUsingSchema({ operation, db, schema })
     })
 
-    it('should create the connectionSource', () => {
-      expect(db).to.have.deep.property('connectionSources.0').to.deep.equal({
-        id: 'connectionSource1',
+    it('should create the source', () => {
+      expect(db).to.have.deep.property('sources.0').to.deep.equal({
+        id: 'source1',
         name: 'CONNECTION_SOURCE'
       })
     })
 
-    it('should only create one connectionSource', () => {
-      expect(db.connectionSources.length).to.equal(1)
+    it('should only create one source', () => {
+      expect(db.sources.length).to.equal(1)
     })
 
     it('should create the roles', () => {
@@ -127,7 +129,7 @@ describe('Person.getOrCreateConnections', () => {
             name: 'CONNECTION_COMPANY1'
           },
           source: {
-            id: 'connectionSource1',
+            id: 'source1',
             name: 'CONNECTION_SOURCE'
           },
           person: {
@@ -147,7 +149,7 @@ describe('Person.getOrCreateConnections', () => {
             name: 'CONNECTION_COMPANY2'
           },
           source: {
-            id: 'connectionSource1',
+            id: 'source1',
             name: 'CONNECTION_SOURCE'
           },
           person: {
@@ -158,7 +160,7 @@ describe('Person.getOrCreateConnections', () => {
     })
   })
 
-  describe('when connectionSource already exists', () => {
+  describe('when source already exists', () => {
     beforeEach(async () => {
       db = {
         people: [
@@ -166,7 +168,7 @@ describe('Person.getOrCreateConnections', () => {
             id: 'person1'
           }
         ],
-        connectionSources: [{
+        sources: [{
           id: 'oldId',
           name: 'CONNECTION_SOURCE'
         }],
@@ -177,8 +179,8 @@ describe('Person.getOrCreateConnections', () => {
       result = await executeQueryOnDbUsingSchema({ operation, db, schema })
     })
 
-    it('should not create a new connectionSource', () => {
-      expect(db.connectionSources.length).to.equal(1)
+    it('should not create a new source', () => {
+      expect(db.sources.length).to.equal(1)
     })
 
     it('should return the existing source', () => {
@@ -205,7 +207,7 @@ describe('Person.getOrCreateConnections', () => {
             id: 'person1'
           }
         ],
-        connectionSources: [],
+        sources: [],
         roles: [{
           id: 'oldId',
           name: 'CONNECTION_TITLE1'
@@ -238,7 +240,7 @@ describe('Person.getOrCreateConnections', () => {
             id: 'person1'
           }
         ],
-        connectionSources: [],
+        sources: [],
         roles: [],
         companies: [{
           id: 'oldId',
@@ -275,7 +277,7 @@ describe('Person.getOrCreateConnections', () => {
             email: 'CONNECTION_EMAIL1'
           }
         ],
-        connectionSources: [],
+        sources: [],
         roles: [],
         companies: [],
         connections: []
@@ -309,8 +311,8 @@ describe('Person.getOrCreateConnections', () => {
             email: 'CONNECTION_EMAIL1'
           }
         ],
-        connectionSources: [{
-          id: 'connectionSource1',
+        sources: [{
+          id: 'source1',
           name: 'linkedin'
         }],
         roles: [{
@@ -327,7 +329,7 @@ describe('Person.getOrCreateConnections', () => {
           lastName: 'Johnson',
           from: 'person1',
           person: 'person2',
-          source: 'connectionSource1',
+          source: 'source1',
           role: 'role1',
           company: 'company1'
         }]
@@ -355,7 +357,7 @@ describe('Person.getOrCreateConnections', () => {
             name: 'nudj'
           },
           source: {
-            id: 'connectionSource1',
+            id: 'source1',
             name: 'linkedin'
           },
           person: {

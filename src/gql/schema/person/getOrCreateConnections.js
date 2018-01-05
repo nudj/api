@@ -1,7 +1,7 @@
 module.exports = {
   typeDefs: `
     extend type Person {
-      getOrCreateConnections(to: [ConnectionCreateInput!]!, source: String!): [Connection]
+      getOrCreateConnections(to: [ConnectionCreateInput!]!, source: SourceCreateInput!): [Connection]
     }
   `,
   resolvers: {
@@ -9,22 +9,22 @@ module.exports = {
       getOrCreateConnections: async (person, args, context) => {
         const from = person.id
         const { to, source } = args
-        const connectionSource = await context.transaction((store, params) => {
+        const savedSource = await context.transaction((store, params) => {
           const { source } = params
           return store.readOneOrCreate({
-            type: 'connectionSources',
-            filters: { name: source },
-            data: { name: source }
+            type: 'sources',
+            filters: { name: source.name },
+            data: source
           })
         }, { source })
-        if (!connectionSource) {
-          throw new Error('Unable to create ConnectionSource')
+        if (!savedSource) {
+          throw new Error('Unable to create Source')
         }
         return Promise.all(to.map(async data => {
           return context.transaction((store, params) => {
             const omit = require('lodash/omit')
             const pick = require('lodash/pick')
-            const { from, connectionSource } = params
+            const { from, source } = params
             return Promise.all([
               data.title && store.readOneOrCreate({
                 type: 'roles',
@@ -55,7 +55,7 @@ module.exports = {
                 },
                 data: Object.assign({}, omit(data, ['email', 'title']), {
                   from,
-                  source: connectionSource.id,
+                  source: source.id,
                   role: role && role.id,
                   company: company && company.id,
                   person: person.id
@@ -64,7 +64,7 @@ module.exports = {
             })
           }, {
             from,
-            connectionSource
+            source: savedSource
           })
         }))
       }

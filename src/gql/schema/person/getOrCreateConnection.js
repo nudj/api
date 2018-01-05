@@ -1,7 +1,7 @@
 module.exports = {
   typeDefs: `
     extend type Person {
-      getOrCreateConnection(to: ConnectionCreateInput!, source: String!): Connection
+      getOrCreateConnection(to: ConnectionCreateInput!, source: SourceCreateInput!): Connection
     }
   `,
   resolvers: {
@@ -15,9 +15,9 @@ module.exports = {
           const { from, to, source } = params
           return Promise.all([
             store.readOneOrCreate({
-              type: 'connectionSources',
-              filters: { name: source },
-              data: { name: source }
+              type: 'sources',
+              filters: { name: source.name },
+              data: source
             }),
             to.title && store.readOneOrCreate({
               type: 'roles',
@@ -36,7 +36,7 @@ module.exports = {
             })
           ])
           .then(([
-            connectionSource,
+            source,
             role,
             company,
             person
@@ -49,7 +49,7 @@ module.exports = {
               },
               data: Object.assign({}, omit(to, ['email', 'title']), {
                 from,
-                source: connectionSource.id,
+                source: source.id,
                 role: role && role.id,
                 company: company && company.id,
                 person: person.id

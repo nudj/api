@@ -19,7 +19,9 @@ describe('Person.getOrCreateConnection', () => {
             company: "CONNECTION_COMPANY",
             email: "CONNECTION_EMAIL"
           },
-          source: "CONNECTION_SOURCE"
+          source: {
+            name: "CONNECTION_SOURCE"
+          }
         ) {
           id
           firstName
@@ -53,7 +55,7 @@ describe('Person.getOrCreateConnection', () => {
             id: 'person1'
           }
         ],
-        connectionSources: [],
+        sources: [],
         roles: [],
         companies: [],
         connections: []
@@ -61,9 +63,9 @@ describe('Person.getOrCreateConnection', () => {
       result = await executeQueryOnDbUsingSchema({ operation, db, schema })
     })
 
-    it('should create the connectionSource', () => {
-      return expect(db).to.have.deep.property('connectionSources.0').to.deep.equal({
-        id: 'connectionSource1',
+    it('should create the source', () => {
+      return expect(db).to.have.deep.property('sources.0').to.deep.equal({
+        id: 'source1',
         name: 'CONNECTION_SOURCE'
       })
     })
@@ -105,7 +107,7 @@ describe('Person.getOrCreateConnection', () => {
             name: 'CONNECTION_COMPANY'
           },
           source: {
-            id: 'connectionSource1',
+            id: 'source1',
             name: 'CONNECTION_SOURCE'
           },
           person: {
@@ -116,7 +118,7 @@ describe('Person.getOrCreateConnection', () => {
     })
   })
 
-  describe('when connectionSource already exists', () => {
+  describe('when source already exists', () => {
     beforeEach(async () => {
       db = {
         people: [
@@ -124,7 +126,7 @@ describe('Person.getOrCreateConnection', () => {
             id: 'person1'
           }
         ],
-        connectionSources: [{
+        sources: [{
           id: 'oldId',
           name: 'CONNECTION_SOURCE'
         }],
@@ -135,8 +137,8 @@ describe('Person.getOrCreateConnection', () => {
       result = await executeQueryOnDbUsingSchema({ operation, db, schema })
     })
 
-    it('should not create a new connectionSource', () => {
-      expect(db.connectionSources.length).to.equal(1)
+    it('should not create a new source', () => {
+      expect(db.sources.length).to.equal(1)
     })
 
     it('should return the existing source', () => {
@@ -157,7 +159,7 @@ describe('Person.getOrCreateConnection', () => {
             id: 'person1'
           }
         ],
-        connectionSources: [],
+        sources: [],
         roles: [{
           id: 'oldId',
           name: 'CONNECTION_TITLE'
@@ -190,7 +192,7 @@ describe('Person.getOrCreateConnection', () => {
             id: 'person1'
           }
         ],
-        connectionSources: [],
+        sources: [],
         roles: [],
         companies: [{
           id: 'oldId',
@@ -227,7 +229,7 @@ describe('Person.getOrCreateConnection', () => {
             email: 'CONNECTION_EMAIL'
           }
         ],
-        connectionSources: [],
+        sources: [],
         roles: [],
         companies: [],
         connections: []
@@ -261,8 +263,8 @@ describe('Person.getOrCreateConnection', () => {
             email: 'CONNECTION_EMAIL'
           }
         ],
-        connectionSources: [{
-          id: 'connectionSource1',
+        sources: [{
+          id: 'source1',
           name: 'linkedin'
         }],
         roles: [{
@@ -279,7 +281,7 @@ describe('Person.getOrCreateConnection', () => {
           lastName: 'Johnson',
           from: 'person1',
           person: 'person2',
-          source: 'connectionSource1',
+          source: 'source1',
           role: 'role1',
           company: 'company1'
         }]
@@ -307,7 +309,7 @@ describe('Person.getOrCreateConnection', () => {
             name: 'nudj'
           },
           source: {
-            id: 'connectionSource1',
+            id: 'source1',
             name: 'linkedin'
           },
           person: {

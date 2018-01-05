@@ -19,7 +19,7 @@ module.exports = {
         const { to, source } = args
         return context.transaction((store, params) => {
           const omit = require('lodash/omit')
-          const pick = require('lodash/omit')
+          const pick = require('lodash/pick')
           const { from, to, source } = params
           return Promise.all([
             store.readOneOrCreate({

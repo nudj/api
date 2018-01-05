@@ -224,7 +224,7 @@ module.exports = ({ transaction }) => ({
     getOrCreateConnections: async (obj, args) => {
       const from = obj.id
       const { to, source } = args
-      const source = await transaction((store, params) => {
+      const savedSource = await transaction((store, params) => {
         const { source } = params
         return store.readOneOrCreate({
           type: 'sources',
@@ -232,7 +232,7 @@ module.exports = ({ transaction }) => ({
           data: { name: source }
         })
       }, { source })
-      if (!source) {
+      if (!savedSource) {
         throw new Error('Unable to create Source')
       }
       return Promise.all(to.map(async data => {
@@ -277,7 +277,7 @@ module.exports = ({ transaction }) => ({
           })
         }, {
           from,
-          source
+          source: savedSource
         })
       }))
     },

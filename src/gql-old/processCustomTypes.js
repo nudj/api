@@ -410,6 +410,9 @@ module.exports = ({ customTypeDefs, customResolvers, transaction }) => {
   schema.types.Query.push(`user(id: ID!): Person`)
   schema.types.Mutation.push(`user(id: ID!): Person`)
   schema.types.Mutation.push(`setNotification(type: NotificationType! message: String!): Notification`)
+  schema.types.Mutation.push(
+    `createSurveyAnswer(surveyQuestion: ID! person: ID! connections: [ID!]!): SurveyAnswer`
+  )
   schema.types.Query.push(`setNotification(type: NotificationType! message: String!): Notification`)
   schema.types.Person.push(
     `searchConnections(query: String!, fields: [[String!]!]!): [Connection!]!`

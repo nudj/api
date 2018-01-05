@@ -9,7 +9,7 @@ const {
 } = require('../../helpers')
 
 describe('SurveyAnswer.connections', () => {
-  it('should fetch filtered question', async () => {
+  it('should fetch filtered connections', async () => {
     const db = {
       surveyAnswers: [
         {

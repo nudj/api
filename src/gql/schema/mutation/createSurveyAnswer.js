@@ -6,7 +6,7 @@ module.exports = {
   `,
   resolvers: {
     Mutation: {
-      createSurveyAnswer: (obj, args, context) => {
+      createSurveyAnswer: (root, args, context) => {
         return context.transaction((store, params) => {
           const { surveyQuestion, person, connections } = params.args
           return store.create({

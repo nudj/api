@@ -27,7 +27,7 @@ describe('Mutation.createSurveyAnswer', () => {
     return executeQueryOnDbUsingSchema({ operation, db, schema })
       .then(() => {
         return expect(db.surveyAnswers[0]).to.deep.equal({
-          id: 'newId',
+          id: 'surveyAnswer1',
           person: 'person1',
           surveyQuestion: 'surveyQuestion1',
           connections: [
@@ -67,7 +67,7 @@ describe('Mutation.createSurveyAnswer', () => {
     return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
         createSurveyAnswer: {
-          id: 'newId',
+          id: 'surveyAnswer1',
           person: {
             id: 'person1'
           }

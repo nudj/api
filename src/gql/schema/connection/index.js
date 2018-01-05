@@ -8,6 +8,14 @@ module.exports = {
       lastName: String!
     }
 
+    input ConnectionCreateInput {
+      email: String!
+      firstName: String
+      lastName: String
+      title: String
+      company: String
+    }
+
     input ConnectionFilterInput {
       id: ID
     }

@@ -3,14 +3,6 @@ module.exports = {
     extend type Person {
       getOrCreateConnection(to: ConnectionCreateInput!, source: String!): Connection
     }
-
-    input ConnectionCreateInput {
-      email: String!
-      firstName: String
-      lastName: String
-      title: String
-      company: String
-    }
   `,
   resolvers: {
     Person: {

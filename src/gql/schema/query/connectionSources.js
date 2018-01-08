@@ -2,7 +2,7 @@ const { definePluralRelation } = require('../../lib')
 
 module.exports = definePluralRelation({
   parentType: 'Query',
-  name: 'connectionSources',
-  type: 'ConnectionSource',
-  collection: 'connectionSources'
+  name: 'sources',
+  type: 'Source',
+  collection: 'sources'
 })

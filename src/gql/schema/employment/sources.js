@@ -1,7 +1,6 @@
 const { defineEntitySingularRelation } = require('../../lib')
 
 module.exports = defineEntitySingularRelation({
-  parentType: 'Connection',
-  type: 'Source',
-  name: 'source'
+  parentType: 'Employment',
+  type: 'Source'
 })

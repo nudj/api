@@ -174,7 +174,7 @@ module.exports = ({ transaction }) => ({
         const { from, to, source } = params
         return Promise.all([
           store.readOneOrCreate({
-            type: 'connectionSources',
+            type: 'sources',
             filters: { name: source },
             data: { name: source }
           }),
@@ -195,7 +195,7 @@ module.exports = ({ transaction }) => ({
           })
         ])
         .then(([
-          connectionSource,
+          source,
           role,
           company,
           person
@@ -208,7 +208,7 @@ module.exports = ({ transaction }) => ({
             },
             data: merge(omit(to, ['email', 'title']), {
               from,
-              source: connectionSource.id,
+              source: source.id,
               role: role && role.id,
               company: company && company.id,
               person: person.id
@@ -224,20 +224,20 @@ module.exports = ({ transaction }) => ({
     getOrCreateConnections: async (obj, args) => {
       const from = obj.id
       const { to, source } = args
-      const connectionSource = await transaction((store, params) => {
+      const savedSource = await transaction((store, params) => {
         const { source } = params
         return store.readOneOrCreate({
-          type: 'connectionSources',
+          type: 'sources',
           filters: { name: source },
           data: { name: source }
         })
       }, { source })
-      if (!connectionSource) {
-        throw new Error('Unable to create ConnectionSource')
+      if (!savedSource) {
+        throw new Error('Unable to create Source')
       }
       return Promise.all(to.map(async data => {
         await transaction((store, params) => {
-          const { from, connectionSource } = params
+          const { from, source } = params
           return Promise.all([
             data.title && store.readOneOrCreate({
               type: 'roles',
@@ -268,7 +268,7 @@ module.exports = ({ transaction }) => ({
               },
               data: merge(omit(data, ['email', 'title']), {
                 from,
-                source: connectionSource.id,
+                source: source.id,
                 role: role && role.id,
                 company: company && company.id,
                 person: person.id
@@ -277,7 +277,7 @@ module.exports = ({ transaction }) => ({
           })
         }, {
           from,
-          connectionSource
+          source: savedSource
         })
       }))
     },

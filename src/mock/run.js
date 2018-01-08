@@ -31,7 +31,7 @@ const data = {
   connections: [],
   employments: [],
   roles: [],
-  connectionSources: []
+  sources: []
 }
 data.companies = data.companies.concat([
   {
@@ -394,9 +394,9 @@ data.surveyQuestions = data.surveyQuestions.concat([
     tags: ['Account Management']
   }
 ])
-data.connectionSources = data.connectionSources.concat([
+data.sources = data.sources.concat([
   {
-    id: 'connectionSource1',
+    id: 'source1',
     created: '2017-06-08T11:38:19.485+00:00',
     modified: '2017-06-08T11:38:19.485+00:00',
     name: 'linkedin'

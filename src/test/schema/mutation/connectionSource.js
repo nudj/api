@@ -8,32 +8,32 @@ const {
   shouldRespondWithGqlError
 } = require('../../helpers')
 
-describe('Mutation.connectionSource', () => {
-  it('should fetch a single connectionSource', async () => {
+describe('Mutation.source', () => {
+  it('should fetch a single source', async () => {
     const db = {
-      connectionSources: [
+      sources: [
         {
-          id: 'connectionSource1'
+          id: 'source1'
         },
         {
-          id: 'connectionSource2'
+          id: 'source2'
         }
       ]
     }
     const operation = `
       mutation ($id: ID!) {
-        connectionSource(id: $id) {
+        source(id: $id) {
           id
         }
       }
     `
     const variables = {
-      id: 'connectionSource2'
+      id: 'source2'
     }
     return expect(executeQueryOnDbUsingSchema({ operation, variables, db, schema })).to.eventually.deep.equal({
       data: {
-        connectionSource: {
-          id: 'connectionSource2'
+        source: {
+          id: 'source2'
         }
       }
     })
@@ -41,23 +41,23 @@ describe('Mutation.connectionSource', () => {
 
   it('should return null and error if no match', async () => {
     const db = {
-      connectionSources: []
+      sources: []
     }
     const operation = `
       mutation ($id: ID!) {
-        connectionSource(id: $id) {
+        source(id: $id) {
           id
         }
       }
     `
     const variables = {
-      id: 'connectionSource2'
+      id: 'source2'
     }
 
     return executeQueryOnDbUsingSchema({ operation, variables, db, schema })
       .then(shouldRespondWithGqlError({
         message: 'NotFound',
-        path: ['connectionSource']
+        path: ['source']
       }))
   })
 })

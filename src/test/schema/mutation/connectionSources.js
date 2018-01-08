@@ -5,33 +5,33 @@ const expect = chai.expect
 const schema = require('../../../gql/schema')
 const { executeQueryOnDbUsingSchema } = require('../../helpers')
 
-describe('Mutation.connectionSources', () => {
-  it('should fetch all connectionSources', async () => {
+describe('Mutation.sources', () => {
+  it('should fetch all sources', async () => {
     const db = {
-      connectionSources: [
+      sources: [
         {
-          id: 'connectionSource1'
+          id: 'source1'
         },
         {
-          id: 'connectionSource2'
+          id: 'source2'
         }
       ]
     }
     const operation = `
       mutation {
-        connectionSources {
+        sources {
           id
         }
       }
     `
     return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
-        connectionSources: [
+        sources: [
           {
-            id: 'connectionSource1'
+            id: 'source1'
           },
           {
-            id: 'connectionSource2'
+            id: 'source2'
           }
         ]
       }
@@ -40,18 +40,18 @@ describe('Mutation.connectionSources', () => {
 
   it('should return empty array if no matches', async () => {
     const db = {
-      connectionSources: []
+      sources: []
     }
     const operation = `
       mutation {
-        connectionSources {
+        sources {
           id
         }
       }
     `
     return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
-        connectionSources: []
+        sources: []
       }
     })
   })

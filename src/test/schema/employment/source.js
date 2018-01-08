@@ -8,12 +8,12 @@ const {
   shouldRespondWithGqlError
 } = require('../../helpers')
 
-describe('Connection.source', () => {
+describe('Employment.source', () => {
   it('should fetch filtered source', async () => {
     const db = {
-      connections: [
+      employments: [
         {
-          id: 'connection1',
+          id: 'employment1',
           source: 'source2'
         }
       ],
@@ -28,7 +28,7 @@ describe('Connection.source', () => {
     }
     const operation = `
       query {
-        connection (id: "connection1") {
+        employment (id: "employment1") {
           source {
             id
           }
@@ -37,7 +37,7 @@ describe('Connection.source', () => {
     `
     return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
-        connection: {
+        employment: {
           source: {
             id: 'source2'
           }
@@ -48,9 +48,9 @@ describe('Connection.source', () => {
 
   it('should return null and error if no matches', async () => {
     const db = {
-      connections: [
+      employments: [
         {
-          id: 'connection1',
+          id: 'employment1',
           source: 'source3'
         }
       ],
@@ -65,7 +65,7 @@ describe('Connection.source', () => {
     }
     const operation = `
       query {
-        connection (id: "connection1") {
+        employment (id: "employment1") {
           source {
             id
           }
@@ -76,7 +76,7 @@ describe('Connection.source', () => {
       .then(shouldRespondWithGqlError({
         message: 'NotFound',
         path: [
-          'connection',
+          'employment',
           'source'
         ]
       }))

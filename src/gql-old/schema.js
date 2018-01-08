@@ -314,10 +314,10 @@ module.exports = `
     person: Person!
     role: Role
     company: Company
-    source: ConnectionSource!
+    source: Source!
   }
 
-  type ConnectionSource {
+  type Source {
     id: ID!
     created: DateTime!
     modified: DateTime!

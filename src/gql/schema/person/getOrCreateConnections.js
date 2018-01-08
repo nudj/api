@@ -1,3 +1,5 @@
+const { handleErrors } = require('../../lib')
+
 module.exports = {
   typeDefs: `
     extend type Person {
@@ -6,7 +8,7 @@ module.exports = {
   `,
   resolvers: {
     Person: {
-      getOrCreateConnections: async (person, args, context) => {
+      getOrCreateConnections: handleErrors(async (person, args, context) => {
         const from = person.id
         const { to, source } = args
         const savedSource = await context.transaction((store, params) => {
@@ -67,7 +69,7 @@ module.exports = {
             source: savedSource
           })
         }))
-      }
+      })
     }
   }
 }

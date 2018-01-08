@@ -108,6 +108,7 @@ function definePluralByFiltersRelation (
     `,
     resolvers: {
       [parentType]: {
+<<<<<<< HEAD
         [name]: (root, args, context) => {
           return context.transaction(
             (store, params) => {
@@ -124,6 +125,18 @@ function definePluralByFiltersRelation (
             )
           )
         }
+=======
+        [name]: handleErrors((root, args, context) => {
+          return context.transaction((store, params) => {
+            return store.readAll({
+              type: params.collection,
+              filters: params.filters
+            })
+          }, merge({
+            collection
+          }, args))
+        })
+>>>>>>> Add error handling to getOrCreateConnections resolver
       }
     }
   }
@@ -367,10 +380,15 @@ function defineEntitySingularByFiltersRelation (
 }
 
 module.exports = {
+<<<<<<< HEAD
   defineEntityPluralByFiltersRelation,
   defineEntityPluralRelation,
   defineEntitySingularByFiltersRelation,
   defineEntitySingularRelation,
+=======
+  handleErrors,
+  mergeDefinitions,
+>>>>>>> Add error handling to getOrCreateConnections resolver
   defineEnum,
   definePluralByFiltersRelation,
   definePluralRelation,

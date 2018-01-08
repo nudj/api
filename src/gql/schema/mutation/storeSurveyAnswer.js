@@ -19,7 +19,6 @@ module.exports = {
             }
           })
           .then(answer => {
-            console.log(answer)
             return store.update({
               type: 'surveyAnswers',
               id: answer.id,

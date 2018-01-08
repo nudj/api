@@ -7,11 +7,13 @@ const { executeQueryOnDbUsingSchema } = require('../../helpers')
 
 describe('Person.updateTaskByFilters', () => {
   const operation = `
-    query {
+    query testQuery (
+      $taskType: TaskType!
+    ) {
       person (id: "person1") {
         updateTaskByFilters(
           filters: {
-            type: "TASK_TYPE_1"
+            type: $taskType
           },
           data: {
             completed: true
@@ -35,18 +37,21 @@ describe('Person.updateTaskByFilters', () => {
       personTasks: [
         {
           id: 'personTask1',
-          type: 'TASK_TYPE_1',
+          type: 'UNLOCK_NETWORK_LINKEDIN',
           person: 'person1',
           completed: false
         }
       ]
     }
-    return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
+    const variables = {
+      taskType: 'UNLOCK_NETWORK_LINKEDIN'
+    }
+    return expect(executeQueryOnDbUsingSchema({ operation, variables, db, schema })).to.eventually.deep.equal({
       data: {
         person: {
           updateTaskByFilters: {
             id: 'personTask1',
-            type: 'TASK_TYPE_1',
+            type: 'UNLOCK_NETWORK_LINKEDIN',
             completed: true
           }
         }

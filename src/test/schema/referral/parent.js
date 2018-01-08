@@ -46,12 +46,16 @@ describe('Referral.parent', () => {
       referrals: [
         {
           id: 'referral1'
+        },
+        {
+          id: 'referral2',
+          parent: 'referral0'
         }
       ]
     }
     const operation = `
       query {
-        referral (id: "referral1") {
+        referral (id: "referral2") {
           parent {
             id
           }

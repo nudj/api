@@ -5,13 +5,13 @@ module.exports = {
       created: DateTime!
       modified: DateTime!
       completed: Boolean!
-      type: String!
+      type: TaskType!
     }
 
     input PersonTaskFilterInput {
       id: ID
       completed: Boolean
-      type: String
+      type: TaskType
     }
 
     input PersonTaskUpdateInput {

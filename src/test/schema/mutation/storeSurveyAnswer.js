@@ -5,14 +5,14 @@ const expect = chai.expect
 const schema = require('../../../gql/schema')
 const { executeQueryOnDbUsingSchema } = require('../../helpers')
 
-describe('Mutation.createSurveyAnswer', () => {
+describe('Mutation.storeSurveyAnswer', () => {
   it('should create surveyAnswer', async () => {
     const db = {
       surveyAnswers: []
     }
     const operation = `
       mutation {
-        createSurveyAnswer (
+        storeSurveyAnswer (
           surveyQuestion: "surveyQuestion1"
           person: "person1"
           connections: [
@@ -38,6 +38,47 @@ describe('Mutation.createSurveyAnswer', () => {
       })
   })
 
+  it('should update existing surveyAnswer', async () => {
+    const db = {
+      surveyAnswers: [
+        {
+          id: 'existingAnswer1',
+          person: 'person1',
+          surveyQuestion: 'existingQuestion1',
+          connections: [
+            'connection1'
+          ]
+        }
+      ]
+    }
+    const operation = `
+      mutation {
+        storeSurveyAnswer (
+          surveyQuestion: "existingQuestion1"
+          person: "person1"
+          connections: [
+            "connection1",
+            "connection2"
+          ]
+        ) {
+          id
+        }
+      }
+    `
+    return executeQueryOnDbUsingSchema({ operation, db, schema })
+      .then(() => {
+        return expect(db.surveyAnswers[0]).to.deep.equal({
+          id: 'existingAnswer1',
+          person: 'person1',
+          surveyQuestion: 'existingQuestion1',
+          connections: [
+            'connection1',
+            'connection2'
+          ]
+        })
+      })
+  })
+
   it('should return created value', async () => {
     const db = {
       surveyAnswers: [],
@@ -49,7 +90,7 @@ describe('Mutation.createSurveyAnswer', () => {
     }
     const operation = `
       mutation {
-        createSurveyAnswer (
+        storeSurveyAnswer (
           surveyQuestion: "surveyQuestion1"
           person: "person1"
           connections: [
@@ -66,8 +107,8 @@ describe('Mutation.createSurveyAnswer', () => {
     `
     return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
-        createSurveyAnswer: {
-          id: 'surveyAnswer1',
+        storeSurveyAnswer: {
+          id: 'newId',
           person: {
             id: 'person1'
           }

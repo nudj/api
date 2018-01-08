@@ -273,8 +273,12 @@ describe('Person.getOrCreateConnections', () => {
             id: 'person1'
           },
           {
-            id: 'oldId',
+            id: 'oldId1',
             email: 'CONNECTION_EMAIL1'
+          },
+          {
+            id: 'oldId2',
+            email: 'CONNECTION_EMAIL2'
           }
         ],
         sources: [],
@@ -285,16 +289,22 @@ describe('Person.getOrCreateConnections', () => {
       result = await executeQueryOnDbUsingSchema({ operation, db, schema })
     })
 
-    it('should not create a new person', () => {
+    it('should not create any new people', () => {
       expect(db.people.length).to.equal(3)
     })
 
-    it('should return the existing person', () => {
-      return expect(result)
+    it('should return the existing people', () => {
+      expect(result)
         .to.have.deep.property('data.person.getOrCreateConnections.0.person')
         .to.deep.equal({
-          id: 'oldId',
+          id: 'oldId1',
           email: 'CONNECTION_EMAIL1'
+        })
+      expect(result)
+        .to.have.deep.property('data.person.getOrCreateConnections.1.person')
+        .to.deep.equal({
+          id: 'oldId2',
+          email: 'CONNECTION_EMAIL2'
         })
     })
   })

@@ -108,7 +108,7 @@ describe('Mutation.storeSurveyAnswer', () => {
     return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
         storeSurveyAnswer: {
-          id: 'newId',
+          id: 'surveyAnswer1',
           person: {
             id: 'person1'
           }

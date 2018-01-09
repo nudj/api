@@ -1,6 +1,6 @@
-const { defineEntityPluralByFiltersRelation } = require('../../lib')
+const { defineEntitySingularByFiltersRelation } = require('../../lib')
 
-module.exports = defineEntityPluralByFiltersRelation({
+module.exports = defineEntitySingularByFiltersRelation({
   parentType: 'Company',
   type: 'Survey'
 })

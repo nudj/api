@@ -22,14 +22,17 @@ const Data = new GraphQLScalarType({
 module.exports = ({ transaction }) => ({
   Query: {
     user: (obj, args) => {
-      return transaction((store, params) => {
-        return store.readOne({
-          type: 'people',
-          id: params.person
-        })
-      }, {
-        person: args.id
-      })
+      return transaction(
+        (store, params) => {
+          return store.readOne({
+            type: 'people',
+            id: params.person
+          })
+        },
+        {
+          person: args.id
+        }
+      )
     },
     setNotification: (obj, args) => {
       return Promise.resolve({ type: args.type, message: args.message })
@@ -37,338 +40,420 @@ module.exports = ({ transaction }) => ({
   },
   Mutation: {
     user: (obj, args) => {
-      return transaction((store, params) => {
-        return store.readOne({
-          type: 'people',
-          id: params.person
-        })
-      }, {
-        person: args.id
-      })
+      return transaction(
+        (store, params) => {
+          return store.readOne({
+            type: 'people',
+            id: params.person
+          })
+        },
+        {
+          person: args.id
+        }
+      )
     },
     setNotification: (obj, args) => {
       return Promise.resolve({ type: args.type, message: args.message })
     },
     createSurvey: (obj, args) => {
       const { input } = args
-      return transaction((store, params) => {
-        const surveySections = []
-        return store.create({
-          type: 'surveys',
-          data: merge(params.input, { surveySections })
-        })
-      }, {
-        input
-      })
+      return transaction(
+        (store, params) => {
+          const surveySections = []
+          return store.create({
+            type: 'surveys',
+            data: merge(params.input, { surveySections })
+          })
+        },
+        {
+          input
+        }
+      )
     },
     createSurveySection: (obj, args) => {
       const { input } = args
-      return transaction((store, params) => {
-        const surveyQuestions = []
-        return store.create({
-          type: 'surveySections',
-          data: merge(params.input, { surveyQuestions })
-        })
-        .then(section => {
-          return store.readOne({
-            type: 'surveys',
-            id: section.survey
-          })
-          .then(survey => {
-            const { surveySections = [] } = survey
-            return store.update({
-              type: 'surveys',
-              id: section.survey,
-              data: {
-                surveySections: surveySections.concat(section.id)
-              }
+      return transaction(
+        (store, params) => {
+          const surveyQuestions = []
+          return store
+            .create({
+              type: 'surveySections',
+              data: merge(params.input, { surveyQuestions })
             })
-          })
-          .then(() => Promise.resolve(section))
-        })
-      }, {
-        input
-      })
+            .then(section => {
+              return store
+                .readOne({
+                  type: 'surveys',
+                  id: section.survey
+                })
+                .then(survey => {
+                  const { surveySections = [] } = survey
+                  return store.update({
+                    type: 'surveys',
+                    id: section.survey,
+                    data: {
+                      surveySections: surveySections.concat(section.id)
+                    }
+                  })
+                })
+                .then(() => Promise.resolve(section))
+            })
+        },
+        {
+          input
+        }
+      )
     },
     createSurveyQuestion: (obj, args) => {
       const { input } = args
-      return transaction((store, params) => {
-        return store.create({
-          type: 'surveyQuestions',
-          data: params.input
-        })
-        .then(question => {
-          return store.readOne({
-            type: 'surveySections',
-            id: question.surveySection
-          })
-          .then(section => {
-            const { surveyQuestions = [] } = section
-            return store.update({
-              type: 'surveySections',
-              id: question.surveySection,
+      return transaction(
+        (store, params) => {
+          return store
+            .create({
+              type: 'surveyQuestions',
+              data: params.input
+            })
+            .then(question => {
+              return store
+                .readOne({
+                  type: 'surveySections',
+                  id: question.surveySection
+                })
+                .then(section => {
+                  const { surveyQuestions = [] } = section
+                  return store.update({
+                    type: 'surveySections',
+                    id: question.surveySection,
+                    data: {
+                      surveyQuestions: surveyQuestions.concat(question.id)
+                    }
+                  })
+                })
+                .then(() => Promise.resolve(question))
+            })
+        },
+        {
+          input
+        }
+      )
+    },
+    storeSurveyAnswer: (obj, args) => {
+      return transaction(
+        (store, params) => {
+          const { surveyQuestion, person, connections } = params.args
+          return store
+            .readOneOrCreate({
+              type: 'surveyAnswers',
+              filters: { surveyQuestion, person },
               data: {
-                surveyQuestions: surveyQuestions.concat(question.id)
+                surveyQuestion,
+                person,
+                connections
               }
             })
+            .then(answer => {
+              return store.update({
+                type: 'surveyAnswers',
+                id: answer.id,
+                data: { connections }
+              })
+            })
+        },
+        {
+          args
+        }
+      )
+    },
+    updatePerson: (obj, args) => {
+      return transaction(
+        (store, params) => {
+          const { person, data } = params
+          return store.update({
+            id: person,
+            type: 'people',
+            data
           })
-          .then(() => Promise.resolve(question))
-        })
-      }, {
-        input
-      })
+        },
+        {
+          person: args.id,
+          data: args.data
+        }
+      )
     }
   },
   Person: {
     incompleteTaskCount: (obj, args) => {
       const person = obj.id
-      return transaction((store, params) => {
-        const { person } = params
-        return store
-          .readOne({
-            type: 'hirers',
-            filters: { person }
-          })
-          .then(hirer =>
-            store.readOne({
-              type: 'companies',
-              id: hirer.company
+      return transaction(
+        (store, params) => {
+          const { person } = params
+          return store
+            .readOne({
+              type: 'hirers',
+              filters: { person }
             })
-          )
-          .then(company =>
-            Promise.all([
-              store.readAll({
-                type: 'companyTasks',
-                filters: { company: company.id, completed: false }
-              }),
-              store.readAll({
-                type: 'personTasks',
-                filters: { person, completed: false }
+            .then(hirer =>
+              store.readOne({
+                type: 'companies',
+                id: hirer.company
               })
-            ])
-          )
-          .then(tasks => Promise.resolve([].concat(...tasks).length))
-      }, {
-        person
-      })
+            )
+            .then(company =>
+              Promise.all([
+                store.readAll({
+                  type: 'companyTasks',
+                  filters: { company: company.id, completed: false }
+                }),
+                store.readAll({
+                  type: 'personTasks',
+                  filters: { person, completed: false }
+                })
+              ])
+            )
+            .then(tasks => Promise.resolve([].concat(...tasks).length))
+        },
+        {
+          person
+        }
+      )
     },
     getOrCreateConnection: (obj, args) => {
       const from = obj.id
       const { to, source } = args
-      return transaction((store, params) => {
-        const { from, to, source } = params
-        return Promise.all([
-          store.readOneOrCreate({
-            type: 'connectionSources',
-            filters: { name: source },
-            data: { name: source }
-          }),
-          to.title && store.readOneOrCreate({
-            type: 'roles',
-            filters: { name: to.title },
-            data: { name: to.title }
-          }),
-          to.company && store.readOneOrCreate({
-            type: 'companies',
-            filters: { name: to.company },
-            data: { name: to.company }
-          }),
-          store.readOneOrCreate({
-            type: 'people',
-            filters: { email: to.email },
-            data: pick(to, ['email'])
-          })
-        ])
-        .then(([
-          connectionSource,
-          role,
-          company,
-          person
-        ]) => {
-          return store.readOneOrCreate({
-            type: 'connections',
-            filters: {
-              from,
-              person: person.id
-            },
-            data: merge(omit(to, ['email', 'title']), {
-              from,
-              source: connectionSource.id,
-              role: role && role.id,
-              company: company && company.id,
-              person: person.id
-            })
-          })
-        })
-      }, {
-        from,
-        to,
-        source
-      })
-    },
-    getOrCreateConnections: async (obj, args) => {
-      const from = obj.id
-      const { to, source } = args
-      const connectionSource = await transaction((store, params) => {
-        const { source } = params
-        return store.readOneOrCreate({
-          type: 'connectionSources',
-          filters: { name: source },
-          data: { name: source }
-        })
-      }, { source })
-      if (!connectionSource) {
-        throw new Error('Unable to create ConnectionSource')
-      }
-      return Promise.all(to.map(async data => {
-        await transaction((store, params) => {
-          const { from, connectionSource } = params
+      return transaction(
+        (store, params) => {
+          const { from, to, source } = params
           return Promise.all([
-            data.title && store.readOneOrCreate({
-              type: 'roles',
-              filters: { name: data.title },
-              data: { name: data.title }
+            store.readOneOrCreate({
+              type: 'sources',
+              filters: { name: source },
+              data: { name: source }
             }),
-            data.company && store.readOneOrCreate({
-              type: 'companies',
-              filters: { name: data.company },
-              data: { name: data.company }
-            }),
+            to.title &&
+              store.readOneOrCreate({
+                type: 'roles',
+                filters: { name: to.title },
+                data: { name: to.title }
+              }),
+            to.company &&
+              store.readOneOrCreate({
+                type: 'companies',
+                filters: { name: to.company },
+                data: { name: to.company }
+              }),
             store.readOneOrCreate({
               type: 'people',
-              filters: { email: data.email },
-              data: pick(data, ['email'])
+              filters: { email: to.email },
+              data: pick(to, ['email'])
             })
-          ])
-          .then(([
-            role,
-            company,
-            person
-          ]) => {
+          ]).then(([source, role, company, person]) => {
             return store.readOneOrCreate({
               type: 'connections',
               filters: {
                 from,
                 person: person.id
               },
-              data: merge(omit(data, ['email', 'title']), {
+              data: merge(omit(to, ['email', 'title']), {
                 from,
-                source: connectionSource.id,
+                source: source.id,
                 role: role && role.id,
                 company: company && company.id,
                 person: person.id
               })
             })
           })
-        }, {
+        },
+        {
           from,
-          connectionSource
+          to,
+          source
+        }
+      )
+    },
+    getOrCreateConnections: async (obj, args) => {
+      const from = obj.id
+      const { to, source } = args
+      const savedSource = await transaction(
+        (store, params) => {
+          const { source } = params
+          return store.readOneOrCreate({
+            type: 'sources',
+            filters: { name: source },
+            data: { name: source }
+          })
+        },
+        { source }
+      )
+      if (!savedSource) {
+        throw new Error('Unable to create Source')
+      }
+      return Promise.all(
+        to.map(async data => {
+          await transaction(
+            (store, params) => {
+              const { from, source } = params
+              return Promise.all([
+                data.title &&
+                  store.readOneOrCreate({
+                    type: 'roles',
+                    filters: { name: data.title },
+                    data: { name: data.title }
+                  }),
+                data.company &&
+                  store.readOneOrCreate({
+                    type: 'companies',
+                    filters: { name: data.company },
+                    data: { name: data.company }
+                  }),
+                store.readOneOrCreate({
+                  type: 'people',
+                  filters: { email: data.email },
+                  data: pick(data, ['email'])
+                })
+              ]).then(([role, company, person]) => {
+                return store.readOneOrCreate({
+                  type: 'connections',
+                  filters: {
+                    from,
+                    person: person.id
+                  },
+                  data: merge(omit(data, ['email', 'title']), {
+                    from,
+                    source: source.id,
+                    role: role && role.id,
+                    company: company && company.id,
+                    person: person.id
+                  })
+                })
+              })
+            },
+            {
+              from,
+              source: savedSource
+            }
+          )
         })
-      }))
+      )
     },
     connections: (person, args) => {
-      return transaction((store, params) => {
-        const { from } = params
-        return store.readAll({
-          type: 'connections',
-          filters: { from }
-        })
-      }, {
-        from: person.id
-      })
+      return transaction(
+        (store, params) => {
+          const { from } = params
+          return store.readAll({
+            type: 'connections',
+            filters: { from }
+          })
+        },
+        {
+          from: person.id
+        }
+      )
     },
     searchConnections: (person, args) => {
       const { query, fields } = args
-      return transaction((store, params) => {
-        const { from, query, fields } = params
-        return store.search({
-          type: 'connections',
+      return transaction(
+        (store, params) => {
+          const { from, query, fields } = params
+          return store.search({
+            type: 'connections',
+            query,
+            fields,
+            filters: { from }
+          })
+        },
+        {
           query,
           fields,
-          filters: { from }
-        })
-      }, {
-        query,
-        fields,
-        from: person.id
-      })
+          from: person.id
+        }
+      )
     },
     getOrCreateFormerEmployer: (obj, args) => {
-      return transaction((store, params) => {
-        const {
-          person,
-          newFormerEmployer,
-          source
-        } = params
-        return store.readOne({
-          type: 'companies',
-          filters: { name: newFormerEmployer.name }
-        })
-        .then(storedCompany => {
-          if (storedCompany) return storedCompany
-          // enrich company with clearbit data here
-          return store.create({
-            type: 'companies',
-            data: newFormerEmployer
-          })
-        })
-        .then(storedCompany => {
-          const company = storedCompany.id
-          return store.readOneOrCreate({
-            type: 'formerEmployers',
-            filters: {
-              person,
-              company
-            },
-            data: merge({
-              person,
-              source,
-              company
-            }, newFormerEmployer)
-          })
-        })
-      }, {
-        person: obj.id,
-        newFormerEmployer: args.formerEmployer,
-        source: args.source
-      })
+      return transaction(
+        (store, params) => {
+          const { person, newFormerEmployer, source } = params
+          return store
+            .readOne({
+              type: 'companies',
+              filters: { name: newFormerEmployer.name }
+            })
+            .then(storedCompany => {
+              if (storedCompany) return storedCompany
+              // enrich company with clearbit data here
+              return store.create({
+                type: 'companies',
+                data: newFormerEmployer
+              })
+            })
+            .then(storedCompany => {
+              const company = storedCompany.id
+              return store.readOneOrCreate({
+                type: 'formerEmployers',
+                filters: {
+                  person,
+                  company
+                },
+                data: merge(
+                  {
+                    person,
+                    source,
+                    company
+                  },
+                  newFormerEmployer
+                )
+              })
+            })
+        },
+        {
+          person: obj.id,
+          newFormerEmployer: args.formerEmployer,
+          source: args.source
+        }
+      )
     },
     updateTaskByFilters: (person, args) => {
-      return transaction((store, params) => {
-        const { person, filters, data } = params
-        return store.readOne({
-          type: 'personTasks',
-          filters: merge(filters, { person })
-        })
-        .then(task => {
-          if (!task) {
-            return null
-          }
-          return store.update({
-            type: 'personTasks',
-            id: task.id,
-            data
-          })
-        })
-      }, {
-        person: person.id,
-        filters: args.filters,
-        data: args.data
-      })
+      return transaction(
+        (store, params) => {
+          const { person, filters, data } = params
+          return store
+            .readOne({
+              type: 'personTasks',
+              filters: merge(filters, { person })
+            })
+            .then(task => {
+              if (!task) {
+                return null
+              }
+              return store.update({
+                type: 'personTasks',
+                id: task.id,
+                data
+              })
+            })
+        },
+        {
+          person: person.id,
+          filters: args.filters,
+          data: args.data
+        }
+      )
     }
   },
   Hirer: {
     setOnboarded: async (hirer, args) => {
-      return transaction((store, params) => {
-        const { hirer } = params
-        return store.readOneOrCreate({
-          type: 'hirerOnboardedEvents',
-          filters: { hirer },
-          data: { hirer }
-        })
-      }, {
-        hirer: hirer.id
-      })
+      return transaction(
+        (store, params) => {
+          const { hirer } = params
+          return store.readOneOrCreate({
+            type: 'hirerOnboardedEvents',
+            filters: { hirer },
+            data: { hirer }
+          })
+        },
+        {
+          hirer: hirer.id
+        }
+      )
     }
   },
   DateTime,

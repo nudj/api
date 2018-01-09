@@ -32,24 +32,30 @@ module.exports = ({ customTypeDefs, customResolvers, transaction }) => {
             typeResolvers[fieldName.plural] = (parent, args, context) => {
               if (parent[fieldName.original]) {
                 // full referential integrity usually denoting many->many relationship
-                return transaction((store, params) => {
-                  const { type, ids } = params
-                  return store.readMany({ type, ids })
-                }, {
-                  type: targetName.plural,
-                  ids: parent[fieldName.original]
-                })
+                return transaction(
+                  (store, params) => {
+                    const { type, ids } = params
+                    return store.readMany({ type, ids })
+                  },
+                  {
+                    type: targetName.plural,
+                    ids: parent[fieldName.original]
+                  }
+                )
               } else {
                 // no full referential integrity usually denoting one->many relationship
-                return transaction((store, params) => {
-                  const { type, filters } = params
-                  return store.readAll({ type, filters })
-                }, {
-                  type: targetName.plural,
-                  filters: {
-                    [typeName.singular]: parent.id
+                return transaction(
+                  (store, params) => {
+                    const { type, filters } = params
+                    return store.readAll({ type, filters })
+                  },
+                  {
+                    type: targetName.plural,
+                    filters: {
+                      [typeName.singular]: parent.id
+                    }
                   }
-                })
+                )
               }
             }
             typeResolvers[`${fieldName.singular}ById`] = (
@@ -58,16 +64,19 @@ module.exports = ({ customTypeDefs, customResolvers, transaction }) => {
               context
             ) => {
               if (args.id) {
-                return transaction((store, params) => {
-                  const { type, filters } = params
-                  return store.readOne({ type, filters })
-                }, {
-                  type: targetName.plural,
-                  filters: {
-                    id: args.id,
-                    [typeName.singular]: parent.id
+                return transaction(
+                  (store, params) => {
+                    const { type, filters } = params
+                    return store.readOne({ type, filters })
+                  },
+                  {
+                    type: targetName.plural,
+                    filters: {
+                      id: args.id,
+                      [typeName.singular]: parent.id
+                    }
                   }
-                })
+                )
               } else {
                 return null
               }
@@ -77,51 +86,63 @@ module.exports = ({ customTypeDefs, customResolvers, transaction }) => {
               args,
               context
             ) => {
-              return transaction((store, params) => {
-                const { type, filters } = params
-                return store.readOne({ type, filters })
-              }, {
-                type: targetName.plural,
-                filters: merge(args.filters, {
-                  [typeName.singular]: parent.id
-                })
-              })
+              return transaction(
+                (store, params) => {
+                  const { type, filters } = params
+                  return store.readOne({ type, filters })
+                },
+                {
+                  type: targetName.plural,
+                  filters: merge(args.filters, {
+                    [typeName.singular]: parent.id
+                  })
+                }
+              )
             }
             typeResolvers[`${fieldName.plural}ByFilters`] = (
               parent,
               args,
               context
             ) => {
-              return transaction((store, params) => {
-                const { type, filters } = params
-                return store.readAll({ type, filters })
-              }, {
-                type: targetName.plural,
-                filters: merge(args.filters, {
-                  [typeName.singular]: parent.id
-                })
-              })
+              return transaction(
+                (store, params) => {
+                  const { type, filters } = params
+                  return store.readAll({ type, filters })
+                },
+                {
+                  type: targetName.plural,
+                  filters: merge(args.filters, {
+                    [typeName.singular]: parent.id
+                  })
+                }
+              )
             }
           } else {
             typeResolvers[fieldName.singular] = (parent, args, context) => {
               if (parent[fieldName.singular] || parent[fieldName.original]) {
-                return transaction((store, params) => {
-                  const { type, id } = params
-                  return store.readOne({ type, id })
-                }, {
-                  type: targetName.plural,
-                  id: parent[fieldName.singular] || parent[fieldName.original]
-                })
-              } else {
-                return transaction((store, params) => {
-                  const { type, filters } = params
-                  return store.readOne({ type, filters })
-                }, {
-                  type: targetName.plural,
-                  filters: {
-                    [typeName.singular]: parent.id
+                return transaction(
+                  (store, params) => {
+                    const { type, id } = params
+                    return store.readOne({ type, id })
+                  },
+                  {
+                    type: targetName.plural,
+                    id: parent[fieldName.singular] || parent[fieldName.original]
                   }
-                })
+                )
+              } else {
+                return transaction(
+                  (store, params) => {
+                    const { type, filters } = params
+                    return store.readOne({ type, filters })
+                  },
+                  {
+                    type: targetName.plural,
+                    filters: {
+                      [typeName.singular]: parent.id
+                    }
+                  }
+                )
               }
             }
           }
@@ -202,10 +223,18 @@ module.exports = ({ customTypeDefs, customResolvers, transaction }) => {
         // root resolver schemas
         schema.types.Query.push(`${typeName.singular}(id: ID): ${type}`)
         schema.types.Mutation.push(`${typeName.singular}(id: ID): ${type}`)
-        schema.types.Query.push(`${typeName.singular}ByFilters(filters: ${type}FilterInput): ${type}`)
-        schema.types.Mutation.push(`${typeName.singular}ByFilters(filters: ${type}FilterInput): ${type}`)
-        schema.types.Query.push(`${typeName.plural}(filters: ${type}FilterInput): [${type}]`)
-        schema.types.Mutation.push(`${typeName.plural}(filters: ${type}FilterInput): [${type}]`)
+        schema.types.Query.push(
+          `${typeName.singular}ByFilters(filters: ${type}FilterInput): ${type}`
+        )
+        schema.types.Mutation.push(
+          `${typeName.singular}ByFilters(filters: ${type}FilterInput): ${type}`
+        )
+        schema.types.Query.push(
+          `${typeName.plural}(filters: ${type}FilterInput): [${type}]`
+        )
+        schema.types.Mutation.push(
+          `${typeName.plural}(filters: ${type}FilterInput): [${type}]`
+        )
         schema.types.Mutation.push(`delete${type}(id: ID!): ${type}`)
 
         // custom type definitions and inputs
@@ -267,9 +296,7 @@ module.exports = ({ customTypeDefs, customResolvers, transaction }) => {
           }
 
           // add field to update input schema
-          if (
-            !['id', 'created', 'modified'].includes(field.name.value)
-          ) {
+          if (!['id', 'created', 'modified'].includes(field.name.value)) {
             if (tally.types.includes(typeConfig.name)) {
               if (typeConfig.list) {
                 fieldStrings.update.push(`${field.name.value}: [ID!]`)
@@ -318,78 +345,120 @@ module.exports = ({ customTypeDefs, customResolvers, transaction }) => {
         schema.types[type] = fieldStrings.type.concat('_depth: Int')
         schema.inputs[`${type}FilterInput`] = fieldStrings.filter
         if (fieldStrings.create.length) {
-          schema.types.Mutation.push(`create${type}(input: ${type}CreateInput): ${type}`)
+          schema.types.Mutation.push(
+            `create${type}(input: ${type}CreateInput): ${type}`
+          )
           schema.inputs[`${type}CreateInput`] = fieldStrings.create
-          resolvers.Mutation[`create${typeName.original}`] = (obj, args, context) => {
-            return transaction((store, params) => {
-              const { type, data } = params
-              return store.create({ type, data })
-            }, {
-              type: typeName.plural,
-              data: args.input
-            })
+          resolvers.Mutation[`create${typeName.original}`] = (
+            obj,
+            args,
+            context
+          ) => {
+            return transaction(
+              (store, params) => {
+                const { type, data } = params
+                return store.create({ type, data })
+              },
+              {
+                type: typeName.plural,
+                data: args.input
+              }
+            )
           }
         }
         if (fieldStrings.update.length) {
-          schema.types.Mutation.push(`update${type}(id: ID!, input: ${type}UpdateInput): ${type}`)
+          schema.types.Mutation.push(
+            `update${type}(id: ID!, input: ${type}UpdateInput): ${type}`
+          )
           schema.inputs[`${type}UpdateInput`] = fieldStrings.update
-          resolvers.Mutation[`update${typeName.original}`] = (obj, args, context) => {
-            return transaction((store, params) => {
-              const { type, id, data } = params
-              return store.update({ type, id, data })
-            }, {
-              type: typeName.plural,
-              id: args.id,
-              data: args.input
-            })
+          resolvers.Mutation[`update${typeName.original}`] = (
+            obj,
+            args,
+            context
+          ) => {
+            return transaction(
+              (store, params) => {
+                const { type, id, data } = params
+                return store.update({ type, id, data })
+              },
+              {
+                type: typeName.plural,
+                id: args.id,
+                data: args.input
+              }
+            )
           }
         }
 
         // get one (by id)
         resolvers.Query[typeName.singular] = (obj, args, context) => {
-          return args.id ? transaction((store, params) => {
-            const { type, id } = params
-            return store.readOne({ type, id })
-          }, {
-            type: typeName.plural,
-            id: args.id
-          }) : null
+          return args.id
+            ? transaction(
+                (store, params) => {
+                  const { type, id } = params
+                  return store.readOne({ type, id })
+                },
+              {
+                type: typeName.plural,
+                id: args.id
+              }
+              )
+            : null
         }
-        resolvers.Mutation[typeName.singular] = resolvers.Query[typeName.singular]
+        resolvers.Mutation[typeName.singular] =
+          resolvers.Query[typeName.singular]
 
         // get one (by filters)
-        resolvers.Query[`${typeName.singular}ByFilters`] = (obj, args, context) => {
-          return transaction((store, params) => {
-            const { type, filters } = params
-            return store.readOne({ type, filters })
-          }, {
-            type: typeName.plural,
-            filters: args.filters
-          })
+        resolvers.Query[`${typeName.singular}ByFilters`] = (
+          obj,
+          args,
+          context
+        ) => {
+          return transaction(
+            (store, params) => {
+              const { type, filters } = params
+              return store.readOne({ type, filters })
+            },
+            {
+              type: typeName.plural,
+              filters: args.filters
+            }
+          )
         }
-        resolvers.Mutation[`${typeName.singular}ByFilters`] = resolvers.Query[`${typeName.singular}ByFilters`]
+        resolvers.Mutation[`${typeName.singular}ByFilters`] =
+          resolvers.Query[`${typeName.singular}ByFilters`]
 
         // get all (filterable)
         resolvers.Query[typeName.plural] = (obj, args, context) => {
-          return transaction((store, params) => {
-            const { type, filters } = params
-            return store.readAll({ type, filters })
-          }, {
-            type: typeName.plural,
-            filters: args.filters
-          })
+          return transaction(
+            (store, params) => {
+              const { type, filters } = params
+              return store.readAll({ type, filters })
+            },
+            {
+              type: typeName.plural,
+              filters: args.filters
+            }
+          )
         }
         resolvers.Mutation[typeName.plural] = resolvers.Query[typeName.plural]
 
         // delete (by id)
-        resolvers.Mutation[`delete${typeName.original}`] = (obj, args, context) => {
-          return transaction((store, params) => {
-            const { type, id } = params
-            return store.delete({ type, id })
-          }, {
-            type: typeName.plural,
-            id: args.id
-          })
+        resolvers.Mutation[`delete${typeName.original}`] = (
+          obj,
+          args,
+          context
+        ) => {
+          return transaction(
+            (store, params) => {
+              const { type, id } = params
+              return store.delete({ type, id })
+            },
+            {
+              type: typeName.plural,
+              id: args.id
+            }
+          )
         }
 
         // custom type resolvers
@@ -409,8 +478,15 @@ module.exports = ({ customTypeDefs, customResolvers, transaction }) => {
 
   schema.types.Query.push(`user(id: ID!): Person`)
   schema.types.Mutation.push(`user(id: ID!): Person`)
-  schema.types.Mutation.push(`setNotification(type: NotificationType! message: String!): Notification`)
-  schema.types.Query.push(`setNotification(type: NotificationType! message: String!): Notification`)
+  schema.types.Mutation.push(
+    `setNotification(type: NotificationType! message: String!): Notification`
+  )
+  schema.types.Mutation.push(
+    `storeSurveyAnswer(surveyQuestion: ID! person: ID! connections: [ID!]!): SurveyAnswer`
+  )
+  schema.types.Query.push(
+    `setNotification(type: NotificationType! message: String!): Notification`
+  )
   schema.types.Person.push(
     `searchConnections(query: String!, fields: [[String!]!]!): [Connection!]!`
   )
@@ -426,8 +502,10 @@ module.exports = ({ customTypeDefs, customResolvers, transaction }) => {
   schema.types.Person.push(
     `updateTaskByFilters(filters: PersonTaskFilterInput!, data: PersonTaskUpdateInput!): PersonTask`
   )
-  schema.types.Hirer.push(
-    `setOnboarded: HirerOnboardedEvent`
+  schema.types.Hirer.push(`setOnboarded: HirerOnboardedEvent`)
+
+  schema.types.Mutation.push(
+    `updatePerson(id: ID!, data: PersonUpdateInput!): Person`
   )
 
   let typeDefs = ''

@@ -6,7 +6,12 @@ const flatten = require('lodash/flatten')
 const findIndex = require('lodash/findIndex')
 const toLower = require('lodash/toLower')
 const merge = require('lodash/merge')
+const pluralize = require('pluralize')
 const { NotFound } = require('@nudj/library/errors')
+
+function generateId ({ db, type }) {
+  return `${pluralize.singular(type)}${db[type].length + 1}`
+}
 
 module.exports = ({ db }) => {
   return {
@@ -14,7 +19,7 @@ module.exports = ({ db }) => {
       type,
       data
     }) => {
-      const id = 'newId'
+      const id = generateId({ db, type })
       const entity = merge(data, { id })
       db[type].push(entity)
       return Promise.resolve(entity)
@@ -25,6 +30,7 @@ module.exports = ({ db }) => {
       filters
     }) => {
       return new Promise((resolve, reject) => {
+        if (!id && !filters) return resolve(null)
         const all = get(db, type)
         let item
         if (filters) {
@@ -91,7 +97,7 @@ module.exports = ({ db }) => {
       if (entity) {
         return Promise.resolve(entity)
       }
-      const id = 'newId'
+      const id = generateId({ db, type })
       entity = merge(data, { id })
       db[type].push(entity)
       return Promise.resolve(entity)

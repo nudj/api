@@ -8,21 +8,21 @@ const {
   shouldRespondWithGqlError
 } = require('../../helpers')
 
-describe('Mutation.connectionSourceByFilters', () => {
-  it('should fetch first filtered connectionSource', async () => {
+describe('Mutation.sourceByFilters', () => {
+  it('should fetch first filtered source', async () => {
     const db = {
-      connectionSources: [
+      sources: [
         {
-          id: 'connectionSource1'
+          id: 'source1'
         },
         {
-          id: 'connectionSource2'
+          id: 'source2'
         }
       ]
     }
     const operation = `
       mutation ($id: ID!) {
-        connectionSourceByFilters (filters: {
+        sourceByFilters (filters: {
           id: $id
         }) {
           id
@@ -30,12 +30,12 @@ describe('Mutation.connectionSourceByFilters', () => {
       }
     `
     const variables = {
-      id: 'connectionSource2'
+      id: 'source2'
     }
     return expect(executeQueryOnDbUsingSchema({ operation, variables, db, schema })).to.eventually.deep.equal({
       data: {
-        connectionSourceByFilters: {
-          id: 'connectionSource2'
+        sourceByFilters: {
+          id: 'source2'
         }
       }
     })
@@ -43,11 +43,11 @@ describe('Mutation.connectionSourceByFilters', () => {
 
   it('should return null and error if no match', async () => {
     const db = {
-      connectionSources: []
+      sources: []
     }
     const operation = `
       mutation ($id: ID!) {
-        connectionSourceByFilters (filters: {
+        sourceByFilters (filters: {
           id: $id
         }) {
           id
@@ -55,12 +55,12 @@ describe('Mutation.connectionSourceByFilters', () => {
       }
     `
     const variables = {
-      id: 'connectionSource2'
+      id: 'source2'
     }
     return executeQueryOnDbUsingSchema({ operation, variables, db, schema })
       .then(shouldRespondWithGqlError({
         message: 'NotFound',
-        path: ['connectionSourceByFilters']
+        path: ['sourceByFilters']
       }))
   })
 })

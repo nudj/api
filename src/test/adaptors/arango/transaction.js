@@ -38,7 +38,7 @@ const BAD_RESPONSE = {
 }
 const PARAMS = { param: 'param' }
 
-describe('ArangoAdaptor transaction', () => {
+xdescribe('ArangoAdaptor transaction', () => {
   let server
   let transaction
   let actionToStringStub = sinon.stub().returns(ACTION_STRING_RESPONSE)

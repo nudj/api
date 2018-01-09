@@ -60,6 +60,7 @@ module.exports = () => ({
     try {
       const filterString = toQs(filters)
       let result
+      if (!id && !filters) return null
       if (id) {
         result = await request({
           url: `/${type}/${id}`

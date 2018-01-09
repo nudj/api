@@ -1,13 +1,12 @@
 module.exports = {
   typeDefs: `
-    type ConnectionSource {
+    type SurveyAnswer {
       id: ID!
       created: DateTime!
       modified: DateTime!
-      name: String!
     }
 
-    input ConnectionSourceFilterInput {
+    input SurveyAnswerFilterInput {
       id: ID
     }
   `

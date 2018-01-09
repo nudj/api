@@ -8,21 +8,21 @@ const {
   shouldRespondWithGqlError
 } = require('../../helpers')
 
-describe('Connection.connectionSource', () => {
-  it('should fetch filtered connectionSource', async () => {
+describe('Connection.source', () => {
+  it('should fetch filtered source', async () => {
     const db = {
       connections: [
         {
           id: 'connection1',
-          source: 'connectionSource2'
+          source: 'source2'
         }
       ],
-      connectionSources: [
+      sources: [
         {
-          id: 'connectionSource1'
+          id: 'source1'
         },
         {
-          id: 'connectionSource2'
+          id: 'source2'
         }
       ]
     }
@@ -39,7 +39,7 @@ describe('Connection.connectionSource', () => {
       data: {
         connection: {
           source: {
-            id: 'connectionSource2'
+            id: 'source2'
           }
         }
       }
@@ -51,15 +51,15 @@ describe('Connection.connectionSource', () => {
       connections: [
         {
           id: 'connection1',
-          source: 'connectionSource3'
+          source: 'source3'
         }
       ],
-      connectionSources: [
+      sources: [
         {
-          id: 'connectionSource1'
+          id: 'source1'
         },
         {
-          id: 'connectionSource2'
+          id: 'source2'
         }
       ]
     }

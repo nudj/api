@@ -83,4 +83,12 @@ describe('ArangoAdaptor Store().readOne', () => {
       })
     })
   })
+
+  describe('when neither `id` or `filters` are given', () => {
+    it('should return `null`', () => {
+      return expect(Store().readOne({
+        type: 'collectionName'
+      })).to.eventually.be.null()
+    })
+  })
 })

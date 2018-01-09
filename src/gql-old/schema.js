@@ -63,6 +63,11 @@ module.exports = `
     info
   }
 
+  enum EmailPreference {
+    GOOGLE
+    OTHER
+  }
+
   type Notification {
     type: String!
     message: String!
@@ -84,7 +89,7 @@ module.exports = `
     slug: String
     twitter: String
     url: String
-    onboarded: Boolean!
+    onboarded: Boolean
     jobs: [Job!]!
     hirers: [Hirer!]!
     tasks: [CompanyTask!]!
@@ -158,6 +163,7 @@ module.exports = `
     incompleteTaskCount: Int
     connections: [Connection!]!
     formerEmployers: [FormerEmployer!]!
+    emailPreference: EmailPreference
   }
 
   type Application {
@@ -211,7 +217,7 @@ module.exports = `
     person: Person!
     recommendations: [Recommendation!]!
     modified: DateTime!
-    onboarded: Boolean!
+    onboarded: Boolean
   }
 
   type HirerOnboardedEvent {
@@ -295,6 +301,15 @@ module.exports = `
     surveySection: SurveySection!
   }
 
+  type SurveyAnswer {
+    id: ID!
+    created: DateTime!
+    modified: DateTime!
+    person: Person!
+    connections: [Connection!]!
+    surveyQuestion: SurveyQuestion!
+  }
+
   type Connection {
     id: ID!
     created: DateTime!
@@ -305,10 +320,10 @@ module.exports = `
     person: Person!
     role: Role
     company: Company
-    source: ConnectionSource!
+    source: Source!
   }
 
-  type ConnectionSource {
+  type Source {
     id: ID!
     created: DateTime!
     modified: DateTime!

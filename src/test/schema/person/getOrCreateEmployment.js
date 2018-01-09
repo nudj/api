@@ -12,12 +12,8 @@ describe('Person.getOrCreateEmployment', () => {
     query {
       person (id: "person1") {
         getOrCreateEmployment (
-          company: {
-            name: "EMPLOYMENT_COMPANY"
-          },
-          source: {
-            name: "EMPLOYMENT_SOURCE"
-          }
+          company: "EMPLOYMENT_COMPANY",
+          source: "EMPLOYMENT_SOURCE"
         ) {
           id
           source {

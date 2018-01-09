@@ -5,7 +5,7 @@ const expect = chai.expect
 const schema = require('../../../gql/schema')
 const { executeQueryOnDbUsingSchema } = require('../../helpers')
 
-describe.only('Mutation.personUpdate', () => {
+describe('Mutation.personUpdate', () => {
   it("should update the person's data", () => {
     const db = {
       people: [

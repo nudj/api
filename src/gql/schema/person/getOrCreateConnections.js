@@ -3,7 +3,7 @@ const { handleErrors } = require('../../lib')
 module.exports = {
   typeDefs: `
     extend type Person {
-      getOrCreateConnections(to: [ConnectionCreateInput!]!, source: SourceCreateInput!): [Connection]
+      getOrCreateConnections(to: [ConnectionCreateInput!]!, source: String!): [Connection]
     }
   `,
   resolvers: {
@@ -15,8 +15,8 @@ module.exports = {
           const { source } = params
           return store.readOneOrCreate({
             type: 'sources',
-            filters: { name: source.name },
-            data: source
+            filters: { name: source },
+            data: { name: source }
           })
         }, { source })
         if (!savedSource) {

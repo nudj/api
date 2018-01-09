@@ -1,5 +1,4 @@
 /* eslint-env mocha */
-require('envkey')
 const chai = require('chai')
 const proxyquire = require('proxyquire')
 const expect = chai.expect
@@ -37,14 +36,23 @@ const queryResponse = {
 
 const apiStub = { query: sinon.stub().returns(queryResponse) }
 const prismicStub = sinon.stub().returns(apiStub)
-const fetchContent = proxyquire('../../../gql/lib/prismic', {
-  'prismic.io': {
-    api: prismicStub
-  }
-})
 
 describe('fetchContent', () => {
+  let fetchContent
+  let cachedPrismicAccessToken
+
+  beforeEach(() => {
+    cachedPrismicAccessToken = process.env.PRISMICIO_ACCESS_TOKEN
+    process.env.PRISMICIO_ACCESS_TOKEN = 'TEST_PRISMIC_ACCESS_TOKEN'
+    fetchContent = proxyquire('../../../gql/lib/prismic', {
+      'prismic.io': {
+        api: prismicStub
+      }
+    })
+  })
+
   afterEach(() => {
+    process.env.PRISMICIO_ACCESS_TOKEN = cachedPrismicAccessToken
     apiStub.query.reset()
     prismicStub.reset()
   })
@@ -53,7 +61,7 @@ describe('fetchContent', () => {
     await fetchContent(baseArgs)
     expect(prismicStub).to.have.been.calledWith(
       `https://nudj-special-test.prismic.io/api`,
-      { accessToken: process.env.PRISMICIO_ACCESS_TOKEN }
+      { accessToken: 'TEST_PRISMIC_ACCESS_TOKEN' }
     )
   })
 

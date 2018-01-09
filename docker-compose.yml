@@ -2,6 +2,7 @@ version: '2'
 services:
   api:
     image: nudj/api:latest
+    env_file: .env
     depends_on:
       - db
     ports:

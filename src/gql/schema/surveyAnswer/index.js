@@ -8,6 +8,7 @@ module.exports = {
 
     input SurveyAnswerFilterInput {
       id: ID
+      person: ID
     }
   `
 }

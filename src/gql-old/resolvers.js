@@ -3,6 +3,8 @@ const { merge } = require('@nudj/library')
 const pick = require('lodash/pick')
 const omit = require('lodash/omit')
 
+const fetchContent = require('../gql/lib/prismic')
+
 const DateTime = new GraphQLScalarType({
   name: 'DateTime',
   description: 'Graphcool DateTime emulated type',

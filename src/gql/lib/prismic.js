@@ -3,7 +3,6 @@ const mapValues = require('lodash/mapValues')
 const { merge, logger } = require('@nudj/library')
 
 const accessToken = process.env.PRISMICIO_ACCESS_TOKEN
-
 const defaultKeys = {
   subject: 'composesubject',
   message: 'composetext'

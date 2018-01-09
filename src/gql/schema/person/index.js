@@ -8,11 +8,20 @@ module.exports = {
       firstName: String
       lastName: String
       url: String
+      emailPreference: EmailPreference!
     }
 
     input PersonFilterInput {
       id: ID
       email: String
+    }
+
+    input PersonUpdateInput {
+      email: String
+      firstName: String
+      lastName: String
+      url: String
+      emailPreference: EmailPreference
     }
   `
 }

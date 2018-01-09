@@ -63,6 +63,11 @@ module.exports = `
     info
   }
 
+  enum EmailPreference {
+    GOOGLE
+    OTHER
+  }
+
   type Notification {
     type: String!
     message: String!
@@ -158,6 +163,7 @@ module.exports = `
     incompleteTaskCount: Int
     connections: [Connection!]!
     formerEmployers: [FormerEmployer!]!
+    emailPreference: EmailPreference
   }
 
   type Application {

@@ -55,7 +55,7 @@ const response = {
   { method: 'GET',
     enctype: 'application/x-www-form-urlencoded',
     action: 'https://nudj-hirer.prismic.io/api/v1/documents/search',
-    fields: [Object] } },
+    fields: [] } },
   oauth_initiate: 'https://nudj-hirer.prismic.io/auth',
   oauth_token: 'https://nudj-hirer.prismic.io/auth/token',
   version: 'c62e61d',

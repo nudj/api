@@ -280,14 +280,15 @@ function defineEntityPluralByFiltersRelation (
 }
 
 function defineEntitySingularRelation (
-  { parentType, name, type, collection, propertyName } = {}
+  { parentType, name, type, collection, propertyName, parentPropertyName } = {}
 ) {
   const camelType = camelCase(type)
   if (!parentType) { throw new AppError('defineEntitySingularRelation requires a parentType') }
   if (!type) throw new AppError('defineEntitySingularRelation requires a type')
   name = name || camelType
   collection = collection || `${camelType}s`
-  propertyName = propertyName || name || camelType
+  propertyName = propertyName || name
+  parentPropertyName = parentPropertyName || camelCase(parentType)
 
   return {
     typeDefs: `
@@ -298,16 +299,22 @@ function defineEntitySingularRelation (
     resolvers: {
       [parentType]: {
         [name]: handleErrors((parent, args, context) => {
+          const id = parent[propertyName]
+          const filters = id ? undefined : {
+            [parentPropertyName]: parent.id
+          }
           return context.transaction(
             (store, params) => {
               return store.readOne({
                 type: params.collection,
-                id: params.id
+                id: params.id,
+                filters: params.filters
               })
             },
             {
               collection,
-              id: parent[propertyName]
+              id,
+              filters
             }
           )
         })

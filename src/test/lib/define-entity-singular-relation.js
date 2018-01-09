@@ -74,14 +74,32 @@ describe('defineEntitySingularRelation', () => {
       return expect(resolver(parent, null, fakeContext)).to.eventually.have.deep.property('type', 'relations')
     })
 
-    it('should call store.readOne with the id', () => {
-      const parent = {
-        relation: 'relation1'
-      }
-      const fakeContext = generateFakeContextWithStore({
-        readOne: args => args
+    describe('when parent.relation exists', () => {
+      it('should call store.readOne with the id', () => {
+        const parent = {
+          relation: 'relation1'
+        }
+        const fakeContext = generateFakeContextWithStore({
+          readOne: args => args
+        })
+        return expect(resolver(parent, null, fakeContext)).to.eventually.have.deep.property('id', 'relation1')
       })
-      return expect(resolver(parent, null, fakeContext)).to.eventually.have.deep.property('id', 'relation1')
+    })
+
+    describe('when parent.relation does not exist', () => {
+      it('should call store.readOne with filters', () => {
+        const parent = {
+          id: 'parent1'
+        }
+        const fakeContext = generateFakeContextWithStore({
+          readOne: args => args
+        })
+        return expect(resolver(parent, null, fakeContext))
+          .to.eventually.have.deep.property('filters')
+          .to.deep.equal({
+            parent: 'parent1'
+          })
+      })
     })
   })
 
@@ -176,6 +194,29 @@ describe('defineEntitySingularRelation', () => {
           readOne: args => args
         })
         return expect(resolver(parent, null, fakeContext)).to.eventually.have.deep.property('id', 'theActualId')
+      })
+    })
+  })
+
+  describe('when parentPropertyName is passed in', () => {
+    describe('the resolver', () => {
+      it('should override property used to filter the parent id on the children', () => {
+        const resolver = defineEntitySingularRelation({
+          parentType: 'Parent',
+          type: 'Relation',
+          parentPropertyName: 'aDifferentParentPropertyName'
+        }).resolvers.Parent.relation
+        const parent = {
+          id: 'parent1'
+        }
+        const fakeContext = generateFakeContextWithStore({
+          readOne: args => args
+        })
+        return expect(resolver(parent, null, fakeContext))
+          .to.eventually.have.deep.property('filters')
+          .to.deep.equal({
+            aDifferentParentPropertyName: 'parent1'
+          })
       })
     })
   })

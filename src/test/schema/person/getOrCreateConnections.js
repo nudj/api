@@ -25,9 +25,7 @@ describe('Person.getOrCreateConnections', () => {
             company: "CONNECTION_COMPANY2",
             email: "CONNECTION_EMAIL2"
           }],
-          source: {
-            name: "CONNECTION_SOURCE"
-          }
+          source: "CONNECTION_SOURCE"
         ) {
           id
           firstName

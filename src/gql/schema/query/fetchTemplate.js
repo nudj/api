@@ -7,7 +7,8 @@ module.exports = {
         type: String!
         repo: String!
         tags: [String!]!
-      ): MessageTemplate
+        keys: Data
+      ): Data
     }
   `,
   resolvers: {

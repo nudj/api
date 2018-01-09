@@ -508,7 +508,7 @@ module.exports = ({ customTypeDefs, customResolvers, transaction }) => {
     `updatePerson(id: ID!, data: PersonUpdateInput!): Person`
   )
   schema.types.Query.push(
-    `fetchTemplate(type: String! keys: Data repo: String! tags: [String!]!): MessageTemplate`
+    `fetchTemplate(type: String! keys: Data repo: String! tags: [String!]!): Data`
   )
 
   let typeDefs = ''

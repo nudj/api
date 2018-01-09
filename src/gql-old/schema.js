@@ -68,13 +68,6 @@ module.exports = `
     OTHER
   }
 
-  type MessageTemplate {
-    subject: String!
-    message: String!
-    tags: [String]
-    keys: Data
-  }
-
   type Notification {
     type: String!
     message: String!

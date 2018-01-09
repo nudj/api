@@ -54,10 +54,6 @@ describe('definePluralByFiltersRelation', () => {
       }).resolvers.Parent.relationsByFilters
     })
 
-    it('should be a function', () => {
-      return expect(resolver).to.be.a('function')
-    })
-
     it('should return the result of a store.readAll call', () => {
       const filters = {
         slug: 'someSlug'
@@ -65,7 +61,7 @@ describe('definePluralByFiltersRelation', () => {
       const fakeContext = generateFakeContextWithStore({
         readAll: () => 'all_the_relations'
       })
-      return expect(resolver(null, { filters }, fakeContext)).to.equal('all_the_relations')
+      return expect(resolver(null, { filters }, fakeContext)).to.eventually.equal('all_the_relations')
     })
 
     it('should call store.readAll with the collection type', () => {
@@ -75,7 +71,9 @@ describe('definePluralByFiltersRelation', () => {
       const fakeContext = generateFakeContextWithStore({
         readAll: args => args
       })
-      return expect(resolver(null, { filters }, fakeContext).type).to.equal('relations')
+      return expect(resolver(null, { filters }, fakeContext))
+        .to.eventually.have.property('type')
+        .to.equal('relations')
     })
 
     it('should call store.readAll with the filters passed in args', () => {
@@ -85,9 +83,11 @@ describe('definePluralByFiltersRelation', () => {
       const fakeContext = generateFakeContextWithStore({
         readAll: args => args
       })
-      return expect(resolver(null, { filters }, fakeContext).filters).to.deep.equal({
-        slug: 'someSlug'
-      })
+      return expect(resolver(null, { filters }, fakeContext))
+        .to.eventually.have.property('filters')
+        .to.deep.equal({
+          slug: 'someSlug'
+        })
     })
   })
 
@@ -121,7 +121,9 @@ describe('definePluralByFiltersRelation', () => {
         const fakeContext = generateFakeContextWithStore({
           readAll: args => args
         })
-        return expect(resolver(null, { filters }, fakeContext).type).to.deep.equal('aDifferentCollection')
+        return expect(resolver(null, { filters }, fakeContext))
+          .to.eventually.have.property('type')
+          .to.deep.equal('aDifferentCollection')
       })
     })
   })

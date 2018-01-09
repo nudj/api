@@ -30,6 +30,7 @@ module.exports = ({ db }) => {
       filters
     }) => {
       return new Promise((resolve, reject) => {
+        if (!id && !filters) return resolve(null)
         const all = get(db, type)
         let item
         if (filters) {

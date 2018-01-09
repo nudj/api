@@ -1,7 +1,7 @@
 module.exports = {
   typeDefs: `
     extend type Person {
-      searchConnections: [Connection!]!
+      searchConnections(query: String!, fields: [[String!]!]!): [Connection!]!
     }
   `,
   resolvers: {

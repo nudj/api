@@ -1,7 +1,7 @@
 module.exports = {
   typeDefs: `
     extend type Person {
-      getOrCreateEmployment(company: CompanyCreateInput!, source: SourceCreateInput!): Employment
+      getOrCreateEmployment(company: String!, source: String!): Employment
     }
   `,
   resolvers: {
@@ -16,13 +16,13 @@ module.exports = {
           return Promise.all([
             store.readOneOrCreate({
               type: 'sources',
-              filters: { name: newSource.name },
-              data: newSource
+              filters: { name: newSource },
+              data: { name: newSource }
             }),
             store.readOneOrCreate({
               type: 'companies',
-              filters: { name: newCompany.name },
-              data: newCompany
+              filters: { name: newCompany },
+              data: { name: newCompany }
             })
           ])
           .then(([

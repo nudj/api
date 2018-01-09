@@ -35,6 +35,7 @@ module.exports = () => {
       id,
       filters
     }) => {
+      if (!id && !filters) return Promise.resolve(null)
       let method = 'document'
       let arg = id
       if (filters) {

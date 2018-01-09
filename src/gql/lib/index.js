@@ -108,22 +108,16 @@ function definePluralByFiltersRelation (
     `,
     resolvers: {
       [parentType]: {
-        [name]: (root, args, context) => {
-          return context.transaction(
-            (store, params) => {
-              return store.readAll({
-                type: params.collection,
-                filters: params.filters
-              })
-            },
-            merge(
-              {
-                collection
-              },
-              args
-            )
-          )
-        }
+        [name]: handleErrors((root, args, context) => {
+          return context.transaction((store, params) => {
+            return store.readAll({
+              type: params.collection,
+              filters: params.filters
+            })
+          }, merge({
+            collection
+          }, args))
+        })
       }
     }
   }

@@ -8,23 +8,28 @@ const {
   shouldRespondWithGqlError
 } = require('../../helpers')
 
-describe('Referral.parent', () => {
-  it('should fetch parent referral', async () => {
+describe('CompanyTask.completedBy', () => {
+  it('should fetch filtered person', async () => {
     const db = {
-      referrals: [
+      companyTasks: [
         {
-          id: 'referral1'
+          id: 'companyTask1',
+          completedBy: 'person2'
+        }
+      ],
+      people: [
+        {
+          id: 'person1'
         },
         {
-          id: 'referral2',
-          parent: 'referral1'
+          id: 'person2'
         }
       ]
     }
     const operation = `
       query {
-        referral (id: "referral2") {
-          parent {
+        companyTask (id: "companyTask1") {
+          completedBy {
             id
           }
         }
@@ -32,9 +37,9 @@ describe('Referral.parent', () => {
     `
     return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
-        referral: {
-          parent: {
-            id: 'referral1'
+        companyTask: {
+          completedBy: {
+            id: 'person2'
           }
         }
       }
@@ -43,20 +48,25 @@ describe('Referral.parent', () => {
 
   it('should return null and error if no matches', async () => {
     const db = {
-      referrals: [
+      companyTasks: [
         {
-          id: 'referral1'
+          id: 'companyTask1',
+          completedBy: 'person3'
+        }
+      ],
+      people: [
+        {
+          id: 'person1'
         },
         {
-          id: 'referral2',
-          parent: 'referral0'
+          id: 'person2'
         }
       ]
     }
     const operation = `
       query {
-        referral (id: "referral2") {
-          parent {
+        companyTask (id: "companyTask1") {
+          completedBy {
             id
           }
         }
@@ -66,8 +76,8 @@ describe('Referral.parent', () => {
       .then(shouldRespondWithGqlError({
         message: 'NotFound',
         path: [
-          'referral',
-          'parent'
+          'companyTask',
+          'completedBy'
         ]
       }))
   })

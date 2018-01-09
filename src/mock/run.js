@@ -419,4 +419,12 @@ data.employments = data.employments.concat([
   }
 ])
 
-mock.gql({ data }).listen(81, 82, () => console.log('info', 'Mock GQL API running'))
+const { jsonServer, gqlServer } = mock({ data })
+
+jsonServer.listen(81, () => {
+  console.log('info', 'JSONServer running')
+})
+
+gqlServer.listen(82, () => {
+  console.log('info', 'Mock GQL running')
+})

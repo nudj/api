@@ -1,7 +1,7 @@
 module.exports = {
   typeDefs: `
     extend type Person {
-      createAccount(type: String!, data: Data): Data
+      createAccount(type: AccountType!, data: Data!): Data
     }
   `,
   resolvers: {

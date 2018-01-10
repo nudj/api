@@ -14,6 +14,7 @@ build:
 ssh:
 	-@docker rm -f api-dev 2> /dev/null || true
 	@docker run --rm -it \
+		--env-file $(CWD)/.env \
 		--name api-dev \
 		-e NPM_TOKEN=${NPM_TOKEN} \
 		-e DB_API_URL=http://localhost:81 \
@@ -39,6 +40,7 @@ ssh:
 test:
 	-@docker rm -f api-test 2> /dev/null || true
 	@docker run --rm -it \
+		--env-file $(CWD)/.env \
 		--name api-test \
 		-e ENVIRONMENT=test \
 		-e DB_API_URL=http://localhost:81 \
@@ -65,4 +67,3 @@ standardFix:
 		-v $(CWD)/src/test:/usr/src/test \
 		$(IMAGEDEV) \
 		/bin/zsh -c './node_modules/.bin/standard --fix'
-

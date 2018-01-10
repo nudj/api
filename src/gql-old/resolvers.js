@@ -3,6 +3,8 @@ const { merge } = require('@nudj/library')
 const pick = require('lodash/pick')
 const omit = require('lodash/omit')
 
+const fetchContent = require('../gql/lib/prismic')
+
 const DateTime = new GraphQLScalarType({
   name: 'DateTime',
   description: 'Graphcool DateTime emulated type',
@@ -36,6 +38,11 @@ module.exports = ({ transaction }) => ({
     },
     setNotification: (obj, args) => {
       return Promise.resolve({ type: args.type, message: args.message })
+    },
+    fetchTemplate: async (obj, args) => {
+      const { type, repo, tags, keys } = args
+      const data = await fetchContent({ type, tags, repo, keys })
+      return data && data[0]
     }
   },
   Mutation: {

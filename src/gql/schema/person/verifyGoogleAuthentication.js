@@ -9,17 +9,16 @@ module.exports = {
   resolvers: {
     Person: {
       verifyGoogleAuthentication: (person, args, context) => {
-        return context.transaction(async (store, params) => {
-          try {
-            const account = await store.readOne({
-              type: 'accounts',
-              filters: params.filters
-            })
-            return !!(account && account.refreshToken)
-          } catch (error) {
+        return context.transaction((store, params) => {
+          return store.readOne({
+            type: 'accounts',
+            filters: params.filters
+          })
+          .then(account => !!(account && account.refreshToken))
+          .catch(error => {
             if (error.constructor === NotFound) return false
             throw error
-          }
+          })
         }, {
           filters: {
             person: person.id,

@@ -5,6 +5,7 @@ let {
   expectPropertyIsRequired,
   expectPropertyContentsIsRequired
 } = require('../../helpers')
+const { values: statusTypes } = require('../../../gql/schema/enums/job-status-types')
 
 const TYPE = 'Job'
 const TYPE_PLURAL = 'jobs'
@@ -13,6 +14,7 @@ const DUMMY_INT = 123
 const DUMMY_STRING = 'abc'
 const DUMMY_DATETIME = '2000-01-17T02:51:58.000+00:00'
 const DUMMY_ARRAY_STRINGS = ['abc']
+const DUMMY_STATUS = statusTypes.PUBLISHED
 expectPropertyReceivesValue = expectPropertyReceivesValue(schema, TYPE, TYPE_PLURAL)
 expectPropertyIsRequired = expectPropertyIsRequired(schema, TYPE, TYPE_PLURAL)
 expectPropertyContentsIsRequired = expectPropertyContentsIsRequired(schema, TYPE, TYPE_PLURAL)
@@ -30,7 +32,7 @@ describe('Job properties', () => {
     await expectPropertyReceivesValue('candidateDescription', DUMMY_STRING)
     await expectPropertyReceivesValue('location', DUMMY_STRING)
     await expectPropertyReceivesValue('remuneration', DUMMY_STRING)
-    await expectPropertyReceivesValue('status', DUMMY_STRING)
+    await expectPropertyReceivesValue('status', DUMMY_STATUS)
     await expectPropertyReceivesValue('templateTags', DUMMY_ARRAY_STRINGS)
     await expectPropertyReceivesValue('type', DUMMY_STRING)
     await expectPropertyReceivesValue('url', DUMMY_STRING)

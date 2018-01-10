@@ -5,7 +5,6 @@ module.exports = {
       created: DateTime!
       modified: DateTime!
       type: AccountType!
-      data: Data!
     }
   `
 }

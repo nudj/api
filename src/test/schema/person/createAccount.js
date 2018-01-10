@@ -98,4 +98,49 @@ describe('Person.createAccount', () => {
       }
     })
   })
+
+  it('should not expose stored data', async () => {
+    const db = {
+      accounts: [],
+      people: [
+        {
+          id: 'person1',
+          firstName: 'Larry'
+        }
+      ]
+    }
+    const operation = `
+      mutation swankyNewAccount ($data: Data! $type: AccountType! $userId: ID!) {
+        user (id: $userId) {
+          account: createAccount(type: $type data: $data) {
+            id
+            person {
+              id
+              firstName
+            }
+            type
+          }
+        }
+      }
+    `
+    const variables = {
+      userId: 'person1',
+      type: 'GOOGLE',
+      data: {
+        accessToken: '12345',
+        refreshToken: '6789'
+      }
+    }
+    const result = await executeQueryOnDbUsingSchema({ operation, variables, db, schema })
+    const { account } = result.data.user
+    expect(account).to.deep.equal({
+      id: 'account1',
+      person: {
+        id: 'person1',
+        firstName: 'Larry'
+      },
+      type: 'GOOGLE'
+    })
+    expect(account.data).to.be.undefined()
+  })
 })

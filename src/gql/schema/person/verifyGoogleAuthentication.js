@@ -14,7 +14,7 @@ module.exports = {
             type: 'accounts',
             filters: params.filters
           })
-          .then(account => !!(account && account.refreshToken))
+          .then(account => !!(account && account.data && account.data.refreshToken))
           .catch(error => {
             if (error.constructor === NotFound) return false
             throw error

@@ -15,7 +15,7 @@ module.exports = {
               type: 'accounts',
               filters: params.filters
             })
-            return !!account.refreshToken
+            return !!(account && account.refreshToken)
           } catch (error) {
             if (error.constructor === NotFound) return false
             throw error

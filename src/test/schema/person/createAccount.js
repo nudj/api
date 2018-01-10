@@ -11,14 +11,21 @@ describe('Person.createAccount', () => {
       accounts: [],
       people: [
         {
-          id: 'person1'
+          id: 'person1',
+          firstName: 'Larry'
         }
       ]
     }
     const operation = `
       mutation swankyNewAccount ($data: Data! $type: AccountType! $userId: ID!) {
         user (id: $userId) {
-          account: createAccount(type: $type data: $data)
+          account: createAccount(type: $type data: $data) {
+            id
+            person {
+              firstName
+            }
+            type
+          }
         }
       }
     `
@@ -33,11 +40,13 @@ describe('Person.createAccount', () => {
     return executeQueryOnDbUsingSchema({ operation, variables, db, schema })
       .then(() => {
         return expect(db.accounts[0]).to.deep.equal({
+          id: 'account1',
           person: 'person1',
           type: 'GOOGLE',
-          accessToken: '12345',
-          refreshToken: '6789',
-          id: 'account1'
+          data: {
+            accessToken: '12345',
+            refreshToken: '6789'
+          }
         })
       })
   })
@@ -47,14 +56,22 @@ describe('Person.createAccount', () => {
       accounts: [],
       people: [
         {
-          id: 'person1'
+          id: 'person1',
+          firstName: 'Larry'
         }
       ]
     }
     const operation = `
       mutation swankyNewAccount ($data: Data! $type: AccountType! $userId: ID!) {
         user (id: $userId) {
-          account: createAccount(type: $type data: $data)
+          account: createAccount(type: $type data: $data) {
+            id
+            person {
+              id
+              firstName
+            }
+            type
+          }
         }
       }
     `
@@ -70,11 +87,12 @@ describe('Person.createAccount', () => {
       data: {
         user: {
           account: {
-            person: 'person1',
-            type: 'GOOGLE',
-            accessToken: '12345',
-            refreshToken: '6789',
-            id: 'account1'
+            id: 'account1',
+            person: {
+              id: 'person1',
+              firstName: 'Larry'
+            },
+            type: 'GOOGLE'
           }
         }
       }

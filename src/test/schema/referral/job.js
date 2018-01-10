@@ -3,10 +3,7 @@ const chai = require('chai')
 const expect = chai.expect
 
 const schema = require('../../../gql/schema')
-const {
-  executeQueryOnDbUsingSchema,
-  shouldRespondWithGqlError
-} = require('../../helpers')
+const { executeQueryOnDbUsingSchema } = require('../../helpers')
 
 describe('Referral.job', () => {
   it('should fetch filtered job', async () => {
@@ -46,7 +43,7 @@ describe('Referral.job', () => {
     })
   })
 
-  it('should return null and error if no matches', async () => {
+  it('should return null if no matches', async () => {
     const db = {
       referrals: [
         {
@@ -72,13 +69,12 @@ describe('Referral.job', () => {
         }
       }
     `
-    return executeQueryOnDbUsingSchema({ operation, db, schema })
-      .then(shouldRespondWithGqlError({
-        message: 'NotFound',
-        path: [
-          'referral',
-          'job'
-        ]
-      }))
+    return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
+      data: {
+        referral: {
+          job: null
+        }
+      }
+    })
   })
 })

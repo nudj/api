@@ -3,10 +3,7 @@ const chai = require('chai')
 const expect = chai.expect
 
 const schema = require('../../../gql/schema')
-const {
-  executeQueryOnDbUsingSchema,
-  shouldRespondWithGqlError
-} = require('../../helpers')
+const { executeQueryOnDbUsingSchema } = require('../../helpers')
 
 describe('CompanyTask.completedBy', () => {
   it('should fetch filtered person', async () => {
@@ -46,7 +43,7 @@ describe('CompanyTask.completedBy', () => {
     })
   })
 
-  it('should return null and error if no matches', async () => {
+  it('should return null if no matches', async () => {
     const db = {
       companyTasks: [
         {
@@ -72,13 +69,12 @@ describe('CompanyTask.completedBy', () => {
         }
       }
     `
-    return executeQueryOnDbUsingSchema({ operation, db, schema })
-      .then(shouldRespondWithGqlError({
-        message: 'NotFound',
-        path: [
-          'companyTask',
-          'completedBy'
-        ]
-      }))
+    return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
+      data: {
+        companyTask: {
+          completedBy: null
+        }
+      }
+    })
   })
 })

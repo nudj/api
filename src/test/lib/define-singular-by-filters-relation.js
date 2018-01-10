@@ -59,7 +59,7 @@ describe('defineSingularByFiltersRelation', () => {
         slug: 'someSlug'
       }
       const fakeContext = generateFakeContextWithStore({
-        readOne: () => 'the_relation'
+        readOne: () => Promise.resolve('the_relation')
       })
       return expect(resolver(null, { filters }, fakeContext)).to.eventually.equal('the_relation')
     })
@@ -69,7 +69,7 @@ describe('defineSingularByFiltersRelation', () => {
         slug: 'someSlug'
       }
       const fakeContext = generateFakeContextWithStore({
-        readOne: args => args
+        readOne: args => Promise.resolve(args)
       })
       return expect(resolver(null, { filters }, fakeContext))
         .to.eventually.have.deep.property('type')
@@ -81,7 +81,7 @@ describe('defineSingularByFiltersRelation', () => {
         slug: 'someSlug'
       }
       const fakeContext = generateFakeContextWithStore({
-        readOne: args => args
+        readOne: args => Promise.resolve(args)
       })
       return expect(resolver(null, { filters }, fakeContext))
         .to.eventually.have.deep.property('filters')
@@ -119,7 +119,7 @@ describe('defineSingularByFiltersRelation', () => {
           slug: 'someSlug'
         }
         const fakeContext = generateFakeContextWithStore({
-          readOne: args => args
+          readOne: args => Promise.resolve(args)
         })
         return expect(resolver(null, { filters }, fakeContext))
           .to.eventually.have.deep.property('type')
@@ -139,6 +139,20 @@ describe('defineSingularByFiltersRelation', () => {
         relationByFilters(filters: aDifferentFilterType!): Relation
       }
     `)
+    })
+  })
+
+  describe('when no filters are given', () => {
+    describe('the resolver', () => {
+      it('should return null', () => {
+        const resolver = defineSingularByFiltersRelation({
+          parentType: 'Parent',
+          type: 'Relation'
+        }).resolvers.Parent.relationByFilters
+        const filters = {}
+        return expect(resolver(null, { filters }))
+          .to.eventually.be.null()
+      })
     })
   })
 })

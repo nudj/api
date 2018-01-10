@@ -59,7 +59,7 @@ describe('defineEntitySingularRelation', () => {
         relation: 'relation1'
       }
       const fakeContext = generateFakeContextWithStore({
-        readOne: () => 'the_relation'
+        readOne: () => Promise.resolve('the_relation')
       })
       return expect(resolver(parent, null, fakeContext)).to.eventually.equal('the_relation')
     })
@@ -69,7 +69,7 @@ describe('defineEntitySingularRelation', () => {
         relation: 'relation1'
       }
       const fakeContext = generateFakeContextWithStore({
-        readOne: args => args
+        readOne: args => Promise.resolve(args)
       })
       return expect(resolver(parent, null, fakeContext)).to.eventually.have.deep.property('type', 'relations')
     })
@@ -80,7 +80,7 @@ describe('defineEntitySingularRelation', () => {
           relation: 'relation1'
         }
         const fakeContext = generateFakeContextWithStore({
-          readOne: args => args
+          readOne: args => Promise.resolve(args)
         })
         return expect(resolver(parent, null, fakeContext)).to.eventually.have.deep.property('id', 'relation1')
       })
@@ -92,7 +92,7 @@ describe('defineEntitySingularRelation', () => {
           id: 'parent1'
         }
         const fakeContext = generateFakeContextWithStore({
-          readOne: args => args
+          readOne: args => Promise.resolve(args)
         })
         return expect(resolver(parent, null, fakeContext))
           .to.eventually.have.deep.property('filters')
@@ -135,7 +135,7 @@ describe('defineEntitySingularRelation', () => {
           aDifferentName: 'theActualId'
         }
         const fakeContext = generateFakeContextWithStore({
-          readOne: args => args
+          readOne: args => Promise.resolve(args)
         })
         return expect(resolver(parent, null, fakeContext)).to.eventually.have.deep.property('id', 'theActualId')
       })
@@ -154,7 +154,7 @@ describe('defineEntitySingularRelation', () => {
           id: 'parent1'
         }
         const fakeContext = generateFakeContextWithStore({
-          readOne: args => args
+          readOne: args => Promise.resolve(args)
         })
         return expect(resolver(parent, null, fakeContext)).to.eventually.have.deep.property('type', 'aDifferentCollection')
       })
@@ -174,7 +174,7 @@ describe('defineEntitySingularRelation', () => {
           aDifferentParentName: 'theActualId'
         }
         const fakeContext = generateFakeContextWithStore({
-          readOne: args => args
+          readOne: args => Promise.resolve(args)
         })
         return expect(resolver(parent, null, fakeContext)).to.eventually.have.deep.property('id', 'theActualId')
       })
@@ -191,7 +191,7 @@ describe('defineEntitySingularRelation', () => {
           aDifferentParentName: 'theActualId'
         }
         const fakeContext = generateFakeContextWithStore({
-          readOne: args => args
+          readOne: args => Promise.resolve(args)
         })
         return expect(resolver(parent, null, fakeContext)).to.eventually.have.deep.property('id', 'theActualId')
       })
@@ -210,7 +210,7 @@ describe('defineEntitySingularRelation', () => {
           id: 'parent1'
         }
         const fakeContext = generateFakeContextWithStore({
-          readOne: args => args
+          readOne: args => Promise.resolve(args)
         })
         return expect(resolver(parent, null, fakeContext))
           .to.eventually.have.deep.property('filters')

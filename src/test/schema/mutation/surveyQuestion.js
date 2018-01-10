@@ -3,10 +3,7 @@ const chai = require('chai')
 const expect = chai.expect
 
 const schema = require('../../../gql/schema')
-const {
-  executeQueryOnDbUsingSchema,
-  shouldRespondWithGqlError
-} = require('../../helpers')
+const { executeQueryOnDbUsingSchema } = require('../../helpers')
 
 describe('Mutation.surveyQuestion', () => {
   it('should fetch a single surveyQuestion', async () => {
@@ -39,7 +36,7 @@ describe('Mutation.surveyQuestion', () => {
     })
   })
 
-  it('should return null and error if no match', async () => {
+  it('should return null if no match', async () => {
     const db = {
       surveyQuestions: []
     }
@@ -54,10 +51,10 @@ describe('Mutation.surveyQuestion', () => {
       id: 'surveyQuestion2'
     }
 
-    return executeQueryOnDbUsingSchema({ operation, variables, db, schema })
-      .then(shouldRespondWithGqlError({
-        message: 'NotFound',
-        path: ['surveyQuestion']
-      }))
+    return expect(executeQueryOnDbUsingSchema({ operation, variables, db, schema })).to.eventually.deep.equal({
+      data: {
+        surveyQuestion: null
+      }
+    })
   })
 })

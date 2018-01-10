@@ -70,9 +70,11 @@ module.exports = () => ({
           url: `/${type}${filterString.length ? `?${filterString}` : ''}`
         }).then(first)
       }
-      if (!result) throw new NotFound(`${type} with ${filters ? `filters ${JSON.stringify(filters)}` : `id ${id}`} not found`)
       return result
     } catch (error) {
+      if (error.response.status === 404) {
+        return null
+      }
       errorHandler({
         action: 'readOne',
         type,
@@ -133,11 +135,16 @@ module.exports = () => ({
     return Promise.all(ids.map(id => request({
       url: `/${type}/${id}`
     })))
-    .catch(errorHandler({
-      action: 'readMany',
-      type,
-      ids
-    }))
+    .catch(error => {
+      if (error.constructor === NotFound) {
+        return []
+      }
+      return errorHandler({
+        action: 'readMany',
+        type,
+        ids
+      })(error)
+    })
   },
   update: ({
     type,

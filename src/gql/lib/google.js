@@ -1,7 +1,7 @@
 const google = require('googleapis')
 const { Base64 } = require('js-base64')
-const logger = require('@nudj/framework/logger')
 const { emailBuilder } = require('@nudj/library/server')
+const { logger } = require('@nudj/library')
 
 const gmail = google.gmail('v1')
 const OAuth2 = google.auth.OAuth2
@@ -24,7 +24,7 @@ const sendGmail = ({ email, accessToken, threadId }) => {
       }
     }, (error, response) => {
       if (error) {
-        logger.log('error', 'Error sending Gmail', error)
+        logger('error', 'Error sending Gmail', error)
         return reject(error)
       }
       resolve(response)

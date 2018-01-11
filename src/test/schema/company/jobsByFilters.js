@@ -3,10 +3,7 @@ const chai = require('chai')
 const expect = chai.expect
 
 const schema = require('../../../gql/schema')
-const {
-  executeQueryOnDbUsingSchema,
-  shouldRespondWithGqlError
-} = require('../../helpers')
+const { executeQueryOnDbUsingSchema } = require('../../helpers')
 
 describe('Company.jobsByFilters', () => {
   it('should fetch filtered jobs', async () => {
@@ -55,23 +52,27 @@ describe('Company.jobsByFilters', () => {
       status: 'PUBLISHED'
     }
 
-    return expect(executeQueryOnDbUsingSchema({ operation, db, schema, variables })).to.eventually.deep.equal({
+    return expect(
+      executeQueryOnDbUsingSchema({ operation, db, schema, variables })
+    ).to.eventually.deep.equal({
       data: {
         company: {
-          jobsByFilters: [{
-            id: 'job1',
-            status: 'PUBLISHED'
-          },
-          {
-            id: 'job2',
-            status: 'PUBLISHED'
-          }]
+          jobsByFilters: [
+            {
+              id: 'job1',
+              status: 'PUBLISHED'
+            },
+            {
+              id: 'job2',
+              status: 'PUBLISHED'
+            }
+          ]
         }
       }
     })
   })
 
-  it('should return null and error if no matches', async () => {
+  it('should return an empty array if no matches', async () => {
     const db = {
       companies: [
         {
@@ -99,7 +100,7 @@ describe('Company.jobsByFilters', () => {
     const operation = `
       query {
         company (id: "company1") {
-          jobByFilters(filters: {
+          jobsByFilters(filters: {
             slug: "jobSlug3"
           }) {
             id
@@ -108,13 +109,14 @@ describe('Company.jobsByFilters', () => {
         }
       }
     `
-    return executeQueryOnDbUsingSchema({ operation, db, schema })
-      .then(shouldRespondWithGqlError({
-        message: 'NotFound',
-        path: [
-          'company',
-          'jobByFilters'
-        ]
-      }))
+    return expect(
+      executeQueryOnDbUsingSchema({ operation, db, schema })
+    ).to.eventually.deep.equal({
+      data: {
+        company: {
+          jobsByFilters: []
+        }
+      }
+    })
   })
 })

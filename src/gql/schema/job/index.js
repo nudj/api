@@ -12,7 +12,7 @@ module.exports = {
       candidateDescription: String!
       location: String!
       remuneration: String!
-      status: String!
+      status: JobStatus!
       templateTags: [String!]!
       type: String!
       url: String!
@@ -23,6 +23,7 @@ module.exports = {
     input JobFilterInput {
       id: ID
       slug: String
+      status: JobStatus
     }
   `
 }

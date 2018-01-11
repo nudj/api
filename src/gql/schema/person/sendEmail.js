@@ -1,4 +1,4 @@
-const { sendGmail } = require('../../lib/google')
+const { sendGmail, validateTokens } = require('../../lib/google')
 
 module.exports = {
   typeDefs: `
@@ -21,8 +21,25 @@ module.exports = {
             type: 'accounts',
             filters: { person }
           })
-          .then(account => sendGmail({ email, accessToken: account.data.accessToken }))
-          .then(response => response)
+          .then(account => {
+            const { accessToken, refreshToken } = account.data
+            return validateTokens(accessToken, refreshToken)
+              .then(tokens => {
+                if (tokens.refreshed) {
+                  const data = { accessToken: tokens.accessToken, refreshToken }
+                  return store.update({
+                    type: 'accounts',
+                    id: account.id,
+                    data: { data }
+                  })
+                }
+                return Promise.resolve(account)
+              })
+          })
+          .then(account => {
+            const { accessToken } = account.data
+            return sendGmail({ email, accessToken })
+          })
         }, {
           person: person.id,
           email: { body, from, subject, to }

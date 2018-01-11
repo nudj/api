@@ -13,7 +13,7 @@ const validateTokens = async (accessToken, refreshToken) => {
     await request(`/oauth2/v1/tokeninfo?access_token=${accessToken}`, {
       baseURL: 'https://www.googleapis.com/'
     })
-    return { accessToken }
+    return { accessToken, refreshed: false }
   } catch (error) {
     logger('info', 'Error with Google AccessToken:', error)
     return refreshAccessToken(refreshToken)
@@ -28,7 +28,7 @@ const refreshAccessToken = (refreshToken) => {
   return new Promise((resolve, reject) => {
     oauth2Client.refreshAccessToken((error, tokens) => {
       if (error) {
-        logger.log('error', 'Google authentication error', error)
+        logger('error', 'Google authentication error', error)
         return reject(error)
       }
       resolve({ accessToken: tokens.access_token, refreshed: true })

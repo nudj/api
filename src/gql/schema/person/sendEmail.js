@@ -7,7 +7,7 @@ module.exports = {
         body: String!
         from: String!
         subject: String!
-        to: String
+        to: String!
       ): Data
     }
   `,

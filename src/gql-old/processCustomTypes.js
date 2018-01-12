@@ -502,10 +502,13 @@ module.exports = ({ customTypeDefs, customResolvers, transaction }) => {
   schema.types.Person.push(
     `updateTaskByFilters(filters: PersonTaskFilterInput!, data: PersonTaskUpdateInput!): PersonTask`
   )
-  schema.types.Hirer.push(`setOnboarded: HirerOnboardedEvent`)
 
+  schema.types.Hirer.push(`setOnboarded: HirerOnboardedEvent`)
   schema.types.Mutation.push(
     `updatePerson(id: ID!, data: PersonUpdateInput!): Person`
+  )
+  schema.types.Query.push(
+    `fetchTemplate(type: String! keys: Data repo: String! tags: [String!]!): Data`
   )
 
   let typeDefs = ''

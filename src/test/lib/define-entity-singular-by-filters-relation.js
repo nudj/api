@@ -62,7 +62,7 @@ describe('defineEntitySingularByFiltersRelation', () => {
         slug: 'someSlug'
       }
       const fakeContext = generateFakeContextWithStore({
-        readOne: () => 'the_relation'
+        readOne: () => Promise.resolve('the_relation')
       })
       return expect(resolver(parent, { filters }, fakeContext)).to.eventually.equal('the_relation')
     })
@@ -75,7 +75,7 @@ describe('defineEntitySingularByFiltersRelation', () => {
         slug: 'someSlug'
       }
       const fakeContext = generateFakeContextWithStore({
-        readOne: args => args
+        readOne: args => Promise.resolve(args)
       })
       return expect(resolver(parent, { filters }, fakeContext))
         .to.eventually.have.deep.property('type')
@@ -90,7 +90,7 @@ describe('defineEntitySingularByFiltersRelation', () => {
         slug: 'someSlug'
       }
       const fakeContext = generateFakeContextWithStore({
-        readOne: args => args
+        readOne: args => Promise.resolve(args)
       })
       return expect(resolver(parent, { filters }, fakeContext))
         .to.eventually.have.deep.property('filters')
@@ -146,7 +146,7 @@ describe('defineEntitySingularByFiltersRelation', () => {
           slug: 'someSlug'
         }
         const fakeContext = generateFakeContextWithStore({
-          readOne: args => args
+          readOne: args => Promise.resolve(args)
         })
         return expect(resolver(parent, { filters }, fakeContext))
           .to.eventually.have.deep.property('type')
@@ -170,7 +170,7 @@ describe('defineEntitySingularByFiltersRelation', () => {
           slug: 'someSlug'
         }
         const fakeContext = generateFakeContextWithStore({
-          readOne: args => args
+          readOne: args => Promise.resolve(args)
         })
         return expect(resolver(parent, { filters }, fakeContext))
           .to.eventually.have.deep.property('filters')

@@ -29,7 +29,7 @@ describe('defineSingularRelation', () => {
       type: 'Relation'
     })).to.have.property('typeDefs').to.equal(`
       extend type Parent {
-        relation(id: ID!): Relation
+        relation(id: ID): Relation
       }
     `)
   })
@@ -59,7 +59,7 @@ describe('defineSingularRelation', () => {
         id: 'relation1'
       }
       const fakeContext = generateFakeContextWithStore({
-        readOne: () => 'the_relation'
+        readOne: () => Promise.resolve('the_relation')
       })
       return expect(resolver(null, args, fakeContext)).to.eventually.equal('the_relation')
     })
@@ -69,7 +69,7 @@ describe('defineSingularRelation', () => {
         id: 'relation1'
       }
       const fakeContext = generateFakeContextWithStore({
-        readOne: args => args
+        readOne: args => Promise.resolve(args)
       })
       return expect(resolver(null, args, fakeContext)).to.eventually.have.deep.property('type', 'relations')
     })
@@ -79,7 +79,7 @@ describe('defineSingularRelation', () => {
         id: 'relation1'
       }
       const fakeContext = generateFakeContextWithStore({
-        readOne: args => args
+        readOne: args => Promise.resolve(args)
       })
       return expect(resolver(null, args, fakeContext)).to.eventually.have.deep.property('id', 'relation1')
     })
@@ -95,7 +95,7 @@ describe('defineSingularRelation', () => {
         name: 'aDifferentName'
       })).to.have.property('typeDefs').to.equal(`
       extend type Parent {
-        aDifferentName(id: ID!): Relation
+        aDifferentName(id: ID): Relation
       }
     `)
     })
@@ -113,9 +113,22 @@ describe('defineSingularRelation', () => {
           id: 'relation1'
         }
         const fakeContext = generateFakeContextWithStore({
-          readOne: args => args
+          readOne: args => Promise.resolve(args)
         })
         return expect(resolver(null, args, fakeContext)).to.eventually.have.property('type', 'aDifferentCollection')
+      })
+    })
+  })
+
+  describe('when no id is given during query execution', () => {
+    describe('the resolver', () => {
+      it('should return null', () => {
+        const resolver = defineSingularRelation({
+          parentType: 'Parent',
+          type: 'Relation'
+        }).resolvers.Parent.relation
+        const args = {}
+        return expect(resolver(null, args)).to.eventually.be.null
       })
     })
   })

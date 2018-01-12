@@ -1,4 +1,6 @@
+.env*
 node_modules
 .cache/*
 !.cache/readme.md
 .DS_Store
+.env

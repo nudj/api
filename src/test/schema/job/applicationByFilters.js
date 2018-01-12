@@ -3,10 +3,7 @@ const chai = require('chai')
 const expect = chai.expect
 
 const schema = require('../../../gql/schema')
-const {
-  executeQueryOnDbUsingSchema,
-  shouldRespondWithGqlError
-} = require('../../helpers')
+const { executeQueryOnDbUsingSchema } = require('../../helpers')
 
 describe('Job.applicationByFilters', () => {
   it('should fetch filtered application', async () => {
@@ -24,12 +21,12 @@ describe('Job.applicationByFilters', () => {
         },
         {
           id: 'application2',
-          job: 'job1',
+          job: 'job2',
           person: 'person2'
         },
         {
           id: 'application3',
-          job: 'job2',
+          job: 'job1',
           person: 'person2'
         }
       ]
@@ -49,14 +46,14 @@ describe('Job.applicationByFilters', () => {
       data: {
         job: {
           applicationByFilters: {
-            id: 'application2'
+            id: 'application3'
           }
         }
       }
     })
   })
 
-  it('should return null and error if no matches', async () => {
+  it('should return null if no matches', async () => {
     const db = {
       jobs: [
         {
@@ -92,13 +89,12 @@ describe('Job.applicationByFilters', () => {
         }
       }
     `
-    return executeQueryOnDbUsingSchema({ operation, db, schema })
-      .then(shouldRespondWithGqlError({
-        message: 'NotFound',
-        path: [
-          'job',
-          'applicationByFilters'
-        ]
-      }))
+    return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
+      data: {
+        job: {
+          applicationByFilters: null
+        }
+      }
+    })
   })
 })

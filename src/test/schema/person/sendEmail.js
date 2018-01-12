@@ -59,18 +59,26 @@ describe.only('Person.sendEmail', () => {
   const sendSwankyEmail = `
     mutation sendSwankyEmail (
       $userId: ID!,
+      $type: EmailPreference!,
       $body: String!,
       $to: String!,
       $from: String!,
       $subject: String!
     ) {
       user (id: $userId) {
-        email: sendEmail(body: $body, to: $to, from: $from, subject: $subject)
+        email: sendEmail(
+          type: $type,
+          body: $body,
+          to: $to,
+          from: $from,
+          subject: $subject
+        )
       }
     }
   `
   const emailVariables = {
     userId: 'person1',
+    type: 'GOOGLE',
     body: 'I think it might be time we upgrade you from Demigod. Thoughts?',
     from: 'Zeus <zeus@gmail.com>',
     to: 'hercules@demigod.com',

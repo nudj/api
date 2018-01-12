@@ -1,9 +1,32 @@
-const { sendGmail, validateTokens } = require('../../lib/google')
+const pick = require('lodash/pick')
+const { sendGmail } = require('../../lib/google')
+
+const createConversation = ({ context, type, to, person, threadId }) => {
+  return context.transaction((store, params) => {
+    const { to, threadId, person, type } = params
+    return store.readOne({
+      type: 'people',
+      filters: { email: to }
+    })
+    .then(recipient => {
+      return store.create({
+        type: 'conversations',
+        data: {
+          type,
+          threadId,
+          person: person.id,
+          recipient: recipient.id
+        }
+      })
+    })
+  }, { to, threadId, type, person })
+}
 
 module.exports = {
   typeDefs: `
     extend type Person {
       sendEmail(
+        type: EmailPreference!
         body: String!
         from: String!
         subject: String!
@@ -13,54 +36,17 @@ module.exports = {
   `,
   resolvers: {
     Person: {
-      sendEmail: (person, args, context) => {
-        const { body, from, subject, to } = args
-        return context.transaction((store, params) => {
-          const { person, email } = params
-          return store.readOne({
-            type: 'accounts',
-            filters: { person }
-          })
-          .then(account => {
-            const { accessToken, refreshToken } = account.data
-            return validateTokens(accessToken, refreshToken)
-              .then(tokens => {
-                if (tokens.refreshed) {
-                  const data = { accessToken: tokens.accessToken, refreshToken }
-                  return store.update({
-                    type: 'accounts',
-                    id: account.id,
-                    data: { data }
-                  })
-                }
-                return Promise.resolve(account)
-              })
-          })
-          .then(account => {
-            const { accessToken } = account.data
-            return sendGmail({ email, accessToken })
-          })
-          .then(emailResponse => {
-            return store.readOne({
-              type: 'people',
-              filters: { email: email.to }
-            })
-            .then(recipient => {
-              return store.create({
-                type: 'conversations',
-                data: {
-                  person,
-                  recipient: recipient.id,
-                  type: 'GOOGLE',
-                  threadId: emailResponse.threadId
-                }
-              })
-            })
-          })
-        }, {
-          person: person.id,
-          email: { body, from, subject, to }
-        })
+      sendEmail: async (person, args, context) => {
+        const email = pick(args, ['body', 'subject', 'to', 'from'])
+        const { type, to } = args
+
+        switch (type) {
+          case 'GOOGLE':
+            const { threadId } = await sendGmail({ context, email, person })
+            return createConversation({ context, type, to, person, threadId })
+          default:
+            return createConversation({ context, type, to, person })
+        }
       }
     }
   }

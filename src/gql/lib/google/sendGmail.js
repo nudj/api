@@ -1,7 +1,34 @@
+const google = require('googleapis')
+const { Base64 } = require('js-base64')
+const { emailBuilder } = require('@nudj/library/server')
+const { logger } = require('@nudj/library')
+
 const fetchAccountTokens = require('./fetchAccountTokens')
-const send = require('./send')
+const authClient = require('./authClient')
+
+const gmail = google.gmail('v1')
 
 module.exports = async ({ context, email, person }) => {
   const { accessToken } = await fetchAccountTokens(context, person)
-  return await send({ email, accessToken })
+  const mimeEmail = emailBuilder(email)
+  const base64EncodedEmail = Base64.encodeURI(mimeEmail)
+  authClient.setCredentials({
+    access_token: accessToken
+  })
+
+  return new Promise((resolve, reject) => {
+    gmail.users.messages.send({
+      auth: authClient,
+      userId: 'me',
+      resource: {
+        raw: base64EncodedEmail
+      }
+    }, (error, response) => {
+      if (error) {
+        logger('error', 'Error sending Gmail', error)
+        return reject(error)
+      }
+      resolve(response)
+    })
+  })
 }

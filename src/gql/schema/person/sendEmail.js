@@ -1,5 +1,7 @@
 const pick = require('lodash/pick')
 const { sendGmail } = require('../../lib/google')
+const { handleErrors } = require('../../lib')
+const { values: emailPreferences } = require('../enums/email-preference-types')
 
 const createConversation = ({ context, type, to, person, threadId }) => {
   return context.transaction((store, params) => {
@@ -36,18 +38,18 @@ module.exports = {
   `,
   resolvers: {
     Person: {
-      sendEmail: async (person, args, context) => {
+      sendEmail: handleErrors(async (person, args, context) => {
         const email = pick(args, ['body', 'subject', 'to', 'from'])
         const { type, to } = args
 
         switch (type) {
-          case 'GOOGLE':
+          case emailPreferences.GOOGLE:
             const { threadId } = await sendGmail({ context, email, person })
             return createConversation({ context, type, to, person, threadId })
           default:
             return createConversation({ context, type, to, person })
         }
-      }
+      })
     }
   }
 }

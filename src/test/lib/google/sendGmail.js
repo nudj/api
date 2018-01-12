@@ -4,11 +4,7 @@ const sinon = require('sinon')
 const sinonChai = require('sinon-chai')
 const nock = require('nock')
 
-const {
-  sendGmail,
-  validateTokens,
-  fetchAccountTokens
-} = require('../../../gql/lib/google')
+const { sendGmail } = require('../../../gql/lib/google')
 
 const expect = chai.expect
 chai.use(sinonChai)
@@ -102,62 +98,18 @@ describe('Google', () => {
         subject: 'RE: Death Star Plans',
         body: 'How many Bothans were there, anyway?'
       }
-      const person = { id: 'person1' }
-      expect(sendGmail({ email, person }))
-        .to.be.rejectedWith('Invalid Access Token')
-    })
-  })
-
-  describe('validateTokens', () => {
-    beforeEach(() => {
-      mockTokenValidation()
-    })
-
-    it('returns provided accessToken if valid', async () => {
-      const data = await validateTokens(validAccessToken, refreshToken)
-      expect(data.accessToken).to.equal(validAccessToken)
-      expect(data.refreshed).to.be.false()
-    })
-
-    it('refreshes accessToken with invalid accessToken', async () => {
-      mockTokenRefresh()
-      const data = await validateTokens(badAccessToken, refreshToken)
-      expect(data.accessToken).to.equal(validAccessToken)
-      expect(data.refreshed).to.be.true()
-    })
-
-    it('errors with invalid refreshToken', async () => {
-      mockTokenRefresh()
-      await expect(
-        validateTokens(badAccessToken, '*HNQ£D)CASC:')
-      ).to.be.rejectedWith('Invalid Refresh Token')
-    })
-  })
-
-  describe('fetchAccountTokens', () => {
-    beforeEach(() => {
-      mockTokenValidation()
-    })
-
-    it('returns provided accessToken if valid', async () => {
       const account = {
         data: {
-          accessToken: validAccessToken,
+          accessToken: badAccessToken,
           refreshToken
         }
       }
       const transaction = sinon.stub().returns(account)
       const context = { transaction }
       const person = { id: 'person1' }
-      const data = await fetchAccountTokens(context, person)
-      expect(data).to.equal(account.data)
-    })
-
-    it('throws error if no account exists', async () => {
-      const transaction = sinon.stub().returns(undefined)
-      const context = { transaction }
-      const person = { id: 'person1' }
-      expect(fetchAccountTokens(context, person)).to.be.rejectedWith('No google account found')
+      await expect(
+        sendGmail({ context, email, person })
+      ).to.be.rejectedWith('Invalid Access Token')
     })
   })
 })

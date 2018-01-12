@@ -101,6 +101,15 @@ describe('defineEntitySingularRelation', () => {
           })
       })
     })
+
+    describe('when parent.relation exists but is null', () => {
+      it('should call store.readOne with filters', () => {
+        const parent = {
+          relation: null
+        }
+        return expect(resolver(parent)).to.eventually.be.null()
+      })
+    })
   })
 
   // optional parameters

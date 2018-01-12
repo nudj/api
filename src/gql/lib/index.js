@@ -305,6 +305,7 @@ function defineEntitySingularRelation (
       [parentType]: {
         [name]: handleErrors((parent, args, context) => {
           const id = parent[propertyName]
+          if (id === null) return null
           const filters = id === undefined ? {
             [parentPropertyName]: parent.id
           } : undefined

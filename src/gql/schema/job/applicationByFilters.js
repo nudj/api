@@ -1,6 +1,6 @@
-const { defineSingularByFiltersRelation } = require('../../lib')
+const { defineEntitySingularByFiltersRelation } = require('../../lib')
 
-module.exports = defineSingularByFiltersRelation({
+module.exports = defineEntitySingularByFiltersRelation({
   parentType: 'Job',
   type: 'Application'
 })

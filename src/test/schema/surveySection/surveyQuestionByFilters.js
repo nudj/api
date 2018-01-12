@@ -3,10 +3,7 @@ const chai = require('chai')
 const expect = chai.expect
 
 const schema = require('../../../gql/schema')
-const {
-  executeQueryOnDbUsingSchema,
-  shouldRespondWithGqlError
-} = require('../../helpers')
+const { executeQueryOnDbUsingSchema } = require('../../helpers')
 
 describe('SurveySection.surveyQuestionByFilters', () => {
   const operation = `
@@ -50,7 +47,7 @@ describe('SurveySection.surveyQuestionByFilters', () => {
     })
   })
 
-  it('should return null and error if surveyQuestion exists but is not child of selected surveySection', async () => {
+  it('should return null if surveyQuestion exists but is not child of selected surveySection', async () => {
     const db = {
       surveySections: [
         {
@@ -68,17 +65,16 @@ describe('SurveySection.surveyQuestionByFilters', () => {
         }
       ]
     }
-    return executeQueryOnDbUsingSchema({ operation, db, schema })
-      .then(shouldRespondWithGqlError({
-        message: 'NotFound',
-        path: [
-          'surveySection',
-          'surveyQuestionByFilters'
-        ]
-      }))
+    return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
+      data: {
+        surveySection: {
+          surveyQuestionByFilters: null
+        }
+      }
+    })
   })
 
-  it('should return null and error if no matches', async () => {
+  it('should return null if no matches', async () => {
     const db = {
       surveySections: [
         {
@@ -92,13 +88,12 @@ describe('SurveySection.surveyQuestionByFilters', () => {
         }
       ]
     }
-    return executeQueryOnDbUsingSchema({ operation, db, schema })
-      .then(shouldRespondWithGqlError({
-        message: 'NotFound',
-        path: [
-          'surveySection',
-          'surveyQuestionByFilters'
-        ]
-      }))
+    return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
+      data: {
+        surveySection: {
+          surveyQuestionByFilters: null
+        }
+      }
+    })
   })
 })

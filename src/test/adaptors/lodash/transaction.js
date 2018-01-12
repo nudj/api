@@ -70,7 +70,7 @@ describe('LodashAdaptor transaction', () => {
         type: 'dogs',
         id: 'dog4'
       })
-    })).to.be.rejectedWith(NotFound)
+    })).to.eventually.equal(null)
   })
 
   it('readOne by filters', () => {
@@ -96,7 +96,7 @@ describe('LodashAdaptor transaction', () => {
           breed: 'Chihuahua'
         }
       })
-    })).to.be.rejectedWith(NotFound)
+    })).to.eventually.equal(null)
   })
 
   it('readAll', () => {
@@ -150,7 +150,7 @@ describe('LodashAdaptor transaction', () => {
         type: 'dogs',
         ids: ['dog2', 'dog4']
       })
-    })).to.be.rejectedWith(NotFound)
+    })).to.eventually.deep.equal([])
   })
 
   it('update', () => {

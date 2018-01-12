@@ -16,8 +16,12 @@ ssh:
 	@docker run --rm -it \
 		--env-file $(CWD)/.env \
 		--name api-dev \
+		--env-file $(CWD)/.env \
 		-e NPM_TOKEN=${NPM_TOKEN} \
 		-e DB_API_URL=http://localhost:81 \
+    -e MAILGUN_API_KEY=123 \
+    -e MAILGUN_DOMAIN=abc \
+    -e INTERCOM_ACCESS_TOKEN=qwe \
 		-p 0.0.0.0:60:80 \
 		-p 0.0.0.0:61:81 \
 		-p 0.0.0.0:62:82 \
@@ -44,6 +48,9 @@ test:
 		--name api-test \
 		-e ENVIRONMENT=test \
 		-e DB_API_URL=http://localhost:81 \
+    -e MAILGUN_API_KEY=123 \
+    -e MAILGUN_DOMAIN=abc \
+    -e INTERCOM_ACCESS_TOKEN=qwe \
 		-v $(CWD)/src/gql:/usr/src/gql \
 		-v $(CWD)/src/gql-old:/usr/src/gql-old \
 		-v $(CWD)/src/lib:/usr/src/lib \

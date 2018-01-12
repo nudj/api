@@ -1,3 +1,4 @@
+require('envkey')
 const rest = require('./rest')
 const gqlNew = require('./gql')
 const gqlOld = require('./gql-old')

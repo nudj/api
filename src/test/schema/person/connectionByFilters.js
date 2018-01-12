@@ -3,10 +3,7 @@ const chai = require('chai')
 const expect = chai.expect
 
 const schema = require('../../../gql/schema')
-const {
-  executeQueryOnDbUsingSchema,
-  shouldRespondWithGqlError
-} = require('../../helpers')
+const { executeQueryOnDbUsingSchema } = require('../../helpers')
 
 describe('Person.connectionByFilters', () => {
   const operation = `
@@ -56,7 +53,7 @@ describe('Person.connectionByFilters', () => {
     })
   })
 
-  it('should return null and error if no matches', async () => {
+  it('should return null if no matches', async () => {
     const db = {
       people: [
         {
@@ -81,11 +78,14 @@ describe('Person.connectionByFilters', () => {
       db,
       schema,
       variables
-    }).then(
-      shouldRespondWithGqlError({
-        message: 'NotFound',
-        path: ['person', 'connection']
+    }).then(result => {
+      return expect(result).to.deep.equal({
+        data: {
+          person: {
+            connection: null
+          }
+        }
       })
-    )
+    })
   })
 })

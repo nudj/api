@@ -3,10 +3,7 @@ const chai = require('chai')
 const expect = chai.expect
 
 const schema = require('../../../gql/schema')
-const {
-  executeQueryOnDbUsingSchema,
-  shouldRespondWithGqlError
-} = require('../../helpers')
+const { executeQueryOnDbUsingSchema } = require('../../helpers')
 const operation = `
   query {
     job(id: "job2") {
@@ -47,7 +44,7 @@ describe('Company.relatedJobs', () => {
 
   it('should return empty array if no matches', async () => {
     const db = {
-      relatedJobs: [
+      jobs: [
         {
           id: 'job1'
         },
@@ -57,12 +54,13 @@ describe('Company.relatedJobs', () => {
         }
       ]
     }
-    return executeQueryOnDbUsingSchema({ operation, db, schema })
-      .then(shouldRespondWithGqlError({
-        message: 'NotFound',
-        path: [
-          'job'
-        ]
-      }))
+    return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
+      data: {
+        job: {
+          id: 'job2',
+          relatedJobs: []
+        }
+      }
+    })
   })
 })

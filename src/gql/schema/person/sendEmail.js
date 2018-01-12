@@ -40,6 +40,23 @@ module.exports = {
             const { accessToken } = account.data
             return sendGmail({ email, accessToken })
           })
+          .then(emailResponse => {
+            return store.readOne({
+              type: 'people',
+              filters: { email: email.to }
+            })
+            .then(recipient => {
+              return store.create({
+                type: 'conversations',
+                data: {
+                  person,
+                  recipient: recipient.id,
+                  type: 'GOOGLE',
+                  threadId: emailResponse.threadId
+                }
+              })
+            })
+          })
         }, {
           person: person.id,
           email: { body, from, subject, to }

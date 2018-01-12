@@ -28,7 +28,7 @@ const invalidTokenGoogle = nock('https://www.googleapis.com/gmail/v1/users/me', 
 const mockGmailResponses = () => {
   validTokenGoogle
     .post('/messages/send')
-    .reply(200, 'Gmail Sent')
+    .reply(200, { threadId: 'Gmail Sent' })
   invalidTokenGoogle
     .post('/messages/send')
     .replyWithError('Invalid Access Token')
@@ -48,7 +48,7 @@ const mockGmailResponses = () => {
     .replyWithError('Invalid Refresh Token')
 }
 
-describe('Person.sendEmail', () => {
+describe.only('Person.sendEmail', () => {
   beforeEach(() => {
     mockGmailResponses()
   })
@@ -94,18 +94,24 @@ describe('Person.sendEmail', () => {
       people: [
         {
           id: 'person1'
+        },
+        {
+          id: 'person2',
+          email: 'hercules@demigod.com'
         }
       ]
     }
     const operation = sendSwankyEmail
     const variables = emailVariables
     const response = await executeQueryOnDbUsingSchema({ operation, db, variables, schema })
-    const data = response.data.user.email
-    expect(data).to.equal('Gmail Sent')
+    const { threadId } = response.data.user.email
+    expect(threadId).to.exist()
+    expect(threadId).to.equal('Gmail Sent')
   })
 
   it('should still send with invalid accessToken', async () => {
     const db = {
+      conversations: [],
       accounts: [
         {
           id: 'account1',
@@ -130,8 +136,9 @@ describe('Person.sendEmail', () => {
     const operation = sendSwankyEmail
     const variables = emailVariables
     const response = await executeQueryOnDbUsingSchema({ operation, db, variables, schema })
-    const data = response.data.user.email
-    expect(data).to.equal('Gmail Sent')
+    const { threadId } = response.data.user.email
+    expect(threadId).to.exist()
+    expect(threadId).to.equal('Gmail Sent')
   })
 
   it('should refresh an invalid account accessToken', async () => {
@@ -165,6 +172,44 @@ describe('Person.sendEmail', () => {
           accessToken: 'VALID_ACCESS_TOKEN',
           refreshToken: 'SUPREMELY_REFRESHING_TOKEN'
         }
+      }
+    ])
+  })
+
+  it('should create a conversation for a new message', async () => {
+    const db = {
+      conversations: [],
+      accounts: [
+        {
+          id: 'account1',
+          person: 'person1',
+          type: 'GOOGLE',
+          data: {
+            accessToken: 'I_AINT_NO_STINKIN_TOKEN',
+            refreshToken: 'SUPREMELY_REFRESHING_TOKEN'
+          }
+        }
+      ],
+      people: [
+        {
+          id: 'person1'
+        },
+        {
+          id: 'person2',
+          email: 'hercules@demigod.com'
+        }
+      ]
+    }
+    const operation = sendSwankyEmail
+    const variables = emailVariables
+    await executeQueryOnDbUsingSchema({ operation, db, variables, schema })
+    expect(db.conversations).to.deep.equal([
+      {
+        id: 'conversation1',
+        person: 'person1',
+        recipient: 'person2',
+        threadId: 'Gmail Sent',
+        type: 'GOOGLE'
       }
     ])
   })

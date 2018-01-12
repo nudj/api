@@ -8,7 +8,7 @@ module.exports = {
       firstName: String
       lastName: String
       url: String
-      emailPreference: EmailPreference!
+      emailPreference: EmailPreference
     }
 
     input PersonFilterInput {

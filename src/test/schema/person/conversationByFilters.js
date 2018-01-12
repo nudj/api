@@ -9,7 +9,7 @@ describe('Person.conversationByFilters', () => {
   const operation = `
     query testQuery ($userId: ID!, $conversationId: ID!) {
       person (id: $userId) {
-        conversation: conversationByFilters(filters: {id: $conversationId}) {
+        conversationByFilters(filters: {id: $conversationId}) {
           id
         }
       }
@@ -44,7 +44,7 @@ describe('Person.conversationByFilters', () => {
       return expect(result).to.deep.equal({
         data: {
           person: {
-            conversation: {
+            conversationByFilters: {
               id: 'conversation1'
             }
           }
@@ -82,7 +82,7 @@ describe('Person.conversationByFilters', () => {
       return expect(result).to.deep.equal({
         data: {
           person: {
-            conversation: null
+            conversationByFilters: null
           }
         }
       })

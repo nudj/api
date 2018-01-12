@@ -36,7 +36,7 @@ describe('Person.conversations', () => {
         },
         {
           id: 'conversation3',
-          person: 'person1'
+          person: 'person2'
         }
       ]
     })
@@ -50,9 +50,6 @@ describe('Person.conversations', () => {
               },
               {
                 id: 'conversation2'
-              },
-              {
-                id: 'conversation3'
               }
             ]
           }

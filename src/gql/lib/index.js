@@ -132,12 +132,16 @@ function defineSingularRelation ({ parentType, type, name, collection } = {}) {
   return {
     typeDefs: `
       extend type ${parentType} {
-        ${name}(id: ID!): ${type}
+        ${name}(id: ID): ${type}
       }
     `,
     resolvers: {
       [parentType]: {
         [name]: handleErrors((root, args, context) => {
+          const id = args.id
+          if (id === undefined) {
+            return null
+          }
           return context.transaction(
             (store, params) => {
               return store.readOne({
@@ -174,6 +178,7 @@ function defineSingularByFiltersRelation (
     resolvers: {
       [parentType]: {
         [name]: handleErrors((root, args, context) => {
+          if (!Object.keys(args.filters).length) return null
           return context.transaction(
             (store, params) => {
               return store.readOne({
@@ -300,9 +305,10 @@ function defineEntitySingularRelation (
       [parentType]: {
         [name]: handleErrors((parent, args, context) => {
           const id = parent[propertyName]
-          const filters = id ? undefined : {
+          if (id === null) return null
+          const filters = id === undefined ? {
             [parentPropertyName]: parent.id
-          }
+          } : undefined
           return context.transaction(
             (store, params) => {
               return store.readOne({

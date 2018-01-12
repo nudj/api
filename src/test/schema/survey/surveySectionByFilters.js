@@ -3,10 +3,7 @@ const chai = require('chai')
 const expect = chai.expect
 
 const schema = require('../../../gql/schema')
-const {
-  executeQueryOnDbUsingSchema,
-  shouldRespondWithGqlError
-} = require('../../helpers')
+const { executeQueryOnDbUsingSchema } = require('../../helpers')
 
 describe('Survey.surveySectionByFilters', () => {
   const operation = `
@@ -50,7 +47,7 @@ describe('Survey.surveySectionByFilters', () => {
     })
   })
 
-  it('should return null and error if surveySection exists but is not child of selected survey', async () => {
+  it('should return null if surveySection exists but is not child of selected survey', async () => {
     const db = {
       surveys: [
         {
@@ -68,17 +65,16 @@ describe('Survey.surveySectionByFilters', () => {
         }
       ]
     }
-    return executeQueryOnDbUsingSchema({ operation, db, schema })
-      .then(shouldRespondWithGqlError({
-        message: 'NotFound',
-        path: [
-          'survey',
-          'surveySectionByFilters'
-        ]
-      }))
+    return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
+      data: {
+        survey: {
+          surveySectionByFilters: null
+        }
+      }
+    })
   })
 
-  it('should return null and error if no matches', async () => {
+  it('should return null if no matches', async () => {
     const db = {
       surveys: [
         {
@@ -92,13 +88,12 @@ describe('Survey.surveySectionByFilters', () => {
         }
       ]
     }
-    return executeQueryOnDbUsingSchema({ operation, db, schema })
-      .then(shouldRespondWithGqlError({
-        message: 'NotFound',
-        path: [
-          'survey',
-          'surveySectionByFilters'
-        ]
-      }))
+    return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
+      data: {
+        survey: {
+          surveySectionByFilters: null
+        }
+      }
+    })
   })
 })

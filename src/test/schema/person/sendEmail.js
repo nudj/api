@@ -48,7 +48,7 @@ const mockGmailResponses = () => {
     .replyWithError('Invalid Refresh Token')
 }
 
-describe.only('Person.sendEmail', () => {
+describe('Person.sendEmail', () => {
   beforeEach(() => {
     mockGmailResponses()
   })

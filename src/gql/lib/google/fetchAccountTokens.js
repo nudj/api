@@ -10,6 +10,7 @@ module.exports = async (context, person) => {
   }, {
     person: person.id
   })
+  if (!account) throw new Error('No google account found')
   const { accessToken, refreshToken } = account.data
   const tokens = await validateTokens(accessToken, refreshToken)
   if (tokens.refreshed) {

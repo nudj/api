@@ -6,7 +6,7 @@ const authClient = require('./authClient')
 
 const gmail = google.gmail('v1')
 
-module.exports = ({ email, accessToken, threadId }) => {
+module.exports = ({ email, accessToken }) => {
   const mimeEmail = emailBuilder(email)
   const base64EncodedEmail = Base64.encodeURI(mimeEmail)
   authClient.setCredentials({
@@ -18,8 +18,7 @@ module.exports = ({ email, accessToken, threadId }) => {
       auth: authClient,
       userId: 'me',
       resource: {
-        raw: base64EncodedEmail,
-        threadId
+        raw: base64EncodedEmail
       }
     }, (error, response) => {
       if (error) {

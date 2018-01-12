@@ -7,7 +7,6 @@ module.exports = {
   resolvers: {
     Person: {
       createReferral: (person, args, context) => {
-        console.log(person, args)
         return context.transaction((store, params) => {
           const AlreadyNudjedError = new Error('Already nudjed')
           const { personId, jobId, parentReferralId } = params

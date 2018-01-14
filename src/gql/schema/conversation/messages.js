@@ -1,3 +1,4 @@
+const { handleErrors } = require('../../lib')
 const { fetchGmailMessages } = require('../../lib/google')
 const { values: emailPreferences } = require('../enums/email-preference-types')
 
@@ -17,7 +18,7 @@ module.exports = {
   `,
   resolvers: {
     Conversation: {
-      messages: async (conversation, args, context) => {
+      messages: handleErrors(async (conversation, args, context) => {
         switch (conversation.type) {
           case emailPreferences.GOOGLE:
             return await fetchGmailMessages({ context, conversation })
@@ -26,7 +27,7 @@ module.exports = {
 
             }
         }
-      }
+      })
     }
   }
 }

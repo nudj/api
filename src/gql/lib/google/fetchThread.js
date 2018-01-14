@@ -16,7 +16,7 @@ module.exports = async ({ threadId, accessToken }) => {
       id: threadId
     }, (error, response) => {
       if (error) {
-        logger.log('error', 'Error retrieving Gmail thread', error)
+        logger('error', 'Error retrieving Gmail thread', error)
         return reject(error)
       }
       resolve(response)

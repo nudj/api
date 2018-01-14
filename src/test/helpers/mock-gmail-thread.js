@@ -21,7 +21,7 @@ module.exports = {
         ],
         body: {
           size: 243,
-          data: 'SGV5IEknbSBzZW5kaW5nIHlvdSBhbiBlbWFpbCB1c2luZyB0aGUgZ3FsIGFwaSBhbmQga'
+          data: 'V2hlcmUncyBteSBzcGFjZXNoaXA/IFNwYWNlIGNvbW1hbmQgbmVlZHMgbWUu'
         }
       },
       sizeEstimate: 660
@@ -37,7 +37,7 @@ module.exports = {
           },
           {
             name: 'To',
-            value: 'Woody <woody@andysroom.co>'
+            value: 'Woody <woody@andysroom.com>'
           },
           {
             name: 'Subject',
@@ -57,7 +57,7 @@ module.exports = {
             mimeType: 'text/plain',
             body: {
               size: 350,
-              data: 'UmVzcG9uZGluZyB0byB0aGlzIG'
+              data: 'WW91LiBBcmUuIEEuIFRveSE='
             }
           },
           {
@@ -65,7 +65,7 @@ module.exports = {
             mimeType: 'text/html',
             body: {
               size: 702,
-              data: 'PGRpdiBkaXI9Imx0ciI-UmVzcG9uZGluZyB0byB0aGlzIG5vdzwvZGl2PjxkaXYs'
+              data: 'WW91LiBBcmUuIEEuIFRveSE='
             }
           }
         ]
@@ -80,7 +80,7 @@ module.exports = {
         headers: [
           {
             name: 'From',
-            value: 'Woody <woody@andysroom.co>'
+            value: 'Woody <woody@andysroom.com>'
           },
           {
             name: 'Subject',
@@ -100,7 +100,7 @@ module.exports = {
             mimeType: 'text/plain',
             body: {
               size: 955,
-              data: 'VGhpcyBpcyB0aGUgZmlyc3QgbGluZSB0aGF0'
+              data: 'RmluZSwgaXQncyBkb3duc3RhaXJzLg=='
             }
           },
           {
@@ -108,7 +108,7 @@ module.exports = {
             mimeType: 'text/html',
             body: {
               size: 1735,
-              data: 'PGRpdiBkaXI9Imx0ciI-VGhpcyBpcyB0aGUgZmlyc3QgbGluZSB0aG'
+              data: 'RmluZSwgaXQncyBkb3duc3RhaXJzLg=='
             }
           }
         ]

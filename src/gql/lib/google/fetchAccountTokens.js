@@ -5,7 +5,7 @@ module.exports = async (context, person) => {
     const { person } = params
     return store.readOne({
       type: 'accounts',
-      filters: { person }
+      filters: { person, type: 'GOOGLE' }
     })
   }, {
     person: person.id

@@ -3,11 +3,12 @@ const chai = require('chai')
 const sinon = require('sinon')
 const sinonChai = require('sinon-chai')
 const proxyquire = require('proxyquire')
-const mockGmailThread = require('../../helpers/mock-gmail-thread')
+const mockGmailThread = require('../../helpers/google/mock-gmail-thread')
+const { validAccessToken } = require('../../helpers/google/mock-tokens')
 
 const thread = sinon.stub()
 const fetchGmailMessages = proxyquire('../../../gql/lib/google/fetchGmailMessages', {
-  './fetchAccountTokens': () => ({ accessToken: 'VALID_ACCESS_TOKEN' }),
+  './fetchAccountTokens': () => ({ accessToken: validAccessToken }),
   './fetchThread': thread
 })
 

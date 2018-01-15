@@ -17,8 +17,10 @@ const {
 const operation = `
   query fetchMessages ($conversationId: ID!) {
     conversation (id: $conversationId) {
-      latestMessage {
-        body
+      messages {
+        recipient {
+          id
+        }
       }
     }
   }
@@ -49,14 +51,14 @@ const baseData = {
   ]
 }
 
-describe('Conversation.latestMessage', () => {
+describe('Message.recipient', () => {
   beforeEach(() => {
     mockThreadFetch()
     mockTokenRefresh()
     mockTokenValidation()
   })
 
-  it('should fetch the latest message in the conversation', async () => {
+  it('should fetch the message recipient', async () => {
     const db = merge(baseData, {
       conversations: [
         {
@@ -71,15 +73,29 @@ describe('Conversation.latestMessage', () => {
     return expect(executeQueryOnDbUsingSchema({ operation, variables, db, schema })).to.eventually.deep.equal({
       data: {
         conversation: {
-          latestMessage: {
-            body: 'Fine, it\'s downstairs.'
-          }
+          messages: [
+            {
+              recipient: {
+                id: 'person3'
+              }
+            },
+            {
+              recipient: {
+                id: 'person3'
+              }
+            },
+            {
+              recipient: {
+                id: 'person2'
+              }
+            }
+          ]
         }
       }
     })
   })
 
-  it('should return bare message data if OTHER type', async () => {
+  it('should return message recipient for OTHER type', async () => {
     const db = merge(baseData, {
       conversations: [
         {
@@ -94,9 +110,13 @@ describe('Conversation.latestMessage', () => {
     return expect(executeQueryOnDbUsingSchema({ operation, variables, db, schema })).to.eventually.deep.equal({
       data: {
         conversation: {
-          latestMessage: {
-            body: null
-          }
+          messages: [
+            {
+              recipient: {
+                id: 'person2'
+              }
+            }
+          ]
         }
       }
     })
@@ -118,7 +138,7 @@ describe('Conversation.latestMessage', () => {
     shouldRespondWithGqlError({
       path: [
         'conversation',
-        'latestMessage'
+        'messages'
       ]
     })(result)
   })

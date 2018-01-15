@@ -22,6 +22,7 @@ const fetchPersonFromEmail = async (context, headers, name) => {
       filters: { email },
       data: { email }
     })
+    .then(person => person.id)
   }, { address })
 }
 

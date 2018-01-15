@@ -10,7 +10,7 @@ const fetchPerson = async (context, personId) => {
       id
     })
     .then(person => {
-      if (!person) throw new Error('Person in converation not found')
+      if (!person) throw new Error('Person in conversation not found')
       return person
     })
   }, { id: personId })

@@ -11,19 +11,25 @@ const {
 const expect = chai.expect
 
 const schema = require('../../../gql/schema')
-const { executeQueryOnDbUsingSchema } = require('../../helpers')
+const {
+  executeQueryOnDbUsingSchema,
+  shouldRespondWithGqlError
+} = require('../../helpers')
 const operation = `
-  query fetchMessages ($userId: ID!, $body: String!) {
+  query fetchMessages ($userId: ID!, $body: String!, $filters: ConversationFilterInput!) {
     user (id: $userId) {
-      conversations {
-        sendMessage(body: $body)
+      conversationByFilters (filters: $filters) {
+        sendMessage(body: $body) {
+          success
+        }
       }
     }
   }
 `
 const variables = {
   userId: 'person3',
-  body: 'Hello this is a message body!'
+  body: 'Hello this is a message body!',
+  filters: { id: 'conversation1' }
 }
 const baseData = {
   people: [
@@ -76,26 +82,46 @@ describe('Conversation.sendMessage', () => {
     return expect(executeQueryOnDbUsingSchema({ operation, variables, db, schema })).to.eventually.deep.equal({
       data: {
         user: {
-          conversations: [
-            {
-              sendMessage: {
-                response: 'gmailSentResponse',
-                threadId: 'gmailThread'
-              }
+          conversationByFilters: {
+            sendMessage: {
+              success: true
             }
-          ]
+          }
         }
       }
     })
   })
 
-  it('should return empty array if no matches', async () => {
+  it('should throw error if of unknown or unimplemented type', async () => {
+    const db = merge(baseData, {
+      conversations: [
+        {
+          id: 'conversation1',
+          person: 'person3',
+          recipient: 'person5',
+          type: 'OTHER',
+          threadId: 'VALID_THREAD_ID'
+        }
+      ]
+    })
+    const result = await executeQueryOnDbUsingSchema({ operation, variables, db, schema })
+    shouldRespondWithGqlError({
+      path: [
+        'user',
+        'conversationByFilters',
+        'sendMessage'
+      ]
+    })(result)
+  })
+
+  it('should return null if no matches', async () => {
     const db = merge(baseData, {
       conversations: [
         {
           id: 'conversation1',
           person: 'person9',
-          type: 'OTHER',
+          recipient: 'person3000',
+          type: 'GOOGLE',
           threadId: 'VALID_THREAD_ID'
         }
       ]
@@ -103,7 +129,7 @@ describe('Conversation.sendMessage', () => {
     return expect(executeQueryOnDbUsingSchema({ operation, variables, db, schema })).to.eventually.deep.equal({
       data: {
         user: {
-          conversations: []
+          conversationByFilters: null
         }
       }
     })

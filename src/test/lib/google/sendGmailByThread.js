@@ -5,6 +5,7 @@ const sinonChai = require('sinon-chai')
 const nock = require('nock')
 const proxyquire = require('proxyquire')
 
+const sendGmailCall = require('../../../gql/lib/google/sendGmailByThread')
 const {
   mockGmailSend,
   mockTokenRefresh,
@@ -47,9 +48,6 @@ describe('sendGmailByThread', () => {
   })
 
   beforeEach(() => {
-    sendGmailByThread = proxyquire('../../../gql/lib/google/sendGmailByThread', {
-      './sendGmail': sendGmail
-    })
     mockThreadFetch()
     mockGmailSend()
     mockTokenRefresh()
@@ -63,6 +61,9 @@ describe('sendGmailByThread', () => {
   })
 
   it('calls sendGmail and sends new message', async () => {
+    sendGmailByThread = proxyquire('../../../gql/lib/google/sendGmailByThread', {
+      './sendGmail': sendGmail
+    })
     mockTokenValidation()
     setupTransactions(transaction, validAccessToken)
     const body = 'Hey, how\'s it going?'
@@ -87,6 +88,23 @@ describe('sendGmailByThread', () => {
         lastName: 'Grayson'
       },
       threadId: 'VALID_THREAD_ID'
+    })
+  })
+
+  it('returns resolved data', async () => {
+    sendGmailByThread = sendGmailCall
+    mockTokenValidation()
+    setupTransactions(transaction, validAccessToken)
+    const body = 'Hey, how\'s it going?'
+    const conversation = {
+      threadId: validThreadId,
+      recipient: 'person99',
+      person: 'person101'
+    }
+    const context = { transaction }
+    await expect(sendGmailByThread({ context, body, conversation })).to.eventually.deep.equal({
+      response: 'gmailSentResponse',
+      threadId: 'gmailThread'
     })
   })
 })

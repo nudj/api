@@ -28,7 +28,7 @@ const invalidTokenGoogle = nock('https://www.googleapis.com/gmail/v1/users/me', 
 const mockGmailResponses = () => {
   validTokenGoogle
     .post('/messages/send')
-    .reply(200, { threadId: 'Gmail Sent' })
+    .reply(200, { threadId: 'gmailThread' })
   invalidTokenGoogle
     .post('/messages/send')
     .replyWithError('Invalid Access Token')
@@ -114,7 +114,7 @@ describe('Person.sendEmail', () => {
     const response = await executeQueryOnDbUsingSchema({ operation, db, variables, schema })
     const { threadId } = response.data.user.email
     expect(threadId).to.exist()
-    expect(threadId).to.equal('Gmail Sent')
+    expect(threadId).to.equal('gmailThread')
   })
 
   it('should still send with invalid accessToken', async () => {
@@ -146,7 +146,7 @@ describe('Person.sendEmail', () => {
     const response = await executeQueryOnDbUsingSchema({ operation, db, variables, schema })
     const { threadId } = response.data.user.email
     expect(threadId).to.exist()
-    expect(threadId).to.equal('Gmail Sent')
+    expect(threadId).to.equal('gmailThread')
   })
 
   it('should refresh an invalid account accessToken', async () => {
@@ -216,7 +216,7 @@ describe('Person.sendEmail', () => {
         id: 'conversation1',
         person: 'person1',
         recipient: 'person2',
-        threadId: 'Gmail Sent',
+        threadId: 'gmailThread',
         type: 'GOOGLE'
       }
     ])

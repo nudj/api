@@ -23,6 +23,5 @@ module.exports = async ({ context, body, conversation }) => {
   const subject = await fetchGmailSubject({ context, conversation })
   const from = `${get(person, 'firstName', '')} ${get(person, 'lastName', '')} <${person.email}>`
   const email = { body, to, from, subject }
-
   return await sendGmail({ context, email, person, threadId })
 }

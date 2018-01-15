@@ -8,7 +8,7 @@ const authClient = require('./authClient')
 
 const gmail = google.gmail('v1')
 
-module.exports = async ({ context, email, person }) => {
+module.exports = async ({ context, email, person, threadId }) => {
   const { accessToken } = await fetchAccountTokens(context, person)
   const mimeEmail = emailBuilder(email)
   const base64EncodedEmail = Base64.encodeURI(mimeEmail)
@@ -21,7 +21,8 @@ module.exports = async ({ context, email, person }) => {
       auth: authClient,
       userId: 'me',
       resource: {
-        raw: base64EncodedEmail
+        raw: base64EncodedEmail,
+        threadId
       }
     }, (error, response) => {
       if (error) {

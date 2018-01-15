@@ -16,20 +16,17 @@ const {
   shouldRespondWithGqlError
 } = require('../../helpers')
 const operation = `
-  query fetchMessages ($userId: ID!, $body: String!, $filters: ConversationFilterInput!) {
-    user (id: $userId) {
-      conversationByFilters (filters: $filters) {
-        sendMessage(body: $body) {
-          success
-        }
+  query fetchMessages ($conversationId: ID!, $body: String!) {
+    conversation (id: $conversationId) {
+      sendMessage(body: $body) {
+        success
       }
     }
   }
 `
 const variables = {
-  userId: 'person3',
-  body: 'Hello this is a message body!',
-  filters: { id: 'conversation1' }
+  conversationId: 'conversation1',
+  body: 'Hello this is a message body!'
 }
 const baseData = {
   people: [
@@ -81,11 +78,9 @@ describe('Conversation.sendMessage', () => {
     })
     return expect(executeQueryOnDbUsingSchema({ operation, variables, db, schema })).to.eventually.deep.equal({
       data: {
-        user: {
-          conversationByFilters: {
-            sendMessage: {
-              success: true
-            }
+        conversation: {
+          sendMessage: {
+            success: true
           }
         }
       }
@@ -107,8 +102,7 @@ describe('Conversation.sendMessage', () => {
     const result = await executeQueryOnDbUsingSchema({ operation, variables, db, schema })
     shouldRespondWithGqlError({
       path: [
-        'user',
-        'conversationByFilters',
+        'conversation',
         'sendMessage'
       ]
     })(result)
@@ -118,9 +112,9 @@ describe('Conversation.sendMessage', () => {
     const db = merge(baseData, {
       conversations: [
         {
-          id: 'conversation1',
-          person: 'person9',
-          recipient: 'person3000',
+          id: 'conversation2',
+          person: 'person3',
+          recipient: 'person5',
           type: 'GOOGLE',
           threadId: 'VALID_THREAD_ID'
         }
@@ -128,9 +122,7 @@ describe('Conversation.sendMessage', () => {
     })
     return expect(executeQueryOnDbUsingSchema({ operation, variables, db, schema })).to.eventually.deep.equal({
       data: {
-        user: {
-          conversationByFilters: null
-        }
+        conversation: null
       }
     })
   })

@@ -1,11 +1,12 @@
 const validateTokens = require('./validateTokens')
+const { values: emailPreferences } = require('../../schema/enums/email-preference-types')
 
 module.exports = async (context, person) => {
   let account = await context.transaction((store, params) => {
     const { person } = params
     return store.readOne({
       type: 'accounts',
-      filters: { person }
+      filters: { person, type: emailPreferences.GOOGLE }
     })
   }, {
     person: person.id

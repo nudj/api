@@ -5,27 +5,16 @@ const sinonChai = require('sinon-chai')
 const nock = require('nock')
 
 const { fetchAccountTokens } = require('../../../gql/lib/google')
+const { mockTokenValidation } = require('../../helpers/google/mock-requests')
+const {
+  validAccessToken,
+  refreshToken
+} = require('../../helpers/google/mock-tokens')
 
 const expect = chai.expect
 chai.use(sinonChai)
 
-const tokenValidation = nock('https://www.googleapis.com/')
-
-const mockTokenValidation = () => {
-  tokenValidation
-    .get('/oauth2/v1/tokeninfo')
-    .query({ access_token: 'VALID_ACCESS_TOKEN' })
-    .reply(200)
-  tokenValidation
-    .get('/oauth2/v1/tokeninfo')
-    .query({ access_token: 'I_AINT_NO_STINKIN_TOKEN' })
-    .reply(400)
-}
-
 describe('Google', () => {
-  const validAccessToken = 'VALID_ACCESS_TOKEN'
-  const refreshToken = 'SUPREMELY_REFRESHING_TOKEN'
-
   nock.emitter.on('no match', function (req) {
     console.log('No match for request:', req)
   })

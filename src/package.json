@@ -17,12 +17,13 @@
   },
   "homepage": "https://github.com/nudj/api#readme",
   "dependencies": {
-    "@nudj/library": "4.0.0",
+    "@nudj/library": "4.1.0",
     "apollo-server-express": "^1.2.0",
     "axios": "^0.17.1",
     "body-parser": "1.17.2",
     "date-fns": "1.28.2",
     "dedent": "^0.7.0",
+    "email-addresses": "^3.0.1",
     "envkey": "^1.0.0",
     "express": "4.15.3",
     "glob": "^7.1.2",
@@ -36,13 +37,15 @@
     "lodash": "4.17.4",
     "mailgun-js": "^0.14.1",
     "morgan": "1.8.2",
+    "node-email-reply-parser": "^0.1.0",
     "node-fetch": "1.6.3",
     "pad-right": "^0.2.2",
     "pluralize": "5.0.0",
     "prismic.io": "^3.5.6",
     "random-words": "^0.0.1",
     "restify": "4.3.0",
-    "semi": "^4.0.5"
+    "semi": "^4.0.5",
+    "striptags": "^3.1.1"
   },
   "devDependencies": {
     "chai": "3.5.0",

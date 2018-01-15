@@ -4,13 +4,17 @@ const { Base64 } = require('js-base64')
 const striptags = require('striptags')
 const get = require('lodash/get')
 const find = require('lodash/find')
-const { getFirstNonNil } = require('@nudj/library')
 
 const fetchAccountTokens = require('./fetchAccountTokens')
 const fetchThread = require('./fetchThread')
 
 const fetchPersonFromEmail = async (context, headers, name) => {
-  const { address } = parseOneAddress(get(find(headers, { name }), 'value'))
+  const { address } = parseOneAddress(
+    get(
+      find(headers, { name }),
+      'value'
+    )
+  )
   return await context.transaction((store, params) => {
     const email = params.address
     return store.readOneOrCreate({
@@ -31,10 +35,8 @@ module.exports = async ({ context, conversation }) => {
     const sender = await fetchPersonFromEmail(context, payload.headers, 'From')
     const recipient = await fetchPersonFromEmail(context, payload.headers, 'To')
 
-    const encryptedBody = getFirstNonNil(
-      get(payload, 'body.data'),
-      get(payload, 'parts[0].body.data')
-    )
+    const encryptedBody =
+      get(payload, 'body.data') || get(payload, 'parts[0].body.data')
     const message = emailParser(Base64.decode(encryptedBody)).getVisibleText()
     const body = striptags(message.replace(/<br>|<br\s*\/>/g, '\n'))
 

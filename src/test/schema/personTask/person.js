@@ -11,7 +11,7 @@ describe('PersonTask.person', () => {
       personTasks: [
         {
           id: 'personTask1',
-          completedBy: 'person2'
+          person: 'person2'
         }
       ],
       people: [
@@ -26,7 +26,7 @@ describe('PersonTask.person', () => {
     const operation = `
       query {
         personTask (id: "personTask1") {
-          completedBy {
+          person {
             id
           }
         }
@@ -35,7 +35,7 @@ describe('PersonTask.person', () => {
     return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
         personTask: {
-          completedBy: {
+          person: {
             id: 'person2'
           }
         }
@@ -48,7 +48,7 @@ describe('PersonTask.person', () => {
       personTasks: [
         {
           id: 'personTask1',
-          completedBy: 'person3'
+          person: 'person3'
         }
       ],
       people: [
@@ -63,7 +63,7 @@ describe('PersonTask.person', () => {
     const operation = `
       query {
         personTask (id: "personTask1") {
-          completedBy {
+          person {
             id
           }
         }
@@ -72,7 +72,7 @@ describe('PersonTask.person', () => {
     return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
         personTask: {
-          completedBy: null
+          person: null
         }
       }
     })

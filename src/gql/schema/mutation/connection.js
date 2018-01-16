@@ -1,6 +1,6 @@
-const { defineSingularRelation } = require('../../lib')
+const { rootSingle } = require('../../lib')
 
-module.exports = defineSingularRelation({
+module.exports = rootSingle({
   parentType: 'Mutation',
   type: 'Connection'
 })

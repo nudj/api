@@ -8,7 +8,7 @@ const { executeQueryOnDbUsingSchema } = require('../../helpers')
 describe('Person.getOrCreateConnection', () => {
   let db
   let result
-  const operation = `
+  let operation = `
     query {
       person (id: "person1") {
         getOrCreateConnection(
@@ -311,6 +311,186 @@ describe('Person.getOrCreateConnection', () => {
           source: {
             id: 'source1',
             name: 'linkedin'
+          },
+          person: {
+            id: 'person2',
+            email: 'CONNECTION_EMAIL'
+          }
+        })
+    })
+  })
+
+  describe('when title is not given', () => {
+    beforeEach(async () => {
+      operation = `
+        query {
+          person (id: "person1") {
+            getOrCreateConnection(
+              to: {
+                firstName: "CONNECTION_FIRSTNAME",
+                lastName: "CONNECTION_LASTNAME",
+                company: "CONNECTION_COMPANY",
+                email: "CONNECTION_EMAIL"
+              },
+              source: {
+                name: "CONNECTION_SOURCE"
+              }
+            ) {
+              id
+              firstName
+              lastName
+              role {
+                id
+                name
+              }
+              company {
+                id
+                name
+              }
+              source {
+                id
+                name
+              }
+              person {
+                id
+                email
+              }
+            }
+          }
+        }
+      `
+      db = {
+        people: [
+          {
+            id: 'person1'
+          }
+        ],
+        sources: [],
+        roles: [
+          {
+            id: 'role1',
+            name: 'Test role'
+          }
+        ],
+        companies: [],
+        connections: []
+      }
+      result = await executeQueryOnDbUsingSchema({ operation, db, schema })
+    })
+
+    it('should not create a role', () => {
+      return expect(db.roles).to.have.length(1)
+    })
+
+    it('should set the role to null in the saved connection', () => {
+      return expect(db.connections[0]).to.have.property('role', null)
+    })
+
+    it('should return the connection with null for role', () => {
+      return expect(result)
+        .to.have.deep.property('data.person.getOrCreateConnection')
+        .to.deep.equal({
+          id: 'connection1',
+          firstName: 'CONNECTION_FIRSTNAME',
+          lastName: 'CONNECTION_LASTNAME',
+          role: null,
+          company: {
+            id: 'company1',
+            name: 'CONNECTION_COMPANY'
+          },
+          source: {
+            id: 'source1',
+            name: 'CONNECTION_SOURCE'
+          },
+          person: {
+            id: 'person2',
+            email: 'CONNECTION_EMAIL'
+          }
+        })
+    })
+  })
+
+  describe('when company is not given', () => {
+    beforeEach(async () => {
+      operation = `
+        query {
+          person (id: "person1") {
+            getOrCreateConnection(
+              to: {
+                firstName: "CONNECTION_FIRSTNAME",
+                lastName: "CONNECTION_LASTNAME",
+                title: "CONNECTION_TITLE",
+                email: "CONNECTION_EMAIL"
+              },
+              source: {
+                name: "CONNECTION_SOURCE"
+              }
+            ) {
+              id
+              firstName
+              lastName
+              role {
+                id
+                name
+              }
+              company {
+                id
+                name
+              }
+              source {
+                id
+                name
+              }
+              person {
+                id
+                email
+              }
+            }
+          }
+        }
+      `
+      db = {
+        people: [
+          {
+            id: 'person1'
+          }
+        ],
+        sources: [],
+        roles: [],
+        companies: [
+          {
+            id: 'company1',
+            name: 'Company name'
+          }
+        ],
+        connections: []
+      }
+      result = await executeQueryOnDbUsingSchema({ operation, db, schema })
+    })
+
+    it('should not create a company', () => {
+      return expect(db.companies).to.have.length(1)
+    })
+
+    it('should set the company to null in the saved connection', () => {
+      return expect(db.connections[0]).to.have.property('company', null)
+    })
+
+    it('should return the connection with null for company', () => {
+      return expect(result)
+        .to.have.deep.property('data.person.getOrCreateConnection')
+        .to.deep.equal({
+          id: 'connection1',
+          firstName: 'CONNECTION_FIRSTNAME',
+          lastName: 'CONNECTION_LASTNAME',
+          role: {
+            id: 'role1',
+            name: 'CONNECTION_TITLE'
+          },
+          company: null,
+          source: {
+            id: 'source1',
+            name: 'CONNECTION_SOURCE'
           },
           person: {
             id: 'person2',

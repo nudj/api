@@ -2,29 +2,29 @@
 const chai = require('chai')
 const expect = chai.expect
 
-const { defineEntityPluralByFiltersRelation } = require('../../gql/lib')
+const { rootAllByFilters } = require('../../gql/lib')
 const { generateFakeContextWithStore } = require('../helpers')
 
-describe('defineEntityPluralByFiltersRelation', () => {
+describe('rootAllByFilters', () => {
   it('should throw if no parentType is given', () => {
-    return expect(() => defineEntityPluralByFiltersRelation()).to.throw('defineEntityPluralByFiltersRelation requires a parentType')
+    return expect(() => rootAllByFilters()).to.throw('rootAllByFilters requires a parentType')
   })
 
   it('should throw if no type is given', () => {
-    return expect(() => defineEntityPluralByFiltersRelation({
+    return expect(() => rootAllByFilters({
       parentType: 'Parent'
-    })).to.throw('defineEntityPluralByFiltersRelation requires a type')
+    })).to.throw('rootAllByFilters requires a type')
   })
 
   it('should return an object', () => {
-    return expect(defineEntityPluralByFiltersRelation({
+    return expect(rootAllByFilters({
       parentType: 'Parent',
       type: 'Relation'
     })).to.be.an('object')
   })
 
   it('should return the typeDefs', () => {
-    return expect(defineEntityPluralByFiltersRelation({
+    return expect(rootAllByFilters({
       parentType: 'Parent',
       type: 'Relation'
     })).to.have.property('typeDefs').to.equal(`
@@ -35,7 +35,7 @@ describe('defineEntityPluralByFiltersRelation', () => {
   })
 
   it('should return resolver for Parent.relationsByFilters', () => {
-    return expect(defineEntityPluralByFiltersRelation({
+    return expect(rootAllByFilters({
       parentType: 'Parent',
       type: 'Relation'
     }))
@@ -48,54 +48,44 @@ describe('defineEntityPluralByFiltersRelation', () => {
     let resolver
 
     beforeEach(() => {
-      resolver = defineEntityPluralByFiltersRelation({
+      resolver = rootAllByFilters({
         parentType: 'Parent',
         type: 'Relation'
       }).resolvers.Parent.relationsByFilters
     })
 
     it('should return the result of a store.readAll call', () => {
-      const parent = {
-        id: 'parent1'
-      }
       const filters = {
         slug: 'someSlug'
       }
       const fakeContext = generateFakeContextWithStore({
         readAll: () => 'all_the_relations'
       })
-      return expect(resolver(parent, { filters }, fakeContext)).to.eventually.equal('all_the_relations')
+      return expect(resolver(null, { filters }, fakeContext)).to.eventually.equal('all_the_relations')
     })
 
     it('should call store.readAll with the collection type', () => {
-      const parent = {
-        id: 'parent1'
-      }
       const filters = {
         slug: 'someSlug'
       }
       const fakeContext = generateFakeContextWithStore({
         readAll: args => args
       })
-      return expect(resolver(parent, { filters }, fakeContext))
-        .to.eventually.have.deep.property('type')
-        .to.deep.equal('relations')
+      return expect(resolver(null, { filters }, fakeContext))
+        .to.eventually.have.property('type')
+        .to.equal('relations')
     })
 
-    it('should call store.readAll with filters merged with parent.id', () => {
-      const parent = {
-        id: 'parent1'
-      }
+    it('should call store.readAll with the filters passed in args', () => {
       const filters = {
         slug: 'someSlug'
       }
       const fakeContext = generateFakeContextWithStore({
         readAll: args => args
       })
-      return expect(resolver(parent, { filters }, fakeContext))
-        .to.eventually.have.deep.property('filters')
+      return expect(resolver(null, { filters }, fakeContext))
+        .to.eventually.have.property('filters')
         .to.deep.equal({
-          parent: 'parent1',
           slug: 'someSlug'
         })
     })
@@ -105,7 +95,7 @@ describe('defineEntityPluralByFiltersRelation', () => {
 
   describe('when the name is passed in', () => {
     it('should override the name', () => {
-      return expect(defineEntityPluralByFiltersRelation({
+      return expect(rootAllByFilters({
         parentType: 'Parent',
         type: 'Relation',
         name: 'aDifferentName'
@@ -120,22 +110,19 @@ describe('defineEntityPluralByFiltersRelation', () => {
   describe('when the collection is passed in', () => {
     describe('the resolver', () => {
       it('should override the type passed to store.readAll', () => {
-        const resolver = defineEntityPluralByFiltersRelation({
+        const filters = {
+          slug: 'someSlug'
+        }
+        const resolver = rootAllByFilters({
           parentType: 'Parent',
           type: 'Relation',
           collection: 'aDifferentCollection'
         }).resolvers.Parent.relationsByFilters
-        const parent = {
-          id: 'parent1'
-        }
-        const filters = {
-          slug: 'someSlug'
-        }
         const fakeContext = generateFakeContextWithStore({
           readAll: args => args
         })
-        return expect(resolver(parent, { filters }, fakeContext))
-          .to.eventually.have.deep.property('type')
+        return expect(resolver(null, { filters }, fakeContext))
+          .to.eventually.have.property('type')
           .to.deep.equal('aDifferentCollection')
       })
     })
@@ -143,7 +130,7 @@ describe('defineEntityPluralByFiltersRelation', () => {
 
   describe('when the filterType is passed in', () => {
     it('should override the filterType', () => {
-      return expect(defineEntityPluralByFiltersRelation({
+      return expect(rootAllByFilters({
         parentType: 'Parent',
         type: 'Relation',
         filterType: 'aDifferentFilterType'
@@ -152,33 +139,6 @@ describe('defineEntityPluralByFiltersRelation', () => {
         relationsByFilters(filters: aDifferentFilterType!): [Relation!]!
       }
     `)
-    })
-  })
-
-  describe('when parentName is passed in', () => {
-    describe('the resolver', () => {
-      it('should override key in filters for parent.id', () => {
-        const resolver = defineEntityPluralByFiltersRelation({
-          parentType: 'Parent',
-          parentName: 'aDifferentName',
-          type: 'Relation'
-        }).resolvers.Parent.relationsByFilters
-        const parent = {
-          id: 'parent1'
-        }
-        const filters = {
-          slug: 'someSlug'
-        }
-        const fakeContext = generateFakeContextWithStore({
-          readAll: args => args
-        })
-        return expect(resolver(parent, { filters }, fakeContext))
-          .to.eventually.have.deep.property('filters')
-          .to.deep.equal({
-            aDifferentName: 'parent1',
-            slug: 'someSlug'
-          })
-      })
     })
   })
 })

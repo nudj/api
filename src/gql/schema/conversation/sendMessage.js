@@ -29,11 +29,3 @@ module.exports = {
     }
   }
 }
-
-// {
-//   id: `${threadIds[0]}-message1`,
-//   date: '2018-01-16T02:51:58.000+00:00',
-//   body: 'Hello, how are you?',
-//   to: 'person5',
-//   from: 'person1'
-// },

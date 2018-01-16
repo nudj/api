@@ -44,7 +44,7 @@ module.exports = {
         body: String!
         subject: String!
         to: ID!
-      ): Data
+      ): Conversation!
     }
   `,
   resolvers: {

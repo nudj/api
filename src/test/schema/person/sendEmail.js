@@ -68,7 +68,9 @@ describe('Person.sendEmail', () => {
           body: $body,
           to: $to,
           subject: $subject
-        )
+        ) {
+          id
+        }
       }
     }
   `
@@ -79,7 +81,7 @@ describe('Person.sendEmail', () => {
     subject: 'Demigod Status'
   }
 
-  it('should send email', async () => {
+  it('should send email and return conversation', async () => {
     const db = {
       conversations: [],
       accounts: [
@@ -107,9 +109,10 @@ describe('Person.sendEmail', () => {
     const operation = sendSwankyEmail
     const variables = emailVariables
     const response = await executeQueryOnDbUsingSchema({ operation, db, variables, schema })
-    const { threadId } = response.data.user.email
-    expect(threadId).to.exist()
-    expect(threadId).to.equal('gmailThread')
+    console.log(response.data.user.email)
+    const { id } = response.data.user.email
+    expect(id).to.exist()
+    expect(id).to.equal('conversation1')
   })
 
   it('should still send with invalid accessToken', async () => {
@@ -140,9 +143,9 @@ describe('Person.sendEmail', () => {
     const operation = sendSwankyEmail
     const variables = emailVariables
     const response = await executeQueryOnDbUsingSchema({ operation, db, variables, schema })
-    const { threadId } = response.data.user.email
-    expect(threadId).to.exist()
-    expect(threadId).to.equal('gmailThread')
+    const { id } = response.data.user.email
+    expect(id).to.exist()
+    expect(id).to.equal('conversation1')
   })
 
   it('should refresh an invalid account accessToken', async () => {

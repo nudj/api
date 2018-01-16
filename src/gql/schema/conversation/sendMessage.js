@@ -5,7 +5,7 @@ const { values: emailPreferences } = require('../enums/email-preference-types')
 module.exports = {
   typeDefs: `
     extend type Conversation {
-      sendMessage(body: String): Status!
+      sendMessage(body: String): Message!
     }
   `,
   resolvers: {
@@ -16,8 +16,10 @@ module.exports = {
 
         switch (type) {
           case emailPreferences.GOOGLE:
-            await sendGmailByThread({ context, body, conversation })
-            return { success: true }
+            const { id } = await sendGmailByThread({ context, body, conversation })
+            const { recipient: to, person: from } = conversation
+            const date = new Date()
+            return { id, date, body, to, from }
           default:
             throw new Error('Cannot send message of this type')
         }
@@ -25,3 +27,11 @@ module.exports = {
     }
   }
 }
+
+// {
+//   id: `${threadIds[0]}-message1`,
+//   date: '2018-01-16T02:51:58.000+00:00',
+//   body: 'Hello, how are you?',
+//   to: 'person5',
+//   from: 'person1'
+// },

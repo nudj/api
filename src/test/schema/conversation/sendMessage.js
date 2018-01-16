@@ -19,7 +19,7 @@ const operation = `
   query fetchMessages ($conversationId: ID!, $body: String!) {
     conversation (id: $conversationId) {
       sendMessage(body: $body) {
-        success
+        body
       }
     }
   }
@@ -64,7 +64,7 @@ describe('Conversation.sendMessage', () => {
     mockTokenValidation()
   })
 
-  it('should send a message', async () => {
+  it('should send and return new message', async () => {
     const db = merge(baseData, {
       conversations: [
         {
@@ -80,7 +80,7 @@ describe('Conversation.sendMessage', () => {
       data: {
         conversation: {
           sendMessage: {
-            success: true
+            body: 'Hello this is a message body!'
           }
         }
       }

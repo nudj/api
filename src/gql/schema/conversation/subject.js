@@ -5,7 +5,7 @@ const { values: emailPreferences } = require('../enums/email-preference-types')
 module.exports = {
   typeDefs: `
     extend type Conversation {
-      subject: String!
+      subject: String
     }
   `,
   resolvers: {

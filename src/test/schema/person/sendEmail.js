@@ -59,33 +59,29 @@ describe('Person.sendEmail', () => {
   const sendSwankyEmail = `
     mutation sendSwankyEmail (
       $userId: ID!,
-      $type: EmailPreference!,
       $body: String!,
-      $to: String!,
-      $from: String!,
+      $to: ID!,
       $subject: String!
     ) {
       user (id: $userId) {
         email: sendEmail(
-          type: $type,
           body: $body,
           to: $to,
-          from: $from,
           subject: $subject
-        )
+        ) {
+          id
+        }
       }
     }
   `
   const emailVariables = {
     userId: 'person1',
-    type: 'GOOGLE',
     body: 'I think it might be time we upgrade you from Demigod. Thoughts?',
-    from: 'Zeus <zeus@gmail.com>',
-    to: 'hercules@demigod.com',
+    to: 'person2',
     subject: 'Demigod Status'
   }
 
-  it('should send email', async () => {
+  it('should send email and return conversation', async () => {
     const db = {
       conversations: [],
       accounts: [
@@ -101,7 +97,8 @@ describe('Person.sendEmail', () => {
       ],
       people: [
         {
-          id: 'person1'
+          id: 'person1',
+          emailPreference: 'GOOGLE'
         },
         {
           id: 'person2',
@@ -112,9 +109,9 @@ describe('Person.sendEmail', () => {
     const operation = sendSwankyEmail
     const variables = emailVariables
     const response = await executeQueryOnDbUsingSchema({ operation, db, variables, schema })
-    const { threadId } = response.data.user.email
-    expect(threadId).to.exist()
-    expect(threadId).to.equal('gmailThread')
+    const { id } = response.data.user.email
+    expect(id).to.exist()
+    expect(id).to.equal('conversation1')
   })
 
   it('should still send with invalid accessToken', async () => {
@@ -133,7 +130,8 @@ describe('Person.sendEmail', () => {
       ],
       people: [
         {
-          id: 'person1'
+          id: 'person1',
+          emailPreference: 'GOOGLE'
         },
         {
           id: 'person2',
@@ -144,9 +142,9 @@ describe('Person.sendEmail', () => {
     const operation = sendSwankyEmail
     const variables = emailVariables
     const response = await executeQueryOnDbUsingSchema({ operation, db, variables, schema })
-    const { threadId } = response.data.user.email
-    expect(threadId).to.exist()
-    expect(threadId).to.equal('gmailThread')
+    const { id } = response.data.user.email
+    expect(id).to.exist()
+    expect(id).to.equal('conversation1')
   })
 
   it('should refresh an invalid account accessToken', async () => {
@@ -164,7 +162,12 @@ describe('Person.sendEmail', () => {
       ],
       people: [
         {
-          id: 'person1'
+          id: 'person1',
+          emailPreference: 'GOOGLE'
+        },
+        {
+          id: 'person2',
+          email: 'hercules@demigod.com'
         }
       ]
     }
@@ -200,7 +203,8 @@ describe('Person.sendEmail', () => {
       ],
       people: [
         {
-          id: 'person1'
+          id: 'person1',
+          emailPreference: 'GOOGLE'
         },
         {
           id: 'person2',

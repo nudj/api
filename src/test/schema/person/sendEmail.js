@@ -59,18 +59,14 @@ describe('Person.sendEmail', () => {
   const sendSwankyEmail = `
     mutation sendSwankyEmail (
       $userId: ID!,
-      $type: EmailPreference!,
       $body: String!,
-      $to: String!,
-      $from: String!,
+      $to: ID!,
       $subject: String!
     ) {
       user (id: $userId) {
         email: sendEmail(
-          type: $type,
           body: $body,
           to: $to,
-          from: $from,
           subject: $subject
         )
       }
@@ -78,10 +74,8 @@ describe('Person.sendEmail', () => {
   `
   const emailVariables = {
     userId: 'person1',
-    type: 'GOOGLE',
     body: 'I think it might be time we upgrade you from Demigod. Thoughts?',
-    from: 'Zeus <zeus@gmail.com>',
-    to: 'hercules@demigod.com',
+    to: 'person2',
     subject: 'Demigod Status'
   }
 
@@ -101,7 +95,8 @@ describe('Person.sendEmail', () => {
       ],
       people: [
         {
-          id: 'person1'
+          id: 'person1',
+          emailPreference: 'GOOGLE'
         },
         {
           id: 'person2',
@@ -133,7 +128,8 @@ describe('Person.sendEmail', () => {
       ],
       people: [
         {
-          id: 'person1'
+          id: 'person1',
+          emailPreference: 'GOOGLE'
         },
         {
           id: 'person2',
@@ -164,7 +160,12 @@ describe('Person.sendEmail', () => {
       ],
       people: [
         {
-          id: 'person1'
+          id: 'person1',
+          emailPreference: 'GOOGLE'
+        },
+        {
+          id: 'person2',
+          email: 'hercules@demigod.com'
         }
       ]
     }
@@ -200,7 +201,8 @@ describe('Person.sendEmail', () => {
       ],
       people: [
         {
-          id: 'person1'
+          id: 'person1',
+          emailPreference: 'GOOGLE'
         },
         {
           id: 'person2',

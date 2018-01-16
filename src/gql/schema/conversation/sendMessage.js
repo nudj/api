@@ -14,6 +14,8 @@ module.exports = {
         const { body } = args
         const { type } = conversation
 
+        if (!body) throw new Error('No message body')
+
         switch (type) {
           case emailPreferences.GOOGLE:
             const { id } = await sendGmailByThread({ context, body, conversation })

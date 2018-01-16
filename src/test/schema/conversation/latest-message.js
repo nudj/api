@@ -10,30 +10,31 @@ const {
 const expect = chai.expect
 
 const schema = require('../../../gql/schema')
-const { executeQueryOnDbUsingSchema } = require('../../helpers')
+const {
+  executeQueryOnDbUsingSchema,
+  shouldRespondWithGqlError
+} = require('../../helpers')
 const operation = `
-  query fetchMessages ($userId: ID!) {
-    user (id: $userId) {
-      conversations {
-        messages {
-          id
-          body
-          to {
-            id
-          }
-        }
+  query fetchMessages ($conversationId: ID!) {
+    conversation (id: $conversationId) {
+      latestMessage {
+        body
       }
     }
   }
 `
 const variables = {
-  userId: 'person3'
+  conversationId: 'conversation1'
 }
 const baseData = {
   people: [
     {
       id: 'person3',
       email: 'woody@andysroom.com'
+    },
+    {
+      id: 'person2',
+      email: 'buzz@spacecommand.com'
     }
   ],
   accounts: [
@@ -48,19 +49,20 @@ const baseData = {
   ]
 }
 
-describe('Conversation.messages', () => {
+describe('Conversation.latestMessage', () => {
   beforeEach(() => {
     mockThreadFetch()
     mockTokenRefresh()
     mockTokenValidation()
   })
 
-  it('should fetch all messages relating to the conversation', async () => {
+  it('should fetch the latest message in the conversation', async () => {
     const db = merge(baseData, {
       conversations: [
         {
           id: 'conversation1',
           person: 'person3',
+          recipient: 'person2',
           type: 'GOOGLE',
           threadId: 'VALID_THREAD_ID'
         }
@@ -68,45 +70,22 @@ describe('Conversation.messages', () => {
     })
     return expect(executeQueryOnDbUsingSchema({ operation, variables, db, schema })).to.eventually.deep.equal({
       data: {
-        user: {
-          conversations: [
-            {
-              messages: [
-                {
-                  body: 'Where\'s my spaceship? Space command needs me.',
-                  id: 'MESSAGE_1',
-                  to: {
-                    id: 'person3'
-                  }
-                },
-                {
-                  body: 'You. Are. A. Toy!',
-                  id: 'MESSAGE_2',
-                  to: {
-                    id: 'person3'
-                  }
-                },
-                {
-                  body: 'Fine, it\'s downstairs.',
-                  id: 'MESSAGE_3',
-                  to: {
-                    id: 'person2'
-                  }
-                }
-              ]
-            }
-          ]
+        conversation: {
+          latestMessage: {
+            body: 'Fine, it\'s downstairs.'
+          }
         }
       }
     })
   })
 
-  it('should return empty array if no matches', async () => {
+  it('should return bare message data if OTHER type', async () => {
     const db = merge(baseData, {
       conversations: [
         {
           id: 'conversation1',
-          person: 'person9',
+          person: 'person3',
+          recipient: 'person2',
           type: 'OTHER',
           threadId: 'VALID_THREAD_ID'
         }
@@ -114,10 +93,33 @@ describe('Conversation.messages', () => {
     })
     return expect(executeQueryOnDbUsingSchema({ operation, variables, db, schema })).to.eventually.deep.equal({
       data: {
-        user: {
-          conversations: []
+        conversation: {
+          latestMessage: {
+            body: null
+          }
         }
       }
     })
+  })
+
+  it('should error with bad data', async () => {
+    const db = merge(baseData, {
+      conversations: [
+        {
+          id: 'conversation1',
+          person: 'person2',
+          recipient: 'person2',
+          type: 'GOOGLE',
+          threadId: 'VALID_THREAD_ID'
+        }
+      ]
+    })
+    const result = await executeQueryOnDbUsingSchema({ operation, variables, db, schema })
+    shouldRespondWithGqlError({
+      path: [
+        'conversation',
+        'latestMessage'
+      ]
+    })(result)
   })
 })

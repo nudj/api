@@ -22,6 +22,7 @@ const fetchPersonFromEmail = async (context, headers, name) => {
       filters: { email },
       data: { email }
     })
+    .then(person => person.id)
   }, { address })
 }
 
@@ -32,14 +33,14 @@ module.exports = async ({ context, conversation }) => {
 
   return Promise.all(thread.messages.map(async (data) => {
     const { payload, id, internalDate: date } = data
-    const sender = await fetchPersonFromEmail(context, payload.headers, 'From')
-    const recipient = await fetchPersonFromEmail(context, payload.headers, 'To')
+    const from = await fetchPersonFromEmail(context, payload.headers, 'From')
+    const to = await fetchPersonFromEmail(context, payload.headers, 'To')
 
     const encryptedBody =
       get(payload, 'body.data') || get(payload, 'parts[0].body.data')
     const message = emailParser(Base64.decode(encryptedBody)).getVisibleText()
     const body = striptags(message.replace(/<br>|<br\s*\/>/g, '\n'))
 
-    return { id, sender, recipient, date, body }
+    return { id, from, to, date, body }
   }))
 }

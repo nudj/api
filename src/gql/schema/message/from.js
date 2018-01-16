@@ -17,7 +17,7 @@ module.exports = {
             id
           })
           .then(person => {
-            if (!person) throw new Error('No message from found')
+            if (!person) throw new Error('No message.from found')
             return person
           })
         }, { id: from })

@@ -25,8 +25,8 @@ module.exports = {
             return [
               {
                 date,
-                recipient,
-                sender: person
+                to: recipient,
+                from: person
               }
             ]
         }

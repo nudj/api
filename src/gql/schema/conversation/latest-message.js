@@ -17,11 +17,11 @@ module.exports = {
             const messages = await fetchGmailMessages({ context, conversation })
             return orderBy(messages, (message) => message.date, ['desc'])[0]
           default:
-            const { recipient, sender: person, created: date } = conversation
+            const { recipient, sender: from, created: date } = conversation
             return {
               date,
-              person,
-              recipient
+              from,
+              to: recipient
             }
         }
       })

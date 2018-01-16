@@ -18,7 +18,7 @@ const operation = `
   query fetchMessages ($conversationId: ID!) {
     conversation (id: $conversationId) {
       messages {
-        recipient {
+        from {
           id
         }
       }
@@ -51,14 +51,14 @@ const baseData = {
   ]
 }
 
-describe('Message.recipient', () => {
+describe('Message.from', () => {
   beforeEach(() => {
     mockThreadFetch()
     mockTokenRefresh()
     mockTokenValidation()
   })
 
-  it('should fetch the message recipient', async () => {
+  it('should fetch the message from', async () => {
     const db = merge(baseData, {
       conversations: [
         {
@@ -75,18 +75,18 @@ describe('Message.recipient', () => {
         conversation: {
           messages: [
             {
-              recipient: {
-                id: 'person3'
-              }
-            },
-            {
-              recipient: {
-                id: 'person3'
-              }
-            },
-            {
-              recipient: {
+              from: {
                 id: 'person2'
+              }
+            },
+            {
+              from: {
+                id: 'person2'
+              }
+            },
+            {
+              from: {
+                id: 'person3'
               }
             }
           ]
@@ -95,7 +95,7 @@ describe('Message.recipient', () => {
     })
   })
 
-  it('should return message recipient for OTHER type', async () => {
+  it('should return message from for OTHER type', async () => {
     const db = merge(baseData, {
       conversations: [
         {
@@ -112,8 +112,8 @@ describe('Message.recipient', () => {
         conversation: {
           messages: [
             {
-              recipient: {
-                id: 'person2'
+              from: {
+                id: 'person3'
               }
             }
           ]

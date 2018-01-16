@@ -29,22 +29,22 @@ describe('Google.fetchGmailMessages', () => {
     expect(messages).to.deep.equal([
       {
         id: 'MESSAGE_1',
-        sender: { id: 'personId' },
-        recipient: { id: 'personId' },
+        from: { id: 'personId' },
+        to: { id: 'personId' },
         date: '1515758519000',
         body: 'Where\'s my spaceship? Space command needs me.'
       },
       {
         id: 'MESSAGE_2',
-        sender: { id: 'personId' },
-        recipient: { id: 'personId' },
+        from: { id: 'personId' },
+        to: { id: 'personId' },
         date: '1515758631000',
         body: 'You. Are. A. Toy!'
       },
       {
         id: 'MESSAGE_3',
-        sender: { id: 'personId' },
-        recipient: { id: 'personId' },
+        from: { id: 'personId' },
+        to: { id: 'personId' },
         date: '1515847314000',
         body: 'Fine, it\'s downstairs.'
       }

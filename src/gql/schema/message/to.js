@@ -3,13 +3,13 @@ const { handleErrors } = require('../../lib')
 module.exports = {
   typeDefs: `
     extend type Message {
-      sender: Person!
+      to: Person!
     }
   `,
   resolvers: {
     Message: {
-      sender: handleErrors(async (message, args, context) => {
-        const { sender } = message
+      to: handleErrors(async (message, args, context) => {
+        const { to } = message
         return await context.transaction((store, params) => {
           const { id } = params
           return store.readOne({
@@ -17,10 +17,10 @@ module.exports = {
             id
           })
           .then(person => {
-            if (!person) throw new Error('No message sender found')
+            if (!person) throw new Error('No message recipient found')
             return person
           })
-        }, { id: sender })
+        }, { id: to })
       })
     }
   }

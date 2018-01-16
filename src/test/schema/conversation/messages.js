@@ -18,7 +18,7 @@ const operation = `
         messages {
           id
           body
-          recipient {
+          to {
             id
           }
         }
@@ -75,21 +75,21 @@ describe('Conversation.messages', () => {
                 {
                   body: 'Where\'s my spaceship? Space command needs me.',
                   id: 'MESSAGE_1',
-                  recipient: {
+                  to: {
                     id: 'person3'
                   }
                 },
                 {
                   body: 'You. Are. A. Toy!',
                   id: 'MESSAGE_2',
-                  recipient: {
+                  to: {
                     id: 'person3'
                   }
                 },
                 {
                   body: 'Fine, it\'s downstairs.',
                   id: 'MESSAGE_3',
-                  recipient: {
+                  to: {
                     id: 'person2'
                   }
                 }

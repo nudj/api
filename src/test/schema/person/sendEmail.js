@@ -109,7 +109,6 @@ describe('Person.sendEmail', () => {
     const operation = sendSwankyEmail
     const variables = emailVariables
     const response = await executeQueryOnDbUsingSchema({ operation, db, variables, schema })
-    console.log(response.data.user.email)
     const { id } = response.data.user.email
     expect(id).to.exist()
     expect(id).to.equal('conversation1')

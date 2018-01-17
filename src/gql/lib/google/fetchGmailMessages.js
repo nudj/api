@@ -7,12 +7,12 @@ const find = require('lodash/find')
 
 const fetchAccountTokens = require('./fetchAccountTokens')
 const fetchThread = require('./fetchThread')
+const gmailBodyRegex = require('./gmail-body-regex')
 
 const sanitiseMessage = (message) => {
   // Extracts the email body and formats it with appropriate line breaks.
-  const extraGmailInfoSection = /<div\s*class="[^"]*?gmail_extra[^"]*?"\s*>/
   const messageBody = Base64.decode(message)
-    .split(extraGmailInfoSection)[0]
+    .split(gmailBodyRegex)[0]
     .replace(/<div>/g, '\n')
 
   return emailParser(striptags(messageBody)).getVisibleText()

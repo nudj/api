@@ -39,14 +39,14 @@ describe('Google.fetchGmailMessages', () => {
         from: { id: 'personId' },
         to: { id: 'personId' },
         date: '1515758631000',
-        body: 'You. Are. A. Toy!'
+        body: 'You\nAre\nA\nToy!'
       },
       {
         id: 'MESSAGE_3',
         from: { id: 'personId' },
         to: { id: 'personId' },
         date: '1515847314000',
-        body: 'Fine, it\'s downstairs.'
+        body: 'Fine\n\nIt\'s downstairs.\nPS. You are a toy.'
       }
     ])
   })

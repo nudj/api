@@ -72,7 +72,7 @@ describe('Conversation.latestMessage', () => {
       data: {
         conversation: {
           latestMessage: {
-            body: 'Fine, it\'s downstairs.'
+            body: 'Fine\n\nIt\'s downstairs.\nPS. You are a toy.'
           }
         }
       }

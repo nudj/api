@@ -11,8 +11,8 @@ const fetchThread = require('./fetchThread')
 const sanitiseMessage = (message) => {
   return Base64.decode(message)
     .split(/<div\s*class="[^"]*?gmail_extra[^"]*?"\s*>/)[0]
+    .replace(/<div><br><\/div>/g, '\n\n')
     .replace(/<div>/g, '\n')
-    .replace(/<br><\/div>/g, '')
 }
 
 const fetchPersonFromEmail = async (context, headers, name) => {

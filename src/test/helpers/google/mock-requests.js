@@ -1,4 +1,5 @@
 const nock = require('nock')
+const { Base64 } = require('js-base64')
 const gmailThread = require('./mock-gmail-thread')
 const {
   validAccessToken,
@@ -28,6 +29,12 @@ const mockGmailSend = () => {
   invalidAccessTokenGoogle
     .post('/messages/send')
     .replyWithError('Invalid Access Token')
+}
+
+const mockGmailSendWithBody = () => {
+  validAccessTokenGoogle
+    .post('/messages/send')
+    .reply((uri, body, callback) => callback(null, [200, Base64.decode(body.raw)]))
 }
 
 const mockThreadFetch = () => {
@@ -65,6 +72,7 @@ const mockTokenRefresh = () => {
 module.exports = {
   mockThreadFetch,
   mockGmailSend,
+  mockGmailSendWithBody,
   mockTokenRefresh,
   mockTokenValidation
 }

@@ -65,7 +65,7 @@ module.exports = {
             mimeType: 'text/html',
             body: {
               size: 702,
-              data: 'WW91LiBBcmUuIEEuIFRveSE='
+              data: 'WW91PGRpdj5BcmU8ZGl2PkE8ZGl2PlRveSE8L2Rpdj48L2Rpdj48L2Rpdj4='
             }
           }
         ]
@@ -108,7 +108,7 @@ module.exports = {
             mimeType: 'text/html',
             body: {
               size: 1735,
-              data: 'RmluZSwgaXQncyBkb3duc3RhaXJzLg=='
+              data: 'RmluZTxkaXY+PGJyPjwvZGl2Pkl0J3MgZG93bnN0YWlycy48ZGl2PlBTLiBZb3UgYXJlIGEgdG95LjwvZGl2Pg=='
             }
           }
         ]

@@ -1,6 +1,6 @@
-const { defineSingularByFiltersRelation } = require('../../lib')
+const { rootSingleByFilters } = require('../../lib')
 
-module.exports = defineSingularByFiltersRelation({
+module.exports = rootSingleByFilters({
   parentType: 'Mutation',
   type: 'Recommendation'
 })

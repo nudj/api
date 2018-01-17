@@ -2,29 +2,29 @@
 const chai = require('chai')
 const expect = chai.expect
 
-const { definePluralRelation } = require('../../gql/lib')
+const { rootAll } = require('../../gql/lib')
 const { generateFakeContextWithStore } = require('../helpers')
 
-describe('definePluralRelation', () => {
+describe('rootAll', () => {
   it('should throw if no parentType is given', () => {
-    return expect(() => definePluralRelation()).to.throw('definePluralRelation requires a parentType')
+    return expect(() => rootAll()).to.throw('rootAll requires a parentType')
   })
 
   it('should throw if no type is given', () => {
-    return expect(() => definePluralRelation({
+    return expect(() => rootAll({
       parentType: 'Parent'
-    })).to.throw('definePluralRelation requires a type')
+    })).to.throw('rootAll requires a type')
   })
 
   it('should return an object', () => {
-    return expect(definePluralRelation({
+    return expect(rootAll({
       parentType: 'Parent',
       type: 'Relation'
     })).to.be.an('object')
   })
 
   it('should return the typeDefs', () => {
-    return expect(definePluralRelation({
+    return expect(rootAll({
       parentType: 'Parent',
       type: 'Relation'
     })).to.have.property('typeDefs').to.equal(`
@@ -35,7 +35,7 @@ describe('definePluralRelation', () => {
   })
 
   it('should return resolver for Parent.relations', () => {
-    return expect(definePluralRelation({
+    return expect(rootAll({
       parentType: 'Parent',
       type: 'Relation'
     }))
@@ -48,7 +48,7 @@ describe('definePluralRelation', () => {
     let resolver
 
     beforeEach(() => {
-      resolver = definePluralRelation({
+      resolver = rootAll({
         parentType: 'Parent',
         type: 'Relation'
       }).resolvers.Parent.relations
@@ -73,7 +73,7 @@ describe('definePluralRelation', () => {
 
   describe('when the name is passed in', () => {
     it('should override the name', () => {
-      return expect(definePluralRelation({
+      return expect(rootAll({
         parentType: 'Parent',
         type: 'Relation',
         name: 'aDifferentName'
@@ -88,7 +88,7 @@ describe('definePluralRelation', () => {
   describe('when the collection is passed in', () => {
     describe('the resolver', () => {
       it('should override the type passed to store.readAll', () => {
-        const resolver = definePluralRelation({
+        const resolver = rootAll({
           parentType: 'Parent',
           type: 'Relation',
           collection: 'aDifferentCollection'

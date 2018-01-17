@@ -2,29 +2,29 @@
 const chai = require('chai')
 const expect = chai.expect
 
-const { defineEntityPluralRelation } = require('../../gql/lib')
+const { nestedAll } = require('../../gql/lib')
 const { generateFakeContextWithStore } = require('../helpers')
 
-describe('defineEntityPluralRelation', () => {
+describe('nestedAll', () => {
   it('should throw if no parentType is given', () => {
-    return expect(() => defineEntityPluralRelation()).to.throw('defineEntityPluralRelation requires a parentType')
+    return expect(() => nestedAll()).to.throw('nestedAll requires a parentType')
   })
 
   it('should throw if no type is given', () => {
-    return expect(() => defineEntityPluralRelation({
+    return expect(() => nestedAll({
       parentType: 'Parent'
-    })).to.throw('defineEntityPluralRelation requires a type')
+    })).to.throw('nestedAll requires a type')
   })
 
   it('should return an object', () => {
-    return expect(defineEntityPluralRelation({
+    return expect(nestedAll({
       parentType: 'Parent',
       type: 'Relation'
     })).to.be.an('object')
   })
 
   it('should return the typeDefs', () => {
-    return expect(defineEntityPluralRelation({
+    return expect(nestedAll({
       parentType: 'Parent',
       type: 'Relation'
     })).to.have.property('typeDefs').to.equal(`
@@ -35,7 +35,7 @@ describe('defineEntityPluralRelation', () => {
   })
 
   it('should return resolver for Parent.relations', () => {
-    return expect(defineEntityPluralRelation({
+    return expect(nestedAll({
       parentType: 'Parent',
       type: 'Relation'
     }))
@@ -48,7 +48,7 @@ describe('defineEntityPluralRelation', () => {
     let resolver
 
     beforeEach(() => {
-      resolver = defineEntityPluralRelation({
+      resolver = nestedAll({
         parentType: 'Parent',
         type: 'Relation'
       }).resolvers.Parent.relations
@@ -95,7 +95,7 @@ describe('defineEntityPluralRelation', () => {
 
   describe('when the name is passed in', () => {
     it('should override the name', () => {
-      return expect(defineEntityPluralRelation({
+      return expect(nestedAll({
         parentType: 'Parent',
         type: 'Relation',
         name: 'aDifferentName'
@@ -110,7 +110,7 @@ describe('defineEntityPluralRelation', () => {
   describe('when the collection is passed in', () => {
     describe('the resolver', () => {
       it('should override the type passed to store.readAll', () => {
-        const resolver = defineEntityPluralRelation({
+        const resolver = nestedAll({
           parentType: 'Parent',
           type: 'Relation',
           collection: 'aDifferentCollection'
@@ -131,7 +131,7 @@ describe('defineEntityPluralRelation', () => {
   describe('when parentName is passed in', () => {
     describe('the resolver', () => {
       it('should override key in filters for parent.id', () => {
-        const resolver = defineEntityPluralRelation({
+        const resolver = nestedAll({
           parentType: 'Parent',
           parentName: 'aDifferentName',
           type: 'Relation'
@@ -156,7 +156,7 @@ describe('defineEntityPluralRelation', () => {
       let resolver
 
       beforeEach(() => {
-        resolver = defineEntityPluralRelation({
+        resolver = nestedAll({
           parentType: 'Parent',
           type: 'Relation'
         }).resolvers.Parent.relations
@@ -202,7 +202,7 @@ describe('defineEntityPluralRelation', () => {
         let resolver
 
         beforeEach(() => {
-          resolver = defineEntityPluralRelation({
+          resolver = nestedAll({
             parentType: 'Parent',
             type: 'Relation',
             parentPropertyName: 'aDifferentParentPropertyName'

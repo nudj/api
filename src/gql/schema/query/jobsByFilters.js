@@ -1,6 +1,6 @@
-const { definePluralByFiltersRelation } = require('../../lib')
+const { rootAllByFilters } = require('../../lib')
 
-module.exports = definePluralByFiltersRelation({
+module.exports = rootAllByFilters({
   parentType: 'Query',
   name: 'jobsByFilters',
   type: 'Job',

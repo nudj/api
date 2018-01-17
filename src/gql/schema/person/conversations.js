@@ -1,6 +1,6 @@
-const { defineEntityPluralRelation } = require('../../lib')
+const { nestedAll } = require('../../lib')
 
-module.exports = defineEntityPluralRelation({
+module.exports = nestedAll({
   parentType: 'Person',
   type: 'Conversation'
 })

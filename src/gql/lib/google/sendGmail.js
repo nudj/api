@@ -10,10 +10,12 @@ const authClient = require('./authClient')
 const gmail = google.gmail('v1')
 
 const formatBody = (message) => {
+  // Emulates Gmail HTML patterns for line breaks
   const body = striptags(message)
     .replace(/\n\n/g, '<div><br></div><div>')
     .replace(/\n/g, '<div>')
 
+  // Counts number of closing tags to apply
   const closedTags = (body.match(/<\/div>/g) || [])
   const endTags = (body.match(/<div>/g) || [])
   closedTags.forEach(() => endTags.pop())
@@ -22,7 +24,7 @@ const formatBody = (message) => {
 }
 
 module.exports = async ({ context, email, person, threadId }) => {
-  email.body = formatBody(email.body) // Emulating Gmail patterns
+  email.body = formatBody(email.body)
 
   const { accessToken } = await fetchAccountTokens(context, person)
   const mimeEmail = emailBuilder(email)

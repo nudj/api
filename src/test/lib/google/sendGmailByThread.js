@@ -103,6 +103,7 @@ describe('sendGmailByThread', () => {
     }
     const context = { transaction }
     await expect(sendGmailByThread({ context, body, conversation })).to.eventually.deep.equal({
+      body: 'Hey, how\'s it going?',
       response: 'gmailSentResponse',
       threadId: 'gmailThread'
     })

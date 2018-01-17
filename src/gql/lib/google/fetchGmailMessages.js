@@ -9,8 +9,10 @@ const fetchAccountTokens = require('./fetchAccountTokens')
 const fetchThread = require('./fetchThread')
 
 const sanitiseMessage = (message) => {
+  // Extracts the email body and formats it with appropriate line breaks.
+  const extraGmailInfoSection = /<div\s*class="[^"]*?gmail_extra[^"]*?"\s*>/
   const messageBody = Base64.decode(message)
-    .split(/<div\s*class="[^"]*?gmail_extra[^"]*?"\s*>/)[0]
+    .split(extraGmailInfoSection)[0]
     .replace(/<div>/g, '\n')
 
   return emailParser(striptags(messageBody)).getVisibleText()

@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 const chai = require('chai')
 const nock = require('nock')
-const fetchThread = require('../../../gql/lib/google/fetchThread')
+const fetchThread = require('../../../gql/lib/google/fetch-thread')
 const { mockThreadFetch } = require('../../helpers/google/mock-requests')
 const gmailThread = require('../../helpers/google/mock-gmail-thread')
 const {

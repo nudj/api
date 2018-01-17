@@ -5,8 +5,8 @@ const striptags = require('striptags')
 const get = require('lodash/get')
 const find = require('lodash/find')
 
-const fetchAccountTokens = require('./fetchAccountTokens')
-const fetchThread = require('./fetchThread')
+const fetchAccountTokens = require('./fetch-account-tokens')
+const fetchThread = require('./fetch-thread')
 const gmailBodyRegex = require('./gmail-body-regex')
 
 const sanitiseMessage = (message) => {

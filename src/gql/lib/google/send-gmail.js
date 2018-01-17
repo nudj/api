@@ -4,8 +4,8 @@ const { Base64 } = require('js-base64')
 const { emailBuilder } = require('@nudj/library/server')
 const { logger } = require('@nudj/library')
 
-const fetchAccountTokens = require('./fetchAccountTokens')
-const authClient = require('./authClient')
+const fetchAccountTokens = require('./fetch-account-tokens')
+const authClient = require('./auth-client')
 
 const gmail = google.gmail('v1')
 

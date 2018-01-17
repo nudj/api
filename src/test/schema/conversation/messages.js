@@ -87,7 +87,7 @@ describe('Conversation.messages', () => {
                   }
                 },
                 {
-                  body: 'Fine\n\nIt\'s downstairs.\nPS. You are a toy.',
+                  body: 'Fine\n\nIt\'s downstairs\nPS. You are a toy.',
                   id: 'MESSAGE_3',
                   to: {
                     id: 'person2'

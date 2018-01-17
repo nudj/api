@@ -9,10 +9,11 @@ const fetchAccountTokens = require('./fetchAccountTokens')
 const fetchThread = require('./fetchThread')
 
 const sanitiseMessage = (message) => {
-  return Base64.decode(message)
+  const messageBody = Base64.decode(message)
     .split(/<div\s*class="[^"]*?gmail_extra[^"]*?"\s*>/)[0]
-    .replace(/<div><br><\/div>/g, '\n\n')
     .replace(/<div>/g, '\n')
+
+  return emailParser(striptags(messageBody)).getVisibleText()
 }
 
 const fetchPersonFromEmail = async (context, headers, name) => {
@@ -48,8 +49,7 @@ module.exports = async ({ context, conversation }) => {
       get(payload, 'parts[1].body.data') ||
       get(payload, 'parts[0].body.data')
     )
-    const message = sanitiseMessage(encryptedBody)
-    const body = emailParser(striptags(message)).getVisibleText()
+    const body = sanitiseMessage(encryptedBody) // Emulates Gmail formatting
 
     return { id, from, to, date, body }
   }))

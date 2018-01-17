@@ -108,7 +108,7 @@ module.exports = {
             mimeType: 'text/html',
             body: {
               size: 1735,
-              data: 'RmluZTxkaXY+PGJyPjwvZGl2Pkl0J3MgZG93bnN0YWlycy48ZGl2PlBTLiBZb3UgYXJlIGEgdG95LjwvZGl2Pg=='
+              data: 'RmluZTxkaXY+PGJyPjwvZGl2PjxkaXY+SXQncyBkb3duc3RhaXJzPGRpdj5QUy4gWW91IGFyZSBhIHRveS48L2Rpdj48L2Rpdj4='
             }
           }
         ]

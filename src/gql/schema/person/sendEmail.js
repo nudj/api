@@ -54,7 +54,9 @@ module.exports = {
         const { body, subject, to: recipient } = args
         if (!body) throw new Error('No message body')
 
-        const { emailPreference: type = emailPreferences.OTHER } = person
+        const {
+          emailPreference: type = emailPreferences.OTHER
+        } = person
         const name = `${get(person, 'firstName', '')} ${get(person, 'lastName', '')}`
         const from = `${name} <${get(person, 'email', '')}>`
         const to = await fetchEmail(context, recipient)

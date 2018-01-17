@@ -4,7 +4,7 @@ const expect = chai.expect
 
 const { mergeDefinitions } = require('../../gql/lib')
 
-describe('mergeDefinitions', () => {
+describe('merge-definitions', () => {
   it('should concat the typeDefs', () => {
     expect(mergeDefinitions(
       {

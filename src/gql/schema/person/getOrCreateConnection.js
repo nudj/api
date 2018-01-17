@@ -50,8 +50,8 @@ module.exports = {
               data: Object.assign({}, omit(to, ['email', 'title']), {
                 from,
                 source: source.id,
-                role: role && role.id,
-                company: company && company.id,
+                role: role ? role.id : null,
+                company: company ? company.id : null,
                 person: person.id
               })
             })

@@ -2,29 +2,29 @@
 const chai = require('chai')
 const expect = chai.expect
 
-const { defineSingularRelation } = require('../../gql/lib')
+const { rootSingle } = require('../../gql/lib')
 const { generateFakeContextWithStore } = require('../helpers')
 
-describe('defineSingularRelation', () => {
+describe('rootSingle', () => {
   it('should throw if no parentType is given', () => {
-    return expect(() => defineSingularRelation()).to.throw('defineSingularRelation requires a parentType')
+    return expect(() => rootSingle()).to.throw('rootSingle requires a parentType')
   })
 
   it('should throw if no type is given', () => {
-    return expect(() => defineSingularRelation({
+    return expect(() => rootSingle({
       parentType: 'Parent'
-    })).to.throw('defineSingularRelation requires a type')
+    })).to.throw('rootSingle requires a type')
   })
 
   it('should return an object', () => {
-    return expect(defineSingularRelation({
+    return expect(rootSingle({
       parentType: 'Parent',
       type: 'Relation'
     })).to.be.an('object')
   })
 
   it('should return the typeDefs', () => {
-    return expect(defineSingularRelation({
+    return expect(rootSingle({
       parentType: 'Parent',
       type: 'Relation'
     })).to.have.property('typeDefs').to.equal(`
@@ -35,7 +35,7 @@ describe('defineSingularRelation', () => {
   })
 
   it('should return resolver for Parent.relation', () => {
-    return expect(defineSingularRelation({
+    return expect(rootSingle({
       parentType: 'Parent',
       type: 'Relation'
     }))
@@ -48,7 +48,7 @@ describe('defineSingularRelation', () => {
     let resolver
 
     beforeEach(() => {
-      resolver = defineSingularRelation({
+      resolver = rootSingle({
         parentType: 'Parent',
         type: 'Relation'
       }).resolvers.Parent.relation
@@ -89,7 +89,7 @@ describe('defineSingularRelation', () => {
 
   describe('when the name is passed in', () => {
     it('should override the name', () => {
-      return expect(defineSingularRelation({
+      return expect(rootSingle({
         parentType: 'Parent',
         type: 'Relation',
         name: 'aDifferentName'
@@ -104,7 +104,7 @@ describe('defineSingularRelation', () => {
   describe('when the collection is passed in', () => {
     describe('the resolver', () => {
       it('should override the type passed to store.readOne', () => {
-        const resolver = defineSingularRelation({
+        const resolver = rootSingle({
           parentType: 'Parent',
           type: 'Relation',
           collection: 'aDifferentCollection'
@@ -123,7 +123,7 @@ describe('defineSingularRelation', () => {
   describe('when no id is given during query execution', () => {
     describe('the resolver', () => {
       it('should return null', () => {
-        const resolver = defineSingularRelation({
+        const resolver = rootSingle({
           parentType: 'Parent',
           type: 'Relation'
         }).resolvers.Parent.relation

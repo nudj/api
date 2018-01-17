@@ -2,7 +2,7 @@ const { makeExecutableSchema } = require('graphql-tools')
 const glob = require('glob')
 const path = require('path')
 
-const { mergeDefinitions } = require('../lib')
+const mergeDefinitions = require('../lib/merge-definitions')
 const requireFile = file => require(path.resolve(__dirname, file))
 
 const modules = glob.sync('./**/*.js', {

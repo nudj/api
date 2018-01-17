@@ -2,59 +2,59 @@
 const chai = require('chai')
 const expect = chai.expect
 
-const { defineEntitySingularByFiltersRelation } = require('../../gql/lib')
+const { nestedAllByFilters } = require('../../gql/lib')
 const { generateFakeContextWithStore } = require('../helpers')
 
-describe('defineEntitySingularByFiltersRelation', () => {
+describe('nestedAllByFilters', () => {
   it('should throw if no parentType is given', () => {
-    return expect(() => defineEntitySingularByFiltersRelation()).to.throw('defineEntitySingularByFiltersRelation requires a parentType')
+    return expect(() => nestedAllByFilters()).to.throw('nestedAllByFilters requires a parentType')
   })
 
   it('should throw if no type is given', () => {
-    return expect(() => defineEntitySingularByFiltersRelation({
+    return expect(() => nestedAllByFilters({
       parentType: 'Parent'
-    })).to.throw('defineEntitySingularByFiltersRelation requires a type')
+    })).to.throw('nestedAllByFilters requires a type')
   })
 
   it('should return an object', () => {
-    return expect(defineEntitySingularByFiltersRelation({
+    return expect(nestedAllByFilters({
       parentType: 'Parent',
       type: 'Relation'
     })).to.be.an('object')
   })
 
   it('should return the typeDefs', () => {
-    return expect(defineEntitySingularByFiltersRelation({
+    return expect(nestedAllByFilters({
       parentType: 'Parent',
       type: 'Relation'
     })).to.have.property('typeDefs').to.equal(`
       extend type Parent {
-        relationByFilters(filters: RelationFilterInput!): Relation
+        relationsByFilters(filters: RelationFilterInput!): [Relation!]!
       }
     `)
   })
 
-  it('should return resolver for Parent.relationByFilters', () => {
-    return expect(defineEntitySingularByFiltersRelation({
+  it('should return resolver for Parent.relationsByFilters', () => {
+    return expect(nestedAllByFilters({
       parentType: 'Parent',
       type: 'Relation'
     }))
     .to.have.property('resolvers')
     .to.have.property('Parent')
-    .to.have.property('relationByFilters')
+    .to.have.property('relationsByFilters')
   })
 
   describe('the resolver', () => {
     let resolver
 
     beforeEach(() => {
-      resolver = defineEntitySingularByFiltersRelation({
+      resolver = nestedAllByFilters({
         parentType: 'Parent',
         type: 'Relation'
-      }).resolvers.Parent.relationByFilters
+      }).resolvers.Parent.relationsByFilters
     })
 
-    it('should return the result of a store.readOne call', () => {
+    it('should return the result of a store.readAll call', () => {
       const parent = {
         id: 'parent1'
       }
@@ -62,12 +62,12 @@ describe('defineEntitySingularByFiltersRelation', () => {
         slug: 'someSlug'
       }
       const fakeContext = generateFakeContextWithStore({
-        readOne: () => Promise.resolve('the_relation')
+        readAll: () => 'all_the_relations'
       })
-      return expect(resolver(parent, { filters }, fakeContext)).to.eventually.equal('the_relation')
+      return expect(resolver(parent, { filters }, fakeContext)).to.eventually.equal('all_the_relations')
     })
 
-    it('should call store.readOne with the collection type', () => {
+    it('should call store.readAll with the collection type', () => {
       const parent = {
         id: 'parent1'
       }
@@ -75,14 +75,14 @@ describe('defineEntitySingularByFiltersRelation', () => {
         slug: 'someSlug'
       }
       const fakeContext = generateFakeContextWithStore({
-        readOne: args => Promise.resolve(args)
+        readAll: args => args
       })
       return expect(resolver(parent, { filters }, fakeContext))
         .to.eventually.have.deep.property('type')
         .to.deep.equal('relations')
     })
 
-    it('should call store.readOne with filters merged with parent.id', () => {
+    it('should call store.readAll with filters merged with parent.id', () => {
       const parent = {
         id: 'parent1'
       }
@@ -90,7 +90,7 @@ describe('defineEntitySingularByFiltersRelation', () => {
         slug: 'someSlug'
       }
       const fakeContext = generateFakeContextWithStore({
-        readOne: args => Promise.resolve(args)
+        readAll: args => args
       })
       return expect(resolver(parent, { filters }, fakeContext))
         .to.eventually.have.deep.property('filters')
@@ -105,27 +105,13 @@ describe('defineEntitySingularByFiltersRelation', () => {
 
   describe('when the name is passed in', () => {
     it('should override the name', () => {
-      return expect(defineEntitySingularByFiltersRelation({
+      return expect(nestedAllByFilters({
         parentType: 'Parent',
         type: 'Relation',
         name: 'aDifferentName'
       })).to.have.property('typeDefs').to.equal(`
       extend type Parent {
-        aDifferentName(filters: RelationFilterInput!): Relation
-      }
-    `)
-    })
-  })
-
-  describe('when the filterType is passed in', () => {
-    it('should override the filterType', () => {
-      return expect(defineEntitySingularByFiltersRelation({
-        parentType: 'Parent',
-        type: 'Relation',
-        filterType: 'aDifferentFilterType'
-      })).to.have.property('typeDefs').to.equal(`
-      extend type Parent {
-        relationByFilters(filters: aDifferentFilterType!): Relation
+        aDifferentName(filters: RelationFilterInput!): [Relation!]!
       }
     `)
     })
@@ -133,12 +119,12 @@ describe('defineEntitySingularByFiltersRelation', () => {
 
   describe('when the collection is passed in', () => {
     describe('the resolver', () => {
-      it('should override the type passed to store.readOne', () => {
-        const resolver = defineEntitySingularByFiltersRelation({
+      it('should override the type passed to store.readAll', () => {
+        const resolver = nestedAllByFilters({
           parentType: 'Parent',
           type: 'Relation',
           collection: 'aDifferentCollection'
-        }).resolvers.Parent.relationByFilters
+        }).resolvers.Parent.relationsByFilters
         const parent = {
           id: 'parent1'
         }
@@ -146,7 +132,7 @@ describe('defineEntitySingularByFiltersRelation', () => {
           slug: 'someSlug'
         }
         const fakeContext = generateFakeContextWithStore({
-          readOne: args => Promise.resolve(args)
+          readAll: args => args
         })
         return expect(resolver(parent, { filters }, fakeContext))
           .to.eventually.have.deep.property('type')
@@ -155,14 +141,28 @@ describe('defineEntitySingularByFiltersRelation', () => {
     })
   })
 
+  describe('when the filterType is passed in', () => {
+    it('should override the filterType', () => {
+      return expect(nestedAllByFilters({
+        parentType: 'Parent',
+        type: 'Relation',
+        filterType: 'aDifferentFilterType'
+      })).to.have.property('typeDefs').to.equal(`
+      extend type Parent {
+        relationsByFilters(filters: aDifferentFilterType!): [Relation!]!
+      }
+    `)
+    })
+  })
+
   describe('when parentName is passed in', () => {
     describe('the resolver', () => {
       it('should override key in filters for parent.id', () => {
-        const resolver = defineEntitySingularByFiltersRelation({
+        const resolver = nestedAllByFilters({
           parentType: 'Parent',
           parentName: 'aDifferentName',
           type: 'Relation'
-        }).resolvers.Parent.relationByFilters
+        }).resolvers.Parent.relationsByFilters
         const parent = {
           id: 'parent1'
         }
@@ -170,7 +170,7 @@ describe('defineEntitySingularByFiltersRelation', () => {
           slug: 'someSlug'
         }
         const fakeContext = generateFakeContextWithStore({
-          readOne: args => Promise.resolve(args)
+          readAll: args => args
         })
         return expect(resolver(parent, { filters }, fakeContext))
           .to.eventually.have.deep.property('filters')

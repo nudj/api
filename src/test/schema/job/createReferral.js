@@ -20,12 +20,6 @@ describe('Job.createReferral', () => {
           parent: $parentId
         ) {
           id
-          person {
-            id
-          }
-          parent {
-            id
-          }
         }
       }
     }
@@ -70,11 +64,7 @@ describe('Job.createReferral', () => {
         data: {
           job: {
             createReferral: {
-              id: 'referral1',
-              person: {
-                id: 'person1'
-              },
-              parent: null
+              id: 'referral1'
             }
           }
         }
@@ -131,13 +121,7 @@ describe('Job.createReferral', () => {
         data: {
           job: {
             createReferral: {
-              id: 'referral2',
-              person: {
-                id: 'person1'
-              },
-              parent: {
-                id: 'referral1'
-              }
+              id: 'referral2'
             }
           }
         }
@@ -188,11 +172,7 @@ describe('Job.createReferral', () => {
         data: {
           job: {
             createReferral: {
-              id: 'referral1',
-              person: {
-                id: 'person1'
-              },
-              parent: null
+              id: 'referral1'
             }
           }
         }
@@ -240,11 +220,7 @@ describe('Job.createReferral', () => {
         data: {
           job: {
             createReferral: {
-              id: 'referral1',
-              person: {
-                id: 'person1'
-              },
-              parent: null
+              id: 'referral1'
             }
           }
         }

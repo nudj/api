@@ -3,9 +3,15 @@ const { AppError } = require('@nudj/library/errors')
 
 const handleErrors = require('./handle-errors')
 
-module.exports = function nestedAllByFilters (
-  { parentType, parentName, name, type, collection, filterType } = {}
-) {
+module.exports = function nestedAllByFilters (props = {}) {
+  let {
+    parentType,
+    parentName,
+    name,
+    type,
+    collection,
+    filterType
+  } = props
   if (!parentType) {
     throw new AppError(
       'nestedAllByFilters requires a parentType'

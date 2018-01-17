@@ -3,9 +3,15 @@ const { AppError } = require('@nudj/library/errors')
 
 const handleErrors = require('./handle-errors')
 
-module.exports = function nestedAll (
-  { parentType, type, name, collection, parentName, parentPropertyName } = {}
-) {
+module.exports = function nestedAll (props = {}) {
+  let {
+    parentType,
+    parentName,
+    name,
+    type,
+    collection,
+    parentPropertyName
+  } = props
   if (!parentType) { throw new AppError('nestedAll requires a parentType') }
   if (!type) throw new AppError('nestedAll requires a type')
   const camelTypePlural = `${camelCase(type)}s`

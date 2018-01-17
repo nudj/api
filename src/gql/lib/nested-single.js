@@ -3,9 +3,14 @@ const { AppError } = require('@nudj/library/errors')
 
 const handleErrors = require('./handle-errors')
 
-module.exports = function nestedSingle (
-  { parentType, name, type, collection, propertyName } = {}
-) {
+module.exports = function nestedSingle (props = {}) {
+  let {
+    parentType,
+    name,
+    type,
+    collection,
+    propertyName
+  } = props
   if (!parentType) { throw new AppError('nestedSingle requires a parentType') }
   if (!type) throw new AppError('nestedSingle requires a type')
   const camelRelationType = camelCase(type)

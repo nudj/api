@@ -3,7 +3,13 @@ const { AppError, logThenThrow } = require('@nudj/library/errors')
 
 const handleErrors = require('./handle-errors')
 
-module.exports = function rootAll ({ parentType, type, name, collection } = {}) {
+module.exports = function rootAll (props = {}) {
+  let {
+    parentType,
+    type,
+    name,
+    collection
+  } = props
   if (!parentType) { throw new AppError('rootAll requires a parentType') }
   if (!type) throw new AppError('rootAll requires a type')
   name = name || `${camelCase(type)}s`

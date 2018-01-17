@@ -4,9 +4,15 @@ const { merge } = require('@nudj/library')
 
 const handleErrors = require('./handle-errors')
 
-module.exports = function nestedSingleByFilters (
-  { parentType, type, parentName, name, collection, filterType } = {}
-) {
+module.exports = function nestedSingleByFilters (props = {}) {
+  let {
+    parentType,
+    type,
+    parentName,
+    name,
+    collection,
+    filterType
+  } = props
   if (!parentType) {
     throw new AppError(
       'nestedSingleByFilters requires a parentType'

@@ -3,9 +3,14 @@ const { AppError } = require('@nudj/library/errors')
 
 const handleErrors = require('./handle-errors')
 
-module.exports = function rootSingleByFilters (
-  { parentType, name, type, collection, filterType } = {}
-) {
+module.exports = function rootSingleByFilters (props = {}) {
+  let {
+    parentType,
+    name,
+    type,
+    collection,
+    filterType
+  } = props
   if (!parentType) { throw new AppError('rootSingleByFilters requires a parentType') }
   if (!type) { throw new AppError('rootSingleByFilters requires a type') }
   name = name || `${camelCase(type)}ByFilters`

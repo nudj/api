@@ -4,9 +4,14 @@ const { merge } = require('@nudj/library')
 
 const handleErrors = require('./handle-errors')
 
-module.exports = function rootAllByFilters (
-  { parentType, type, name, collection, filterType } = {}
-) {
+module.exports = function rootAllByFilters (props = {}) {
+  let {
+    parentType,
+    type,
+    name,
+    collection,
+    filterType
+  } = props
   if (!parentType) { throw new AppError('rootAllByFilters requires a parentType') }
   if (!type) throw new AppError('rootAllByFilters requires a type')
   name = name || `${camelCase(type)}sByFilters`

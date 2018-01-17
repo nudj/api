@@ -4,7 +4,13 @@ const { AppError } = require('@nudj/library/errors')
 const handleErrors = require('./handle-errors')
 
 module.exports =
-function rootSingle ({ parentType, type, name, collection } = {}) {
+function rootSingle (props = {}) {
+  let {
+    parentType,
+    type,
+    name,
+    collection
+  } = props
   if (!parentType) { throw new AppError('rootSingle requires a parentType') }
   if (!type) throw new AppError('rootSingle requires a type')
   name = name || camelCase(type)

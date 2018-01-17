@@ -11,11 +11,14 @@ const gmail = google.gmail('v1')
 
 const formatBody = (message) => {
   const body = striptags(message)
-    .replace(/\n\n/g, '<div><br></div>')
-  const closingTags = (body.match(/\n/g) || [])
-    .map(() => '</div>').join('')
+    .replace(/\n\n/g, '<div><br></div><div>')
+    .replace(/\n/g, '<div>')
 
-  return body.replace(/\n/g, '<div>') + closingTags
+  const closedTags = (body.match(/<\/div>/g) || [])
+  const endTags = (body.match(/<div>/g) || [])
+  closedTags.forEach(() => endTags.pop())
+
+  return body + endTags.map(() => '</div>').join('')
 }
 
 module.exports = async ({ context, email, person, threadId }) => {

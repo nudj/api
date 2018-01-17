@@ -107,8 +107,8 @@ describe('Google', () => {
         .replace(/\r\n/g, '')
       expect(messageBody).to.equal(dedent`
         There were so many bothans<div>And I don\'t know how I can recover those \
-        plans, I think they\'re gone.<div><br></div>Sorry about that Emperor. Love \
-        you babs.</div>
+        plans, I think they\'re gone.<div><br></div><div>Sorry about that Emperor. Love \
+        you babs.</div></div>
       `)
     })
   })

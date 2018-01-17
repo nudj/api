@@ -7,7 +7,7 @@ const expect = chai.expect
 
 chai.use(sinonChai)
 
-describe.only('Person.notifyByEmail', () => {
+describe('Person.notifyByEmail', () => {
   let definition
   let mailerSendStub
   let result

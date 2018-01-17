@@ -9,13 +9,13 @@ module.exports = {
       notifyByEmail(
         subject: String!,
         body: String!,
-      ): Data
+      ): Status
     }
   `,
   resolvers: {
     Person: {
-      notifyByEmail: handleErrors(async (person, args) =>
-        mailer.send({
+      notifyByEmail: handleErrors(async (person, args) => {
+        return mailer.send({
           from: 'hello@nudj.co',
           to: person.email,
           subject: renderSimpleTemplate({
@@ -31,7 +31,7 @@ module.exports = {
             splitter: 'somerandomstring'
           })[0].join('')
         })
-      )
+      })
     }
   }
 }

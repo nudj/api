@@ -8,6 +8,13 @@ const find = require('lodash/find')
 const fetchAccountTokens = require('./fetchAccountTokens')
 const fetchThread = require('./fetchThread')
 
+const sanitiseMessage = (message) => {
+  return Base64.decode(message)
+    .split(/<div\s*class="[^"]*?gmail_extra[^"]*?"\s*>/)[0]
+    .replace(/<div>/g, '\n')
+    .replace(/<br><\/div>/g, '')
+}
+
 const fetchPersonFromEmail = async (context, headers, name) => {
   const { address } = parseOneAddress(
     get(
@@ -36,10 +43,13 @@ module.exports = async ({ context, conversation }) => {
     const from = await fetchPersonFromEmail(context, payload.headers, 'From')
     const to = await fetchPersonFromEmail(context, payload.headers, 'To')
 
-    const encryptedBody =
-      get(payload, 'body.data') || get(payload, 'parts[0].body.data')
-    const message = emailParser(Base64.decode(encryptedBody)).getVisibleText()
-    const body = striptags(message.replace(/<br>|<br\s*\/>/g, '\n'))
+    const encryptedBody = (
+      get(payload, 'body.data') ||
+      get(payload, 'parts[1].body.data') ||
+      get(payload, 'parts[0].body.data')
+    )
+    const message = sanitiseMessage(encryptedBody)
+    const body = emailParser(striptags(message)).getVisibleText()
 
     return { id, from, to, date, body }
   }))

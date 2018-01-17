@@ -1,3 +1,4 @@
+const get = require('lodash/get')
 const { sendGmail } = require('../../lib/google')
 const { handleErrors } = require('../../lib')
 const { values: emailPreferences } = require('../enums/email-preference-types')
@@ -53,8 +54,9 @@ module.exports = {
         const { body, subject, to: recipient } = args
         if (!body) throw new Error('No message body')
 
-        const { emailPreference: type } = person
-        const from = `${person.firstName} ${person.lastName} <${person.email}>`
+        const { emailPreference: type = emailPreferences.OTHER } = person
+        const name = `${get(person, 'firstName', '')} ${get(person, 'lastName', '')}`
+        const from = `${name} <${get(person, 'email', '')}>`
         const to = await fetchEmail(context, recipient)
         const email = { body, subject, to, from }
 

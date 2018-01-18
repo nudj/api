@@ -1,6 +1,6 @@
-const { defineEntitySingularRelation } = require('../../lib')
+const { nestedSingle } = require('../../lib')
 
-module.exports = defineEntitySingularRelation({
+module.exports = nestedSingle({
   parentType: 'Referral',
   type: 'Person',
   collection: 'people'

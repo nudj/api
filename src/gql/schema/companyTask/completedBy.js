@@ -1,8 +1,9 @@
-const { defineEntitySingularRelation } = require('../../lib')
+const { nestedSingle } = require('../../lib')
 
-module.exports = defineEntitySingularRelation({
+module.exports = nestedSingle({
   parentType: 'CompanyTask',
   type: 'Person',
   collection: 'people',
-  name: 'completedBy'
+  name: 'completedBy',
+  propertyName: 'completedBy'
 })

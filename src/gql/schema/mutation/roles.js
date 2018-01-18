@@ -1,6 +1,6 @@
-const { definePluralRelation } = require('../../lib')
+const { rootAll } = require('../../lib')
 
-module.exports = definePluralRelation({
+module.exports = rootAll({
   parentType: 'Mutation',
   name: 'roles',
   type: 'Role',

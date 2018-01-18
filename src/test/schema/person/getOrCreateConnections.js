@@ -12,7 +12,7 @@ describe('Person.getOrCreateConnections', () => {
     query {
       person (id: "person1") {
         getOrCreateConnections(
-          to: [{
+          connections: [{
             firstName: "CONNECTION_FIRSTNAME1",
             lastName: "CONNECTION_LASTNAME1",
             title: "CONNECTION_TITLE1",

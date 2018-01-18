@@ -3,14 +3,14 @@ const { handleErrors } = require('../../lib')
 module.exports = {
   typeDefs: `
     extend type Person {
-      getOrCreateConnections(to: [ConnectionCreateInput!]!, source: String!): [Connection]
+      getOrCreateConnections(connections: [ConnectionCreateInput!]!, source: String!): [Connection]
     }
   `,
   resolvers: {
     Person: {
       getOrCreateConnections: handleErrors(async (person, args, context) => {
         const from = person.id
-        const { to, source } = args
+        const { connections, source } = args
         const savedSource = await context.transaction((store, params) => {
           const { source } = params
           return store.readOneOrCreate({
@@ -22,26 +22,26 @@ module.exports = {
         if (!savedSource) {
           throw new Error('Unable to create Source')
         }
-        return Promise.all(to.map(async data => {
+        return Promise.all(connections.map(async to => {
           return context.transaction((store, params) => {
             const omit = require('lodash/omit')
             const pick = require('lodash/pick')
-            const { from, source } = params
+            const { from, to, source } = params
             return Promise.all([
-              data.title && store.readOneOrCreate({
+              to.title && store.readOneOrCreate({
                 type: 'roles',
-                filters: { name: data.title },
-                data: { name: data.title }
+                filters: { name: to.title },
+                data: { name: to.title }
               }),
-              data.company && store.readOneOrCreate({
+              to.company && store.readOneOrCreate({
                 type: 'companies',
-                filters: { name: data.company },
-                data: { name: data.company }
+                filters: { name: to.company },
+                data: { name: to.company }
               }),
               store.readOneOrCreate({
                 type: 'people',
-                filters: { email: data.email },
-                data: pick(data, ['email'])
+                filters: { email: to.email },
+                data: pick(to, ['email'])
               })
             ])
             .then(([
@@ -55,7 +55,7 @@ module.exports = {
                   from,
                   person: person.id
                 },
-                data: Object.assign({}, omit(data, ['email', 'title']), {
+                data: Object.assign({}, omit(to, ['email', 'title']), {
                   from,
                   source: source.id,
                   role: role && role.id,
@@ -66,6 +66,7 @@ module.exports = {
             })
           }, {
             from,
+            to,
             source: savedSource
           })
         }))

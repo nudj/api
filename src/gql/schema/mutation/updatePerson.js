@@ -13,8 +13,8 @@ module.exports = {
           (store, params) => {
             const { person, data } = params
             return store.update({
-              id: person,
               type: 'people',
+              id: person,
               data
             })
           },

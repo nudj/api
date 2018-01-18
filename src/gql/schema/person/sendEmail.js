@@ -27,12 +27,19 @@ const fetchEmail = (context, id) => {
   return context.transaction((store, params) => {
     const { id } = params
     return store.readOne({
-      type: 'people',
+      type: 'connections',
       id
     })
-    .then(person => {
-      if (!person) throw new Error(`No person for id ${id} found`)
-      return person.email
+    .then(connection => {
+      if (!connection) throw new Error(`No connection for id ${id} found`)
+      return store.readOne({
+        type: 'people',
+        id: connection.person
+      })
+      .then(person => {
+        if (!person) throw new Error(`No person for id ${connection.person} found`)
+        return person.email
+      })
     })
   }, { id })
 }

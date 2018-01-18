@@ -62,7 +62,7 @@ describe('ArangoAdaptor ActionToString', () => {
 
     it('should contain a stringified check for an error', () => {
       const result = ActionToString(STORE_NOOP, ACTION_NOOP)
-      expect(result).to.contain.string('if (result.error) { throw error }')
+      expect(result).to.contain.string('if (result.error) { throw result.error }')
     })
 
     it('should contain a stringified return of the resolution', () => {

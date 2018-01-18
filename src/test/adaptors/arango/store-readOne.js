@@ -56,18 +56,16 @@ describe('ArangoAdaptor Store().readOne', () => {
   })
 
   describe('by filters', () => {
-    it('should read the data by filters', () => {
-      return Store().readOne({
+    it('should read the data by filters', async () => {
+      await Store().readOne({
         type: 'collectionName',
         filters: {
           test: 'value'
         }
       })
-      .then(() => {
-        const dataArgument = dbStub.db.collectionName.firstExample.firstCall.args[0]
-        expect(dataArgument).to.deep.equal({
-          test: 'value'
-        })
+      const dataArgument = dbStub.db.collectionName.firstExample.firstCall.args[0]
+      return expect(dataArgument).to.deep.equal({
+        test: 'value'
       })
     })
 
@@ -80,6 +78,18 @@ describe('ArangoAdaptor Store().readOne', () => {
       })).to.eventually.deep.equal({
         id: 'id',
         prop: 'value'
+      })
+    })
+
+    describe('when arango returns `null`', () => {
+      it('should return `null`', () => {
+        dbStub.db.collectionName.firstExample.returns(null)
+        return expect(Store().readOne({
+          type: 'collectionName',
+          filters: {
+            test: 'value'
+          }
+        })).to.eventually.be.null()
       })
     })
   })

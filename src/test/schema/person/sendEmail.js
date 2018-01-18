@@ -77,13 +77,19 @@ describe('Person.sendEmail', () => {
   const emailVariables = {
     userId: 'person1',
     body: 'I think it might be time we upgrade you from Demigod. Thoughts?',
-    to: 'person2',
+    to: 'connection1',
     subject: 'Demigod Status'
   }
 
   it('should send email and return conversation', async () => {
     const db = {
       conversations: [],
+      connections: [
+        {
+          id: 'connection1',
+          person: 'person2'
+        }
+      ],
       accounts: [
         {
           id: 'account1',
@@ -117,6 +123,12 @@ describe('Person.sendEmail', () => {
   it('should still send with invalid accessToken', async () => {
     const db = {
       conversations: [],
+      connections: [
+        {
+          id: 'connection1',
+          person: 'person2'
+        }
+      ],
       accounts: [
         {
           id: 'account1',
@@ -160,6 +172,12 @@ describe('Person.sendEmail', () => {
           }
         }
       ],
+      connections: [
+        {
+          id: 'connection1',
+          person: 'person2'
+        }
+      ],
       people: [
         {
           id: 'person1',
@@ -190,6 +208,12 @@ describe('Person.sendEmail', () => {
   it('should create a conversation for a new message', async () => {
     const db = {
       conversations: [],
+      connections: [
+        {
+          id: 'connection1',
+          person: 'person2'
+        }
+      ],
       accounts: [
         {
           id: 'account1',

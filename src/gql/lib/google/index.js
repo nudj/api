@@ -1,9 +1,9 @@
-const fetchAccountTokens = require('./fetchAccountTokens')
-const fetchGmailMessages = require('./fetchGmailMessages')
-const fetchGmailSubject = require('./fetchGmailSubject')
-const sendGmailByThread = require('./sendGmailByThread')
-const validateTokens = require('./validateTokens')
-const sendGmail = require('./sendGmail')
+const fetchAccountTokens = require('./fetch-account-tokens')
+const fetchGmailMessages = require('./fetch-gmail-messages')
+const fetchGmailSubject = require('./fetch-gmail-subject')
+const sendGmailByThread = require('./send-gmail-by-thread')
+const validateTokens = require('./validate-tokens')
+const sendGmail = require('./send-gmail')
 
 module.exports = {
   sendGmail,

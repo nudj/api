@@ -1,8 +1,8 @@
 const get = require('lodash/get')
 const find = require('lodash/find')
 
-const fetchAccountTokens = require('./fetchAccountTokens')
-const fetchThread = require('./fetchThread')
+const fetchAccountTokens = require('./fetch-account-tokens')
+const fetchThread = require('./fetch-thread')
 
 module.exports = async ({ context, conversation }) => {
   const { threadId, person } = conversation

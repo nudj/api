@@ -1,6 +1,6 @@
 const get = require('lodash/get')
-const fetchGmailSubject = require('./fetchGmailSubject')
-const sendGmail = require('./sendGmail')
+const fetchGmailSubject = require('./fetch-gmail-subject')
+const sendGmail = require('./send-gmail')
 
 const fetchPerson = async (context, personId) => {
   return await context.transaction((store, params) => {

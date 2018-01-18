@@ -1,6 +1,6 @@
 const google = require('googleapis')
 const { logger } = require('@nudj/library')
-const authClient = require('./authClient')
+const authClient = require('./auth-client')
 
 const gmail = google.gmail('v1')
 

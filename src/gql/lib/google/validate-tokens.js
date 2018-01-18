@@ -1,6 +1,6 @@
 const request = require('@nudj/library/request')
 const { logger } = require('@nudj/library')
-const authClient = require('./authClient')
+const authClient = require('./auth-client')
 
 const refreshAccessToken = (refreshToken) => {
   authClient.setCredentials({

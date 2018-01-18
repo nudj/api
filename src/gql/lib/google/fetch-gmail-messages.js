@@ -1,12 +1,22 @@
-const emailParser = require('node-email-reply-parser')
+const { decodeHTML } = require('entities')
 const { parseOneAddress } = require('email-addresses')
 const { Base64 } = require('js-base64')
 const striptags = require('striptags')
 const get = require('lodash/get')
 const find = require('lodash/find')
 
-const fetchAccountTokens = require('./fetchAccountTokens')
-const fetchThread = require('./fetchThread')
+const fetchAccountTokens = require('./fetch-account-tokens')
+const fetchThread = require('./fetch-thread')
+const gmailBodyRegex = require('./gmail-body-regex')
+
+const sanitiseMessage = (message) => {
+  // Extracts the email body and formats it with appropriate line breaks.
+  const messageBody = Base64.decode(message)
+    .split(gmailBodyRegex)[0]
+    .replace(/<div>/g, '\n')
+
+  return decodeHTML(striptags(messageBody)) // Remove tags & replace HTML entities
+}
 
 const fetchPersonFromEmail = async (context, headers, name) => {
   const { address } = parseOneAddress(
@@ -36,10 +46,12 @@ module.exports = async ({ context, conversation }) => {
     const from = await fetchPersonFromEmail(context, payload.headers, 'From')
     const to = await fetchPersonFromEmail(context, payload.headers, 'To')
 
-    const encryptedBody =
-      get(payload, 'body.data') || get(payload, 'parts[0].body.data')
-    const message = emailParser(Base64.decode(encryptedBody)).getVisibleText()
-    const body = striptags(message.replace(/<br>|<br\s*\/>/g, '\n'))
+    const encryptedBody = (
+      get(payload, 'body.data') ||
+      get(payload, 'parts[1].body.data') ||
+      get(payload, 'parts[0].body.data')
+    )
+    const body = sanitiseMessage(encryptedBody)
 
     return { id, from, to, date, body }
   }))

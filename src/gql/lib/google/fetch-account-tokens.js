@@ -1,4 +1,4 @@
-const validateTokens = require('./validateTokens')
+const validateTokens = require('./validate-tokens')
 const { values: emailPreferences } = require('../../schema/enums/email-preference-types')
 
 module.exports = async (context, person) => {

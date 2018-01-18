@@ -1,6 +1,6 @@
 const nock = require('nock')
 const { Base64 } = require('js-base64')
-const gmailThread = require('./mock-gmail-thread')
+const { mockGmailThread } = require('./mock-gmail-thread')
 const {
   validAccessToken,
   invalidAccessToken,
@@ -50,7 +50,7 @@ const mockGmailSend = () => {
 const mockThreadFetch = () => {
   validAccessTokenGoogle
     .get(`/threads/${validThreadId}`)
-    .reply(200, gmailThread)
+    .reply(200, mockGmailThread)
   validAccessTokenGoogle
     .get(`/threads/${invalidThreadId}`)
     .replyWithError('Invalid Thread ID')

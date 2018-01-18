@@ -3,7 +3,7 @@ const chai = require('chai')
 const sinon = require('sinon')
 const sinonChai = require('sinon-chai')
 const proxyquire = require('proxyquire')
-const mockGmailThread = require('../../helpers/google/mock-gmail-thread')
+const { mockGmailThread } = require('../../helpers/google/mock-gmail-thread')
 const { validAccessToken } = require('../../helpers/google/mock-tokens')
 
 const thread = sinon.stub()

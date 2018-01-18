@@ -1,4 +1,4 @@
-const emailParser = require('node-email-reply-parser')
+const { decodeHTML } = require('entities')
 const { parseOneAddress } = require('email-addresses')
 const { Base64 } = require('js-base64')
 const striptags = require('striptags')
@@ -15,7 +15,7 @@ const sanitiseMessage = (message) => {
     .split(gmailBodyRegex)[0]
     .replace(/<div>/g, '\n')
 
-  return emailParser(striptags(messageBody)).getVisibleText()
+  return decodeHTML(striptags(messageBody)) // Remove tags & replace HTML entities
 }
 
 const fetchPersonFromEmail = async (context, headers, name) => {
@@ -51,7 +51,7 @@ module.exports = async ({ context, conversation }) => {
       get(payload, 'parts[1].body.data') ||
       get(payload, 'parts[0].body.data')
     )
-    const body = sanitiseMessage(encryptedBody) // Emulates Gmail formatting
+    const body = sanitiseMessage(encryptedBody)
 
     return { id, from, to, date, body }
   }))

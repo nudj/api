@@ -3,7 +3,7 @@ const chai = require('chai')
 const nock = require('nock')
 const fetchThread = require('../../../gql/lib/google/fetch-thread')
 const { mockThreadFetch } = require('../../helpers/google/mock-requests')
-const gmailThread = require('../../helpers/google/mock-gmail-thread')
+const { mockGmailThread } = require('../../helpers/google/mock-gmail-thread')
 const {
   validAccessToken,
   invalidAccessToken,
@@ -30,7 +30,7 @@ describe('Google.fetchThread', () => {
     const accessToken = validAccessToken
     const threadId = validThreadId
     const response = await fetchThread({ threadId, accessToken })
-    expect(response).to.deep.equal(gmailThread)
+    expect(response).to.deep.equal(mockGmailThread)
   })
 
   it('errors with invalid threadId', async () => {

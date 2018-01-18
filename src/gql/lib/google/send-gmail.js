@@ -24,7 +24,7 @@ const formatBody = (message) => {
 }
 
 module.exports = async ({ context, email, person, threadId }) => {
-  email.body = formatBody(email.body)
+  email.body = formatBody(email.body) // Emulates Gmail formatting
 
   const { accessToken } = await fetchAccountTokens(context, person)
   const mimeEmail = emailBuilder(email)

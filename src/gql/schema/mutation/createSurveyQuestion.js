@@ -3,7 +3,7 @@ const { handleErrors } = require('../../lib')
 module.exports = {
   typeDefs: `
     extend type Mutation {
-      createSurveyQuestion(surveySection: ID!, data: SurveyQuestionCreateInput!): Survey
+      createSurveyQuestion(surveySection: ID!, data: SurveyQuestionCreateInput!): SurveyQuestion
     }
   `,
   resolvers: {

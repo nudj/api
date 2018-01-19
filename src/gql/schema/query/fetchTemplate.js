@@ -1,3 +1,4 @@
+const find = require('lodash/find')
 const fetchContent = require('../../lib/prismic')
 
 module.exports = {
@@ -16,7 +17,7 @@ module.exports = {
       fetchTemplate: async (root, args) => {
         const { type, repo, tags, keys } = args
         const data = await fetchContent({ type, tags, repo, keys })
-        return data && data[0]
+        return data && find(data, { tags })
       }
     }
   }

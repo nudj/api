@@ -8,6 +8,11 @@ module.exports = {
       description: String
     }
 
+    input SurveySectionCreateInput {
+      title: String!
+      description: String
+    }
+
     input SurveySectionFilterInput {
       id: ID
     }

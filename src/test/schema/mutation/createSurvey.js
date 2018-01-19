@@ -29,7 +29,7 @@ const variables = {
   }
 }
 
-describe.only('Mutation.createSurvey', () => {
+describe('Mutation.createSurvey', () => {
   let db
 
   beforeEach(() => {

@@ -1,4 +1,7 @@
 const camelCase = require('lodash/camelCase')
+const omit = require('lodash/omit')
+const filter = require('lodash/filter')
+const first = require('lodash/first')
 const { AppError } = require('@nudj/library/errors')
 const { merge } = require('@nudj/library')
 
@@ -36,18 +39,37 @@ module.exports = function nestedSingleByFilters (props = {}) {
           let filters = merge(args.filters, {
             [parentName]: parent.id
           })
-          return context.transaction(
-            (store, params) => {
-              return store.readOne({
-                type: params.collection,
-                filters: params.filters
-              })
-            },
-            {
-              collection,
-              filters
-            }
-          )
+          // arango does not support filtering by an id
+          // so fetches by id and confirms match retrospectively
+          if (filters.id) {
+            return context.transaction(
+              (store, params) => {
+                return store.readOne({
+                  type: params.collection,
+                  id: params.id
+                })
+              },
+              {
+                collection,
+                id: filters.id
+              }
+            )
+            // checks to make sure the result matches the non-id filters
+            .then(result => first(filter([result], omit(filters, 'id'))))
+          } else {
+            return context.transaction(
+              (store, params) => {
+                return store.readOne({
+                  type: params.collection,
+                  filters: params.filters
+                })
+              },
+              {
+                collection,
+                filters
+              }
+            )
+          }
         })
       }
     }

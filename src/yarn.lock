@@ -980,6 +980,10 @@ end-of-stream@^1.0.0:
   dependencies:
     once "^1.4.0"
 
+entities@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/entities/-/entities-1.1.1.tgz#6e5c2d0a5621b5dadaecef80b90edfb5cd7772f0"
+
 envkey@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/envkey/-/envkey-1.0.0.tgz#c0512dc56a8ee889727a898d0f74a02e2519bb8b"
@@ -1230,10 +1234,6 @@ esrecurse@^4.1.0:
   dependencies:
     estraverse "^4.1.0"
     object-assign "^4.0.1"
-
-esrever@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/esrever/-/esrever-0.2.0.tgz#96e9d28f4f1b1a76784cd5d490eaae010e7407b8"
 
 estraverse-fb@^1.3.1:
   version "1.3.2"
@@ -2573,7 +2573,7 @@ lodash.restparam@^3.0.0:
   version "3.6.1"
   resolved "https://registry.yarnpkg.com/lodash.restparam/-/lodash.restparam-3.6.1.tgz#936a4e309ef330a7645ed4145986c85ae5b20805"
 
-lodash@4, lodash@4.17.4, lodash@^4.0.0, lodash@^4.11.2, lodash@^4.14.0, lodash@^4.17.4, lodash@^4.3.0, lodash@~4.17.2:
+lodash@4, lodash@4.17.4, lodash@^4.0.0, lodash@^4.11.2, lodash@^4.14.0, lodash@^4.3.0, lodash@~4.17.2:
   version "4.17.4"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.4.tgz#78203a4d1c328ae1d86dca6460e369b57f4055ae"
 
@@ -2853,13 +2853,6 @@ nock@9.0.14:
     propagate "0.4.0"
     qs "^6.0.2"
     semver "^5.3.0"
-
-node-email-reply-parser@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/node-email-reply-parser/-/node-email-reply-parser-0.1.0.tgz#d9b668b2a13e015cccaeaad4e87a4288dd5bf3cf"
-  dependencies:
-    esrever "^0.2.0"
-    lodash "^4.17.4"
 
 node-fetch@1.6.3:
   version "1.6.3"

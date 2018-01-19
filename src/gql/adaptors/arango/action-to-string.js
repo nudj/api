@@ -12,7 +12,7 @@ module.exports = (store, action) => {
     const store = ${store.toString()}
     const action = ${action.toString()}
     const result = action(store(), params)
-    if (result.error) { throw error }
+    if (result.error) { throw result.error }
     return result.resolution
   }`
 }

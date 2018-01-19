@@ -4,3 +4,5 @@ node_modules
 !.cache/readme.md
 .DS_Store
 .env
+tmp/*
+!tmp/readme.md

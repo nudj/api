@@ -3,6 +3,7 @@ module.exports = () => {
   const flatten = require('lodash/flatten')
   const { db } = require('@arangodb')
   const normaliseData = (data) => {
+    if (data === null) return null
     return reduce(data, (result, value, key) => {
       switch (key) {
         case '_key':

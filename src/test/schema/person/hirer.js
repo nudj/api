@@ -10,8 +10,7 @@ describe('Person.hirer', () => {
     const db = {
       people: [
         {
-          id: 'person1',
-          hirer: 'hirer2'
+          id: 'person1'
         }
       ],
       hirers: [
@@ -19,7 +18,8 @@ describe('Person.hirer', () => {
           id: 'hirer1'
         },
         {
-          id: 'hirer2'
+          id: 'hirer2',
+          person: 'person1'
         }
       ]
     }

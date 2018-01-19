@@ -1,6 +1,6 @@
 {
   "name": "@nudj/api",
-  "version": "7.0.0",
+  "version": "7.1.0",
   "description": "Internal api for nudj data",
   "main": "index",
   "directories": {
@@ -17,18 +17,22 @@
   },
   "homepage": "https://github.com/nudj/api#readme",
   "dependencies": {
-    "@nudj/library": "4.0.0",
+    "@nudj/library": "4.2.0",
     "apollo-server-express": "^1.2.0",
     "axios": "^0.17.1",
     "body-parser": "1.17.2",
     "date-fns": "1.28.2",
     "dedent": "^0.7.0",
+    "email-addresses": "^3.0.1",
+    "entities": "^1.1.1",
     "envkey": "^1.0.0",
     "express": "4.15.3",
     "glob": "^7.1.2",
+    "googleapis": "^21.3.0",
     "graphql": "0.10.3",
     "graphql-server-express": "1.0.0",
     "graphql-tools": "1.1.0",
+    "js-base64": "^2.1.9",
     "intercom-client": "^2.8.7",
     "json-server": "0.11.2",
     "lodash": "4.17.4",
@@ -40,7 +44,8 @@
     "prismic.io": "^3.5.6",
     "random-words": "^0.0.1",
     "restify": "4.3.0",
-    "semi": "^4.0.5"
+    "semi": "^4.0.5",
+    "striptags": "^3.1.1"
   },
   "devDependencies": {
     "chai": "3.5.0",

@@ -1,6 +1,6 @@
-const { defineEnum } = require('../../lib')
+const { rootEnum } = require('../../lib')
 
-module.exports = defineEnum({
+module.exports = rootEnum({
   name: 'RecommendationSource',
   values: [
     'NUDJ',

@@ -1,3 +1,5 @@
+const handleErrors = require('../../lib/handle-errors')
+
 module.exports = {
   typeDefs: `
     extend type Job {
@@ -6,7 +8,7 @@ module.exports = {
   `,
   resolvers: {
     Job: {
-      createApplication: (job, args, context) => {
+      createApplication: handleErrors((job, args, context) => {
         return context.transaction((store, params) => {
           const { personId, jobId, referralId } = params
           return Promise.all([
@@ -20,7 +22,7 @@ module.exports = {
             })
           ])
           .then(([ person, referral ]) => {
-            if (!job) throw new Error(`Person with id ${personId} does not exist`)
+            if (!person) throw new Error(`Person with id ${personId} does not exist`)
             return store.readOneOrCreate({
               type: 'applications',
               filters: {
@@ -39,7 +41,7 @@ module.exports = {
           personId: args.person,
           referralId: args.referral
         })
-      }
+      })
     }
   }
 }

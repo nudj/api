@@ -1,6 +1,6 @@
-const { defineEntitySingularByFiltersRelation } = require('../../lib')
+const { nestedSingleByFilters } = require('../../lib')
 
-module.exports = defineEntitySingularByFiltersRelation({
+module.exports = nestedSingleByFilters({
   parentType: 'SurveySection',
   type: 'SurveyQuestion'
 })

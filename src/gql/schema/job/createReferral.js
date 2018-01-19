@@ -20,7 +20,7 @@ module.exports = {
             })
           ])
           .then(([ person, parent ]) => {
-            if (!job) throw new Error(`Person with id ${personId} does not exist`)
+            if (!person) throw new Error(`Person with id ${personId} does not exist`)
             return store.readOneOrCreate({
               type: 'referrals',
               filters: {

@@ -5,10 +5,14 @@ CWD=$(shell pwd)
 .PHONY: build ssh test
 
 build:
+	@./build.sh $(IMAGEDEV)
+
+buildLocal:
 	@docker build \
-		-t $(IMAGEDEV) \
+		-t $(IMAGE):local \
 		--build-arg NPM_TOKEN=${NPM_TOKEN} \
-		-f $(CWD)/Dockerfile.dev \
+		--build-arg NODE_ENV=production \
+		-f $(CWD)/Dockerfile \
 		.
 
 ssh:

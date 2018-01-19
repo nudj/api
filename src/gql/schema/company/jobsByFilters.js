@@ -1,6 +1,6 @@
-const { defineEntityPluralByFiltersRelation } = require('../../lib')
+const { nestedAllByFilters } = require('../../lib')
 
-module.exports = defineEntityPluralByFiltersRelation({
+module.exports = nestedAllByFilters({
   parentType: 'Company',
   type: 'Job'
 })

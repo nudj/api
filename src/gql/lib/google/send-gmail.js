@@ -12,8 +12,8 @@ const gmail = google.gmail('v1')
 const formatBody = (message) => {
   // Emulates Gmail HTML patterns for line breaks
   const body = striptags(message)
-    .replace(/\n\n/g, '<div><br></div><div>')
-    .replace(/\n/g, '<div>')
+    .replace(/(\n\n|\r\n\r\n)/g, '<div><br></div><div>')
+    .replace(/(\n|\r\n)/g, '<div>')
 
   // Counts number of closing tags to apply
   const closedTags = (body.match(/<\/div>/g) || [])

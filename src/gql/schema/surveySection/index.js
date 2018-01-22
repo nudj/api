@@ -13,6 +13,12 @@ module.exports = {
       description: String
     }
 
+    input SurveySectionUpdateInput {
+      title: String
+      description: String
+      surveyQuestions: [ID!]
+    }
+
     input SurveySectionFilterInput {
       id: ID
     }

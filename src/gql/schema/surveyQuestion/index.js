@@ -19,6 +19,14 @@ module.exports = {
       type: SurveyQuestionType!
     }
 
+    input SurveyQuestionUpdateInput {
+      title: String
+      description: String
+      name: String
+      required: Boolean
+      type: SurveyQuestionType
+    }
+
     input SurveyQuestionFilterInput {
       id: ID
     }

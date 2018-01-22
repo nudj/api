@@ -6,10 +6,11 @@ module.exports = async (context, person) => {
     const { person } = params
     return store.readOne({
       type: 'accounts',
-      filters: { person, type: emailPreferences.GOOGLE }
+      filters: { person, type: params.emailPreference }
     })
   }, {
-    person: person.id
+    person: person.id,
+    emailPreference: emailPreferences.GOOGLE
   })
   if (!account) throw new Error('No google account found')
   const { accessToken, refreshToken } = account.data

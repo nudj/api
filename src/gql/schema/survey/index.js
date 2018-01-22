@@ -19,6 +19,15 @@ module.exports = {
       outroDescription: String
     }
 
+    input SurveyUpdateInput {
+      slug: String
+      introTitle: String
+      introDescription: String
+      outroTitle: String
+      outroDescription: String
+      surveySections: [ID!]
+    }
+
     input SurveyFilterInput {
       id: ID
       slug: String

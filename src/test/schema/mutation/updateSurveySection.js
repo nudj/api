@@ -28,7 +28,7 @@ let variables = {
   }
 }
 
-describe.only('Mutation.updateSurveySection ', () => {
+describe('Mutation.updateSurveySection', () => {
   let db
 
   beforeEach(() => {

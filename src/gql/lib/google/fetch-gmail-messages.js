@@ -42,9 +42,10 @@ module.exports = async ({ context, conversation }) => {
   const thread = await fetchThread({ threadId, accessToken })
 
   return Promise.all(thread.messages.map(async (data) => {
-    const { payload, id, internalDate: date } = data
+    const { payload, id, internalDate } = data
     const from = await fetchPersonFromEmail(context, payload.headers, 'From')
     const to = await fetchPersonFromEmail(context, payload.headers, 'To')
+    const date = parseInt(internalDate, 10)
 
     const encryptedBody = (
       get(payload, 'body.data') ||

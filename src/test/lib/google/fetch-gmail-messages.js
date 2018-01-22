@@ -35,21 +35,21 @@ describe('Google.fetchGmailMessages', () => {
         id: 'MESSAGE_1',
         from: { id: 'personId' },
         to: { id: 'personId' },
-        date: '1515758519000',
+        date: 1515758519000,
         body: 'Where\'s my spaceship? Space command needs me.'
       },
       {
         id: 'MESSAGE_2',
         from: { id: 'personId' },
         to: { id: 'personId' },
-        date: '1515758631000',
+        date: 1515758631000,
         body: 'You\nAre\nA\nToy!'
       },
       {
         id: 'MESSAGE_3',
         from: { id: 'personId' },
         to: { id: 'personId' },
-        date: '1515847314000',
+        date: 1515847314000,
         body: 'Fine\n\nIt\'s downstairs\nPS. You are a toy.'
       }
     ])
@@ -66,7 +66,7 @@ describe('Google.fetchGmailMessages', () => {
         id: 'MESSAGE_1',
         from: { id: 'personId' },
         to: { id: 'personId' },
-        date: '1515758519000',
+        date: 1515758519000,
         body: dedent`
           Hi Gavin,
 

@@ -18,6 +18,7 @@ module.exports = {
       url: String!
       experience: String
       requirements: String
+      views: Int!
     }
 
     input JobFilterInput {

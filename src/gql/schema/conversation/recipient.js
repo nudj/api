@@ -4,5 +4,6 @@ module.exports = nestedSingle({
   parentType: 'Conversation',
   type: 'Person',
   collection: 'people',
-  name: 'recipient'
+  name: 'recipient',
+  propertyName: 'recipient'
 })

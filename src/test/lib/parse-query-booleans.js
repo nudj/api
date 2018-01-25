@@ -16,16 +16,23 @@ describe('parseQueryBooleans', () => {
     next.reset()
   })
 
+  it('parses stringified booleans into boolean values', () => {
+    const query = { value: 'true', schmalue: 'false' }
+    const req = { query }
+    parseQueryBooleans(req, {}, next)
+    expect(req.query).to.deep.equal({ value: true, schmalue: false })
+  })
+
   it('parses simple query boolean', () => {
     const req = { query: { client: 'true' } }
-    parseQueryBooleans()(req, {}, next)
+    parseQueryBooleans(req, {}, next)
     expect(req.query).to.deep.equal({ client: true })
   })
 
   it('calls next function upon completion', async () => {
     const req = { query: { client: 'true' } }
     expect(next).to.not.have.been.called()
-    parseQueryBooleans()(req, {}, next)
+    parseQueryBooleans(req, {}, next)
     expect(next).to.have.been.called()
   })
 
@@ -38,7 +45,7 @@ describe('parseQueryBooleans', () => {
         }
       }
     }
-    parseQueryBooleans()(req, {}, next)
+    parseQueryBooleans(req, {}, next)
     expect(req.query).to.deep.equal({
       client: true,
       nested: {
@@ -57,7 +64,7 @@ describe('parseQueryBooleans', () => {
         dogs: 'areamazing'
       }
     }
-    parseQueryBooleans()(req, {}, next)
+    parseQueryBooleans(req, {}, next)
     expect(req.query).to.deep.equal({
       client: true,
       badguy: 'truefacts',
@@ -76,7 +83,7 @@ describe('parseQueryBooleans', () => {
         dogs: 'areamazing'
       }
     }
-    parseQueryBooleans()(req, {}, next)
+    parseQueryBooleans(req, {}, next)
     expect(req.query).to.deep.equal({
       client: true,
       badguy: 'truefacts',
@@ -105,7 +112,7 @@ describe('parseQueryBooleans', () => {
         when: 'true'
       }
     }
-    parseQueryBooleans()(req, {}, next)
+    parseQueryBooleans(req, {}, next)
     expect(req.query).to.deep.equal({
       account: {
         type: 'serial',

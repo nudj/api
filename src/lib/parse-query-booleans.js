@@ -8,9 +8,7 @@ const booleanParser = (obj) => {
   return obj
 }
 
-module.exports = () => {
-  return (req, res, next) => {
-    req.query = mapValues(req.query, booleanParser)
-    next()
-  }
+module.exports = (req, res, next) => {
+  req.query = mapValues(req.query, booleanParser)
+  next()
 }

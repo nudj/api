@@ -47,6 +47,7 @@ describe('Person.getOrCreateEmployment', () => {
     it('should create the company', () => {
       return expect(db).to.have.deep.property('companies.0').to.deep.equal({
         id: 'company1',
+        client: false,
         name: 'EMPLOYMENT_COMPANY'
       })
     })

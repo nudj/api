@@ -17,6 +17,7 @@ module.exports = {
       twitter: String
       url: String
       onboarded: Boolean!
+      client: Boolean!
     }
 
     input CompanyCreateInput {
@@ -33,11 +34,13 @@ module.exports = {
       twitter: String
       url: String
       onboarded: Boolean
+      client: Boolean!
     }
 
     input CompanyFilterInput {
       id: ID
       slug: String
+      client: Boolean
     }
   `
 }

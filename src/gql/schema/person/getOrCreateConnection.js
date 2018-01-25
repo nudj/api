@@ -27,7 +27,7 @@ module.exports = {
             to.company && store.readOneOrCreate({
               type: 'companies',
               filters: { name: to.company },
-              data: { name: to.company }
+              data: { name: to.company, client: false }
             }),
             store.readOneOrCreate({
               type: 'people',

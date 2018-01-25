@@ -22,7 +22,7 @@ module.exports = {
             store.readOneOrCreate({
               type: 'companies',
               filters: { name: newCompany },
-              data: { name: newCompany }
+              data: { name: newCompany, client: false }
             })
           ])
           .then(([

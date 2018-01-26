@@ -1,32 +1,28 @@
 module.exports = {
   typeDefs: `
     extend type Job {
-      incrementViews: Int!
+      incrementViewCount: Int!
     }
   `,
   resolvers: {
     Job: {
-      incrementViews: (job, args, context) => {
+      incrementViewCount: (job, args, context) => {
         return context.transaction((store, params) => {
-          return store.readOne({
-            type: 'jobs',
-            id: params.id
-          }).then(({ views }) => {
-            const incrementedViews = views + 1
+          const incrementedViews = params.viewCount + 1
 
-            return store.update({
-              type: 'jobs',
-              id: params.id,
-              data: {
-                views: incrementedViews
-              }
-            })
-            .then(job => {
-              return incrementedViews
-            })
+          return store.update({
+            type: 'jobs',
+            id: params.id,
+            data: {
+              viewCount: incrementedViews
+            }
+          })
+          .then(job => {
+            return incrementedViews
           })
         }, {
-          id: job.id
+          id: job.id,
+          viewCount: job.viewCount
         })
       }
     }

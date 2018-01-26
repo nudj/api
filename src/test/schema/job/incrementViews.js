@@ -5,20 +5,20 @@ const expect = chai.expect
 const schema = require('../../../gql/schema')
 const { executeQueryOnDbUsingSchema } = require('../../helpers')
 
-describe('Job.incrementViews', () => {
+describe('Job.incrementViewCount', () => {
   it('should increment the number of views for the given job', () => {
     const db = {
       jobs: [{
         id: 'job1',
-        views: 0
+        viewCount: 0
       }]
     }
 
     const operation = `
-      mutation incrementViews {
+      mutation incrementViewCount {
         job(id: "job1") {
           id
-          incrementViews
+          incrementViewCount
         }
       }
     `
@@ -27,7 +27,7 @@ describe('Job.incrementViews', () => {
       data: {
         job: {
           id: 'job1',
-          incrementViews: 1
+          incrementViewCount: 1
         }
       }
     })

@@ -2,6 +2,7 @@ module.exports = () => {
   const reduce = require('lodash/reduce')
   const flatten = require('lodash/flatten')
   const { db } = require('@arangodb')
+
   const normaliseData = (data) => {
     if (data === null) return null
     return reduce(data, (result, value, key) => {
@@ -19,6 +20,19 @@ module.exports = () => {
     }, {})
   }
   const newISODate = () => (new Date()).toISOString()
+
+  const parseFiltersToAql = (filters = {}) => {
+    const keys = Object.keys(filters)
+    if (!keys.length) return ''
+    return `FILTER ${keys.map((key) => {
+      return `item.${key} == "${filters[key]}"`
+    }).join(' && ')}`
+  }
+
+  const aqlDateComparison = (operator, date) => {
+    if (!date) return 'item'
+    return `DATE_TIMESTAMP(item.created) ${operator} DATE_TIMESTAMP("${date}")`
+  }
 
   return {
     create: ({
@@ -53,10 +67,30 @@ module.exports = () => {
     },
     readAll: ({
       type,
-      filters
+      filters,
+      date
     }) => {
       if (filters) {
-        return Promise.resolve(db[type].byExample(filters).toArray().map(normaliseData))
+        if (date && (date.to || date.from)) {
+          const filter = parseFiltersToAql(filters)
+          const dateFilters = `
+            ${aqlDateComparison('<=', date.to)} && ${aqlDateComparison('>=', date.from)}
+          `
+          return Promise.resolve(
+            flatten(
+              db
+                ._query(`
+                  FOR item in ${type}
+                    ${filter}
+                    FILTER ${dateFilters}
+                    RETURN item
+                `)
+                .toArray()
+            )
+          ).then(response => response.map(normaliseData))
+        } else {
+          return Promise.resolve(db[type].byExample(filters).toArray().map(normaliseData))
+        }
       }
       return Promise.resolve(db[type].all().toArray().map(normaliseData))
     },
@@ -98,13 +132,11 @@ module.exports = () => {
       fields,
       filters
     }) => {
-      const filter = `FILTER ${Object.keys(filters || {}).map((key) => {
-        return `item.${key} == "${filters[key]}"`
-      }).join(' && ')}`
+      const filter = parseFiltersToAql(filters)
       const operations = fields.map(fieldGroup => `
         (
           FOR item IN ${type}
-            ${filters ? filter : ''}
+            ${filter}
             FILTER(
               CONTAINS(
                 LOWER(CONCAT_SEPARATOR(" ", ${fieldGroup.map(
@@ -121,7 +153,7 @@ module.exports = () => {
             ._query(`RETURN UNION_DISTINCT([],${operations})`, { query })
             .toArray()
         )
-      ).then(response => response.map(data => normaliseData(data)))
+      ).then(response => response.map(normaliseData))
     }
   }
 }

@@ -21,7 +21,7 @@ module.exports = function rootAllByFilters (props = {}) {
   return {
     typeDefs: `
       extend type ${parentType} {
-        ${name}(filters: ${filterType}!): [${type}!]!
+        ${name}(filters: ${filterType}!, date: DateRange): [${type}!]!
       }
     `,
     resolvers: {
@@ -30,7 +30,8 @@ module.exports = function rootAllByFilters (props = {}) {
           return context.transaction((store, params) => {
             return store.readAll({
               type: params.collection,
-              filters: params.filters
+              filters: params.filters,
+              date: params.date
             })
           }, merge({
             collection

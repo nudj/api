@@ -29,9 +29,12 @@ module.exports = () => {
     }).join(' && ')}`
   }
 
-  const aqlDateComparison = (operator, date) => {
-    if (!date) return 'item'
-    return `DATE_TIMESTAMP(item.created) ${operator} DATE_TIMESTAMP("${date}")`
+  const executeAqlQuery = (query, params) => {
+    return Promise.resolve(
+      flatten(
+        db._query(query, params).toArray()
+      )
+    ).then(response => response.map(normaliseData))
   }
 
   return {
@@ -68,26 +71,21 @@ module.exports = () => {
     readAll: ({
       type,
       filters,
-      date
+      date = {}
     }) => {
       if (filters) {
-        if (date && (date.to || date.from)) {
-          const filter = parseFiltersToAql(filters)
-          const dateFilters = `
-            ${aqlDateComparison('<=', date.to)} && ${aqlDateComparison('>=', date.from)}
-          `
-          return Promise.resolve(
-            flatten(
-              db
-                ._query(`
-                  FOR item in ${type}
-                    ${filter}
-                    FILTER ${dateFilters}
-                    RETURN item
-                `)
-                .toArray()
-            )
-          ).then(response => response.map(normaliseData))
+        if (date.to || date.from) {
+          const { to, from } = date
+          const generalFilters = parseFiltersToAql(filters)
+          const query = [
+            `FOR item in ${type}`,
+            generalFilters,
+            to && 'FILTER DATE_TIMESTAMP(item.created) <= DATE_TIMESTAMP(@to)',
+            from && 'FILTER DATE_TIMESTAMP(item.created) >= DATE_TIMESTAMP(@from)',
+            'RETURN item'
+          ].filter(Boolean).join('\n')
+
+          return executeAqlQuery(query, { to, from })
         } else {
           return Promise.resolve(db[type].byExample(filters).toArray().map(normaliseData))
         }
@@ -147,13 +145,8 @@ module.exports = () => {
             RETURN item
         )
       `).join(',')
-      return Promise.resolve(
-        flatten(
-          db
-            ._query(`RETURN UNION_DISTINCT([],${operations})`, { query })
-            .toArray()
-        )
-      ).then(response => response.map(normaliseData))
+      const aqlQuery = `RETURN UNION_DISTINCT([],${operations})`
+      return executeAqlQuery(aqlQuery, { query })
     }
   }
 }

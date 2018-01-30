@@ -5,7 +5,7 @@ const expect = chai.expect
 const schema = require('../../../gql/schema')
 const { executeQueryOnDbUsingSchema } = require('../../helpers')
 
-describe.only('Person.createOrUpdateAccount', () => {
+describe('Person.createOrUpdateAccount', () => {
   it('should create account for person', async () => {
     const db = {
       accounts: [],

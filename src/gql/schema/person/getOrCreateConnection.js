@@ -32,7 +32,7 @@ module.exports = {
             store.readOneOrCreate({
               type: 'people',
               filters: { email: to.email },
-              data: pick(to, ['email', 'firstName', 'lastName', 'company', 'title'])
+              data: pick(to, ['email'])
             })
           ])
           .then(([

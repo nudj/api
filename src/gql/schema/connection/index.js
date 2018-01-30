@@ -18,6 +18,8 @@ module.exports = {
 
     input ConnectionFilterInput {
       id: ID
+      person: ID
+      from: ID
     }
   `
 }

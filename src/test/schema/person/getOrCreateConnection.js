@@ -87,12 +87,8 @@ describe('Person.getOrCreateConnection', () => {
 
     it('should create the person', () => {
       return expect(db).to.have.deep.property('people.1').to.deep.equal({
-        company: 'CONNECTION_COMPANY',
         email: 'CONNECTION_EMAIL',
-        firstName: 'CONNECTION_FIRSTNAME',
-        id: 'person2',
-        lastName: 'CONNECTION_LASTNAME',
-        title: 'CONNECTION_TITLE'
+        id: 'person2'
       })
     })
 

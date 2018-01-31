@@ -1,20 +1,7 @@
 const get = require('lodash/get')
 const fetchGmailSubject = require('./fetch-gmail-subject')
 const sendGmail = require('./send-gmail')
-
-const fetchPerson = async (context, personId) => {
-  return await context.transaction((store, params) => {
-    const { id } = params
-    return store.readOne({
-      type: 'people',
-      id
-    })
-    .then(person => {
-      if (!person) throw new Error('Person in conversation not found')
-      return person
-    })
-  }, { id: personId })
-}
+const fetchPerson = require('../helpers/fetch-person')
 
 module.exports = async ({ context, body, conversation }) => {
   const { threadId, recipient, person: sender } = conversation

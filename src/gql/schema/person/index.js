@@ -16,6 +16,13 @@ module.exports = {
       email: String
     }
 
+    input PersonCreateInput {
+      email: String!
+      firstName: String!
+      lastName: String!
+      url: String
+    }
+
     input PersonUpdateInput {
       email: String
       firstName: String

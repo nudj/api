@@ -12,6 +12,7 @@ const gmailBodyRegex = require('./gmail-body-regex')
 const sanitiseMessage = (message) => {
   // Extracts the email body and formats it with appropriate line breaks.
   const messageBody = Base64.decode(message)
+    .replace(/\n/g, '')
     .split(gmailBodyRegex)[0]
     .replace(/<div>/g, '\n')
 

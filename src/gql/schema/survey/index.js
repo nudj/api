@@ -31,6 +31,8 @@ module.exports = {
     input SurveyFilterInput {
       id: ID
       slug: String
+      dateTo: DateTime
+      dateFrom: DateTime
     }
   `
 }

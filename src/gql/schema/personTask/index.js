@@ -12,6 +12,8 @@ module.exports = {
       id: ID
       completed: Boolean
       type: TaskType
+      dateTo: DateTime
+      dateFrom: DateTime
     }
 
     input PersonTaskUpdateInput {

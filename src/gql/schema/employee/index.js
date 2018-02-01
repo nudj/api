@@ -8,6 +8,8 @@ module.exports = {
 
     input EmployeeFilterInput {
       id: ID
+      dateTo: DateTime
+      dateFrom: DateTime
     }
   `
 }

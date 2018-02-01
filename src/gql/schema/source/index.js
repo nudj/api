@@ -13,6 +13,8 @@ module.exports = {
 
     input SourceFilterInput {
       id: ID
+      dateTo: DateTime
+      dateFrom: DateTime
     }
   `
 }

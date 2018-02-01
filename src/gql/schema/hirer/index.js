@@ -9,6 +9,8 @@ module.exports = {
 
     input HirerFilterInput {
       id: ID
+      dateTo: DateTime
+      dateFrom: DateTime
     }
   `
 }

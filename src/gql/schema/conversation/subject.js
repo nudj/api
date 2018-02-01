@@ -15,9 +15,8 @@ module.exports = {
         const person = await fetchPerson(context, conversation.person)
         if (conversation.type === emailPreferences.GOOGLE && person.emailPreference === emailPreferences.GOOGLE) {
           return await fetchGmailSubject({ context, conversation })
-        } else {
-          return null
         }
+        return null
       })
     }
   }

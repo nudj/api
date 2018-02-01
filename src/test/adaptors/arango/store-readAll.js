@@ -96,13 +96,12 @@ describe('ArangoAdaptor Store().readAll', () => {
   })
 
   describe('with date filters', () => {
-    it('should fetch the data with "to" and "from" dates', () => {
+    it('should fetch the data with \'to\' and \'from\' dates', () => {
       return Store().readAll({
         type: 'collectionName',
-        filters: {},
-        date: {
-          to: '2017-12-15T11:21:51.030+00:00',
-          from: '2016-12-15T11:21:51.030+00:00'
+        filters: {
+          dateTo: '2017-12-15T11:21:51.030+00:00',
+          dateFrom: '2016-12-15T11:21:51.030+00:00'
         }
       })
       .then(() => {
@@ -120,12 +119,11 @@ describe('ArangoAdaptor Store().readAll', () => {
       })
     })
 
-    it('should fetch the data with "to" date', () => {
+    it('should fetch the data with \'to\' date', () => {
       return Store().readAll({
         type: 'collectionName',
-        filters: {},
-        date: {
-          to: '2017-12-15T11:21:51.030+00:00'
+        filters: {
+          dateTo: '2017-12-15T11:21:51.030+00:00'
         }
       })
       .then(() => {
@@ -140,12 +138,11 @@ describe('ArangoAdaptor Store().readAll', () => {
       })
     })
 
-    it('should fetch the data with "from" date', () => {
+    it('should fetch the data with \'from\' date', () => {
       return Store().readAll({
         type: 'collectionName',
-        filters: {},
-        date: {
-          from: '2017-12-19T11:21:51.030+00:00'
+        filters: {
+          dateFrom: '2017-12-19T11:21:51.030+00:00'
         }
       })
       .then(() => {
@@ -164,11 +161,9 @@ describe('ArangoAdaptor Store().readAll', () => {
       return Store().readAll({
         type: 'collectionName',
         filters: {
-          email: "test@email.com",
-          address: "1 Test Drive"
-        },
-        date: {
-          from: '2010-12-19T11:21:51.030+00:00'
+          email: 'test@email.com',
+          address: '1 Test Drive',
+          dateFrom: '2010-12-19T11:21:51.030+00:00'
         }
       })
       .then(() => {
@@ -186,10 +181,9 @@ describe('ArangoAdaptor Store().readAll', () => {
     it('should return normalised entities', () => {
       return expect(Store().readAll({
         type: 'collectionName',
-        filters: {},
-        date: {
-          to: '2017-12-15T11:21:51.030+00:00',
-          from: '2016-12-15T11:21:51.030+00:00'
+        filters: {
+          dateTo: '2017-12-15T11:21:51.030+00:00',
+          dateFrom: '2016-12-15T11:21:51.030+00:00'
         }
       })).to.eventually.deep.equal([
         {

@@ -29,7 +29,7 @@ describe('rootAllByFilters', () => {
       type: 'Relation'
     })).to.have.property('typeDefs').to.equal(`
       extend type Parent {
-        relationsByFilters(filters: RelationFilterInput!, date: DateRange): [Relation!]!
+        relationsByFilters(filters: RelationFilterInput!): [Relation!]!
       }
     `)
   })
@@ -101,7 +101,7 @@ describe('rootAllByFilters', () => {
         name: 'aDifferentName'
       })).to.have.property('typeDefs').to.equal(`
       extend type Parent {
-        aDifferentName(filters: RelationFilterInput!, date: DateRange): [Relation!]!
+        aDifferentName(filters: RelationFilterInput!): [Relation!]!
       }
     `)
     })
@@ -136,7 +136,7 @@ describe('rootAllByFilters', () => {
         filterType: 'aDifferentFilterType'
       })).to.have.property('typeDefs').to.equal(`
       extend type Parent {
-        relationsByFilters(filters: aDifferentFilterType!, date: DateRange): [Relation!]!
+        relationsByFilters(filters: aDifferentFilterType!): [Relation!]!
       }
     `)
     })

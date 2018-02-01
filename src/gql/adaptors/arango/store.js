@@ -1,6 +1,7 @@
 module.exports = () => {
   const reduce = require('lodash/reduce')
   const flatten = require('lodash/flatten')
+  const omit = require('lodash/omit')
   const { db } = require('@arangodb')
 
   const normaliseData = (data) => {
@@ -70,27 +71,24 @@ module.exports = () => {
     },
     readAll: ({
       type,
-      filters,
-      date = {}
+      filters
     }) => {
-      if (filters) {
-        if (date.to || date.from) {
-          const { to, from } = date
-          const generalFilters = parseFiltersToAql(filters)
-          const query = [
-            `FOR item in ${type}`,
-            generalFilters,
-            to && 'FILTER DATE_TIMESTAMP(item.created) <= DATE_TIMESTAMP(@to)',
-            from && 'FILTER DATE_TIMESTAMP(item.created) >= DATE_TIMESTAMP(@from)',
-            'RETURN item'
-          ].filter(Boolean).join('\n')
+      if (!filters) return Promise.resolve(db[type].all().toArray().map(normaliseData))
+      if (filters.dateTo || filters.dateFrom) {
+        const { dateTo: to, dateFrom: from } = filters
+        const generalFilters = parseFiltersToAql(omit(filters, ['dateTo', 'dateFrom']))
+        const query = [
+          `FOR item in ${type}`,
+          generalFilters,
+          to && 'FILTER DATE_TIMESTAMP(item.created) <= DATE_TIMESTAMP(@to)',
+          from && 'FILTER DATE_TIMESTAMP(item.created) >= DATE_TIMESTAMP(@from)',
+          'RETURN item'
+        ].filter(Boolean).join('\n')
 
-          return executeAqlQuery(query, { to, from })
-        } else {
-          return Promise.resolve(db[type].byExample(filters).toArray().map(normaliseData))
-        }
+        return executeAqlQuery(query, { to, from })
+      } else {
+        return Promise.resolve(db[type].byExample(filters).toArray().map(normaliseData))
       }
-      return Promise.resolve(db[type].all().toArray().map(normaliseData))
     },
     update: ({
       type,

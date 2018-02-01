@@ -66,6 +66,12 @@ describe('Conversation.latestMessage', () => {
           type: 'GOOGLE',
           threadId: 'VALID_THREAD_ID'
         }
+      ],
+      people: [
+        {
+          id: 'person3',
+          emailPreference: 'GOOGLE'
+        }
       ]
     })
     return expect(executeQueryOnDbUsingSchema({ operation, variables, db, schema })).to.eventually.deep.equal({
@@ -89,6 +95,12 @@ describe('Conversation.latestMessage', () => {
           type: 'OTHER',
           threadId: 'VALID_THREAD_ID'
         }
+      ],
+      people: [
+        {
+          id: 'person3',
+          emailPreference: 'GOOGLE'
+        }
       ]
     })
     return expect(executeQueryOnDbUsingSchema({ operation, variables, db, schema })).to.eventually.deep.equal({
@@ -107,10 +119,15 @@ describe('Conversation.latestMessage', () => {
       conversations: [
         {
           id: 'conversation1',
-          person: 'person2',
           recipient: 'person2',
           type: 'GOOGLE',
           threadId: 'VALID_THREAD_ID'
+        }
+      ],
+      people: [
+        {
+          id: 'person7',
+          emailPreference: 'GOOGLE'
         }
       ]
     })

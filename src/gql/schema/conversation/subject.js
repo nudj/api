@@ -1,5 +1,6 @@
 const { handleErrors } = require('../../lib')
 const { fetchGmailSubject } = require('../../lib/google')
+const fetchPerson = require('../../lib/helpers/fetch-person')
 const { values: emailPreferences } = require('../enums/email-preference-types')
 
 module.exports = {
@@ -11,12 +12,11 @@ module.exports = {
   resolvers: {
     Conversation: {
       subject: handleErrors(async (conversation, args, context) => {
-        switch (conversation.type) {
-          case emailPreferences.GOOGLE:
-            return await fetchGmailSubject({ context, conversation })
-          default:
-            return null
+        const person = await fetchPerson(context, conversation.person)
+        if (conversation.type === emailPreferences.GOOGLE && person.emailPreference === emailPreferences.GOOGLE) {
+          return await fetchGmailSubject({ context, conversation })
         }
+        return null
       })
     }
   }

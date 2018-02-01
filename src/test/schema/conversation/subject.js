@@ -63,6 +63,12 @@ describe('Conversation.subject', () => {
           type: 'GOOGLE',
           threadId: validThreadId
         }
+      ],
+      people: [
+        {
+          id: 'person3',
+          emailPreference: 'GOOGLE'
+        }
       ]
     })
     return expect(executeQueryOnDbUsingSchema({ operation, variables, db, schema })).to.eventually.deep.equal({

@@ -119,6 +119,12 @@ module.exports = () => ({
     type,
     filters
   }) => {
+    if (filters.dateTo || filters.dateFrom) {
+      filters.created_gte = filters.dateFrom
+      filters.created_lte = filters.dateTo
+      delete filters.dateFrom
+      delete filters.dateTo
+    }
     const filterString = toQs(filters)
     return request({
       url: `/${type}${filterString.length ? `?${filterString}` : ''}`

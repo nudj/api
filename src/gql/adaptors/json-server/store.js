@@ -4,6 +4,9 @@ const filter = require('lodash/filter')
 const toLower = require('lodash/toLower')
 const flatten = require('lodash/flatten')
 const uniq = require('lodash/uniq')
+const omit = require('lodash/omit')
+const omitBy = require('lodash/omitBy')
+const isUndefined = require('lodash/isUndefined')
 const axios = require('axios')
 const { logThenThrow, NotFound } = require('@nudj/library/errors')
 const {
@@ -119,13 +122,12 @@ module.exports = () => ({
     type,
     filters
   }) => {
-    if (filters.dateTo || filters.dateFrom) {
-      filters.created_gte = filters.dateFrom
-      filters.created_lte = filters.dateTo
-      delete filters.dateFrom
-      delete filters.dateTo
-    }
-    const filterString = toQs(filters)
+    const allFilters = omitBy({
+      ...omit(filters, ['dateTo', 'dateFrom']),
+      created_gte: filters.dateFrom,
+      created_lte: filters.dateTo
+    }, isUndefined)
+    const filterString = toQs(allFilters)
     return request({
       url: `/${type}${filterString.length ? `?${filterString}` : ''}`
     })

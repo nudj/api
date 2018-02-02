@@ -2,6 +2,7 @@ const get = require('lodash/get')
 const filter = require('lodash/filter')
 const first = require('lodash/first')
 const find = require('lodash/find')
+const omit = require('lodash/omit')
 const flatten = require('lodash/flatten')
 const findIndex = require('lodash/findIndex')
 const toLower = require('lodash/toLower')
@@ -50,6 +51,19 @@ module.exports = ({ db }) => {
     }) => {
       const all = get(db, type)
       if (filters) {
+        if (filters.dateTo || filters.dateFrom) {
+          const { dateTo, dateFrom } = filters
+          const time = (stamp) => new Date(stamp).getTime()
+          const filtered = filter(all, omit(filters, ['dateTo', 'dateFrom']))
+          return Promise.resolve(filter(filtered, (item) => {
+            const { created } = item
+            if (dateTo && dateFrom) {
+              return time(created) <= time(dateTo) && time(created) >= time(dateFrom)
+            }
+            if (dateTo) return time(created) <= time(dateTo)
+            return time(created) >= time(dateFrom)
+          }))
+        }
         return Promise.resolve(filter(all, filters))
       }
       return Promise.resolve(all)

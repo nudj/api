@@ -1,3 +1,4 @@
+const get = require('lodash/get')
 const first = require('lodash/first')
 const filter = require('lodash/filter')
 const toLower = require('lodash/toLower')
@@ -72,7 +73,7 @@ module.exports = () => ({
       }
       return result
     } catch (error) {
-      if (error.response.status === 404) {
+      if (get(error, 'response.status') === 404) {
         return null
       }
       errorHandler({

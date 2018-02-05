@@ -14,6 +14,8 @@ module.exports = {
     input PersonFilterInput {
       id: ID
       email: String
+      dateTo: DateTime
+      dateFrom: DateTime
     }
 
     input PersonCreateInput {

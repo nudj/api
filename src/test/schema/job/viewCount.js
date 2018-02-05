@@ -5,7 +5,7 @@ const expect = chai.expect
 const schema = require('../../../gql/schema')
 const { executeQueryOnDbUsingSchema } = require('../../helpers')
 
-describe.only('Job.viewCount', () => {
+describe('Job.viewCount', () => {
   it('should return the jobs\'s viewCount', () => {
     const db = {
       jobs: [{

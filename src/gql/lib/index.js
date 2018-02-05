@@ -12,6 +12,7 @@ const nestedSingleForeign = require('./nested-single-foreign')
 const nestedSingleByFilters = require('./nested-single-by-filters')
 const nestedAll = require('./nested-all')
 const nestedAllByFilters = require('./nested-all-by-filters')
+const nestedCountByFilters = require('./nested-count-by-filters')
 
 module.exports = {
   mergeDefinitions,
@@ -27,5 +28,6 @@ module.exports = {
   nestedAll,
   nestedSingleByFilters,
   nestedSingle,
-  nestedSingleForeign
+  nestedSingleForeign,
+  nestedCountByFilters
 }

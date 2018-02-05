@@ -122,12 +122,20 @@ module.exports = () => ({
     type,
     filters
   }) => {
+    if (!filters) {
+      return request({
+        url: `/${type}`
+      })
+    }
+
     const allFilters = omitBy({
       ...omit(filters, ['dateTo', 'dateFrom']),
       created_gte: filters.dateFrom,
       created_lte: filters.dateTo
     }, isUndefined)
+
     const filterString = toQs(allFilters)
+
     return request({
       url: `/${type}${filterString.length ? `?${filterString}` : ''}`
     })

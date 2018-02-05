@@ -16,10 +16,7 @@ module.exports = {
             data: {
               viewCount: incrementedViews
             }
-          })
-          .then(job => {
-            return incrementedViews
-          })
+          }).then(job => job.viewCount)
         }, {
           id: job.id,
           viewCount: job.viewCount

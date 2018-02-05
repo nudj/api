@@ -529,4 +529,45 @@ describe('LodashAdaptor transaction', () => {
       ])
     })
   })
+
+  it('countByFilters', () => {
+    return transaction({ db })(store => {
+      return store.countByFilters({
+        type: 'monsters',
+        filters: {
+          type: 'classic'
+        }
+      })
+    })
+    .then(result => {
+      expect(result).to.equal(2)
+    })
+  })
+
+  it('countByFilters with date filters', () => {
+    return transaction({ db })(store => {
+      return store.countByFilters({
+        type: 'monsters',
+        filters: {
+          dateTo: '1986-07-08T07:34:54.000',
+          dateFrom: '1986-07-07T07:34:54.000'
+        }
+      })
+    })
+    .then(result => {
+      expect(result).to.equal(2)
+    })
+  })
+
+  it('countByFilters with empty filter params', () => {
+    return transaction({ db })(store => {
+      return store.countByFilters({
+        type: 'dogs',
+        filters: {}
+      })
+    })
+    .then(result => {
+      expect(result).to.equal(db.dogs.length)
+    })
+  })
 })

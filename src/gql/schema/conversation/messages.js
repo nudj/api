@@ -16,10 +16,10 @@ module.exports = {
   `,
   resolvers: {
     Conversation: {
-      messages: handleErrors(async (conversation, args, context) => {
+      messages: handleErrors((conversation, args, context) => {
         switch (conversation.type) {
           case emailPreferences.GOOGLE:
-            return await fetchGmailMessages({ context, conversation })
+            return fetchGmailMessages({ context, conversation })
           default:
             const { recipient, person, created: date } = conversation
             return [

@@ -7,15 +7,12 @@ module.exports = {
   resolvers: {
     Person: {
       referralByFilters: (person, args, context) => {
-        return context.transaction((store, params) => {
-          const { person, filters } = params
-          return store.readOne({
-            type: 'referrals',
-            filters: Object.assign({}, filters, { person })
-          })
-        }, {
-          person: person.id,
-          filters: args.filters
+        return context.store.readOne({
+          type: 'referrals',
+          filters: {
+            ...args.filters,
+            person: person.id
+          }
         })
       }
     }

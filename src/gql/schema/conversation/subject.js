@@ -14,7 +14,7 @@ module.exports = {
       subject: handleErrors(async (conversation, args, context) => {
         const person = await fetchPerson(context, conversation.person)
         if (conversation.type === emailPreferences.GOOGLE && person.emailPreference === emailPreferences.GOOGLE) {
-          return await fetchGmailSubject({ context, conversation })
+          return fetchGmailSubject({ context, conversation })
         }
         return null
       })

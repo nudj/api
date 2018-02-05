@@ -224,5 +224,25 @@ module.exports = () => ({
       fields,
       filters
     }))
+  },
+  countByFilters: ({
+    type,
+    filters = {}
+  }) => {
+    const allFilters = omitBy({
+      ...omit(filters, ['dateTo', 'dateFrom']),
+      created_gte: filters.dateFrom,
+      created_lte: filters.dateTo
+    }, isUndefined)
+    const filterString = toQs(allFilters)
+    return request({
+      url: `/${type}${filterString.length ? `?${filterString}` : ''}`
+    })
+      .then(response => response.length)
+      .catch(errorHandler({
+        action: 'readAll',
+        type,
+        filters
+      }))
   }
 })

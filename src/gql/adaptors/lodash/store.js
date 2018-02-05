@@ -137,6 +137,30 @@ module.exports = ({ db }) => {
         })
       })
       return Promise.resolve(flatten(entity))
+    },
+    countByFilters: ({
+      type,
+      filters
+    }) => {
+      const all = get(db, type)
+      if (filters) {
+        if (filters.dateTo || filters.dateFrom) {
+          const { dateTo, dateFrom } = filters
+          const time = (stamp) => new Date(stamp).getTime()
+          const filtered = filter(all, omit(filters, ['dateTo', 'dateFrom']))
+          const response = filter(filtered, (item) => {
+            const { created } = item
+            if (dateTo && dateFrom) {
+              return time(created) <= time(dateTo) && time(created) >= time(dateFrom)
+            }
+            if (dateTo) return time(created) <= time(dateTo)
+            return time(created) >= time(dateFrom)
+          })
+          return Promise.resolve(response.length)
+        }
+        return Promise.resolve(filter(all, filters).length)
+      }
+      return Promise.resolve(all.length)
     }
   }
 }

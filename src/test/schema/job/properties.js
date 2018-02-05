@@ -38,6 +38,7 @@ describe('Job properties', () => {
     await expectPropertyReceivesValue('url', DUMMY_STRING)
     await expectPropertyReceivesValue('experience', DUMMY_STRING)
     await expectPropertyReceivesValue('requirements', DUMMY_STRING)
+    await expectPropertyReceivesValue('views', DUMMY_INT)
   })
   it('should have the following required properties', async () => {
     await expectPropertyIsRequired('id')
@@ -56,5 +57,6 @@ describe('Job properties', () => {
     await expectPropertyContentsIsRequired('templateTags')
     await expectPropertyIsRequired('type')
     await expectPropertyIsRequired('url')
+    await expectPropertyIsRequired('views')
   })
 })

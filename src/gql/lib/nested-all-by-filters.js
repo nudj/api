@@ -26,6 +26,7 @@ module.exports = function nestedAllByFilters (props = {}) {
   return {
     typeDefs: `
       extend type ${parentType} {
+        # Filters "dateTo" and "dateFrom" is inclusive of the dates provided.
         ${name}(filters: ${filterType}!): [${type}!]!
       }
     `,

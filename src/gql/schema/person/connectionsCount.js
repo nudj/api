@@ -6,15 +6,12 @@ module.exports = {
   `,
   resolvers: {
     Person: {
-      connectionsCount: ({ id }, args, context) => {
-        return context.transaction((store, params) => {
-          return store.readAll({
-            type: 'connections',
-            filters: { from: params.id }
-          }).then(connections => Promise.resolve(connections.length))
-        }, {
-          id
+      connectionsCount: (person, args, context) => {
+        return context.store.readAll({
+          type: 'connections',
+          filters: { from: person.id }
         })
+        .then(connections => Promise.resolve(connections.length))
       }
     }
   }

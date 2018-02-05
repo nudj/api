@@ -25,16 +25,9 @@ module.exports = function rootAll (props = {}) {
       [parentType]: {
         [name]: handleErrors(async (root, args, context) => {
           try {
-            return await context.transaction(
-              (store, params) => {
-                return store.readAll({
-                  type: params.collection
-                })
-              },
-              {
-                collection
-              }
-            )
+            return await context.store.readAll({
+              type: collection
+            })
           } catch (error) {
             logThenThrow(
               error,

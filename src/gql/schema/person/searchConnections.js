@@ -8,18 +8,11 @@ module.exports = {
     Person: {
       searchConnections: (person, args, context) => {
         const { query, fields } = args
-        return context.transaction((store, params) => {
-          const { from, query, fields } = params
-          return store.search({
-            type: 'connections',
-            query,
-            fields,
-            filters: { from }
-          })
-        }, {
+        return context.store.search({
+          type: 'connections',
           query,
           fields,
-          from: person.id
+          filters: { from: person.id }
         })
       }
     }

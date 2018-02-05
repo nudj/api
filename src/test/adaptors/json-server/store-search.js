@@ -7,7 +7,7 @@ const expect = chai.expect
 
 chai.use(sinonChai)
 
-const transaction = require('../../../gql/adaptors/json-server')
+const { transaction } = require('../../../gql/adaptors/json-server')
 const server = nock('http://localhost:81/')
 
 describe('JSON-Server Store().search', () => {

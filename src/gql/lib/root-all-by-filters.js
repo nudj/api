@@ -1,6 +1,5 @@
 const camelCase = require('lodash/camelCase')
 const { AppError } = require('@nudj/library/errors')
-const { merge } = require('@nudj/library')
 
 const handleErrors = require('./handle-errors')
 
@@ -27,14 +26,10 @@ module.exports = function rootAllByFilters (props = {}) {
     resolvers: {
       [parentType]: {
         [name]: handleErrors((root, args, context) => {
-          return context.transaction((store, params) => {
-            return store.readAll({
-              type: params.collection,
-              filters: params.filters
-            })
-          }, merge({
-            collection
-          }, args))
+          return context.store.readAll({
+            type: collection,
+            filters: args.filters
+          })
         })
       }
     }

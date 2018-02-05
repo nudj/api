@@ -25,17 +25,14 @@ const createConversation = ({ context, type, to, person, threadId }) => {
 }
 
 const fetchEmail = (context, personId) => {
-  return context.transaction((store, params) => {
-    const { id } = params
-    return store.readOne({
-      type: 'people',
-      id
-    })
-    .then(person => {
-      if (!person) throw new Error(`No person for id ${id} found`)
-      return person.email
-    })
-  }, { id: personId })
+  return context.store.readOne({
+    type: 'people',
+    id: personId
+  })
+  .then(person => {
+    if (!person) throw new Error(`No person for id ${personId} found`)
+    return person.email
+  })
 }
 
 module.exports = {

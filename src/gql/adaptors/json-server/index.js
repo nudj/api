@@ -1,1 +1,4 @@
-module.exports = require('./transaction')
+module.exports = {
+  transaction: require('./transaction'),
+  store: require('./store')
+}

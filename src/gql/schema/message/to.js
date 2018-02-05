@@ -8,19 +8,16 @@ module.exports = {
   `,
   resolvers: {
     Message: {
-      to: handleErrors(async (message, args, context) => {
+      to: handleErrors((message, args, context) => {
         const { to } = message
-        return await context.transaction((store, params) => {
-          const { id } = params
-          return store.readOne({
-            type: 'people',
-            id
-          })
-          .then(person => {
-            if (!person) throw new Error('No message recipient found')
-            return person
-          })
-        }, { id: to })
+        return context.store.readOne({
+          type: 'people',
+          id: to
+        })
+        .then(person => {
+          if (!person) throw new Error('No message recipient found')
+          return person
+        })
       })
     }
   }

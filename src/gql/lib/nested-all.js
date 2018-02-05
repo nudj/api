@@ -41,13 +41,11 @@ module.exports = function nestedAll (props = {}) {
             }
             params.storeMethod = 'readAll'
           }
-          return context.transaction((store, params) => {
-            return store[params.storeMethod]({
-              type: params.collection,
-              filters: params.filters,
-              ids: params.ids
-            })
-          }, params)
+          return context.store[params.storeMethod]({
+            type: params.collection,
+            filters: params.filters,
+            ids: params.ids
+          })
         })
       }
     }

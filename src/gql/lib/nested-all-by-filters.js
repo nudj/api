@@ -33,19 +33,13 @@ module.exports = function nestedAllByFilters (props = {}) {
     resolvers: {
       [parentType]: {
         [name]: handleErrors((parent, args, context) => {
-          args.filters[parentName] = parent.id
-          return context.transaction(
-            (store, params) => {
-              return store.readAll({
-                type: params.collection,
-                filters: params.filters
-              })
-            },
-            {
-              collection,
-              filters: args.filters
+          return context.store.readAll({
+            type: collection,
+            filters: {
+              ...args.filters,
+              [parentName]: parent.id
             }
-          )
+          })
         })
       }
     }

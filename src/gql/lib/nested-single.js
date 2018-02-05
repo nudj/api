@@ -30,18 +30,10 @@ module.exports = function nestedSingle (props = {}) {
           const id = parent[propertyName]
           if (!id) return null
 
-          return context.transaction(
-            (store, params) => {
-              return store.readOne({
-                type: params.collection,
-                id: params.id
-              })
-            },
-            {
-              collection,
-              id
-            }
-          )
+          return context.store.readOne({
+            type: collection,
+            id
+          })
         })
       }
     }

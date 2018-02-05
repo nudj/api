@@ -1,6 +1,7 @@
 const axios = require('axios')
 const semi = require('semi')
 const logger = require('@nudj/library/lib/logger')
+const get = require('lodash/get')
 
 const store = require('./store')
 const actionToCollectionLock = require('./action-to-collection-lock')
@@ -39,7 +40,7 @@ module.exports = (action, params) => {
   })
   .then(response => response.data.result)
   .catch(error => {
-    logger('error', error.response.data)
+    logger('error', get(error, 'response.data'))
     throw error.response.data
   })
 }

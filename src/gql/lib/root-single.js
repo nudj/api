@@ -29,18 +29,10 @@ function rootSingle (props = {}) {
           if (id === undefined) {
             return null
           }
-          return context.transaction(
-            (store, params) => {
-              return store.readOne({
-                type: params.collection,
-                id: params.id
-              })
-            },
-            {
-              collection,
-              id: args.id
-            }
-          )
+          return context.store.readOne({
+            type: collection,
+            id: args.id
+          })
         })
       }
     }

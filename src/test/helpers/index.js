@@ -3,10 +3,13 @@ const chai = require('chai')
 const curry = require('lodash/curry')
 const expect = chai.expect
 
-const transaction = require('../../gql/adaptors/lodash')
+const { transaction, store } = require('../../gql/adaptors/lodash')
 
 function executeQueryOnDbUsingSchema ({ schema, variables = {}, operation, db }) {
-  const testContext = { transaction: transaction({ db }) }
+  const testContext = {
+    transaction: transaction({ db }),
+    store: store({ db })
+  }
   return graphql(schema, operation, undefined, testContext, variables)
 }
 
@@ -141,7 +144,8 @@ function generateFakeContextWithStore (store) {
   return {
     transaction: (action, params) => {
       return action(store, params)
-    }
+    },
+    store
   }
 }
 

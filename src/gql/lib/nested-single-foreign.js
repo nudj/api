@@ -28,20 +28,12 @@ module.exports = function nestedSingleForeign (props = {}) {
     resolvers: {
       [parentType]: {
         [name]: handleErrors((parent, args, context) => {
-          return context.transaction(
-            (store, params) => {
-              return store.readOne({
-                type: params.collection,
-                filters: params.filters
-              })
-            },
-            {
-              collection,
-              filters: {
-                [propertyName]: parent.id
-              }
+          return context.store.readOne({
+            type: collection,
+            filters: {
+              [propertyName]: parent.id
             }
-          )
+          })
         })
       }
     }

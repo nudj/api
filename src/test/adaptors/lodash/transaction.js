@@ -7,7 +7,7 @@ const expect = chai.expect
 
 chai.use(chaiAsPromised)
 
-const transaction = require('../../../gql/adaptors/lodash')
+const { transaction } = require('../../../gql/adaptors/lodash')
 
 describe('LodashAdaptor transaction', () => {
   let db

@@ -1,11 +1,12 @@
 /* eslint-env mocha */
 
 const chai = require('chai')
-const proxyquire = require('proxyquire').noCallThru()
 const sinon = require('sinon')
 const sinonChai = require('sinon-chai')
 const dedent = require('dedent')
 const expect = chai.expect
+
+const Store = require('../../../../gql/adaptors/arango/store')
 
 chai.use(sinonChai)
 
@@ -21,28 +22,26 @@ const DOCUMENT_RESPONSE = {
 const aqlTemplateTag = (strings, operations) =>
   strings[0] + operations + strings[1]
 
-describe('ArangoAdaptor Store().search', () => {
-  let Store
+describe('ArangoAdaptor store.search', () => {
   let dbStub
+  let store
 
   before(() => {
     dbStub = {
       db: {
-        _query: sinon.stub().returns({ toArray: () => [DOCUMENT_RESPONSE] })
+        query: sinon.stub().returns([DOCUMENT_RESPONSE])
       },
       aql: aqlTemplateTag
     }
-    Store = proxyquire('../../../gql/adaptors/arango/store', {
-      '@arangodb': dbStub
-    })
+    store = Store(dbStub)
   })
   afterEach(() => {
-    dbStub.db._query.reset()
+    dbStub.db.query.reset()
   })
 
   describe('with one search field', () => {
     it('should fetch the data', () => {
-      return Store().search({
+      return store.search({
         type: 'videoGames',
         query: 'Pacman',
         fields: [
@@ -53,7 +52,7 @@ describe('ArangoAdaptor Store().search', () => {
         }
       })
       .then(() => {
-        const [ query, bindVars ] = dbStub.db._query.firstCall.args
+        const [ query, bindVars ] = dbStub.db.query.firstCall.args
         expect(bindVars).to.deep.equal({ query: 'Pacman' })
         expect(dedent(query)).to.equal(dedent`
           RETURN UNION_DISTINCT([],
@@ -74,7 +73,7 @@ describe('ArangoAdaptor Store().search', () => {
     })
 
     it('should return normalised values', () => {
-      return expect(Store().search({
+      return expect(store.search({
         type: 'videoGames',
         query: 'Pacman',
         fields: [
@@ -93,7 +92,7 @@ describe('ArangoAdaptor Store().search', () => {
 
   describe('with multiple search fields', () => {
     it('should fetch the data', () => {
-      return Store().search({
+      return store.search({
         type: 'videoGames',
         query: 'Pacman',
         fields: [
@@ -105,7 +104,7 @@ describe('ArangoAdaptor Store().search', () => {
         }
       })
       .then(() => {
-        const [ query, bindVars ] = dbStub.db._query.firstCall.args
+        const [ query, bindVars ] = dbStub.db.query.firstCall.args
         expect(bindVars).to.deep.equal({ query: 'Pacman' })
         expect(dedent(query)).to.equal(dedent`
           RETURN UNION_DISTINCT([],
@@ -137,7 +136,7 @@ describe('ArangoAdaptor Store().search', () => {
     })
 
     it('should return normalised values', () => {
-      return expect(Store().search({
+      return expect(store.search({
         type: 'videoGames',
         query: 'Pacman',
         fields: [
@@ -157,7 +156,7 @@ describe('ArangoAdaptor Store().search', () => {
 
   describe('with combined fields', () => {
     it('should fetch the data', () => {
-      return Store().search({
+      return store.search({
         type: 'videoGames',
         query: 'Pacman Arcade',
         fields: [
@@ -170,7 +169,7 @@ describe('ArangoAdaptor Store().search', () => {
         }
       })
       .then(() => {
-        const [ query, bindVars ] = dbStub.db._query.firstCall.args
+        const [ query, bindVars ] = dbStub.db.query.firstCall.args
         expect(bindVars).to.deep.equal({ query: 'Pacman Arcade' })
         expect(dedent(query)).to.equal(dedent`
           RETURN UNION_DISTINCT([],
@@ -202,7 +201,7 @@ describe('ArangoAdaptor Store().search', () => {
     })
 
     it('should return normalised values', () => {
-      return expect(Store().search({
+      return expect(store.search({
         type: 'videoGames',
         query: 'Pacman Arcade',
         fields: [['title'], ['franchise']]

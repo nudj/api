@@ -1,12 +1,13 @@
 /* eslint-env mocha */
 
 const chai = require('chai')
-const proxyquire = require('proxyquire').noCallThru()
 const sinon = require('sinon')
 const sinonChai = require('sinon-chai')
 const isDate = require('date-fns/is_valid')
 const differenceInMinutes = require('date-fns/difference_in_minutes')
 const expect = chai.expect
+
+const Store = require('../../../../gql/adaptors/arango/store')
 
 chai.use(sinonChai)
 
@@ -14,31 +15,32 @@ const DOCUMENT_RESPONSE = { _key: 'id', '_id': 123, '_rev': 123, prop: 'value' }
 const NEW_RESPONSE = { new: { _key: 'id', '_id': 123, '_rev': 123, prop: 'value' } }
 const FILTER_NO_MATCH = null
 
-describe('ArangoAdaptor Store().readOneOrCreate', () => {
-  let Store
+describe('ArangoAdaptor store.readOneOrCreate', () => {
+  let collectionStub
   let dbStub
+  let store
 
   before(() => {
+    collectionStub = {
+      save: sinon.stub().returns(NEW_RESPONSE),
+      firstExample: sinon.stub().returns(DOCUMENT_RESPONSE)
+    }
     dbStub = {
       db: {
-        collectionName: {
-          save: sinon.stub().returns(NEW_RESPONSE),
-          firstExample: sinon.stub().returns(DOCUMENT_RESPONSE)
-        }
+        collection: sinon.stub().returns(collectionStub)
       }
     }
-    Store = proxyquire('../../../gql/adaptors/arango/store', {
-      '@arangodb': dbStub
-    })
+    store = Store(dbStub)
   })
   afterEach(() => {
-    dbStub.db.collectionName.save.reset()
-    dbStub.db.collectionName.firstExample.reset()
+    collectionStub.save.reset()
+    collectionStub.firstExample.reset()
+    dbStub.db.collection.reset()
   })
 
   describe('if filter finds a match', () => {
     it('checks for existing', () => {
-      return Store().readOneOrCreate({
+      return store.readOneOrCreate({
         type: 'collectionName',
         filters: {
           test: 'value'
@@ -48,14 +50,14 @@ describe('ArangoAdaptor Store().readOneOrCreate', () => {
         }
       })
       .then(() => {
-        const dataArgument = dbStub.db.collectionName.firstExample.firstCall.args[0]
+        const dataArgument = collectionStub.firstExample.firstCall.args[0]
         expect(dataArgument).to.have.property('test', 'value')
-        expect(dbStub.db.collectionName.save).to.not.have.been.called()
+        expect(collectionStub.save).to.not.have.been.called()
       })
     })
 
     it('should return existing entity', () => {
-      return expect(Store().readOneOrCreate({
+      return expect(store.readOneOrCreate({
         type: 'collectionName',
         filters: {
           test: 'value'
@@ -72,11 +74,11 @@ describe('ArangoAdaptor Store().readOneOrCreate', () => {
 
   describe('if filter matches nothing', () => {
     beforeEach(() => {
-      dbStub.db.collectionName.firstExample.returns(FILTER_NO_MATCH)
+      collectionStub.firstExample.returns(FILTER_NO_MATCH)
     })
 
     it('should save the data', () => {
-      return Store().readOneOrCreate({
+      return store.readOneOrCreate({
         type: 'collectionName',
         filters: {
           test: 'value'
@@ -86,13 +88,13 @@ describe('ArangoAdaptor Store().readOneOrCreate', () => {
         }
       })
       .then(() => {
-        const dataArgument = dbStub.db.collectionName.save.firstCall.args[0]
+        const dataArgument = collectionStub.save.firstCall.args[0]
         expect(dataArgument).to.have.property('prop', 'value')
       })
     })
 
     it('should append created date', () => {
-      return Store().readOneOrCreate({
+      return store.readOneOrCreate({
         type: 'collectionName',
         filters: {
           test: 'value'
@@ -102,7 +104,7 @@ describe('ArangoAdaptor Store().readOneOrCreate', () => {
         }
       })
       .then(() => {
-        const dataArgument = dbStub.db.collectionName.save.firstCall.args[0]
+        const dataArgument = collectionStub.save.firstCall.args[0]
         expect(dataArgument).to.have.property('created')
         expect(isDate(new Date(dataArgument.created)), 'Created is not date').to.be.true()
         expect(differenceInMinutes(new Date(dataArgument.created), new Date()) < 1, 'Created is not recent date').to.be.true()
@@ -110,7 +112,7 @@ describe('ArangoAdaptor Store().readOneOrCreate', () => {
     })
 
     it('should append modified date', () => {
-      return Store().readOneOrCreate({
+      return store.readOneOrCreate({
         type: 'collectionName',
         filters: {
           test: 'value'
@@ -120,7 +122,7 @@ describe('ArangoAdaptor Store().readOneOrCreate', () => {
         }
       })
       .then(() => {
-        const dataArgument = dbStub.db.collectionName.save.firstCall.args[0]
+        const dataArgument = collectionStub.save.firstCall.args[0]
         expect(dataArgument).to.have.property('modified')
         expect(isDate(new Date(dataArgument.modified)), 'Modified is not date').to.be.true()
         expect(differenceInMinutes(new Date(dataArgument.modified), new Date()) < 1, 'Modified is not recent date').to.be.true()
@@ -128,7 +130,7 @@ describe('ArangoAdaptor Store().readOneOrCreate', () => {
     })
 
     it('should request newly created entity is returned', () => {
-      return Store().readOneOrCreate({
+      return store.readOneOrCreate({
         type: 'collectionName',
         filters: {
           test: 'value'
@@ -138,13 +140,13 @@ describe('ArangoAdaptor Store().readOneOrCreate', () => {
         }
       })
       .then(() => {
-        const optionsArgument = dbStub.db.collectionName.save.firstCall.args[1]
+        const optionsArgument = collectionStub.save.firstCall.args[1]
         expect(optionsArgument).to.have.property('returnNew', true)
       })
     })
 
     it('should return normalised entity', () => {
-      return expect(Store().readOneOrCreate({
+      return expect(store.readOneOrCreate({
         type: 'collectionName',
         filters: {
           test: 'value'

@@ -35,11 +35,10 @@ module.exports = function nestedCountByFilters (props = {}) {
           args.filters[parentName] = parent.id
           return context.transaction(
             (store, params) => {
-              return store.readAll({
+              return store.countByFilters({
                 type: params.collection,
                 filters: params.filters
               })
-              .then(response => response.length)
             },
             {
               collection,

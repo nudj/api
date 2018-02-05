@@ -54,7 +54,7 @@ describe('nestedCountByFilters', () => {
       }).resolvers.Parent.relationsCountByFilters
     })
 
-    it('should call store.readAll', () => {
+    it('should call store.countByFilters', () => {
       const parent = {
         id: 'parent1'
       }
@@ -62,9 +62,10 @@ describe('nestedCountByFilters', () => {
         slug: 'someSlug'
       }
       const fakeContext = generateFakeContextWithStore({
-        readAll: () => Promise.resolve([1, 2, 3])
+        countByFilters: () => 'calling store.countByFilters'
       })
-      return expect(resolver(parent, { filters }, fakeContext)).to.eventually.equal(3)
+      return expect(resolver(parent, { filters }, fakeContext))
+        .to.eventually.equal('calling store.countByFilters')
     })
   })
 

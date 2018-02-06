@@ -8,6 +8,7 @@ const findIndex = require('lodash/findIndex')
 const toLower = require('lodash/toLower')
 const merge = require('lodash/merge')
 const pluralize = require('pluralize')
+const { startOfDay, endOfDay } = require('date-fns')
 const { NotFound } = require('@nudj/library/errors')
 
 function generateId ({ db, type }) {
@@ -58,10 +59,10 @@ module.exports = ({ db }) => {
           return Promise.resolve(filter(filtered, (item) => {
             const { created } = item
             if (dateTo && dateFrom) {
-              return time(created) <= time(dateTo) && time(created) >= time(dateFrom)
+              return time(created) <= time(endOfDay(dateTo)) && time(created) >= time(startOfDay(dateFrom))
             }
-            if (dateTo) return time(created) <= time(dateTo)
-            return time(created) >= time(dateFrom)
+            if (dateTo) return time(created) <= time(endOfDay(dateTo))
+            return time(created) >= time(startOfDay(dateFrom))
           }))
         }
         return Promise.resolve(filter(all, filters))
@@ -151,10 +152,10 @@ module.exports = ({ db }) => {
           const response = filter(filtered, (item) => {
             const { created } = item
             if (dateTo && dateFrom) {
-              return time(created) <= time(dateTo) && time(created) >= time(dateFrom)
+              return time(created) <= time(endOfDay(dateTo)) && time(created) >= time(startOfDay(dateFrom))
             }
-            if (dateTo) return time(created) <= time(dateTo)
-            return time(created) >= time(dateFrom)
+            if (dateTo) return time(created) <= time(endOfDay(dateTo))
+            return time(created) >= time(endOfDay(dateFrom))
           })
           return Promise.resolve(response.length)
         }

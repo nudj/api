@@ -5,8 +5,10 @@ const dedent = require('dedent')
 const proxyquire = require('proxyquire').noCallThru()
 const sinon = require('sinon')
 const sinonChai = require('sinon-chai')
-const expect = chai.expect
 
+const Store = require('../../../../gql/adaptors/arango/store')
+
+const expect = chai.expect
 chai.use(sinonChai)
 
 const DOCUMENT_RESPONSE = {
@@ -16,8 +18,8 @@ const DOCUMENT_RESPONSE = {
   prop: 'value'
 }
 
-describe('ArangoAdaptor Store().countByFilters', () => {
-  let Store
+describe('ArangoAdaptor store.countByFilters', () => {
+  let store
   let dbStub
 
   before(() => {
@@ -30,9 +32,7 @@ describe('ArangoAdaptor Store().countByFilters', () => {
         }
       }
     }
-    Store = proxyquire('../../../gql/adaptors/arango/store', {
-      '@arangodb': dbStub
-    })
+    store = Store(dbStub)
   })
   afterEach(() => {
     dbStub.db._query.reset()
@@ -42,7 +42,7 @@ describe('ArangoAdaptor Store().countByFilters', () => {
 
   describe('with no filters', () => {
     it('should fetch the data', () => {
-      return Store().countByFilters({
+      return store.countByFilters({
         type: 'collectionName',
         filters: {}
       })
@@ -52,7 +52,7 @@ describe('ArangoAdaptor Store().countByFilters', () => {
     })
 
     it('should return the cumulative countByFilters of filtered entities', () => {
-      return expect(Store().countByFilters({
+      return expect(store.countByFilters({
         type: 'collectionName',
         filters: {}
       })).to.eventually.deep.equal(47)
@@ -61,7 +61,7 @@ describe('ArangoAdaptor Store().countByFilters', () => {
 
   describe('with filters', () => {
     it('should fetch the data', () => {
-      return Store().countByFilters({
+      return store.countByFilters({
         type: 'collectionName',
         filters: {
           test: 'value'
@@ -74,7 +74,7 @@ describe('ArangoAdaptor Store().countByFilters', () => {
     })
 
     it('should return normalised entities', () => {
-      return expect(Store().countByFilters({
+      return expect(store.countByFilters({
         type: 'collectionName',
         filters: {
           test: 'value'
@@ -85,7 +85,7 @@ describe('ArangoAdaptor Store().countByFilters', () => {
 
   describe('with date filters', () => {
     it('should fetch the data', () => {
-      return Store().countByFilters({
+      return store.countByFilters({
         type: 'collectionName',
         filters: {
           dateTo: '2017-12-15T11:21:51.030+00:00',
@@ -110,7 +110,7 @@ describe('ArangoAdaptor Store().countByFilters', () => {
     })
 
     it('should return normalised entities', () => {
-      return expect(Store().countByFilters({
+      return expect(store.countByFilters({
         type: 'collectionName',
         filters: {
           dateTo: '2017-12-15T11:21:51.030+00:00',

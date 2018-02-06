@@ -6,15 +6,35 @@ const schema = require('../../../gql/schema')
 const { executeQueryOnDbUsingSchema } = require('../../helpers')
 
 describe('Job.viewCount', () => {
-  it('should return the jobs\'s viewCount', () => {
+  it('should return total count of the jobs\'s "viewed" events', () => {
     const db = {
-      jobs: [{
-        id: 'job1',
-        viewCount: 1
-      }, {
-        id: 'job2',
-        viewCount: 9
-      }]
+      jobs: [
+        {
+          id: 'job1'
+        }
+      ],
+      events: [
+        {
+          entityId: 'job1',
+          eventType: 'viewed'
+        },
+        {
+          entityId: 'job1',
+          eventType: 'referred'
+        },
+        {
+          entityId: 'job1',
+          eventType: 'viewed'
+        },
+        {
+          entityId: 'jobFiveMillion',
+          eventType: 'viewed'
+        },
+        {
+          entityId: 'job1',
+          eventType: 'viewed'
+        }
+      ]
     }
 
     const operation = `
@@ -30,17 +50,18 @@ describe('Job.viewCount', () => {
       data: {
         job: {
           id: 'job1',
-          viewCount: 1
+          viewCount: 3
         }
       }
     })
   })
 
-  it('should return 0 if the viewCount doesn\'t have a value', () => {
+  it('should return 0 if the job has no "viewed" events', () => {
     const db = {
       jobs: [{
         id: 'job1'
-      }]
+      }],
+      events: []
     }
 
     const operation = `

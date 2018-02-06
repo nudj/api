@@ -6,7 +6,15 @@ module.exports = {
   `,
   resolvers: {
     Job: {
-      viewCount: (job, args, context) => job.viewCount || 0
+      viewCount: (job, args, context) => {
+        return context.store.countByFilters({
+          type: 'events',
+          filters: {
+            entityId: job.id,
+            eventType: 'viewed'
+          }
+        })
+      }
     }
   }
 }

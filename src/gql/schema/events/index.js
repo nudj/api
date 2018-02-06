@@ -7,7 +7,7 @@ module.exports = {
       eventType: EventType!,
       entityType: EventEntityType!,
       entityId: ID!,
-      browserId: ID
+      browserId: String!
     }
   `
 }

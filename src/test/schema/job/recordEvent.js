@@ -142,15 +142,32 @@ describe('Job.recordEvent', () => {
         browserId: '12345'
       }
 
-      return expect(executeQueryOnDbUsingSchema({ operation, variables, db, schema })).to.eventually.deep.equal({
-        data: {
-          job: {
-            recordEvent: {
-              id: 'event2',
-              browserId: '12345'
+      return executeQueryOnDbUsingSchema({ operation, variables, db, schema })
+      .then(result => {
+        expect(result).to.deep.equal({
+          data: {
+            job: {
+              recordEvent: {
+                id: 'event2',
+                browserId: '12345'
+              }
             }
           }
-        }
+        })
+        expect(db.events).to.deep.equal([
+          {
+            id: 'preExistingEvent',
+            entityId: 'job1',
+            browserId: '78910'
+          },
+          {
+            id: 'event2',
+            entityId: 'job1',
+            entityType: 'jobs',
+            eventType: 'viewed',
+            browserId: '12345'
+          }
+        ])
       })
     })
   })

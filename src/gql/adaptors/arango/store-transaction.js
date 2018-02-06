@@ -145,6 +145,26 @@ module.exports = () => {
       `).join(',')
       const aqlQuery = `RETURN UNION_DISTINCT([],${operations})`
       return executeAqlQuery(aqlQuery, { query })
+    },
+    countByFilters: ({
+      type,
+      filters = {}
+    }) => {
+      const { dateTo: to, dateFrom: from } = filters
+      const generalFilters = parseFiltersToAql(omit(filters, ['dateTo', 'dateFrom']))
+      const query = [
+        `RETURN COUNT(`,
+        `FOR item IN ${type}`,
+        generalFilters,
+        to && 'FILTER DATE_TIMESTAMP(item.created) <= DATE_TIMESTAMP(@to)',
+        from && 'FILTER DATE_TIMESTAMP(item.created) >= DATE_TIMESTAMP(@from)',
+        'RETURN item',
+        ')'
+      ].filter(Boolean).join('\n')
+
+      return Promise.resolve(flatten(
+        db._query(query, { to, from }).toArray()
+      )).then(response => response[0])
     }
   }
 }

@@ -149,7 +149,7 @@ module.exports = ({ db }) => {
     },
     countByFilters: ({
       type,
-      filters
+      filters = {}
     }) => {
       const { dateTo: to, dateFrom: from } = filters
       const generalFilters = parseFiltersToAql(omit(filters, ['dateTo', 'dateFrom']))

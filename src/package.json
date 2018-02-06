@@ -33,6 +33,7 @@
     "graphql": "0.10.3",
     "graphql-server-express": "1.0.0",
     "graphql-tools": "1.1.0",
+    "hash-generator": "^0.1.0",
     "js-base64": "^2.1.9",
     "intercom-client": "^2.8.7",
     "json-server": "0.11.2",

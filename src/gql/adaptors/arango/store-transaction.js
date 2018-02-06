@@ -4,8 +4,22 @@ module.exports = () => {
   const omit = require('lodash/omit')
   const { db } = require('@arangodb')
 
-  const startOfDay = (time) => time && `${time.split('T')[0]}T00:00:00.000Z`
-  const endOfDay = (time) => time && `${time.split('T')[0]}T23:59:59.999Z`
+  const startOfDay = timestamp => {
+    if (!timestamp) return
+
+    const validDate = (new Date(timestamp)).getTime() > 0
+    if (!validDate) throw new Error('Invalid timestamp')
+    return `${timestamp.split('T')[0]}T00:00:00.000Z`
+  }
+
+  const endOfDay = timestamp => {
+    if (!timestamp) return
+
+    const validDate = (new Date(timestamp)).getTime() > 0
+    if (!validDate) throw new Error('Invalid timestamp')
+    return `${timestamp.split('T')[0]}T23:59:59.999Z`
+  }
+
   const normaliseData = (data) => {
     if (data === null) return null
     return reduce(data, (result, value, key) => {
@@ -88,8 +102,8 @@ module.exports = () => {
         ].filter(Boolean).join('\n')
 
         return executeAqlQuery(query, {
-          to: endOfDay(dateTo),
-          from: startOfDay(dateFrom)
+          to: dateTo && endOfDay(dateTo),
+          from: dateFrom && startOfDay(dateFrom)
         })
       } else {
         return Promise.resolve(db[type].byExample(filters).toArray().map(normaliseData))
@@ -169,8 +183,8 @@ module.exports = () => {
 
       return Promise.resolve(flatten(
         db._query(query, {
-          to: endOfDay(dateTo),
-          from: startOfDay(dateFrom)
+          to: dateTo && endOfDay(dateTo),
+          from: dateFrom && startOfDay(dateFrom)
         }).toArray()
       )).then(response => response[0])
     }

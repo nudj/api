@@ -2,8 +2,7 @@ const reduce = require('lodash/reduce')
 const flatten = require('lodash/flatten')
 const omit = require('lodash/omit')
 
-const startOfDay = (time) => time && `${time.split('T')[0]}T00:00:00.000Z`
-const endOfDay = (time) => time && `${time.split('T')[0]}T23:59:59.999Z`
+const { startOfDay, endOfDay } = require('../../lib/format-dates')
 
 module.exports = ({ db }) => {
   const normaliseData = (data) => {
@@ -89,8 +88,8 @@ module.exports = ({ db }) => {
         ].filter(Boolean).join('\n')
 
         return executeAqlQuery(query, {
-          to: endOfDay(dateTo),
-          from: endOfDay(dateFrom)
+          to: dateTo && endOfDay(dateTo),
+          from: dateFrom && endOfDay(dateFrom)
         })
       } else {
         const response = await db.collection(type).byExample(filters)
@@ -171,8 +170,8 @@ module.exports = ({ db }) => {
 
       return Promise.resolve(flatten(
         db._query(query, {
-          to: endOfDay(dateTo),
-          from: startOfDay(dateFrom)
+          to: dateTo && endOfDay(dateTo),
+          from: dateFrom && startOfDay(dateFrom)
         }).toArray()
       )).then(response => response[0])
     }

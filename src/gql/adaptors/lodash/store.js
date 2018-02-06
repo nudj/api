@@ -8,8 +8,9 @@ const findIndex = require('lodash/findIndex')
 const toLower = require('lodash/toLower')
 const merge = require('lodash/merge')
 const pluralize = require('pluralize')
-const { startOfDay, endOfDay } = require('date-fns')
 const { NotFound } = require('@nudj/library/errors')
+
+const { startOfDay, endOfDay } = require('../../lib/format-dates')
 
 function generateId ({ db, type }) {
   return `${pluralize.singular(type)}${db[type].length + 1}`

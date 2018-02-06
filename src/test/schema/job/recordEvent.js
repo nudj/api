@@ -5,20 +5,19 @@ const expect = chai.expect
 const schema = require('../../../gql/schema')
 const { executeQueryOnDbUsingSchema } = require('../../helpers')
 
-const operation = `
-  mutation viewJobPage ($type: EventType!, $browserId: String) {
-    job(id: "job1") {
-      recordEvent(type: $type, browserId: $browserId) {
-        id
-        browserId
-      }
-    }
-  }
-`
-
 describe('Job.recordEvent', () => {
   describe('if event does not exist', () => {
     it('should create a new event', () => {
+      const operation = `
+        mutation viewJobPage ($type: EventType!, $browserId: String) {
+          job(id: "job1") {
+            recordEvent(type: $type, browserId: $browserId) {
+              id
+              browserId
+            }
+          }
+        }
+      `
       const db = {
         jobs: [
           {
@@ -47,6 +46,16 @@ describe('Job.recordEvent', () => {
 
   describe('if event filtered by job and browserId exists', () => {
     it('should not create new entry', () => {
+      const operation = `
+        mutation viewJobPage ($type: EventType!, $browserId: String) {
+          job(id: "job1") {
+            recordEvent(type: $type, browserId: $browserId) {
+              id
+              browserId
+            }
+          }
+        }
+      `
       const db = {
         jobs: [
           {
@@ -89,6 +98,16 @@ describe('Job.recordEvent', () => {
 
   describe('if browserId exists for different job', () => {
     it('creates new event', () => {
+      const operation = `
+        mutation viewJobPage ($type: EventType!, $browserId: String) {
+          job(id: "job1") {
+            recordEvent(type: $type, browserId: $browserId) {
+              id
+              browserId
+            }
+          }
+        }
+      `
       const db = {
         jobs: [
           {
@@ -123,6 +142,16 @@ describe('Job.recordEvent', () => {
 
   describe('if jobId exists for different browserId', () => {
     it('creates new event', () => {
+      const operation = `
+        mutation viewJobPage ($type: EventType!, $browserId: String) {
+          job(id: "job1") {
+            recordEvent(type: $type, browserId: $browserId) {
+              id
+              browserId
+            }
+          }
+        }
+      `
       const db = {
         jobs: [
           {
@@ -174,6 +203,16 @@ describe('Job.recordEvent', () => {
 
   describe('if browserId is not supplied', () => {
     it('creates new browserId and event', () => {
+      const operation = `
+        mutation viewJobPage ($type: EventType!, $browserId: String) {
+          job(id: "job1") {
+            recordEvent(type: $type, browserId: $browserId) {
+              id
+              browserId
+            }
+          }
+        }
+      `
       const db = {
         jobs: [
           {

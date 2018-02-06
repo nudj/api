@@ -95,8 +95,8 @@ describe('ArangoAdaptor Store().countByFilters', () => {
       .then(() => {
         const [ query, bindVars ] = dbStub.db._query.firstCall.args
         expect(bindVars).to.deep.equal({
-          to: '2017-12-15T11:21:51.030+00:00',
-          from: '2016-12-15T11:21:51.030+00:00'
+          from: '2016-12-15T00:00:00.000Z',
+          to: '2017-12-15T23:59:59.999Z'
         })
         expect(dedent(query)).to.equal(dedent`
           RETURN COUNT(

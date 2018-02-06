@@ -4,6 +4,8 @@ module.exports = () => {
   const omit = require('lodash/omit')
   const { db } = require('@arangodb')
 
+  const startOfDay = (time) => time && `${time.split('T')[0]}T00:00:00.000Z`
+  const endOfDay = (time) => time && `${time.split('T')[0]}T23:59:59.999Z`
   const normaliseData = (data) => {
     if (data === null) return null
     return reduce(data, (result, value, key) => {
@@ -75,17 +77,20 @@ module.exports = () => {
     }) => {
       if (!filters) return Promise.resolve(db[type].all().toArray().map(normaliseData))
       if (filters.dateTo || filters.dateFrom) {
-        const { dateTo: to, dateFrom: from } = filters
+        const { dateTo, dateFrom } = filters
         const generalFilters = parseFiltersToAql(omit(filters, ['dateTo', 'dateFrom']))
         const query = [
           `FOR item in ${type}`,
           generalFilters,
-          to && 'FILTER DATE_TIMESTAMP(item.created) <= DATE_TIMESTAMP(@to)',
-          from && 'FILTER DATE_TIMESTAMP(item.created) >= DATE_TIMESTAMP(@from)',
+          dateTo && 'FILTER DATE_TIMESTAMP(item.created) <= DATE_TIMESTAMP(@to)',
+          dateFrom && 'FILTER DATE_TIMESTAMP(item.created) >= DATE_TIMESTAMP(@from)',
           'RETURN item'
         ].filter(Boolean).join('\n')
 
-        return executeAqlQuery(query, { to, from })
+        return executeAqlQuery(query, {
+          to: endOfDay(dateTo),
+          from: startOfDay(dateFrom)
+        })
       } else {
         return Promise.resolve(db[type].byExample(filters).toArray().map(normaliseData))
       }
@@ -150,20 +155,23 @@ module.exports = () => {
       type,
       filters = {}
     }) => {
-      const { dateTo: to, dateFrom: from } = filters
+      const { dateTo, dateFrom } = filters
       const generalFilters = parseFiltersToAql(omit(filters, ['dateTo', 'dateFrom']))
       const query = [
         `RETURN COUNT(`,
         `FOR item IN ${type}`,
         generalFilters,
-        to && 'FILTER DATE_TIMESTAMP(item.created) <= DATE_TIMESTAMP(@to)',
-        from && 'FILTER DATE_TIMESTAMP(item.created) >= DATE_TIMESTAMP(@from)',
+        dateTo && 'FILTER DATE_TIMESTAMP(item.created) <= DATE_TIMESTAMP(@to)',
+        dateFrom && 'FILTER DATE_TIMESTAMP(item.created) >= DATE_TIMESTAMP(@from)',
         'RETURN item',
         ')'
       ].filter(Boolean).join('\n')
 
       return Promise.resolve(flatten(
-        db._query(query, { to, from }).toArray()
+        db._query(query, {
+          to: endOfDay(dateTo),
+          from: startOfDay(dateFrom)
+        }).toArray()
       )).then(response => response[0])
     }
   }

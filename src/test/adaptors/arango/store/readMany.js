@@ -18,7 +18,7 @@ describe('ArangoAdaptor store.readMany', () => {
 
   before(() => {
     collectionStub = {
-      document: sinon.stub().returns([DOCUMENT_RESPONSE, DOCUMENT_RESPONSE])
+      lookupByKeys: sinon.stub().returns([DOCUMENT_RESPONSE, DOCUMENT_RESPONSE])
     }
     dbStub = {
       db: {
@@ -28,7 +28,7 @@ describe('ArangoAdaptor store.readMany', () => {
     store = Store(dbStub)
   })
   afterEach(() => {
-    collectionStub.document.reset()
+    collectionStub.lookupByKeys.reset()
     dbStub.db.collection.reset()
   })
 
@@ -48,7 +48,7 @@ describe('ArangoAdaptor store.readMany', () => {
       ids: [1, 2]
     })
     .then(() => {
-      const dataArgument = collectionStub.document.firstCall.args[0]
+      const dataArgument = collectionStub.lookupByKeys.firstCall.args[0]
       expect(dataArgument).to.deep.equal([1, 2])
     })
   })

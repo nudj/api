@@ -92,10 +92,12 @@ describe('Person.getOrCreateConnections', () => {
     it('should create the companies', () => {
       expect(db).to.have.deep.property('companies.0').to.deep.equal({
         id: 'company1',
+        client: false,
         name: 'CONNECTION_COMPANY1'
       })
       expect(db).to.have.deep.property('companies.1').to.deep.equal({
         id: 'company2',
+        client: false,
         name: 'CONNECTION_COMPANY2'
       })
     })

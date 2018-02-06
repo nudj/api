@@ -63,7 +63,7 @@ module.exports = ({ db }) => {
       type,
       ids
     }) => {
-      const response = await db.collection(type).document(ids)
+      const response = await db.collection(type).lookupByKeys(ids)
       return response.map(normaliseData)
     },
     readAll: async ({

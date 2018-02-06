@@ -140,7 +140,7 @@ module.exports = ({ db }) => {
     },
     countByFilters: ({
       type,
-      filters
+      filters = {}
     }) => {
       const all = get(db, type)
       if (filters) {

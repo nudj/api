@@ -155,7 +155,7 @@ module.exports = ({ db }) => {
               return time(created) <= time(endOfDay(dateTo)) && time(created) >= time(startOfDay(dateFrom))
             }
             if (dateTo) return time(created) <= time(endOfDay(dateTo))
-            return time(created) >= time(endOfDay(dateFrom))
+            return time(created) >= time(startOfDay(dateFrom))
           })
           return Promise.resolve(response.length)
         }

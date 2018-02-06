@@ -9,7 +9,7 @@ chai.use(chaiAsPromised)
 
 const { transaction } = require('../../../gql/adaptors/lodash')
 
-describe('LodashAdaptor transaction', () => {
+describe.only('LodashAdaptor transaction', () => {
   let db
 
   beforeEach(() => {
@@ -556,6 +556,50 @@ describe('LodashAdaptor transaction', () => {
     })
     .then(result => {
       expect(result).to.equal(2)
+    })
+  })
+
+  it('countByFilters with \'from\' date filter', () => {
+    return transaction({ db })(store => {
+      return store.countByFilters({
+        type: 'monsters',
+        filters: {
+          dateFrom: '1986-07-07T07:34:54.000'
+        }
+      })
+    })
+    .then(result => {
+      expect(result).to.equal(4)
+    })
+  })
+
+  it('countByFilters with \'to\' date filter', () => {
+    return transaction({ db })(store => {
+      return store.countByFilters({
+        type: 'monsters',
+        filters: {
+          dateTo: '1986-07-08T07:34:54.000'
+        }
+      })
+    })
+    .then(result => {
+      expect(result).to.deep.equal(3)
+    })
+  })
+
+  it('countByFilters with both general and date filters', () => {
+    return transaction({ db })(store => {
+      return store.countByFilters({
+        type: 'monsters',
+        filters: {
+          type: 'modern',
+          dateTo: '1986-07-08T07:34:54.000',
+          dateFrom: '1986-07-07T07:34:54.000'
+        }
+      })
+    })
+    .then(result => {
+      expect(result).to.equal(1)
     })
   })
 

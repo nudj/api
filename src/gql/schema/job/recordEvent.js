@@ -31,7 +31,6 @@ module.exports = {
           })
         }, {
           entityId: job.id,
-          viewCount: job.viewCount,
           browserId: args.browserId || createNewBrowserId(),
           eventType: args.type
         })

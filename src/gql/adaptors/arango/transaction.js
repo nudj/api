@@ -3,7 +3,7 @@ const semi = require('semi')
 const logger = require('@nudj/library/lib/logger')
 const get = require('lodash/get')
 
-const store = require('./store')
+const store = require('./store-transaction')
 const actionToCollectionLock = require('./action-to-collection-lock')
 const actionToString = require('./action-to-string')
 

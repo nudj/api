@@ -8,7 +8,7 @@ describe('ArangoAdaptor Store', () => {
   let Store
 
   before(() => {
-    Store = proxyquire('../../../gql/adaptors/arango/store', {
+    Store = proxyquire('../../../../gql/adaptors/arango/store-transaction', {
       '@arangodb': {}
     })
   })

@@ -1,39 +1,41 @@
 /* eslint-env mocha */
 
 const chai = require('chai')
-const proxyquire = require('proxyquire').noCallThru()
 const sinon = require('sinon')
 const sinonChai = require('sinon-chai')
 const isDate = require('date-fns/is_valid')
 const differenceInMinutes = require('date-fns/difference_in_minutes')
 const expect = chai.expect
 
+const Store = require('../../../../gql/adaptors/arango/store')
+
 chai.use(sinonChai)
 
 const NEW_RESPONSE = { new: { _key: 'id', '_id': 123, '_rev': 123, prop: 'value' } }
 
-describe('ArangoAdaptor Store().update', () => {
-  let Store
+describe('ArangoAdaptor store.update', () => {
+  let collectionStub
   let dbStub
+  let store
 
   before(() => {
+    collectionStub = {
+      update: sinon.stub().returns(NEW_RESPONSE)
+    }
     dbStub = {
       db: {
-        collectionName: {
-          update: sinon.stub().returns(NEW_RESPONSE)
-        }
+        collection: sinon.stub().returns(collectionStub)
       }
     }
-    Store = proxyquire('../../../gql/adaptors/arango/store', {
-      '@arangodb': dbStub
-    })
+    store = Store(dbStub)
   })
   afterEach(() => {
-    dbStub.db.collectionName.update.reset()
+    collectionStub.update.reset()
+    dbStub.db.collection.reset()
   })
 
   it('should pass the entity id', () => {
-    return Store().update({
+    return store.update({
       type: 'collectionName',
       id: 456,
       data: {
@@ -41,13 +43,13 @@ describe('ArangoAdaptor Store().update', () => {
       }
     })
     .then(() => {
-      const id = dbStub.db.collectionName.update.firstCall.args[0]
+      const id = collectionStub.update.firstCall.args[0]
       expect(id).to.equal(456)
     })
   })
 
   it('should pass the patch data', () => {
-    return Store().update({
+    return store.update({
       type: 'collectionName',
       id: 456,
       data: {
@@ -55,13 +57,13 @@ describe('ArangoAdaptor Store().update', () => {
       }
     })
     .then(() => {
-      const dataArgument = dbStub.db.collectionName.update.firstCall.args[1]
+      const dataArgument = collectionStub.update.firstCall.args[1]
       expect(dataArgument).to.have.property('prop', 'value')
     })
   })
 
   it('should append modified date', () => {
-    return Store().update({
+    return store.update({
       type: 'collectionName',
       id: 456,
       data: {
@@ -69,7 +71,7 @@ describe('ArangoAdaptor Store().update', () => {
       }
     })
     .then(() => {
-      const dataArgument = dbStub.db.collectionName.update.firstCall.args[1]
+      const dataArgument = collectionStub.update.firstCall.args[1]
       expect(dataArgument).to.have.property('modified')
       expect(isDate(new Date(dataArgument.modified)), 'Modified is not date').to.be.true()
       expect(differenceInMinutes(new Date(dataArgument.modified), new Date()) < 1, 'Modified is not recent date').to.be.true()
@@ -77,7 +79,7 @@ describe('ArangoAdaptor Store().update', () => {
   })
 
   it('should request updated entity is returned', () => {
-    return Store().update({
+    return store.update({
       type: 'collectionName',
       id: 456,
       data: {
@@ -85,13 +87,13 @@ describe('ArangoAdaptor Store().update', () => {
       }
     })
     .then(() => {
-      const optionsArgument = dbStub.db.collectionName.update.firstCall.args[2]
+      const optionsArgument = collectionStub.update.firstCall.args[2]
       expect(optionsArgument).to.have.property('returnNew', true)
     })
   })
 
   it('should return normalised entity', () => {
-    return expect(Store().update({
+    return expect(store.update({
       type: 'collectionName',
       id: 456,
       data: {

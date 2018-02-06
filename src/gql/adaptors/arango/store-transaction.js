@@ -1,8 +1,9 @@
-const reduce = require('lodash/reduce')
-const flatten = require('lodash/flatten')
-const omit = require('lodash/omit')
+module.exports = () => {
+  const reduce = require('lodash/reduce')
+  const flatten = require('lodash/flatten')
+  const omit = require('lodash/omit')
+  const { db } = require('@arangodb')
 
-module.exports = ({ db }) => {
   const normaliseData = (data) => {
     if (data === null) return null
     return reduce(data, (result, value, key) => {
@@ -29,23 +30,26 @@ module.exports = ({ db }) => {
     }).join(' && ')}`
   }
 
-  const executeAqlQuery = async (query, params) => {
-    const response = await db.query(query, params)
-    return flatten(response.map(normaliseData))
+  const executeAqlQuery = (query, params) => {
+    return Promise.resolve(
+      flatten(
+        db._query(query, params).toArray()
+      )
+    ).then(response => response.map(normaliseData))
   }
 
   return {
-    create: async ({
+    create: ({
       type,
       data
     }) => {
-      const response = await db.collection(type).save(Object.assign(data, {
+      const response = db[type].save(Object.assign(data, {
         created: newISODate(),
         modified: newISODate()
       }), { returnNew: true })
-      return normaliseData(response.new)
+      return Promise.resolve(normaliseData(response.new))
     },
-    readOne: async ({
+    readOne: ({
       type,
       id,
       filters
@@ -57,23 +61,19 @@ module.exports = ({ db }) => {
         method = 'firstExample'
         arg = filters
       }
-      return normaliseData(await db.collection(type)[method](arg))
+      return Promise.resolve(normaliseData(db[type][method](arg)))
     },
-    readMany: async ({
+    readMany: ({
       type,
       ids
     }) => {
-      const response = await db.collection(type).document(ids)
-      return response.map(normaliseData)
+      return Promise.resolve(db[type].document(ids).map(normaliseData))
     },
-    readAll: async ({
+    readAll: ({
       type,
       filters
     }) => {
-      if (!filters) {
-        const response = await db.collection(type).all()
-        return response.map(normaliseData)
-      }
+      if (!filters) return Promise.resolve(db[type].all().toArray().map(normaliseData))
       if (filters.dateTo || filters.dateFrom) {
         const { dateTo: to, dateFrom: from } = filters
         const generalFilters = parseFiltersToAql(omit(filters, ['dateTo', 'dateFrom']))
@@ -87,35 +87,34 @@ module.exports = ({ db }) => {
 
         return executeAqlQuery(query, { to, from })
       } else {
-        const response = await db.collection(type).byExample(filters)
-        return response.map(normaliseData)
+        return Promise.resolve(db[type].byExample(filters).toArray().map(normaliseData))
       }
     },
-    update: async ({
+    update: ({
       type,
       id,
       data
     }) => {
-      const response = await db.collection(type).update(id, Object.assign(data, {
+      const response = db[type].update(id, Object.assign(data, {
         modified: newISODate()
       }), { returnNew: true })
       return Promise.resolve(normaliseData(response.new))
     },
-    delete: async ({
+    delete: ({
       type,
       id
     }) => {
-      const response = await db.collection(type).remove(id, { returnOld: true })
+      const response = db[type].remove(id, { returnOld: true })
       return Promise.resolve(normaliseData(response.old))
     },
-    readOneOrCreate: async ({
+    readOneOrCreate: ({
       type,
       filters,
       data
     }) => {
-      let item = await db.collection(type).firstExample(filters)
+      let item = db[type].firstExample(filters)
       if (!item) {
-        const response = await db.collection(type).save(Object.assign(data, {
+        const response = db[type].save(Object.assign(data, {
           created: newISODate(),
           modified: newISODate()
         }), { returnNew: true })

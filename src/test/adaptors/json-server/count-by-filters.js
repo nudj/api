@@ -121,4 +121,38 @@ describe('JSON-Server Store().countByFilters', () => {
       expect(results).to.equal(2)
     })
   })
+
+  it('should fetch the count with date filters', () => {
+    server
+      .get('/soft-drinks')
+      .query((queryObject) => {
+        const { created_gte: from, created_lte: to } = queryObject
+        const correctStartDate = to === '1986-07-08T23:59:59.999Z'
+        const correctEndDate = from === '1986-07-07T00:00:00.000Z'
+        return correctStartDate && correctEndDate
+      })
+      .reply(200, [
+        {
+          id: 1,
+          name: 'Diet Coke',
+          created: '1986-07-07T07:34:54.000+00:00'
+        },
+        {
+          id: 2,
+          name: 'Pepsi Cola',
+          created: '1986-07-08T07:34:54.000+00:00'
+        }
+      ])
+    return transaction(store => {
+      return store.countByFilters({
+        type: 'soft-drinks',
+        filters: {
+          dateFrom: '1986-07-07T07:34:54.000+00:00',
+          dateTo: '1986-07-08T07:34:54.000+00:00'
+        }
+      })
+    }).then(results => {
+      expect(results).to.equal(2)
+    })
+  })
 })

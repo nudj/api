@@ -77,9 +77,11 @@ describe('JSON-Server Store().readAll', () => {
   it('should fetch data with date filters', () => {
     server
       .get('/people')
-      .query({
-        created_gte: encodeURI('1986-07-09T07:34:54.000+00:00'),
-        created_lte: encodeURI('1986-07-07T07:34:54.000+00:00')
+      .query((queryObject) => {
+        const { created_gte: from, created_lte: to } = queryObject
+        const correctStartDate = to === '1986-07-07T23:59:59.999Z'
+        const correctEndDate = from === '1986-07-09T00:00:00.000Z'
+        return correctStartDate && correctEndDate
       })
       .reply(200, [
         {

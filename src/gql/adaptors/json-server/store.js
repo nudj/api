@@ -8,6 +8,7 @@ const omit = require('lodash/omit')
 const omitBy = require('lodash/omitBy')
 const isUndefined = require('lodash/isUndefined')
 const axios = require('axios')
+const { startOfDay, endOfDay } = require('date-fns')
 const { logThenThrow, NotFound } = require('@nudj/library/errors')
 const {
   toQs,
@@ -130,8 +131,8 @@ module.exports = () => ({
 
     const allFilters = omitBy({
       ...omit(filters, ['dateTo', 'dateFrom']),
-      created_gte: filters.dateFrom,
-      created_lte: filters.dateTo
+      created_gte: filters.dateFrom && startOfDay(filters.dateFrom).toISOString(),
+      created_lte: filters.dateTo && endOfDay(filters.dateTo).toISOString()
     }, isUndefined)
 
     const filterString = toQs(allFilters)
@@ -239,8 +240,8 @@ module.exports = () => ({
   }) => {
     const allFilters = omitBy({
       ...omit(filters, ['dateTo', 'dateFrom']),
-      created_gte: filters.dateFrom,
-      created_lte: filters.dateTo
+      created_gte: filters.dateFrom && startOfDay(filters.dateFrom).toISOString(),
+      created_lte: filters.dateTo && endOfDay(filters.dateTo).toISOString()
     }, isUndefined)
     const filterString = toQs(allFilters)
     return request({

@@ -5,7 +5,7 @@ const expect = chai.expect
 const schema = require('../../../gql/schema')
 const { executeQueryOnDbUsingSchema } = require('../../helpers')
 
-describe('Job.referralsByFilters', () => {
+describe('Job.applicationsCountByFilters', () => {
   const getOlderDate = () => (new Date('1970', '01', '01')).toISOString()
   const getNewerDate = () => (new Date('1970', '01', '03')).toISOString()
 
@@ -15,31 +15,27 @@ describe('Job.referralsByFilters', () => {
     }, {
       id: 'job2'
     }],
-    referrals: [{
+    applications: [{
       created: getOlderDate(),
-      id: 'referral1',
+      id: 'app1',
       job: 'job1'
     }, {
       created: getNewerDate(),
-      id: 'referral2',
+      id: 'app2',
       job: 'job1'
     }, {
       created: getNewerDate(),
-      id: 'referral3',
+      id: 'app3',
       job: 'job2'
     }]
   }
 
-  it('should fetch filtered referrals', () => {
+  it('should fetch filtered applications', () => {
     const operation = `
-      query ReferralsByFiltersQuery($dateFrom: DateTime!) {
+      query ApplicationsCountByFiltersQuery($dateFrom: DateTime!) {
         job(id: "job1") {
           id
-          referralsByFilters(filters: {
-            dateFrom: $dateFrom
-          }) {
-            id
-          }
+          applicationsCountByFilters(filters: { dateFrom: $dateFrom })
         }
       }
     `
@@ -52,11 +48,7 @@ describe('Job.referralsByFilters', () => {
       data: {
         job: {
           id: 'job1',
-          referralsByFilters: [
-            {
-              id: 'referral2'
-            }
-          ]
+          applicationsCountByFilters: 1
         }
       }
     })
@@ -64,14 +56,10 @@ describe('Job.referralsByFilters', () => {
 
   it('should return empty array if no matches', async () => {
     const operation = `
-      query ReferralsByFiltersQuery($dateFrom: DateTime!) {
+      query ApplicationsCountByFiltersQuery($dateFrom: DateTime!) {
         job(id: "job1") {
           id
-          referralsByFilters(filters: {
-            dateFrom: $dateFrom
-          }) {
-            id
-          }
+          applicationsCountByFilters(filters: { dateFrom: $dateFrom })
         }
       }
     `
@@ -84,7 +72,7 @@ describe('Job.referralsByFilters', () => {
       data: {
         job: {
           id: 'job1',
-          referralsByFilters: []
+          applicationsCountByFilters: 0
         }
       }
     })

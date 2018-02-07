@@ -13,6 +13,8 @@ module.exports = {
       completed: Boolean
       type: String
       completedBy: ID
+      dateTo: DateTime
+      dateFrom: DateTime
     }
   `
 }

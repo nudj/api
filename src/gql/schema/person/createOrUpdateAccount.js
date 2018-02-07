@@ -17,25 +17,25 @@ module.exports = {
               type
             }
           })
-            .then(account => {
-              if (account && account.id) {
-                return store.update({
-                  type: 'accounts',
-                  id: account.id,
-                  data: {
-                    data: Object.assign({}, account.data, data)
-                  }
-                })
-              }
-              return store.create({
+          .then(account => {
+            if (account && account.id) {
+              return store.update({
                 type: 'accounts',
+                id: account.id,
                 data: {
-                  person,
-                  type,
-                  data
+                  data: Object.assign({}, account.data, data)
                 }
               })
+            }
+            return store.create({
+              type: 'accounts',
+              data: {
+                person,
+                type,
+                data
+              }
             })
+          })
         }, {
           type,
           data,

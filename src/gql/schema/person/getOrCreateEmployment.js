@@ -13,39 +13,57 @@ module.exports = {
             newCompany,
             newSource
           } = params
-          return Promise.all([
-            store.readOneOrCreate({
-              type: 'sources',
-              filters: { name: newSource },
-              data: { name: newSource }
-            }),
-            store.readOneOrCreate({
-              type: 'companies',
-              filters: { name: newCompany },
-              data: { name: newCompany, client: false }
-            })
-          ])
-          .then(([
-            storedSource,
-            storedCompany
-          ]) => {
-            const source = storedSource.id
-            const company = storedCompany.id
-            return store.readOneOrCreate({
+
+          return store.readOne({
+            type: 'companies',
+            filters: { name: newCompany }
+          })
+          .then(company => Promise.all([
+            company,
+            company && store.readOne({
               type: 'employments',
               filters: {
-                person,
-                company
-              },
-              data: {
-                person,
-                source,
-                company
+                person: person.id,
+                company: company.id
               }
+            })
+          ]))
+          .then(([
+            company,
+            employment
+          ]) => {
+            if (employment) return Object.assign({}, employment, { company })
+            return Promise.all([
+              company || store.create({
+                type: 'companies',
+                data: { name: newCompany, client: false }
+              }),
+              store.readOneOrCreate({
+                type: 'sources',
+                filters: { name: newSource },
+                data: { name: newSource }
+              })
+            ])
+            .then(([
+              company,
+              source
+            ]) => {
+              return store.create({
+                type: 'employments',
+                data: {
+                  person: person.id,
+                  source: source.id,
+                  company: company.id
+                }
+              })
+              .then(employment => Object.assign({}, employment, {
+                company,
+                source
+              }))
             })
           })
         }, {
-          person: person.id,
+          person,
           newCompany: args.company,
           newSource: args.source
         })

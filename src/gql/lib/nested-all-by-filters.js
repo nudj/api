@@ -26,25 +26,20 @@ module.exports = function nestedAllByFilters (props = {}) {
   return {
     typeDefs: `
       extend type ${parentType} {
+        # Filters "dateTo" and "dateFrom" are inclusive of the dates provided.
         ${name}(filters: ${filterType}!): [${type}!]!
       }
     `,
     resolvers: {
       [parentType]: {
         [name]: handleErrors((parent, args, context) => {
-          args.filters[parentName] = parent.id
-          return context.transaction(
-            (store, params) => {
-              return store.readAll({
-                type: params.collection,
-                filters: params.filters
-              })
-            },
-            {
-              collection,
-              filters: args.filters
+          return context.store.readAll({
+            type: collection,
+            filters: {
+              ...args.filters,
+              [parentName]: parent.id
             }
-          )
+          })
         })
       }
     }

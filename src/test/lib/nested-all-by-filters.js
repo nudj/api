@@ -29,6 +29,7 @@ describe('nestedAllByFilters', () => {
       type: 'Relation'
     })).to.have.property('typeDefs').to.equal(`
       extend type Parent {
+        # Filters "dateTo" and "dateFrom" are inclusive of the dates provided.
         relationsByFilters(filters: RelationFilterInput!): [Relation!]!
       }
     `)
@@ -111,6 +112,7 @@ describe('nestedAllByFilters', () => {
         name: 'aDifferentName'
       })).to.have.property('typeDefs').to.equal(`
       extend type Parent {
+        # Filters "dateTo" and "dateFrom" are inclusive of the dates provided.
         aDifferentName(filters: RelationFilterInput!): [Relation!]!
       }
     `)
@@ -149,6 +151,7 @@ describe('nestedAllByFilters', () => {
         filterType: 'aDifferentFilterType'
       })).to.have.property('typeDefs').to.equal(`
       extend type Parent {
+        # Filters "dateTo" and "dateFrom" are inclusive of the dates provided.
         relationsByFilters(filters: aDifferentFilterType!): [Relation!]!
       }
     `)

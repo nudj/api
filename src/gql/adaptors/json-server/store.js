@@ -4,6 +4,9 @@ const filter = require('lodash/filter')
 const toLower = require('lodash/toLower')
 const flatten = require('lodash/flatten')
 const uniq = require('lodash/uniq')
+const omit = require('lodash/omit')
+const omitBy = require('lodash/omitBy')
+const isUndefined = require('lodash/isUndefined')
 const axios = require('axios')
 const { logThenThrow, NotFound } = require('@nudj/library/errors')
 const {
@@ -11,6 +14,7 @@ const {
   logger,
   merge
 } = require('@nudj/library')
+const { startOfDay, endOfDay } = require('../../lib/format-dates')
 
 const newISODate = () => (new Date()).toISOString()
 
@@ -119,7 +123,20 @@ module.exports = () => ({
     type,
     filters
   }) => {
-    const filterString = toQs(filters)
+    if (!filters) {
+      return request({
+        url: `/${type}`
+      })
+    }
+
+    const allFilters = omitBy({
+      ...omit(filters, ['dateTo', 'dateFrom']),
+      created_gte: filters.dateFrom && startOfDay(filters.dateFrom),
+      created_lte: filters.dateTo && endOfDay(filters.dateTo)
+    }, isUndefined)
+
+    const filterString = toQs(allFilters)
+
     return request({
       url: `/${type}${filterString.length ? `?${filterString}` : ''}`
     })
@@ -216,5 +233,25 @@ module.exports = () => ({
       fields,
       filters
     }))
+  },
+  countByFilters: ({
+    type,
+    filters = {}
+  }) => {
+    const allFilters = omitBy({
+      ...omit(filters, ['dateTo', 'dateFrom']),
+      created_gte: filters.dateFrom && startOfDay(filters.dateFrom),
+      created_lte: filters.dateTo && endOfDay(filters.dateTo)
+    }, isUndefined)
+    const filterString = toQs(allFilters)
+    return request({
+      url: `/${type}${filterString.length ? `?${filterString}` : ''}`
+    })
+      .then(response => response.length)
+      .catch(errorHandler({
+        action: 'readAll',
+        type,
+        filters
+      }))
   }
 })

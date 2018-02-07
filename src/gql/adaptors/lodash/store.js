@@ -2,12 +2,15 @@ const get = require('lodash/get')
 const filter = require('lodash/filter')
 const first = require('lodash/first')
 const find = require('lodash/find')
+const omit = require('lodash/omit')
 const flatten = require('lodash/flatten')
 const findIndex = require('lodash/findIndex')
 const toLower = require('lodash/toLower')
 const merge = require('lodash/merge')
 const pluralize = require('pluralize')
 const { NotFound } = require('@nudj/library/errors')
+
+const { startOfDay, endOfDay } = require('../../lib/format-dates')
 
 function generateId ({ db, type }) {
   return `${pluralize.singular(type)}${db[type].length + 1}`
@@ -50,6 +53,19 @@ module.exports = ({ db }) => {
     }) => {
       const all = get(db, type)
       if (filters) {
+        if (filters.dateTo || filters.dateFrom) {
+          const { dateTo, dateFrom } = filters
+          const time = (stamp) => new Date(stamp).getTime()
+          const filtered = filter(all, omit(filters, ['dateTo', 'dateFrom']))
+          return Promise.resolve(filter(filtered, (item) => {
+            const { created } = item
+            if (dateTo && dateFrom) {
+              return time(created) <= time(endOfDay(dateTo)) && time(created) >= time(startOfDay(dateFrom))
+            }
+            if (dateTo) return time(created) <= time(endOfDay(dateTo))
+            return time(created) >= time(startOfDay(dateFrom))
+          }))
+        }
         return Promise.resolve(filter(all, filters))
       }
       return Promise.resolve(all)
@@ -123,6 +139,30 @@ module.exports = ({ db }) => {
         })
       })
       return Promise.resolve(flatten(entity))
+    },
+    countByFilters: ({
+      type,
+      filters = {}
+    }) => {
+      const all = get(db, type)
+      if (filters) {
+        if (filters.dateTo || filters.dateFrom) {
+          const { dateTo, dateFrom } = filters
+          const time = (stamp) => new Date(stamp).getTime()
+          const filtered = filter(all, omit(filters, ['dateTo', 'dateFrom']))
+          const response = filter(filtered, (item) => {
+            const { created } = item
+            if (dateTo && dateFrom) {
+              return time(created) <= time(endOfDay(dateTo)) && time(created) >= time(startOfDay(dateFrom))
+            }
+            if (dateTo) return time(created) <= time(endOfDay(dateTo))
+            return time(created) >= time(startOfDay(dateFrom))
+          })
+          return Promise.resolve(response.length)
+        }
+        return Promise.resolve(filter(all, filters).length)
+      }
+      return Promise.resolve(all.length)
     }
   }
 }

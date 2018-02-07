@@ -9,6 +9,8 @@ module.exports = {
 
     input RoleFilterInput {
       id: ID
+      dateTo: DateTime
+      dateFrom: DateTime
     }
   `
 }

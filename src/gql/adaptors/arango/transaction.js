@@ -1,8 +1,9 @@
 const axios = require('axios')
 const semi = require('semi')
 const logger = require('@nudj/library/lib/logger')
+const get = require('lodash/get')
 
-const store = require('./store')
+const store = require('./store-transaction')
 const actionToCollectionLock = require('./action-to-collection-lock')
 const actionToString = require('./action-to-string')
 
@@ -19,14 +20,20 @@ const request = (options = {}) => {
 }
 
 module.exports = (action, params) => {
-  // semi does not accept raw functions so wrapping in parentheses
-  let actionString = `(${actionToString(store, action)})`
-  // add semi colons
-  actionString = semi.add(actionString)
-  // remove newlines and multiple consecutive spaces
-  actionString = actionString.replace(/\n/g, ' ').replace(/\s\s+/g, ' ')
-  // strip parentheses and trailing semicolon
-  actionString = actionString.slice(1, -2)
+  let actionString
+  try {
+    // semi does not accept raw functions so wrapping in parentheses
+    actionString = `(${actionToString(store, action)})`
+    // add semi colons
+    actionString = semi.add(actionString)
+    // remove newlines and multiple consecutive spaces
+    actionString = actionString.replace(/\n/g, ' ').replace(/\s\s+/g, ' ')
+    // strip parentheses and trailing semicolon
+    actionString = actionString.slice(1, -2)
+  } catch (error) {
+    logger.log(error)
+    throw error
+  }
 
   return request({
     data: {
@@ -39,7 +46,8 @@ module.exports = (action, params) => {
   })
   .then(response => response.data.result)
   .catch(error => {
-    logger('error', error.response.data)
-    throw error.response.data
+    const data = get(error, 'response.data')
+    logger('error', data)
+    throw data
   })
 }

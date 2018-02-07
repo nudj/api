@@ -7,7 +7,7 @@ const expect = chai.expect
 
 chai.use(chaiAsPromised)
 
-const transaction = require('../../../gql/adaptors/lodash')
+const { transaction } = require('../../../gql/adaptors/lodash')
 
 describe('LodashAdaptor transaction', () => {
   let db
@@ -29,6 +29,33 @@ describe('LodashAdaptor transaction', () => {
           id: 'dog3',
           breed: 'Golden Retriever',
           temperament: 'lazy'
+        }
+      ],
+      monsters: [
+        {
+          name: 'Frankenstein',
+          type: 'classic',
+          created: '1986-07-06T07:34:54.000'
+        },
+        {
+          name: 'Dracula',
+          type: 'classic',
+          created: '1986-07-07T07:34:54.000'
+        },
+        {
+          name: 'Jason Voorhees',
+          type: 'modern',
+          created: '1986-07-08T07:34:54.000'
+        },
+        {
+          name: 'Loch Ness Monster',
+          type: 'mythological',
+          created: '1986-07-09T07:34:54.000'
+        },
+        {
+          name: 'Gremlin',
+          type: 'modern',
+          created: '1986-07-10T07:34:54.000'
         }
       ]
     }
@@ -120,6 +147,107 @@ describe('LodashAdaptor transaction', () => {
         id: 'dog1',
         breed: 'Cocker Spaniel',
         temperament: 'gentle'
+      }
+    ])
+  })
+
+  it('readAll by dateTo filter', () => {
+    return expect(transaction({ db })(store => {
+      return store.readAll({
+        type: 'monsters',
+        filters: {
+          dateTo: '1986-07-08T07:34:54.000'
+        }
+      })
+    })).to.eventually.deep.equal([
+      {
+        name: 'Frankenstein',
+        type: 'classic',
+        created: '1986-07-06T07:34:54.000'
+      },
+      {
+        name: 'Dracula',
+        type: 'classic',
+        created: '1986-07-07T07:34:54.000'
+      },
+      {
+        name: 'Jason Voorhees',
+        type: 'modern',
+        created: '1986-07-08T07:34:54.000'
+      }
+    ])
+  })
+
+  it('readAll by dateFrom filter', () => {
+    return expect(transaction({ db })(store => {
+      return store.readAll({
+        type: 'monsters',
+        filters: {
+          dateFrom: '1986-07-08T07:34:54.000'
+        }
+      })
+    })).to.eventually.deep.equal([
+      {
+        name: 'Jason Voorhees',
+        type: 'modern',
+        created: '1986-07-08T07:34:54.000'
+      },
+      {
+        name: 'Loch Ness Monster',
+        type: 'mythological',
+        created: '1986-07-09T07:34:54.000'
+      },
+      {
+        name: 'Gremlin',
+        type: 'modern',
+        created: '1986-07-10T07:34:54.000'
+      }
+    ])
+  })
+
+  it('readAll by combined date filters', () => {
+    return expect(transaction({ db })(store => {
+      return store.readAll({
+        type: 'monsters',
+        filters: {
+          dateTo: '1986-07-08T07:34:54.000',
+          dateFrom: '1986-07-07T07:34:54.000'
+        }
+      })
+    })).to.eventually.deep.equal([
+      {
+        name: 'Dracula',
+        type: 'classic',
+        created: '1986-07-07T07:34:54.000'
+      },
+      {
+        created: '1986-07-08T07:34:54.000',
+        name: 'Jason Voorhees',
+        type: 'modern'
+      }
+    ])
+  })
+
+  it('readAll by combined date filters', () => {
+    return expect(transaction({ db })(store => {
+      return store.readAll({
+        type: 'monsters',
+        filters: {
+          dateTo: '1986-07-07T07:34:54.000',
+          dateFrom: '1986-07-06T07:34:54.000',
+          type: 'classic'
+        }
+      })
+    })).to.eventually.deep.equal([
+      {
+        name: 'Frankenstein',
+        type: 'classic',
+        created: '1986-07-06T07:34:54.000'
+      },
+      {
+        name: 'Dracula',
+        type: 'classic',
+        created: '1986-07-07T07:34:54.000'
       }
     ])
   })
@@ -399,6 +527,91 @@ describe('LodashAdaptor transaction', () => {
           temperament: 'lazy'
         }
       ])
+    })
+  })
+
+  it('countByFilters', () => {
+    return transaction({ db })(store => {
+      return store.countByFilters({
+        type: 'monsters',
+        filters: {
+          type: 'classic'
+        }
+      })
+    })
+    .then(result => {
+      expect(result).to.equal(2)
+    })
+  })
+
+  it('countByFilters with date filters', () => {
+    return transaction({ db })(store => {
+      return store.countByFilters({
+        type: 'monsters',
+        filters: {
+          dateTo: '1986-07-08T07:34:54.000',
+          dateFrom: '1986-07-07T07:34:54.000'
+        }
+      })
+    })
+    .then(result => {
+      expect(result).to.equal(2)
+    })
+  })
+
+  it('countByFilters with \'from\' date filter', () => {
+    return transaction({ db })(store => {
+      return store.countByFilters({
+        type: 'monsters',
+        filters: {
+          dateFrom: '1986-07-07T07:34:54.000'
+        }
+      })
+    })
+    .then(result => {
+      expect(result).to.equal(4)
+    })
+  })
+
+  it('countByFilters with \'to\' date filter', () => {
+    return transaction({ db })(store => {
+      return store.countByFilters({
+        type: 'monsters',
+        filters: {
+          dateTo: '1986-07-08T07:34:54.000'
+        }
+      })
+    })
+    .then(result => {
+      expect(result).to.deep.equal(3)
+    })
+  })
+
+  it('countByFilters with both general and date filters', () => {
+    return transaction({ db })(store => {
+      return store.countByFilters({
+        type: 'monsters',
+        filters: {
+          type: 'modern',
+          dateTo: '1986-07-08T07:34:54.000',
+          dateFrom: '1986-07-07T07:34:54.000'
+        }
+      })
+    })
+    .then(result => {
+      expect(result).to.equal(1)
+    })
+  })
+
+  it('countByFilters with empty filter params', () => {
+    return transaction({ db })(store => {
+      return store.countByFilters({
+        type: 'dogs',
+        filters: {}
+      })
+    })
+    .then(result => {
+      expect(result).to.equal(db.dogs.length)
     })
   })
 })

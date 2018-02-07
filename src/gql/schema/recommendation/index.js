@@ -9,6 +9,8 @@ module.exports = {
 
     input RecommendationFilterInput {
       id: ID
+      dateTo: DateTime
+      dateFrom: DateTime
     }
   `
 }

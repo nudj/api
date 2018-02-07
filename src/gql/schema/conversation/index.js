@@ -11,6 +11,8 @@ module.exports = {
       id: ID
       person: ID
       recipient: ID
+      dateTo: DateTime
+      dateFrom: DateTime
     }
   `
 }

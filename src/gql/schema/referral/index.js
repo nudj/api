@@ -10,6 +10,8 @@ module.exports = {
       id: ID
       person: ID
       job: ID
+      dateTo: DateTime
+      dateFrom: DateTime
     }
   `
 }

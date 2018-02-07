@@ -24,6 +24,8 @@ module.exports = {
       id: ID
       slug: String
       status: JobStatus
+      dateTo: DateTime
+      dateFrom: DateTime
     }
   `
 }

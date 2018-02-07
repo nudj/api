@@ -1,5 +1,6 @@
 const camelCase = require('lodash/camelCase')
 const { AppError } = require('@nudj/library/errors')
+const isEmpty = require('lodash/isEmpty')
 
 const handleErrors = require('./handle-errors')
 
@@ -26,19 +27,11 @@ module.exports = function rootSingleByFilters (props = {}) {
     resolvers: {
       [parentType]: {
         [name]: handleErrors((root, args, context) => {
-          if (!Object.keys(args.filters).length) return null
-          return context.transaction(
-            (store, params) => {
-              return store.readOne({
-                type: params.collection,
-                filters: params.filters
-              })
-            },
-            {
-              collection,
-              filters: args.filters
-            }
-          )
+          if (isEmpty(args.filters)) return null
+          return context.store.readOne({
+            type: collection,
+            filters: args.filters
+          })
         })
       }
     }

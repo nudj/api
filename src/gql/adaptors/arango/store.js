@@ -1,7 +1,10 @@
-module.exports = () => {
-  const reduce = require('lodash/reduce')
-  const flatten = require('lodash/flatten')
-  const { db } = require('@arangodb')
+const reduce = require('lodash/reduce')
+const flatten = require('lodash/flatten')
+const omit = require('lodash/omit')
+
+const { startOfDay, endOfDay } = require('../../lib/format-dates')
+
+module.exports = ({ db }) => {
   const normaliseData = (data) => {
     if (data === null) return null
     return reduce(data, (result, value, key) => {
@@ -20,18 +23,31 @@ module.exports = () => {
   }
   const newISODate = () => (new Date()).toISOString()
 
+  const parseFiltersToAql = (filters = {}) => {
+    const keys = Object.keys(filters)
+    if (!keys.length) return ''
+    return `FILTER ${keys.map((key) => {
+      return `item.${key} == "${filters[key]}"`
+    }).join(' && ')}`
+  }
+
+  const executeAqlQuery = async (query, params) => {
+    const response = await db.query(query, params)
+    return flatten(response.map(normaliseData))
+  }
+
   return {
-    create: ({
+    create: async ({
       type,
       data
     }) => {
-      const response = db[type].save(Object.assign(data, {
+      const response = await db.collection(type).save(Object.assign(data, {
         created: newISODate(),
         modified: newISODate()
       }), { returnNew: true })
-      return Promise.resolve(normaliseData(response.new))
+      return normaliseData(response.new)
     },
-    readOne: ({
+    readOne: async ({
       type,
       id,
       filters
@@ -43,48 +59,68 @@ module.exports = () => {
         method = 'firstExample'
         arg = filters
       }
-      return Promise.resolve(normaliseData(db[type][method](arg)))
+      return normaliseData(await db.collection(type)[method](arg))
     },
-    readMany: ({
+    readMany: async ({
       type,
       ids
     }) => {
-      return Promise.resolve(db[type].document(ids).map(normaliseData))
+      const response = await db.collection(type).lookupByKeys(ids)
+      return response.map(normaliseData)
     },
-    readAll: ({
+    readAll: async ({
       type,
       filters
     }) => {
-      if (filters) {
-        return Promise.resolve(db[type].byExample(filters).toArray().map(normaliseData))
+      if (!filters) {
+        const response = await db.collection(type).all()
+        return response.map(normaliseData)
       }
-      return Promise.resolve(db[type].all().toArray().map(normaliseData))
+      if (filters.dateTo || filters.dateFrom) {
+        const { dateTo, dateFrom } = filters
+        const generalFilters = parseFiltersToAql(omit(filters, ['dateTo', 'dateFrom']))
+        const query = [
+          `FOR item in ${type}`,
+          generalFilters,
+          dateTo && 'FILTER DATE_TIMESTAMP(item.created) <= DATE_TIMESTAMP(@to)',
+          dateFrom && 'FILTER DATE_TIMESTAMP(item.created) >= DATE_TIMESTAMP(@from)',
+          'RETURN item'
+        ].filter(Boolean).join('\n')
+
+        return executeAqlQuery(query, {
+          to: dateTo && endOfDay(dateTo),
+          from: dateFrom && endOfDay(dateFrom)
+        })
+      } else {
+        const response = await db.collection(type).byExample(filters)
+        return response.map(normaliseData)
+      }
     },
-    update: ({
+    update: async ({
       type,
       id,
       data
     }) => {
-      const response = db[type].update(id, Object.assign(data, {
+      const response = await db.collection(type).update(id, Object.assign(data, {
         modified: newISODate()
       }), { returnNew: true })
       return Promise.resolve(normaliseData(response.new))
     },
-    delete: ({
+    delete: async ({
       type,
       id
     }) => {
-      const response = db[type].remove(id, { returnOld: true })
+      const response = await db.collection(type).remove(id, { returnOld: true })
       return Promise.resolve(normaliseData(response.old))
     },
-    readOneOrCreate: ({
+    readOneOrCreate: async ({
       type,
       filters,
       data
     }) => {
-      let item = db[type].firstExample(filters)
+      let item = await db.collection(type).firstExample(filters)
       if (!item) {
-        const response = db[type].save(Object.assign(data, {
+        const response = await db.collection(type).save(Object.assign(data, {
           created: newISODate(),
           modified: newISODate()
         }), { returnNew: true })
@@ -98,13 +134,11 @@ module.exports = () => {
       fields,
       filters
     }) => {
-      const filter = `FILTER ${Object.keys(filters || {}).map((key) => {
-        return `item.${key} == "${filters[key]}"`
-      }).join(' && ')}`
+      const filter = parseFiltersToAql(filters)
       const operations = fields.map(fieldGroup => `
         (
           FOR item IN ${type}
-            ${filters ? filter : ''}
+            ${filter}
             FILTER(
               CONTAINS(
                 LOWER(CONCAT_SEPARATOR(" ", ${fieldGroup.map(
@@ -115,13 +149,31 @@ module.exports = () => {
             RETURN item
         )
       `).join(',')
-      return Promise.resolve(
-        flatten(
-          db
-            ._query(`RETURN UNION_DISTINCT([],${operations})`, { query })
-            .toArray()
-        )
-      ).then(response => response.map(data => normaliseData(data)))
+      const aqlQuery = `RETURN UNION_DISTINCT([],${operations})`
+      return executeAqlQuery(aqlQuery, { query })
+    },
+    countByFilters: ({
+      type,
+      filters = {}
+    }) => {
+      const { dateTo, dateFrom } = filters
+      const generalFilters = parseFiltersToAql(omit(filters, ['dateTo', 'dateFrom']))
+      const query = [
+        `RETURN COUNT(`,
+        `FOR item IN ${type}`,
+        generalFilters,
+        dateTo && 'FILTER DATE_TIMESTAMP(item.created) <= DATE_TIMESTAMP(@to)',
+        dateFrom && 'FILTER DATE_TIMESTAMP(item.created) >= DATE_TIMESTAMP(@from)',
+        'RETURN item',
+        ')'
+      ].filter(Boolean).join('\n')
+
+      return Promise.resolve(flatten(
+        db._query(query, {
+          to: dateTo && endOfDay(dateTo),
+          from: dateFrom && startOfDay(dateFrom)
+        }).toArray()
+      )).then(response => response[0])
     }
   }
 }

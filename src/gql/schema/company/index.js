@@ -41,6 +41,8 @@ module.exports = {
       id: ID
       slug: String
       client: Boolean
+      dateTo: DateTime
+      dateFrom: DateTime
     }
   `
 }

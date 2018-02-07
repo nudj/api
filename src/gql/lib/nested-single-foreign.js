@@ -1,4 +1,5 @@
 const camelCase = require('lodash/camelCase')
+const isObject = require('lodash/isObject')
 const { AppError } = require('@nudj/library/errors')
 
 const handleErrors = require('./handle-errors')
@@ -28,20 +29,14 @@ module.exports = function nestedSingleForeign (props = {}) {
     resolvers: {
       [parentType]: {
         [name]: handleErrors((parent, args, context) => {
-          return context.transaction(
-            (store, params) => {
-              return store.readOne({
-                type: params.collection,
-                filters: params.filters
-              })
-            },
-            {
-              collection,
-              filters: {
-                [propertyName]: parent.id
-              }
+          if (!parent.id) return null
+          if (isObject(parent.id)) return parent.id
+          return context.store.readOne({
+            type: collection,
+            filters: {
+              [propertyName]: parent.id
             }
-          )
+          })
         })
       }
     }

@@ -9,6 +9,8 @@ module.exports = {
     input SurveyAnswerFilterInput {
       id: ID
       person: ID
+      dateTo: DateTime
+      dateFrom: DateTime
     }
   `
 }

@@ -64,6 +64,23 @@ test:
 		$(IMAGEDEV) \
 		/bin/zsh -c './node_modules/.bin/standard && ./node_modules/.bin/mocha --recursive test'
 
+dbtest:
+	docker-compose -f ./docker-compose.yml run --rm \
+		-e NPM_TOKEN=${NPM_TOKEN} \
+		-v $(CWD)/src/dbtest:/usr/src/dbtest api \
+		/bin/sh -c 'yarn add mocha && \
+		./node_modules/.bin/mocha --recursive ./dbtest/test || exit 1'
+
+dbtdd:
+	docker-compose -f ./docker-compose.yml run --rm \
+		-e NPM_TOKEN=${NPM_TOKEN} \
+		-v $(CWD)/src/dbtest:/usr/src/dbtest api \
+		/bin/sh -c 'yarn add mocha && ./node_modules/.bin/nodemon \
+		--quiet \
+		--watch ./ \
+		--delay 250ms \
+		-x "./node_modules/.bin/mocha --recursive ./dbtest/test || exit 1"'
+
 standardFix:
 	-@docker rm -f api-test 2> /dev/null || true
 	@docker run --rm -it \

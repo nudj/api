@@ -24,3 +24,17 @@ Internal API for nudj data
 1. `test` to run the tests
 1. `tdd` to run the tests with a watcher
 1. `exit` to leave the container and close the ssh session
+
+### Releasing
+
+1. Pull latest from `origin/develop`
+1. Increment `package.json` version and `codefresh.yml` tag
+1. Commit the change with the commit message `Set [x.x.x]`
+1. Push change onto `origin/develop`
+1. Checkout to latest master
+1. Merge latest develop into master using `git merge origin/develop --no-ff`, with the commit message of `Release [x.x.x]`
+1. Push change onto `origin/master`
+1. Tag the version using `git tag [x.x.x]`
+1. Push the tag: `git push origin --tags`
+1. Copy the release notes: `git --no-pager log [PREVIOUS_VERSION_TAG]..[NEW_VERSION_TAG] --pretty=format:'- %s %H ' --reverse --no-merges | pbcopy`
+1. Put the release notes on the [relevant release on GitHub](https://github.com/nudj/api/releases)

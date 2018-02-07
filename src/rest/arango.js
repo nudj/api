@@ -6,23 +6,48 @@ const logger = require('@nudj/library/lib/logger')
 const StoreError = require('../lib/errors').StoreError
 const authHash = new Buffer(process.env.DB_USER + ':' + process.env.DB_PASS).toString('base64')
 
-function fetch (path, options) {
-  const uri = `http://db:8529/_db/nudj/_api/${path}`
-  logger('info', (new Date()).toISOString(), 'REQUEST', uri, options)
-  return nodeFetch(uri, Object.assign(options, {
-    headers: {
-      'Authorization': 'Basic ' + authHash
+function fetch ({ path, options }) {
+  path = `http://db:8529/_db/nudj/_api/${path}`
+  options = Object.assign(
+    options,
+    {
+      headers: {
+        'Authorization': 'Basic ' + authHash
+      },
+      body: Object.assign({}, options.body, {
+        skip: 0,
+        batchSize: 1000
+      })
     }
-  }))
-  .then(extractJson({ uri, options }))
-  .catch(handleError({ uri, options }))
+  )
+  return Promise.all([
+    makeRequest({ path, options })
+  ])
+  .then(checkForMore({ path, options }))
 }
 
-function extractJson ({ uri, options }) {
-  return (response) => {
-    const json = response.json()
-    logger('info', (new Date()).toISOString(), 'RESPONSE', uri, options, json)
-    return Promise.resolve(json)
+function makeRequest ({ path, options }) {
+  options = Object.assign({}, options, {
+    body: JSON.stringify(options.body)
+  })
+  return nodeFetch(path, options)
+  .then(response => response.json())
+}
+
+function checkForMore ({ path, options }) {
+  return async (responses) => {
+    const latest = responses[responses.length - 1]
+    if (latest.hasMore) {
+      options = Object.assign({}, options, {
+        body: Object.assign({}, options.body, {
+          skip: options.body.skip + 1000
+        })
+      })
+      const response = makeRequest({ path, options })
+      return Promise.all(responses.concat(response))
+      .then(checkForMore({ path, options }))
+    }
+    return responses
   }
 }
 
@@ -42,24 +67,29 @@ function normaliseData (data) {
   }, {})
 }
 
-function normalise (responseKey) {
-  return (data) => {
-    if (data.error) {
-      return Promise.resolve({
-        error: true,
-        errorMessage: data.errorMessage,
-        code: data.code
-      })
-    }
-
-    const parent = data[responseKey]
-
-    if (Array.isArray(parent)) {
-      return parent.map(normaliseData)
-    }
-
-    return normaliseData(parent)
+function extractData ({ responseKey }) {
+  return responses => {
+    return responses.reduce((result, response) => {
+      if (result && result.error) {
+        return result
+      }
+      if (response.error) {
+        return Promise.resolve({
+          error: true,
+          errorMessage: response.errorMessage,
+          code: response.code
+        })
+      }
+      return result ? result.concat(response[responseKey]) : response[responseKey]
+    }, null)
   }
+}
+
+function normalise (data) {
+  if (Array.isArray(data)) {
+    return data.map(normaliseData)
+  }
+  return normaliseData(data)
 }
 
 function handleError ({ uri, options }) {
@@ -95,58 +125,88 @@ function addDateTimes (data, addCreated) {
 }
 
 function getAll (type) {
-  return fetch('simple/all', {
+  const path = 'simple/all'
+  const options = {
     method: 'PUT',
-    body: JSON.stringify({
+    body: {
       collection: type
-    })
-  })
-  .then(normalise('result'))
+    }
+  }
+  const responseKey = 'result'
+  return fetch({ path, options })
+  .then(extractData({ responseKey }))
+  .then(normalise)
+  .catch(handleError({ path, options }))
 }
 
 function getFiltered (type, filters) {
-  return fetch('simple/by-example', {
+  const path = 'simple/by-example'
+  const options = {
     method: 'PUT',
-    body: JSON.stringify({
+    body: {
       collection: type,
       example: denormalise(filters)
-    })
-  })
-  .then(normalise('result'))
+    }
+  }
+  const responseKey = 'result'
+  return fetch({ path, options })
+  .then(extractData({ responseKey }))
+  .then(normalise)
+  .catch(handleError({ path, options }))
 }
 
 function getOne (type, filters) {
-  return fetch('simple/first-example', {
+  const path = 'simple/first-example'
+  const options = {
     method: 'PUT',
-    body: JSON.stringify({
+    body: {
       collection: type,
       example: denormalise(filters)
-    })
-  })
-  .then(normalise('document'))
+    }
+  }
+  const responseKey = 'document'
+  return fetch({ path, options })
+  .then(extractData({ responseKey }))
+  .then(normalise)
+  .catch(handleError({ path, options }))
 }
 
 function post (type, props) {
-  return fetch(`document/${type}?returnNew=true`, {
+  const path = `document/${type}?returnNew=true`
+  const options = {
     method: 'POST',
-    body: JSON.stringify(addDateTimes(props, true))
-  })
-  .then(normalise('new'))
+    body: addDateTimes(props, true)
+  }
+  const responseKey = 'new'
+  return fetch({ path, options })
+  .then(extractData({ responseKey }))
+  .then(normalise)
+  .catch(handleError({ path, options }))
 }
 
 function del (type, id) {
-  return fetch(`document/${type}/${id}?returnOld=true`, {
+  const path = `document/${type}/${id}?returnOld=true`
+  const options = {
     method: 'DELETE'
-  })
-  .then(normalise('old'))
+  }
+  const responseKey = 'old'
+  return fetch({ path, options })
+  .then(extractData({ responseKey }))
+  .then(normalise)
+  .catch(handleError({ path, options }))
 }
 
 function patch (type, id, props) {
-  return fetch(`document/${type}/${id}?returnNew=true`, {
+  const path = `document/${type}/${id}?returnNew=true`
+  const options = {
     method: 'PATCH',
-    body: JSON.stringify(addDateTimes(props))
-  })
-  .then(normalise('new'))
+    body: addDateTimes(props)
+  }
+  const responseKey = 'new'
+  return fetch({ path, options })
+  .then(extractData({ responseKey }))
+  .then(normalise)
+  .catch(handleError({ path, options }))
 }
 
 module.exports = {

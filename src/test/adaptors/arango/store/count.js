@@ -24,17 +24,17 @@ describe('ArangoAdaptor store.countByFilters', () => {
   before(() => {
     dbStub = {
       db: {
-        _query: sinon.stub().returns({ toArray: () => [47] }),
+        query: sinon.stub().returns({ all: () => [47] }),
         collectionName: {
-          all: sinon.stub().returns({ toArray: () => [DOCUMENT_RESPONSE, DOCUMENT_RESPONSE] }),
-          byExample: sinon.stub().returns({ toArray: () => [DOCUMENT_RESPONSE, DOCUMENT_RESPONSE] })
+          all: sinon.stub().returns({ all: () => [DOCUMENT_RESPONSE, DOCUMENT_RESPONSE] }),
+          byExample: sinon.stub().returns({ all: () => [DOCUMENT_RESPONSE, DOCUMENT_RESPONSE] })
         }
       }
     }
     store = Store(dbStub)
   })
   afterEach(() => {
-    dbStub.db._query.reset()
+    dbStub.db.query.reset()
     dbStub.db.collectionName.all.reset()
     dbStub.db.collectionName.byExample.reset()
   })
@@ -46,7 +46,7 @@ describe('ArangoAdaptor store.countByFilters', () => {
         filters: {}
       })
       .then(() => {
-        expect(dbStub.db._query).to.have.been.called()
+        expect(dbStub.db.query).to.have.been.called()
       })
     })
 
@@ -67,7 +67,7 @@ describe('ArangoAdaptor store.countByFilters', () => {
         }
       })
       .then(() => {
-        const query = dbStub.db._query.firstCall.args[0]
+        const query = dbStub.db.query.firstCall.args[0]
         expect(query).to.include('FILTER item.test == "value"')
       })
     })
@@ -92,7 +92,7 @@ describe('ArangoAdaptor store.countByFilters', () => {
         }
       })
       .then(() => {
-        const [ query, bindVars ] = dbStub.db._query.firstCall.args
+        const [ query, bindVars ] = dbStub.db.query.firstCall.args
         expect(bindVars).to.deep.equal({
           from: '2016-12-15T00:00:00.000Z',
           to: '2017-12-15T23:59:59.999Z'

@@ -29,7 +29,7 @@ describe('ArangoAdaptor store.readAll', () => {
     }
     dbStub = {
       db: {
-        query: sinon.stub().returns([DOCUMENT_RESPONSE]),
+        query: sinon.stub().returns({ all: () => [DOCUMENT_RESPONSE] }),
         collection: sinon.stub().returns(collectionStub)
       }
     }

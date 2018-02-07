@@ -186,7 +186,7 @@ module.exports = () => {
           to: dateTo && endOfDay(dateTo),
           from: dateFrom && startOfDay(dateFrom)
         }).toArray()
-      )).then(response => response[0])
+      )).then(response => response[0] || 0)
     }
   }
 }

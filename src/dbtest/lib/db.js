@@ -7,7 +7,8 @@ const collections = [
   'dogs',
   'tvSeries',
   'vegetables',
-  'sandwiches'
+  'sandwiches',
+  'drinks'
 ]
 
 const db = new Database({

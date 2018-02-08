@@ -65,17 +65,16 @@ test:
 		/bin/zsh -c './node_modules/.bin/standard && ./node_modules/.bin/mocha --recursive test'
 
 dbtest:
-	docker-compose -f ./docker-compose.yml run --rm \
+	@docker-compose -f ../server/local/docker-compose-dev.yml run --rm \
 		-e NPM_TOKEN=${NPM_TOKEN} \
 		-v $(CWD)/src/dbtest:/usr/src/dbtest api \
-		/bin/sh -c 'yarn add mocha && \
-		./node_modules/.bin/mocha --recursive ./dbtest/test || exit 1'
+		/bin/sh -c './node_modules/.bin/mocha --recursive ./dbtest/test || exit 1'
 
 dbtdd:
-	docker-compose -f ./docker-compose.yml run --rm \
+	@docker-compose -f ../server/local/docker-compose-dev.yml run --rm \
 		-e NPM_TOKEN=${NPM_TOKEN} \
 		-v $(CWD)/src/dbtest:/usr/src/dbtest api \
-		/bin/sh -c 'yarn add mocha && ./node_modules/.bin/nodemon \
+		/bin/sh -c './node_modules/.bin/nodemon \
 		--quiet \
 		--watch ./ \
 		--delay 250ms \

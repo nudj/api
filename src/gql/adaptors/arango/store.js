@@ -119,7 +119,12 @@ module.exports = ({ db }) => {
       filters,
       data
     }) => {
-      let item = await db.collection(type).firstExample(filters)
+      let item
+      try {
+        item = await db.collection(type).firstExample(filters)
+      } catch (error) {
+        if (error.message !== 'no match') throw error
+      }
       if (!item) {
         const response = await db.collection(type).save(Object.assign(data, {
           created: newISODate(),

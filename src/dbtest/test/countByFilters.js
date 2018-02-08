@@ -53,7 +53,7 @@ const resetDataStore = async (database) => {
   return Store({ db })
 }
 
-describe.only('countByFilters', () => {
+describe('countByFilters', () => {
   let store
   beforeEach(async () => {
     store = await resetDataStore(db)

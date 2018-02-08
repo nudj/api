@@ -3,5 +3,6 @@ module.exports = [
   'fruits',
   'emails',
   'dogs',
-  'tvSeries'
+  'tvSeries',
+  'vegetables'
 ]

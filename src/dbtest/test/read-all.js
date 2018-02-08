@@ -1,4 +1,3 @@
-const omit = require('lodash/omit')
 const {
   db,
   setupDatabase,

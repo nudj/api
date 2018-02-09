@@ -56,6 +56,7 @@ test:
     -e MAILGUN_DOMAIN=abc \
     -e INTERCOM_ACCESS_TOKEN=qwe \
 		-v $(CWD)/src/gql:/usr/src/gql \
+		-v $(CWD)/src/dbtest:/usr/src/dbtest \
 		-v $(CWD)/src/gql-old:/usr/src/gql-old \
 		-v $(CWD)/src/lib:/usr/src/lib \
 		-v $(CWD)/src/mock:/usr/src/mock \

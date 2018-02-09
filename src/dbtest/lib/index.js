@@ -1,14 +1,19 @@
-const { db, collections } = require('./db')
 const chai = require('chai')
 const dirtyChai = require('dirty-chai')
-chai.use(dirtyChai)
+
+const db = require('./db')
+const { setupCollections, populateCollections } = require('./setup')
+const { truncateCollections, teardownCollections } = require('./teardown')
+
 const { expect } = chai
+
+chai.use(dirtyChai)
 
 module.exports = {
   expect,
   db,
-  collections,
-  setupDatabase: require('./setup-database'),
-  truncateDatabase: require('./truncate-database'),
-  populateDbCollection: require('./populate-db-collection')
+  setupCollections,
+  truncateCollections,
+  teardownCollections,
+  populateCollections
 }

@@ -1,8 +1,11 @@
+/* eslint-env mocha */
+const orderBy = require('lodash/orderBy')
 const {
   db,
-  setupDatabase,
-  truncateDatabase,
-  populateDbCollection,
+  setupCollections,
+  teardownCollections,
+  truncateCollections,
+  populateCollections,
   expect
 } = require('../lib')
 
@@ -10,36 +13,43 @@ const Store = require('../../gql/adaptors/arango/store')
 
 const collectionName = 'sandwiches'
 
-const resetDataStore = async (database) => {
-  await setupDatabase(database)
-  await populateDbCollection(database, collectionName, [
-    {
-      _key: 'sandwich1',
-      bread: 'white',
-      filling: 'cheese'
-    },
-    {
-      _key: 'sandwich2',
-      bread: 'brown',
-      filling: 'cheese'
-    },
-    {
-      _key: 'sandwich3',
-      bread: 'white',
-      filling: 'ham'
-    }
-  ])
-  return Store({ db })
-}
+const resetDataStore = async () => populateCollections(db, [
+  {
+    collection: collectionName,
+    data: [
+      {
+        bread: 'white',
+        filling: 'cheese'
+      },
+      {
+        bread: 'brown',
+        filling: 'cheese'
+      },
+      {
+        bread: 'white',
+        filling: 'ham'
+      }
+    ]
+  }
+])
 
 describe('readOneOrCreate', () => {
   let store
+  before(async () => {
+    await setupCollections(db, [collectionName])
+  })
+
   beforeEach(async () => {
-    store = await resetDataStore(db)
+    await resetDataStore()
+    store = Store({ db })
+  })
+
+  after(async () => {
+    await teardownCollections(db, [collectionName])
   })
 
   afterEach(async () => {
-    await truncateDatabase(db)
+    await truncateCollections(db, [collectionName])
   })
 
   describe('if filtered item exists', () => {
@@ -48,15 +58,16 @@ describe('readOneOrCreate', () => {
         bread: 'white',
         filling: 'cheese'
       }
-      const sandwichesCollection = await db.collection('sandwiches').all()
+      const sandwichesCollection = await db.collection(collectionName).all()
       expect(sandwichesCollection.count).to.equal(3)
       await store.readOneOrCreate({
         type: collectionName,
         filters: sandwich,
         data: sandwich
       })
-      const updatedSandwichesCollection = await db.collection('sandwiches').all()
-      expect(updatedSandwichesCollection.count).to.equal(3)
+      const newSandwichesCollection = await db.collection(collectionName).all()
+      expect(newSandwichesCollection.count).to.equal(3)
+      expect(await sandwichesCollection.all()).to.deep.equal(await newSandwichesCollection.all())
     })
 
     it('returns normalised data of existing item', async () => {
@@ -69,11 +80,9 @@ describe('readOneOrCreate', () => {
         filters: sandwich,
         data: sandwich
       })
-      expect(result).to.deep.equal({
-        id: 'sandwich1',
-        bread: 'white',
-        filling: 'cheese'
-      })
+      expect(result).to.have.property('bread').to.equal('white')
+      expect(result).to.have.property('filling').to.equal('cheese')
+      expect(result).to.have.property('id').to.be.a('string')
     })
   })
 
@@ -83,15 +92,18 @@ describe('readOneOrCreate', () => {
         bread: 'gluten-free',
         filling: 'bacon'
       }
-      const sandwichesCollection = await db.collection('sandwiches').all()
+      const sandwichesCollection = await db.collection(collectionName).all()
       expect(sandwichesCollection.count).to.equal(3)
       await store.readOneOrCreate({
         type: collectionName,
         filters: sandwich,
         data: sandwich
       })
-      const updatedSandwichesCollection = await db.collection('sandwiches').all()
+      const updatedSandwichesCollection = await db.collection(collectionName).all()
+      const updatedResults = orderBy(await updatedSandwichesCollection.all(), ['filling'])
       expect(updatedSandwichesCollection.count).to.equal(4)
+      expect(updatedResults[0]).to.have.property('bread').to.equal('gluten-free')
+      expect(updatedResults[0]).to.have.property('filling').to.equal('bacon')
     })
 
     it('returns normalised data of new item', async () => {

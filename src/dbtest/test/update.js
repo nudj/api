@@ -1,39 +1,45 @@
+/* eslint-env mocha */
 const {
   db,
-  setupDatabase,
-  truncateDatabase,
-  populateDbCollection,
+  setupCollections,
+  teardownCollections,
+  truncateCollections,
   expect
 } = require('../lib')
 
 const Store = require('../../gql/adaptors/arango/store')
 
 const collectionName = 'dogs'
-const testId = 'dog1'
 
-const resetDataStore = async (database) => {
-  await setupDatabase(database)
-  await populateDbCollection(database, collectionName, [
-    {
-      _key: testId,
-      created: '2016-12-12T13:04:11.248Z',
-      modified: '2017-12-12T13:04:11.248Z',
-      name: 'Patches',
-      breed: 'Mutt',
-      type: 'good boy'
-    }
-  ])
-  return Store({ db })
+const createNewEntry = async () => {
+  const result = await db.collection(collectionName).save({
+    created: '2016-12-12T13:04:11.248Z',
+    modified: '2017-12-12T13:04:11.248Z',
+    name: 'Patches',
+    breed: 'Mutt',
+    type: 'good boy'
+  })
+  return result._key
 }
 
 describe('update', () => {
   let store
+  let testId
+  before(async () => {
+    await setupCollections(db, [collectionName])
+  })
+
   beforeEach(async () => {
-    store = await resetDataStore(db)
+    store = Store({ db })
+    testId = await createNewEntry()
+  })
+
+  after(async () => {
+    await teardownCollections(db, [collectionName])
   })
 
   afterEach(async () => {
-    await truncateDatabase(db)
+    await truncateCollections(db, [collectionName])
   })
 
   it('updates the entity by id', async () => {

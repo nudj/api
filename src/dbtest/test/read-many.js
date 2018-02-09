@@ -1,8 +1,10 @@
+/* eslint-env mocha */
+const orderBy = require('lodash/orderBy')
 const {
   db,
-  setupDatabase,
-  truncateDatabase,
-  populateDbCollection,
+  setupCollections,
+  teardownCollections,
+  truncateCollections,
   expect
 } = require('../lib')
 
@@ -10,58 +12,40 @@ const Store = require('../../gql/adaptors/arango/store')
 
 const collectionName = 'vegetables'
 
-const resetDataStore = async (database) => {
-  await setupDatabase(database)
-  await populateDbCollection(database, collectionName, [
-    {
-      _key: 'vegetable1',
-      name: 'Carrot'
-    },
-    {
-      _key: 'vegetable2',
-      name: 'Spinach'
-    },
-    {
-      _key: 'vegetable3',
-      name: 'Leek'
-    },
-    {
-      _key: 'vegetable4',
-      name: 'Potato'
-    },
-    {
-      _key: 'vegetable5',
-      name: 'Kale'
-    }
-  ])
-  return Store({ db })
+const createNewEntry = (name) => {
+  return db.collection(collectionName).save({ name })
 }
 
 describe('readMany', () => {
   let store
+  before(async () => {
+    await setupCollections(db, [collectionName])
+  })
+
   beforeEach(async () => {
-    store = await resetDataStore(db)
+    store = Store({ db })
+  })
+
+  after(async () => {
+    await teardownCollections(db, [collectionName])
   })
 
   afterEach(async () => {
-    await truncateDatabase(db)
+    await truncateCollections(db, [collectionName])
   })
 
   it('returns all normalised results', async () => {
-    const result = await store.readMany({
+    const { _key: idOne } = await createNewEntry('Broccoli')
+    const { _key: idTwo } = await createNewEntry('Kale')
+    const response = await store.readMany({
       type: collectionName,
-      ids: [ 'vegetable1', 'vegetable4' ]
+      ids: [ idOne, idTwo ]
     })
-    expect(result).to.deep.equal([
-      {
-        id: 'vegetable1',
-        name: 'Carrot'
-      },
-      {
-        id: 'vegetable4',
-        name: 'Potato'
-      }
-    ])
+    const results = orderBy(response, ['name'])
+    expect(results[0]).to.have.property('name').to.equal('Broccoli')
+    expect(results[0]).to.have.property('id').to.equal(idOne)
+    expect(results[1]).to.have.property('name').to.equal('Kale')
+    expect(results[1]).to.have.property('id').to.equal(idTwo)
   })
 
   it('returns an empty array with no ids', async () => {

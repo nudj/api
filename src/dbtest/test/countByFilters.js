@@ -1,9 +1,10 @@
-const omit = require('lodash/omit')
+/* eslint-env mocha */
 const {
   db,
-  setupDatabase,
-  truncateDatabase,
-  populateDbCollection,
+  setupCollections,
+  teardownCollections,
+  truncateCollections,
+  populateCollections,
   expect
 } = require('../lib')
 
@@ -11,56 +12,61 @@ const Store = require('../../gql/adaptors/arango/store')
 
 const collectionName = 'dogs'
 
-const resetDataStore = async (database) => {
-  await setupDatabase(database)
-  await populateDbCollection(database, collectionName, [
-    {
-      _key: 'dog1',
-      created: '2016-12-12T13:04:11.248Z',
-      name: 'Patches',
-      breed: 'Mutt',
-      type: 'good boy'
-    },
-    {
-      _key: 'dog2',
-      created: '2016-12-14T13:04:11.248Z',
-      name: 'Biscuit',
-      breed: 'Golden Retriever',
-      type: 'good boy'
-    },
-    {
-      _key: 'dog3',
-      created: '2016-12-18T13:04:11.248Z',
-      name: 'Jaffa',
-      breed: 'Chihuahua',
-      type: 'good boy'
-    },
-    {
-      _key: 'dog4',
-      created: '2016-12-19T13:04:11.248Z',
-      name: 'Fluff',
-      breed: 'Poodle',
-      type: 'good girl'
-    },
-    {
-      _key: 'dog5',
-      created: '2016-12-20T13:04:11.248Z',
-      name: 'Sheva',
-      breed: 'German Shepherd',
-      type: 'good girl'
-    }
-  ])
-  return Store({ db })
-}
+const resetDataStore = () => populateCollections(db, [
+  {
+    collection: collectionName,
+    data: [
+      {
+        created: '2016-12-12T13:04:11.248Z',
+        name: 'Patches',
+        breed: 'Mutt',
+        type: 'good boy'
+      },
+      {
+        created: '2016-12-14T13:04:11.248Z',
+        name: 'Biscuit',
+        breed: 'Golden Retriever',
+        type: 'good boy'
+      },
+      {
+        created: '2016-12-18T13:04:11.248Z',
+        name: 'Jaffa',
+        breed: 'Chihuahua',
+        type: 'good boy'
+      },
+      {
+        created: '2016-12-19T13:04:11.248Z',
+        name: 'Fluff',
+        breed: 'Poodle',
+        type: 'good girl'
+      },
+      {
+        created: '2016-12-20T13:04:11.248Z',
+        name: 'Sheva',
+        breed: 'German Shepherd',
+        type: 'good girl'
+      }
+    ]
+  }
+])
 
 describe('countByFilters', () => {
   let store
+  before(async () => {
+    await setupCollections(db, [collectionName])
+  })
+
   beforeEach(async () => {
-    store = await resetDataStore(db)
+    await resetDataStore()
+    store = Store({ db })
+  })
+
+  after(async () => {
+    await teardownCollections(db, [collectionName])
   })
 
   afterEach(async () => {
-    await truncateDatabase(db)
+    await truncateCollections(db, [collectionName])
   })
 
   it('returns total count of entites', async () => {
@@ -70,7 +76,7 @@ describe('countByFilters', () => {
     expect(result).to.equal(5)
   })
 
-  describe('with filters', () => {
+  describe('with prop filters', () => {
     it('returns total count of filtered entities', async () => {
       const result = await store.countByFilters({
         type: collectionName,
@@ -119,7 +125,7 @@ describe('countByFilters', () => {
     })
   })
 
-  describe('with both date and general filters', () => {
+  describe('with both date and prop filters', () => {
     it('returns total count of filtered entities', async () => {
       const result = await store.countByFilters({
         type: collectionName,

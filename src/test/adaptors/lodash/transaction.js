@@ -587,7 +587,7 @@ describe('LodashAdaptor transaction', () => {
     })
   })
 
-  it('countByFilters with both general and date filters', () => {
+  it('countByFilters with both prop and date filters', () => {
     return transaction({ db })(store => {
       return store.countByFilters({
         type: 'monsters',

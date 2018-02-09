@@ -1,16 +1,5 @@
 const { Database } = require('arangojs')
 
-const collections = [
-  'people',
-  'fruits',
-  'emails',
-  'dogs',
-  'tvSeries',
-  'vegetables',
-  'sandwiches',
-  'drinks'
-]
-
 const db = new Database({
   url: 'http://db:8529'
 })
@@ -18,7 +7,4 @@ const db = new Database({
 db.useDatabase('test')
 db.useBasicAuth(process.env.DB_USER, process.env.DB_PASS)
 
-module.exports = {
-  db,
-  collections
-}
+module.exports = db

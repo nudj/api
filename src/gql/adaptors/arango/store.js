@@ -32,8 +32,9 @@ module.exports = ({ db }) => {
   }
 
   const executeAqlQuery = async (query, params) => {
-    const response = await db.query(query, params)
-    return flatten(response.map(normaliseData))
+    const cursor = await db.query(query, params)
+    const response = await cursor.all()
+    return flatten(response).map(normaliseData)
   }
 
   return {
@@ -118,7 +119,12 @@ module.exports = ({ db }) => {
       filters,
       data
     }) => {
-      let item = await db.collection(type).firstExample(filters)
+      let item
+      try {
+        item = await db.collection(type).firstExample(filters)
+      } catch (error) {
+        if (error.message !== 'no match') throw error
+      }
       if (!item) {
         const response = await db.collection(type).save(Object.assign(data, {
           created: newISODate(),
@@ -152,7 +158,7 @@ module.exports = ({ db }) => {
       const aqlQuery = `RETURN UNION_DISTINCT([],${operations})`
       return executeAqlQuery(aqlQuery, { query })
     },
-    countByFilters: ({
+    countByFilters: async ({
       type,
       filters = {}
     }) => {
@@ -168,12 +174,12 @@ module.exports = ({ db }) => {
         ')'
       ].filter(Boolean).join('\n')
 
-      return Promise.resolve(flatten(
-        db._query(query, {
-          to: dateTo && endOfDay(dateTo),
-          from: dateFrom && startOfDay(dateFrom)
-        }).toArray()
-      )).then(response => response[0])
+      const cursor = await db.query(query, {
+        to: endOfDay(dateTo),
+        from: startOfDay(dateFrom)
+      })
+      const response = await cursor.all()
+      return response[0] || 0
     }
   }
 }

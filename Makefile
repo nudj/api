@@ -56,6 +56,7 @@ test:
     -e MAILGUN_DOMAIN=abc \
     -e INTERCOM_ACCESS_TOKEN=qwe \
 		-v $(CWD)/src/gql:/usr/src/gql \
+		-v $(CWD)/src/dbtest:/usr/src/dbtest \
 		-v $(CWD)/src/gql-old:/usr/src/gql-old \
 		-v $(CWD)/src/lib:/usr/src/lib \
 		-v $(CWD)/src/mock:/usr/src/mock \
@@ -63,6 +64,22 @@ test:
 		-v $(CWD)/src/test:/usr/src/test \
 		$(IMAGEDEV) \
 		/bin/zsh -c './node_modules/.bin/standard && ./node_modules/.bin/mocha --recursive test'
+
+dbtest:
+	@docker-compose -f ../server/local/docker-compose-dev.yml run --rm \
+		-e NPM_TOKEN=${NPM_TOKEN} \
+		-v $(CWD)/src/dbtest:/usr/src/dbtest api \
+		/bin/sh -c './node_modules/.bin/mocha --recursive ./dbtest/test || exit 1'
+
+dbtdd:
+	@docker-compose -f ../server/local/docker-compose-dev.yml run --rm \
+		-e NPM_TOKEN=${NPM_TOKEN} \
+		-v $(CWD)/src/dbtest:/usr/src/dbtest api \
+		/bin/sh -c './node_modules/.bin/nodemon \
+		--quiet \
+		--watch ./ \
+		--delay 250ms \
+		-x "./node_modules/.bin/mocha --recursive ./dbtest/test || exit 1"'
 
 standardFix:
 	-@docker rm -f api-test 2> /dev/null || true

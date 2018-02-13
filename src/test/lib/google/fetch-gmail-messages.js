@@ -33,22 +33,22 @@ describe('Google.fetchGmailMessages', () => {
     expect(messages).to.deep.equal([
       {
         id: 'MESSAGE_1',
-        from: { id: 'personId' },
-        to: { id: 'personId' },
+        from: 'buzz@spacecommand.com',
+        to: 'woody@andysroom.com',
         date: 1515758519000,
         body: 'Where\'s my spaceship? Space command needs me.'
       },
       {
         id: 'MESSAGE_2',
-        from: { id: 'personId' },
-        to: { id: 'personId' },
+        from: 'buzz@spacecommand.com',
+        to: 'woody@andysroom.com',
         date: 1515758631000,
         body: 'You\nAre\nA\nToy!'
       },
       {
         id: 'MESSAGE_3',
-        from: { id: 'personId' },
-        to: { id: 'personId' },
+        from: 'woody@andysroom.com',
+        to: 'buzz@spacecommand.com',
         date: 1515847314000,
         body: 'Fine\n\nIt\'s downstairs\nPS. You are a toy.'
       }
@@ -64,8 +64,8 @@ describe('Google.fetchGmailMessages', () => {
     expect(messages).to.deep.equal([
       {
         id: 'MESSAGE_1',
-        from: { id: 'personId' },
-        to: { id: 'personId' },
+        from: 'buzz@spacecommand.com',
+        to: 'woody@andysroom.com',
         date: 1515758519000,
         body: dedent`
           Hi Gavin,

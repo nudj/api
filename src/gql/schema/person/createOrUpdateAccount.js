@@ -6,40 +6,29 @@ module.exports = {
   `,
   resolvers: {
     Person: {
-      createOrUpdateAccount: (person, args, context) => {
+      createOrUpdateAccount: async (person, args, context) => {
         const { type, data } = args
-        return context.transaction((store, params) => {
-          const { person, type, data } = params
-          return store.readOne({
+        const account = await context.store.readOne({
+          type: 'accounts',
+          filters: {
+            person: person.id,
+            type
+          }
+        })
+        if (account && account.id) {
+          return context.store.update({
             type: 'accounts',
-            filters: {
-              person,
-              type
-            }
+            id: account.id,
+            data: Object.assign({}, account, data)
           })
-          .then(account => {
-            if (account && account.id) {
-              return store.update({
-                type: 'accounts',
-                id: account.id,
-                data: {
-                  data: Object.assign({}, account.data, data)
-                }
-              })
-            }
-            return store.create({
-              type: 'accounts',
-              data: {
-                person,
-                type,
-                data
-              }
-            })
-          })
-        }, {
-          type,
-          data,
-          person: person.id
+        }
+        return context.store.create({
+          type: 'accounts',
+          data: {
+            person: person.id,
+            type,
+            ...data
+          }
         })
       }
     }

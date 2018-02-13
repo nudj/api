@@ -78,6 +78,23 @@ describe('readOne', () => {
     })
   })
 
+  describe('with filters and no match', () => {
+    it('does not error', () => {
+      return store.readOne({
+        type: collectionName,
+        filters: { email: 'steve@therave.com' }
+      })
+    })
+
+    it('returns undefined', async () => {
+      const result = await store.readOne({
+        type: collectionName,
+        filters: { email: 'steve@therave.com' }
+      })
+      expect(result).to.be.undefined()
+    })
+  })
+
   describe('with an id', () => {
     it('returns normalised data', async () => {
       const result = await store.readOne({

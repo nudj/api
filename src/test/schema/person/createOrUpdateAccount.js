@@ -33,8 +33,10 @@ describe('Person.createOrUpdateAccount', () => {
       userId: 'person1',
       type: 'GOOGLE',
       data: {
-        accessToken: '12345',
-        refreshToken: '6789'
+        data: {
+          accessToken: '12345',
+          refreshToken: '6789'
+        }
       }
     }
     return executeQueryOnDbUsingSchema({ operation, variables, db, schema })
@@ -79,8 +81,10 @@ describe('Person.createOrUpdateAccount', () => {
       userId: 'person1',
       type: 'GOOGLE',
       data: {
-        accessToken: '12345',
-        refreshToken: '6789'
+        data: {
+          accessToken: '12345',
+          refreshToken: '6789'
+        }
       }
     }
     return expect(executeQueryOnDbUsingSchema({ operation, variables, db, schema })).to.eventually.deep.equal({
@@ -127,8 +131,10 @@ describe('Person.createOrUpdateAccount', () => {
       userId: 'person1',
       type: 'GOOGLE',
       data: {
-        accessToken: '12345',
-        refreshToken: '6789'
+        data: {
+          accessToken: '12345',
+          refreshToken: '6789'
+        }
       }
     }
     const result = await executeQueryOnDbUsingSchema({ operation, variables, db, schema })
@@ -178,7 +184,10 @@ describe('Person.createOrUpdateAccount', () => {
       userId: 'person1',
       type: 'GOOGLE',
       data: {
-        accessToken: '12345'
+        data: {
+          accessToken: '12345',
+          refreshToken: 'ABCDE'
+        }
       }
     }
     await executeQueryOnDbUsingSchema({ operation, variables, db, schema })
@@ -188,7 +197,8 @@ describe('Person.createOrUpdateAccount', () => {
         person: 'person1',
         type: 'GOOGLE',
         data: {
-          accessToken: '12345'
+          accessToken: '12345',
+          refreshToken: 'ABCDE'
         }
       }
     ])
@@ -231,7 +241,10 @@ describe('Person.createOrUpdateAccount', () => {
       userId: 'person1',
       type: 'GOOGLE',
       data: {
-        accessToken: '12345'
+        data: {
+          accessToken: '12345',
+          refreshToken: 'REFRESH_TOKEN'
+        }
       }
     }
     await executeQueryOnDbUsingSchema({ operation, variables, db, schema })
@@ -242,7 +255,7 @@ describe('Person.createOrUpdateAccount', () => {
         type: 'GOOGLE',
         data: {
           accessToken: '12345',
-          refreshToken: 'I_NEED_AN_ACCESS_TOKEN'
+          refreshToken: 'REFRESH_TOKEN'
         }
       }
     ])

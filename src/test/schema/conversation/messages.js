@@ -1,5 +1,6 @@
 /* eslint-env mocha */
 const chai = require('chai')
+const nock = require('nock')
 const { merge } = require('@nudj/library')
 const {
   mockThreadFetch,
@@ -20,6 +21,7 @@ const operation = `
           body
           to {
             id
+            email
           }
         }
       }
@@ -34,6 +36,10 @@ const baseData = {
     {
       id: 'person3',
       email: 'woody@andysroom.com'
+    },
+    {
+      id: 'person2',
+      email: 'buzz@spacecommand.com'
     }
   ],
   accounts: [
@@ -53,6 +59,10 @@ describe('Conversation.messages', () => {
     mockThreadFetch()
     mockTokenRefresh()
     mockTokenValidation()
+  })
+
+  afterEach(() => {
+    nock.cleanAll()
   })
 
   it('should fetch all messages relating to the conversation', async () => {
@@ -76,21 +86,24 @@ describe('Conversation.messages', () => {
                   body: 'Where\'s my spaceship? Space command needs me.',
                   id: 'MESSAGE_1',
                   to: {
-                    id: 'person3'
+                    id: 'person3',
+                    email: 'woody@andysroom.com'
                   }
                 },
                 {
                   body: 'You\nAre\nA\nToy!',
                   id: 'MESSAGE_2',
                   to: {
-                    id: 'person3'
+                    id: 'person3',
+                    email: 'woody@andysroom.com'
                   }
                 },
                 {
                   body: 'Fine\n\nIt\'s downstairs\nPS. You are a toy.',
                   id: 'MESSAGE_3',
                   to: {
-                    id: 'person2'
+                    id: 'person2',
+                    email: 'buzz@spacecommand.com'
                   }
                 }
               ]

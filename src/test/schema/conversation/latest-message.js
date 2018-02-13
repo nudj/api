@@ -1,5 +1,6 @@
 /* eslint-env mocha */
 const chai = require('chai')
+const nock = require('nock')
 const { merge } = require('@nudj/library')
 const {
   mockThreadFetch,
@@ -54,6 +55,10 @@ describe('Conversation.latestMessage', () => {
     mockThreadFetch()
     mockTokenRefresh()
     mockTokenValidation()
+  })
+
+  afterEach(() => {
+    nock.cleanAll()
   })
 
   it('should fetch the latest message in the conversation', async () => {

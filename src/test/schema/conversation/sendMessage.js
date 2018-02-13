@@ -1,5 +1,6 @@
 /* eslint-env mocha */
 const chai = require('chai')
+const nock = require('nock')
 const { merge } = require('@nudj/library')
 const {
   mockThreadFetch,
@@ -62,6 +63,10 @@ describe('Conversation.sendMessage', () => {
     mockGmailSend()
     mockTokenRefresh()
     mockTokenValidation()
+  })
+
+  afterEach(() => {
+    nock.cleanAll()
   })
 
   it('should send and return new message', async () => {

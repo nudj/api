@@ -19,22 +19,14 @@ const sanitiseMessage = (message) => {
   return decodeHTML(striptags(messageBody)) // Remove tags & replace HTML entities
 }
 
-const fetchPersonFromEmail = async (context, headers, name) => {
+const parseEmailAddress = (headers, name) => {
   const { address } = parseOneAddress(
     get(
       find(headers, { name }),
       'value'
     )
   )
-  return await context.transaction((store, params) => {
-    const email = params.address
-    return store.readOneOrCreate({
-      type: 'people',
-      filters: { email },
-      data: { email }
-    })
-    .then(person => person.id)
-  }, { address })
+  return address
 }
 
 module.exports = async ({ context, conversation }) => {
@@ -44,8 +36,8 @@ module.exports = async ({ context, conversation }) => {
 
   return Promise.all(thread.messages.map(async (data) => {
     const { payload, id, internalDate } = data
-    const from = await fetchPersonFromEmail(context, payload.headers, 'From')
-    const to = await fetchPersonFromEmail(context, payload.headers, 'To')
+    const from = parseEmailAddress(payload.headers, 'From')
+    const to = parseEmailAddress(payload.headers, 'To')
     const date = parseInt(internalDate, 10)
 
     const encryptedBody = (

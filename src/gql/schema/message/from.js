@@ -11,13 +11,14 @@ module.exports = {
       from: handleErrors((message, args, context) => {
         const { from } = message
         return context.store.readOne({
+          type: 'accounts',
+          filters: { email: from }
+        })
+        .then(account => context.store.readOne({
           type: 'people',
-          id: from
-        })
-        .then(person => {
-          if (!person) throw new Error('No message.from found')
-          return person
-        })
+          filters: account ? undefined : { email: from },
+          id: account && account.person
+        }))
       })
     }
   }

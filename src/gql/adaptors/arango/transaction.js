@@ -31,7 +31,7 @@ module.exports = (action, params) => {
     // strip parentheses and trailing semicolon
     actionString = actionString.slice(1, -2)
   } catch (error) {
-    logger.log(error)
+    logger('error', error)
     throw error
   }
 

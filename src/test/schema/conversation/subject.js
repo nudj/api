@@ -1,5 +1,6 @@
 /* eslint-env mocha */
 const chai = require('chai')
+const nock = require('nock')
 const { merge } = require('@nudj/library')
 const {
   mockThreadFetch,
@@ -52,6 +53,10 @@ describe('Conversation.subject', () => {
     mockThreadFetch()
     mockTokenRefresh()
     mockTokenValidation()
+  })
+
+  afterEach(() => {
+    nock.cleanAll()
   })
 
   it('should fetch the conversation subject', async () => {

@@ -12,7 +12,7 @@ module.exports = {
         const { from } = message
         return context.store.readOne({
           type: 'accounts',
-          filters: { email: from }
+          filters: { emailAddress: from }
         })
         .then(account => context.store.readOne({
           type: 'people',

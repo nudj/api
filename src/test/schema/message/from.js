@@ -65,7 +65,7 @@ const db = {
     {
       person: 'person1',
       type: 'GOOGLE',
-      email: 'hirer@differentemail.com',
+      emailAddress: 'hirer@differentemail.com',
       data: {
         accessToken: 'VALID_ACCESS_TOKEN',
         refreshToken: 'VALID_REFRESH_TOKEN'

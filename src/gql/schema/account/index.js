@@ -2,8 +2,8 @@ module.exports = {
   typeDefs: `
     type Account {
       id: ID!
-      email: String!
-      emails: [String!]
+      emailAddress: String!
+      emailAddresses: [String!]
       created: DateTime!
       modified: DateTime!
       type: AccountType!

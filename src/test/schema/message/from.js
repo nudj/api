@@ -84,7 +84,7 @@ describe('Message.from', () => {
     nock.cleanAll()
   })
 
-  describe('when from is hirer who authorised with same email', () => {
+  describe('when `from` is hirer who authorised with same email', () => {
     beforeEach(() => {
       mockThreadFetchWith({
         messages: [
@@ -117,7 +117,7 @@ describe('Message.from', () => {
         ]
       })
     })
-    it('should fetch the message from', async () => {
+    it('should fetch the message `from`', async () => {
       return expect(executeQueryOnDbUsingSchema({ operation, variables, db, schema })).to.eventually.deep.equal({
         data: {
           conversation: {
@@ -134,7 +134,7 @@ describe('Message.from', () => {
     })
   })
 
-  describe('when from is referrer', () => {
+  describe('when `from` is referrer', () => {
     beforeEach(() => {
       mockThreadFetchWith({
         messages: [
@@ -167,7 +167,7 @@ describe('Message.from', () => {
         ]
       })
     })
-    it('should fetch the message from', async () => {
+    it('should fetch the message `from`', async () => {
       return expect(executeQueryOnDbUsingSchema({ operation, variables, db, schema })).to.eventually.deep.equal({
         data: {
           conversation: {
@@ -200,7 +200,7 @@ describe('Message.from', () => {
       })
     })
 
-    it('should return message from', async () => {
+    it('should return message `from`', async () => {
       return expect(executeQueryOnDbUsingSchema({ operation, variables, db: extendedDb, schema })).to.eventually.deep.equal({
         data: {
           conversation: {
@@ -263,7 +263,7 @@ describe('Message.from', () => {
     })
   })
 
-  describe('when from is the hirer and account authorised with different email', () => {
+  describe('when `from` is the hirer and account authorised with different email', () => {
     beforeEach(() => {
       mockThreadFetchWith({
         messages: [

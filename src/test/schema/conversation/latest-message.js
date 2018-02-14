@@ -196,7 +196,7 @@ describe('Conversation.latestMessage', () => {
     })
   })
 
-  describe('when the request to Google fails', () => {
+  describe('when the user\'s data is out of sync', () => {
     let extendedDb
     beforeEach(() => {
       extendedDb = merge(db, {
@@ -246,7 +246,7 @@ describe('Conversation.latestMessage', () => {
         ]
       })
     })
-    it('should error with bad data', async () => {
+    it('should throw an error', async () => {
       const result = await executeQueryOnDbUsingSchema({ operation, variables, db: extendedDb, schema })
       shouldRespondWithGqlError({
         path: [

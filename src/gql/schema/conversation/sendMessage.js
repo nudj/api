@@ -16,7 +16,6 @@ module.exports = {
         const { type } = conversation
 
         if (!body) throw new Error('No message body')
-
         switch (type) {
           case emailPreferences.GOOGLE:
             const date = new Date()

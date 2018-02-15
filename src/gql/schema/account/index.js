@@ -10,5 +10,13 @@ module.exports = {
       modified: DateTime!
       type: AccountType!
     }
+
+    input AccountFilterInput {
+      id: ID
+      emailAddress: String
+      type: AccountType
+      dateTo: DateTime
+      dateFrom: DateTime
+    }
   `
 }

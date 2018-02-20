@@ -3,7 +3,7 @@ const flatten = require('lodash/flatten')
 const omit = require('lodash/omit')
 
 const { startOfDay, endOfDay } = require('../../lib/format-dates')
-const createFiltersForFields = require('../../lib/arango')
+const { parseFiltersToAql, createFiltersForFields } = require('../../lib/aql')
 
 module.exports = ({ db }) => {
   const normaliseData = (data) => {
@@ -23,14 +23,6 @@ module.exports = ({ db }) => {
     }, {})
   }
   const newISODate = () => (new Date()).toISOString()
-
-  const parseFiltersToAql = (filters = {}) => {
-    const keys = Object.keys(filters)
-    if (!keys.length) return ''
-    return `FILTER ${keys.map((key) => {
-      return `item.${key} == "${filters[key]}"`
-    }).join(' && ')}`
-  }
 
   const executeAqlQuery = async (query, params) => {
     const cursor = await db.query(query, params)

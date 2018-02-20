@@ -196,7 +196,7 @@ describe('search', () => {
     await truncateCollections(db, [tvSeriesCollection, studiosCollection, countriesCollection])
   })
 
-  describe.only('with no filters', () => {
+  describe('with no filters', () => {
     it('returns normalised results with single field', async () => {
       const response = await store.search({
         type: tvSeriesCollection,

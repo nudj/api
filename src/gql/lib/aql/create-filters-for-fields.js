@@ -32,7 +32,7 @@ const recursivelyFetchNestedValues = (
   // accessing value directly
   const query = `
     ${accumulatedQuery}
-    ${prefix} DOCUMENT(CONCAT("${collection}", ${key} ? CONCAT("/", ${key}) : "" )) || ${key}
+    ${prefix} DOCUMENT("${collection}", ${key}) || ${key}
   `
 
   return recursivelyFetchNestedValues(remainingFields, fieldAliases, query, variableId)

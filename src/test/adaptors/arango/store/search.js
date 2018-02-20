@@ -3,7 +3,6 @@
 const chai = require('chai')
 const sinon = require('sinon')
 const sinonChai = require('sinon-chai')
-const dedent = require('dedent')
 const expect = chai.expect
 
 const Store = require('../../../../gql/adaptors/arango/store')
@@ -19,9 +18,6 @@ const DOCUMENT_RESPONSE = {
   genre: 'Arcade'
 }
 
-const aqlTemplateTag = (strings, operations) =>
-  strings[0] + operations + strings[1]
-
 describe('ArangoAdaptor store.search', () => {
   let dbStub
   let store
@@ -30,8 +26,7 @@ describe('ArangoAdaptor store.search', () => {
     dbStub = {
       db: {
         query: sinon.stub().returns({ all: () => [DOCUMENT_RESPONSE] })
-      },
-      aql: aqlTemplateTag
+      }
     }
     store = Store(dbStub)
   })
@@ -54,21 +49,7 @@ describe('ArangoAdaptor store.search', () => {
       .then(() => {
         const [ query, bindVars ] = dbStub.db.query.firstCall.args
         expect(bindVars).to.deep.equal({ query: 'Pacman' })
-        expect(dedent(query)).to.equal(dedent`
-          RETURN UNION_DISTINCT([],
-            (
-              FOR item IN videoGames
-                FILTER item.creator == "Namco"
-                FILTER(
-                  CONTAINS(
-                    LOWER(CONCAT_SEPARATOR(" ", item.title)), LOWER(@query)
-                  )
-                )
-                RETURN item
-            )
-          )
-        `
-      )
+        expect(query).to.be.a('string')
       })
     })
 
@@ -106,32 +87,7 @@ describe('ArangoAdaptor store.search', () => {
       .then(() => {
         const [ query, bindVars ] = dbStub.db.query.firstCall.args
         expect(bindVars).to.deep.equal({ query: 'Pacman' })
-        expect(dedent(query)).to.equal(dedent`
-          RETURN UNION_DISTINCT([],
-            (
-              FOR item IN videoGames
-                FILTER item.creator == "Namco"
-                FILTER(
-                  CONTAINS(
-                    LOWER(CONCAT_SEPARATOR(" ", item.title)), LOWER(@query)
-                  )
-                )
-                RETURN item
-            )
-          ,
-            (
-              FOR item IN videoGames
-                FILTER item.creator == "Namco"
-                FILTER(
-                  CONTAINS(
-                    LOWER(CONCAT_SEPARATOR(" ", item.franchise)), LOWER(@query)
-                  )
-                )
-                RETURN item
-            )
-          )
-        `
-      )
+        expect(query).to.be.a('string')
       })
     })
 
@@ -171,32 +127,7 @@ describe('ArangoAdaptor store.search', () => {
       .then(() => {
         const [ query, bindVars ] = dbStub.db.query.firstCall.args
         expect(bindVars).to.deep.equal({ query: 'Pacman Arcade' })
-        expect(dedent(query)).to.equal(dedent`
-          RETURN UNION_DISTINCT([],
-            (
-              FOR item IN videoGames
-                FILTER item.creator == "Namco" && item.genre == "Arcade"
-                FILTER(
-                  CONTAINS(
-                    LOWER(CONCAT_SEPARATOR(" ", item.title,item.genre)), LOWER(@query)
-                  )
-                )
-                RETURN item
-            )
-          ,
-            (
-              FOR item IN videoGames
-                FILTER item.creator == "Namco" && item.genre == "Arcade"
-                FILTER(
-                  CONTAINS(
-                    LOWER(CONCAT_SEPARATOR(" ", item.franchise)), LOWER(@query)
-                  )
-                )
-                RETURN item
-            )
-          )
-        `
-      )
+        expect(query).to.be.a('string')
       })
     })
 

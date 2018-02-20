@@ -1,6 +1,9 @@
 const reduce = require('lodash/reduce')
 const flatten = require('lodash/flatten')
 const omit = require('lodash/omit')
+const uniq = require('lodash/uniq')
+
+const { merge } = require('@nudj/library')
 
 const { startOfDay, endOfDay } = require('../../lib/format-dates')
 const { parseFiltersToAql, createFiltersForFields } = require('../../lib/aql')
@@ -138,23 +141,27 @@ module.exports = ({ db }) => {
       fieldAliases,
       filters
     }) => {
-      const operations = fields.map(fieldGroup => `
-        (
+      const querySegments = uniq([query, ...query.split(' ')])
+      const queries = merge(...querySegments.map((subQuery, index) => {
+        return { [`query${index}`]: subQuery }
+      }))
+
+      const operations = fields.map(fieldGroup => {
+        return Object.keys(queries).map(queryName => `(
           ${parseFiltersToAql(filters)}
-          ${createFiltersForFields(fieldGroup, fieldAliases)}
+          ${createFiltersForFields(fieldGroup, queryName, fieldAliases)}
           RETURN item
-        )
-      `).join(',')
+        )`)
+      }).join(',')
       const aqlQuery = `
         FOR item IN ${type}
-          LET results = UNION([],${operations})
-          FOR element IN results
-            COLLECT collected = element WITH COUNT INTO length
-            SORT length DESC
+          FOR element IN UNION([], ${operations})
+            COLLECT collected = element WITH COUNT INTO matches
+            SORT matches DESC
             RETURN collected
       `
 
-      return executeAqlQuery(aqlQuery, { query })
+      return executeAqlQuery(aqlQuery, queries)
     },
     countByFilters: async ({
       type,

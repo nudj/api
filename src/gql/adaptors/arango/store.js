@@ -3,6 +3,7 @@ const flatten = require('lodash/flatten')
 const omit = require('lodash/omit')
 
 const { startOfDay, endOfDay } = require('../../lib/format-dates')
+const createFiltersForFields = require('../../lib/arango')
 
 module.exports = ({ db }) => {
   const normaliseData = (data) => {
@@ -149,13 +150,7 @@ module.exports = ({ db }) => {
         (
           FOR item IN ${type}
             ${filter}
-            FILTER(
-              CONTAINS(
-                LOWER(CONCAT_SEPARATOR(" ", ${fieldGroup.map(
-                  field => `item.${field}`
-                )})), LOWER(@query)
-              )
-            )
+            ${createFiltersForFields(fieldGroup)}
             RETURN item
         )
       `).join(',')

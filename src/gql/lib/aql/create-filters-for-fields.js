@@ -38,7 +38,7 @@ const recursivelyFetchNestedValues = (
   return recursivelyFetchNestedValues(remainingFields, fieldAliases, query, variableId)
 }
 
-const createFiltersForFields = (fieldGroup, fieldAliases) => {
+const createFiltersForFields = (fieldGroup, queryName, fieldAliases) => {
   const nestedValues = fieldGroup.map(field => {
     if (!field.includes('.')) return `item.${field}`
 
@@ -49,7 +49,7 @@ const createFiltersForFields = (fieldGroup, fieldAliases) => {
   return `
     FILTER (
       CONTAINS(
-        LOWER(CONCAT_SEPARATOR(" ", ${nestedValues})), LOWER(@query)
+        LOWER(CONCAT_SEPARATOR(" ", ${nestedValues})), LOWER(@${queryName})
       )
     )
   `

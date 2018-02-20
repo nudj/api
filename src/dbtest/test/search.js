@@ -186,7 +186,7 @@ const resetDataStore = async () => populateCollections(db, [
   }
 ])
 
-describe.only('search', () => {
+describe('search', () => {
   let store
   before(async () => {
     await setupCollections(db, [tvSeriesCollection, studiosCollection, countriesCollection])
@@ -205,8 +205,37 @@ describe.only('search', () => {
     await truncateCollections(db, [tvSeriesCollection, studiosCollection, countriesCollection])
   })
 
-  describe('with no filters', () => {
-    it('returns normalised results with single field', async () => {
+  it('returns the results in order of most matches', async () => {
+    const response = await store.search({
+      type: tvSeriesCollection,
+      query: 'Dra',
+      fields: [
+        ['name'],
+        ['genre']
+      ]
+    })
+    expect(response.length).to.equal(3)
+    expect(response[0]).to.have.property('name').to.equal('Drake')
+  })
+
+  it('returns the filtered results in order of most matches', async () => {
+    const response = await store.search({
+      type: tvSeriesCollection,
+      query: 'Dra',
+      fields: [
+        ['name'],
+        ['genre']
+      ],
+      filters: {
+        genre: 'drama'
+      }
+    })
+    expect(response.length).to.equal(3)
+    expect(response[0]).to.have.property('name').to.equal('Drake')
+  })
+
+  describe('with single field', () => {
+    it('returns normalised results', async () => {
       const response = await store.search({
         type: tvSeriesCollection,
         query: 'Wa',
@@ -220,7 +249,24 @@ describe.only('search', () => {
       expect(results[1]).to.have.property('name').to.equal('Waking Ned')
     })
 
-    it('returns normalised results with multiple fields', async () => {
+    it('returns filtered and normalised results', async () => {
+      const response = await store.search({
+        type: tvSeriesCollection,
+        query: 'Wa',
+        fields: [
+          ['name']
+        ],
+        filters: {
+          ratings: 'high'
+        }
+      })
+      expect(response.length).to.equal(1)
+      expect(response[0]).to.have.property('name').to.equal('The Walking Dead')
+    })
+  })
+
+  describe('with multiple fields', () => {
+    it('returns normalised results', async () => {
       const response = await store.search({
         type: tvSeriesCollection,
         query: 'Dra',
@@ -236,7 +282,25 @@ describe.only('search', () => {
       expect(response[0]).to.have.property('name').to.equal('Drake')
     })
 
-    it('returns normalised results with combined fields', async () => {
+    it('returns filtered and normalised results', async () => {
+      const response = await store.search({
+        type: tvSeriesCollection,
+        query: 'game',
+        fields: [
+          ['name'],
+          ['genre']
+        ],
+        filters: {
+          ratings: 'average'
+        }
+      })
+      expect(response.length).to.equal(1)
+      expect(response[0]).to.have.property('name').to.equal('Takeshi\'s Castle')
+    })
+  })
+
+  describe('with combined fields', () => {
+    it('returns normalised results', async () => {
       const response = await store.search({
         type: tvSeriesCollection,
         query: 'land horror',
@@ -244,24 +308,28 @@ describe.only('search', () => {
           ['name', 'genre']
         ]
       })
-      expect(response.length).to.equal(1)
+      expect(response.length).to.equal(3)
       expect(response[0]).to.have.property('name').to.equal('Dead Island')
     })
 
-    it('returns the results in order of most matches', async () => {
+    it('returns filtered and normalised results', async () => {
       const response = await store.search({
         type: tvSeriesCollection,
-        query: 'Dra',
+        query: 'dead action',
         fields: [
-          ['name'],
-          ['genre']
-        ]
+          ['name', 'genre']
+        ],
+        filters: {
+          ratings: 'low'
+        }
       })
-      expect(response.length).to.equal(3)
-      expect(response[0]).to.have.property('name').to.equal('Drake')
+      expect(response.length).to.equal(1)
+      expect(response[0]).to.have.property('name').to.equal('Land of the Dead')
     })
+  })
 
-    it('returns normalised results with nested fields', async () => {
+  describe('with nested fields', () => {
+    it('returns normalised results', async () => {
       const response = await store.search({
         type: tvSeriesCollection,
         query: '$1,000,000',
@@ -275,7 +343,24 @@ describe.only('search', () => {
       expect(results[1]).to.have.property('name').to.equal('West Wing')
     })
 
-    it('returns normalised results with deeply nested fields', async () => {
+    it('returns filtered and normalised results', async () => {
+      const response = await store.search({
+        type: tvSeriesCollection,
+        query: '$1,000,000',
+        fields: [
+          ['statistics.budget']
+        ],
+        filters: {
+          ratings: 'high'
+        }
+      })
+      expect(response.length).to.equal(1)
+      expect(response[0]).to.have.property('name').to.equal('West Wing')
+    })
+  })
+
+  describe('with deeply nested fields', () => {
+    it('returns normalised results', async () => {
       const response = await store.search({
         type: tvSeriesCollection,
         query: '30',
@@ -289,7 +374,25 @@ describe.only('search', () => {
       expect(results[1]).to.have.property('name').to.equal('End Game')
     })
 
-    it('returns normalised results with nested collection fields', async () => {
+    it('returns filtered and normalised results', async () => {
+      const response = await store.search({
+        type: tvSeriesCollection,
+        query: '30',
+        fields: [
+          ['statistics.views.averageEpisode']
+        ],
+        filters: {
+          genre: 'thriller'
+        }
+      })
+      const results = sortBy(response, ['name'])
+      expect(results.length).to.equal(1)
+      expect(results[0]).to.have.property('name').to.equal('End Game')
+    })
+  })
+
+  describe('with nested collection fields', () => {
+    it('returns normalised results', async () => {
       const response = await store.search({
         type: tvSeriesCollection,
         query: 'Lone Star',
@@ -305,7 +408,25 @@ describe.only('search', () => {
       expect(results[3]).to.have.property('name').to.equal('West Wing')
     })
 
-    it('returns normalised results with deeply nested collection fields', async () => {
+    it('returns filtered and normalised results', async () => {
+      const response = await store.search({
+        type: tvSeriesCollection,
+        query: 'Lone Star',
+        fields: [
+          ['studio.name']
+        ],
+        filters: {
+          ratings: 'average',
+          genre: 'sci-fi horror'
+        }
+      })
+      expect(response.length).to.equal(1)
+      expect(response[0]).to.have.property('name').to.equal('Black Mirror')
+    })
+  })
+
+  describe('with deeply nested collection fields', () => {
+    it('returns normalised results', async () => {
       const response = await store.search({
         type: tvSeriesCollection,
         query: 'Canada',
@@ -317,7 +438,26 @@ describe.only('search', () => {
       expect(response[0]).to.have.property('name').to.equal('Land of the Dead')
     })
 
-    it('returns normalised results with aliased fields', async () => {
+    it('returns filtered and normalised results', async () => {
+      const response = await store.search({
+        type: tvSeriesCollection,
+        query: 'USA',
+        fields: [
+          ['studio.country.name']
+        ],
+        filters: {
+          ratings: 'high'
+        }
+      })
+      const results = sortBy(response, ['name'])
+      expect(results.length).to.equal(2)
+      expect(results[0]).to.have.property('name').to.equal('End Game')
+      expect(results[1]).to.have.property('name').to.equal('West Wing')
+    })
+  })
+
+  describe('with aliased fields', () => {
+    it('returns normalised results', async () => {
       const response = await store.search({
         type: tvSeriesCollection,
         query: 'Canada',
@@ -331,50 +471,20 @@ describe.only('search', () => {
       expect(response.length).to.equal(1)
       expect(response[0]).to.have.property('name').to.equal('Land of the Dead')
     })
-  })
 
-  describe('with filters', () => {
-    it('returns normalised results with single field', async () => {
+    it('returns filtered and normalised results', async () => {
       const response = await store.search({
         type: tvSeriesCollection,
-        query: 'Wa',
-        fields: [
-          ['name']
-        ],
-        filters: {
-          ratings: 'high'
-        }
-      })
-      expect(response.length).to.equal(1)
-      expect(response[0]).to.have.property('name').to.equal('The Walking Dead')
-    })
-
-    it('returns normalised results with multiple fields', async () => {
-      const response = await store.search({
-        type: tvSeriesCollection,
-        query: 'game',
-        fields: [
-          ['name'],
-          ['genre']
-        ],
-        filters: {
-          ratings: 'average'
-        }
-      })
-      expect(response.length).to.equal(1)
-      expect(response[0]).to.have.property('name').to.equal('Takeshi\'s Castle')
-    })
-
-    it('returns normalised results with combined fields', async () => {
-      const response = await store.search({
-        type: tvSeriesCollection,
-        query: 'dead action',
-        fields: [
-          ['name', 'genre']
-        ],
+        query: 'Canada',
         filters: {
           ratings: 'low'
-        }
+        },
+        fields: [
+          ['domain.name']
+        ],
+        fieldAliases: [
+          { domain: 'country' }
+        ]
       })
       expect(response.length).to.equal(1)
       expect(response[0]).to.have.property('name').to.equal('Land of the Dead')

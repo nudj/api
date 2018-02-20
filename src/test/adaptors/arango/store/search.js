@@ -48,7 +48,7 @@ describe('ArangoAdaptor store.search', () => {
       })
       .then(() => {
         const [ query, bindVars ] = dbStub.db.query.firstCall.args
-        expect(bindVars).to.deep.equal({ query: 'Pacman' })
+        expect(bindVars).to.deep.equal({ query0: 'Pacman' })
         expect(query).to.be.a('string')
       })
     })
@@ -86,7 +86,7 @@ describe('ArangoAdaptor store.search', () => {
       })
       .then(() => {
         const [ query, bindVars ] = dbStub.db.query.firstCall.args
-        expect(bindVars).to.deep.equal({ query: 'Pacman' })
+        expect(bindVars).to.deep.equal({ query0: 'Pacman' })
         expect(query).to.be.a('string')
       })
     })
@@ -126,7 +126,11 @@ describe('ArangoAdaptor store.search', () => {
       })
       .then(() => {
         const [ query, bindVars ] = dbStub.db.query.firstCall.args
-        expect(bindVars).to.deep.equal({ query: 'Pacman Arcade' })
+        expect(bindVars).to.deep.equal({
+          query0: 'Pacman Arcade',
+          query1: 'Pacman',
+          query2: 'Arcade'
+        })
         expect(query).to.be.a('string')
       })
     })

@@ -21,6 +21,7 @@ const resetDataStore = async () => populateCollections(db, [
     data: [
       {
         name: 'The Walking Dead',
+        domain: 'country1',
         ratings: 'high',
         studio: 'company1',
         genre: 'action',
@@ -34,6 +35,7 @@ const resetDataStore = async () => populateCollections(db, [
       },
       {
         name: 'West Wing',
+        domain: 'country2',
         ratings: 'high',
         studio: 'company2',
         genre: 'drama',
@@ -47,6 +49,7 @@ const resetDataStore = async () => populateCollections(db, [
       },
       {
         name: 'Takeshi\'s Castle',
+        domain: 'country2',
         ratings: 'average',
         studio: 'company2',
         genre: 'gameshow',
@@ -60,6 +63,7 @@ const resetDataStore = async () => populateCollections(db, [
       },
       {
         name: 'Black Mirror',
+        domain: 'country2',
         ratings: 'average',
         studio: 'company2',
         genre: 'sci-fi horror',
@@ -73,6 +77,7 @@ const resetDataStore = async () => populateCollections(db, [
       },
       {
         name: 'Land of the Dead',
+        domain: 'country3',
         ratings: 'low',
         studio: 'company3',
         genre: 'action',
@@ -86,6 +91,7 @@ const resetDataStore = async () => populateCollections(db, [
       },
       {
         name: 'Drake',
+        domain: 'country1',
         ratings: 'low',
         studio: 'company1',
         genre: 'thriller',
@@ -99,6 +105,7 @@ const resetDataStore = async () => populateCollections(db, [
       },
       {
         name: 'Dead Island',
+        domain: 'country1',
         ratings: 'average',
         studio: 'company1',
         genre: 'horror',
@@ -112,6 +119,7 @@ const resetDataStore = async () => populateCollections(db, [
       },
       {
         name: 'Waking Ned',
+        domain: 'country1',
         ratings: 'average',
         studio: 'company1',
         genre: 'drama',
@@ -125,6 +133,7 @@ const resetDataStore = async () => populateCollections(db, [
       },
       {
         name: 'End Game',
+        domain: 'country2',
         ratings: 'high',
         studio: 'company2',
         genre: 'thriller',
@@ -177,7 +186,7 @@ const resetDataStore = async () => populateCollections(db, [
   }
 ])
 
-describe('search', () => {
+describe.only('search', () => {
   let store
   before(async () => {
     await setupCollections(db, [tvSeriesCollection, studiosCollection, countriesCollection])
@@ -289,6 +298,21 @@ describe('search', () => {
         query: 'Canada',
         fields: [
           ['studio.country.name']
+        ]
+      })
+      expect(response.length).to.equal(1)
+      expect(response[0]).to.have.property('name').to.equal('Land of the Dead')
+    })
+
+    it('returns normalised results with aliased fields', async () => {
+      const response = await store.search({
+        type: tvSeriesCollection,
+        query: 'Canada',
+        fields: [
+          ['domain.name']
+        ],
+        fieldAliases: [
+          { domain: 'country' }
         ]
       })
       expect(response.length).to.equal(1)

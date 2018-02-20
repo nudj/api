@@ -135,6 +135,7 @@ module.exports = ({ db }) => {
       type,
       query,
       fields,
+      fieldAliases,
       filters
     }) => {
       const filter = parseFiltersToAql(filters)
@@ -142,7 +143,7 @@ module.exports = ({ db }) => {
         (
           FOR item IN ${type}
             ${filter}
-            ${createFiltersForFields(fieldGroup)}
+            ${createFiltersForFields(fieldGroup, fieldAliases)}
             RETURN item
         )
       `).join(',')

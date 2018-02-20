@@ -1,16 +1,26 @@
-const pluralize = require('pluralize')
+const { plural } = require('pluralize')
 const uniqueId = require('lodash/uniqueId')
+const find = require('lodash/find')
+
+const fetchCollectionName = (field, fieldAliases) => {
+  if (!fieldAliases) return plural(field)
+
+  const alias = find(fieldAliases, (alias) => alias[field])
+  const collectionName = alias ? alias[field] : field
+  return plural(collectionName)
+}
 
 const recursivelyFetchNestedValues = (
   fields,
+  fieldAliases,
   accumulatedQuery = '',
   previousKey = 'item'
 ) => {
   if (!fields.length) return accumulatedQuery
 
   const [field, ...remainingFields] = fields
-  const collection = pluralize.plural(field)
-  const variableId = uniqueId(field)
+  const collection = fetchCollectionName(field, fieldAliases)
+  const variableId = uniqueId(collection)
 
   // Set prefix to either assign intermediate values or return final value
   const prefix = remainingFields.length ? `LET ${variableId} =` : 'RETURN'
@@ -22,18 +32,18 @@ const recursivelyFetchNestedValues = (
   // accessing value directly
   const query = `
     ${accumulatedQuery}
-    ${prefix} DOCUMENT(CONCAT("${collection}/", ${key})) || ${key}
+    ${prefix} DOCUMENT(CONCAT("${collection}", ${key} ? CONCAT("/", ${key}) : "" )) || ${key}
   `
 
-  return recursivelyFetchNestedValues(remainingFields, query, variableId)
+  return recursivelyFetchNestedValues(remainingFields, fieldAliases, query, variableId)
 }
 
-const createFiltersForFields = (fieldGroup) => {
+const createFiltersForFields = (fieldGroup, fieldAliases) => {
   const nestedValues = fieldGroup.map(field => {
     if (!field.includes('.')) return `item.${field}`
 
     const fields = field.split('.')
-    return recursivelyFetchNestedValues(fields)
+    return recursivelyFetchNestedValues(fields, fieldAliases)
   })
 
   return `

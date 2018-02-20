@@ -94,7 +94,7 @@ const resetDataStore = async () => populateCollections(db, [
         domain: 'country1',
         ratings: 'low',
         studio: 'company1',
-        genre: 'thriller',
+        genre: 'drama',
         statistics: {
           budget: '$80,000',
           views: {
@@ -246,6 +246,19 @@ describe.only('search', () => {
       })
       expect(response.length).to.equal(1)
       expect(response[0]).to.have.property('name').to.equal('Dead Island')
+    })
+
+    it('returns the results in order of most matches', async () => {
+      const response = await store.search({
+        type: tvSeriesCollection,
+        query: 'Dra',
+        fields: [
+          ['name'],
+          ['genre']
+        ]
+      })
+      expect(response.length).to.equal(3)
+      expect(response[0]).to.have.property('name').to.equal('Drake')
     })
 
     it('returns normalised results with nested fields', async () => {

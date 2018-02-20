@@ -138,16 +138,22 @@ module.exports = ({ db }) => {
       fieldAliases,
       filters
     }) => {
-      const filter = parseFiltersToAql(filters)
       const operations = fields.map(fieldGroup => `
         (
-          FOR item IN ${type}
-            ${filter}
-            ${createFiltersForFields(fieldGroup, fieldAliases)}
-            RETURN item
+          ${parseFiltersToAql(filters)}
+          ${createFiltersForFields(fieldGroup, fieldAliases)}
+          RETURN item
         )
       `).join(',')
-      const aqlQuery = `RETURN UNION_DISTINCT([],${operations})`
+      const aqlQuery = `
+        FOR item IN ${type}
+          LET results = UNION([],${operations})
+          FOR element IN results
+            COLLECT collected = element WITH COUNT INTO length
+            SORT length DESC
+            RETURN collected
+      `
+
       return executeAqlQuery(aqlQuery, { query })
     },
     countByFilters: async ({

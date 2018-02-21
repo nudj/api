@@ -1,16 +1,22 @@
 version: '2'
 services:
   api:
-    image: nudj/api:latest
-    env_file: .env
-    depends_on:
-      - db
-    ports:
-      - "81:81"
-  db:
-    image: arangodb
+    image: nudj/api:development
     environment:
-      - ARANGO_NO_AUTH=1
-    ports:
-      - "8529:8529"
-    command: arangod --server.authentication false
+      - NPM_TOKEN
+    env_file: ../api/.env
+    volumes:
+      - ../api/.zshrc:/root/.zshrc
+      - ../api/src/gql:/usr/src/gql
+      - ../api/src/gql-old:/usr/src/gql-old
+      - ../api/src/lib:/usr/src/lib
+      - ../api/src/mock:/usr/src/mock
+      - ../api/src/rest:/usr/src/rest
+      - ../api/src/test:/usr/src/test
+      - ../api/src/.npmignore:/usr/src/.npmignore
+      - ../api/src/.npmrc:/usr/src/.npmrc
+      - ../api/src/nodemon.json:/usr/src/nodemon.json
+      - ../api/src/package.json:/usr/src/package.json
+      - ../api/src/index.js:/usr/src/index.js
+    stdin_open: true
+    command: /bin/zsh

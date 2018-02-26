@@ -28,7 +28,7 @@ module.exports = function nestedAll (props = {}) {
     `,
     resolvers: {
       [parentType]: {
-        [name]: handleErrors((parent, args, context) => {
+        [name]: handleErrors(async (parent, args, context) => {
           const params = {
             collection
           }
@@ -41,6 +41,7 @@ module.exports = function nestedAll (props = {}) {
             }
             params.storeMethod = 'readAll'
           }
+
           return context.store[params.storeMethod]({
             type: params.collection,
             filters: params.filters,

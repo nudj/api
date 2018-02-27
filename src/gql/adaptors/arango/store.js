@@ -185,6 +185,41 @@ module.exports = ({ db }) => {
       })
       const response = await cursor.all()
       return response[0] || 0
+    },
+    import: async ({
+      data
+    }) => {
+      const keyedData = data.map(collection => ({
+        name: collection.name,
+        onDuplicate: collection.onDuplicate || 'ignore',
+        data: collection.data.map(item => {
+          item._key = item.id
+          return omit(item, ['id'])
+        })
+      }))
+
+      const imports = await Promise.all(keyedData.map(collection => {
+        const { name, data, onDuplicate } = collection
+
+        return db.collection(name)
+          .import(data.map(entry => {
+            return merge(entry, {
+              created: newISODate(),
+              modified: newISODate()
+            })
+          }), { onDuplicate, details: true })
+      }))
+
+      const results = imports.map((result, index) => {
+        if (result.error || result.errors) {
+          throw new Error(`Import Error: ${result.details}`)
+        }
+
+        const collection = keyedData[index].name
+        return merge(result, { collection })
+      })
+
+      return results
     }
   }
 }

@@ -60,7 +60,11 @@ module.exports = ({ db }) => {
         method = 'firstExample'
         arg = filters
       }
-      return normaliseData(await db.collection(type)[method](arg))
+      try {
+        return normaliseData(await db.collection(type)[method](arg))
+      } catch (error) {
+        if (error.message !== 'no match') throw error
+      }
     },
     readMany: async ({
       type,

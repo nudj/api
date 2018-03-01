@@ -4,6 +4,7 @@ module.exports = rootEnum({
   name: 'DataSource',
   values: [
     'LINKEDIN',
-    'MANUAL'
+    'MANUAL',
+    'SURVEY'
   ]
 })

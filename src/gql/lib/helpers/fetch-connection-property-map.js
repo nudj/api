@@ -1,6 +1,7 @@
 const uniq = require('lodash/uniq')
 const isNil = require('lodash/isNil')
 const zipObject = require('lodash/zipObject')
+const sortBy = require('lodash/sortBy')
 
 const getPropertyIds = connections => {
   const {
@@ -21,15 +22,28 @@ const getPropertyIds = connections => {
   })
 
   return {
-    roleIds: uniq(roleIds).filter(id => !isNil(id)),
-    companyIds: uniq(companyIds).filter(id => !isNil(id)),
-    personIds: uniq(personIds).filter(id => !isNil(id)),
-    sourceIds: uniq(sourceIds).filter(id => !isNil(id))
+    roleIds: sortBy(
+      uniq(roleIds).filter(id => !isNil(id))
+    ),
+    companyIds: sortBy(
+      uniq(companyIds).filter(id => !isNil(id))
+    ),
+    personIds: sortBy(
+      uniq(personIds).filter(id => !isNil(id))
+    ),
+    sourceIds: sortBy(
+      uniq(sourceIds).filter(id => !isNil(id))
+    )
   }
 }
 
-const fetchPropertyValuesByIds = (context, { roleIds, companyIds, personIds, sourceIds }) => {
-  return Promise.all([
+const fetchPropertyValuesByIds = async (context, { roleIds, companyIds, personIds, sourceIds }) => {
+  const [
+    roles,
+    companies,
+    people,
+    sources
+  ] = await Promise.all([
     context.store.readMany({
       type: 'roles',
       ids: roleIds
@@ -47,6 +61,13 @@ const fetchPropertyValuesByIds = (context, { roleIds, companyIds, personIds, sou
       ids: sourceIds
     })
   ])
+
+  return {
+    roles: sortBy(roles, 'id'),
+    companies: sortBy(companies, 'id'),
+    people: sortBy(people, 'id'),
+    sources: sortBy(sources, 'id')
+  }
 }
 
 const fetchConnectionPropertyMap = async (context, connections) => {
@@ -57,12 +78,12 @@ const fetchConnectionPropertyMap = async (context, connections) => {
     sourceIds
   } = getPropertyIds(connections)
 
-  const [
+  const {
     roles,
     companies,
     people,
     sources
-  ] = await fetchPropertyValuesByIds(context, {
+  } = await fetchPropertyValuesByIds(context, {
     roleIds,
     companyIds,
     personIds,

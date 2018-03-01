@@ -7,18 +7,15 @@ const getPropertyIds = connections => {
   const {
     roleIds,
     companyIds,
-    personIds,
-    sourceIds
+    personIds
   } = connections.reduce((idMap, connection) => ({
     roleIds: idMap.roleIds.concat(connection.role),
     companyIds: idMap.companyIds.concat(connection.company),
-    personIds: idMap.personIds.concat(connection.person),
-    sourceIds: idMap.sourceIds.concat(connection.source)
+    personIds: idMap.personIds.concat(connection.person)
   }), {
     roleIds: [],
     companyIds: [],
-    personIds: [],
-    sourceIds: []
+    personIds: []
   })
 
   return {
@@ -30,14 +27,11 @@ const getPropertyIds = connections => {
     ),
     personIds: sortBy(
       uniq(personIds).filter(id => !isNil(id))
-    ),
-    sourceIds: sortBy(
-      uniq(sourceIds).filter(id => !isNil(id))
     )
   }
 }
 
-const fetchPropertyValuesByIds = async (context, { roleIds, companyIds, personIds, sourceIds }) => {
+const fetchPropertyValuesByIds = async (context, { roleIds, companyIds, personIds }) => {
   const [
     roles,
     companies,
@@ -55,18 +49,13 @@ const fetchPropertyValuesByIds = async (context, { roleIds, companyIds, personId
     context.store.readMany({
       type: 'people',
       ids: personIds
-    }),
-    context.store.readMany({
-      type: 'sources',
-      ids: sourceIds
     })
   ])
 
   return {
     roles: sortBy(roles, 'id'),
     companies: sortBy(companies, 'id'),
-    people: sortBy(people, 'id'),
-    sources: sortBy(sources, 'id')
+    people: sortBy(people, 'id')
   }
 }
 
@@ -74,27 +63,23 @@ const fetchConnectionPropertyMap = async (context, connections) => {
   const {
     roleIds,
     companyIds,
-    personIds,
-    sourceIds
+    personIds
   } = getPropertyIds(connections)
 
   const {
     roles,
     companies,
-    people,
-    sources
+    people
   } = await fetchPropertyValuesByIds(context, {
     roleIds,
     companyIds,
-    personIds,
-    sourceIds
+    personIds
   })
 
   return {
     roleMap: zipObject(roleIds, roles),
     companyMap: zipObject(companyIds, companies),
-    personMap: zipObject(personIds, people),
-    sourceMap: zipObject(sourceIds, sources)
+    personMap: zipObject(personIds, people)
   }
 }
 

@@ -20,16 +20,14 @@ module.exports = {
         const {
           roleMap,
           companyMap,
-          personMap,
-          sourceMap
+          personMap
         } = await fetchConnectionPropertyMap(context, connections)
 
         return connections.map(connection => ({
           ...connection,
           role: roleMap[connection.role],
           company: companyMap[connection.company],
-          person: personMap[connection.person],
-          source: sourceMap[connection.source]
+          person: personMap[connection.person]
         }))
       }
     }

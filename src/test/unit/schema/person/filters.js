@@ -12,7 +12,7 @@ expectTypeIsFilterableBy = expectTypeIsFilterableBy(schema, TYPE, TYPE_PLURAL)
 
 describe('Person filters', () => {
   it('should be filterable by the following properties', async () => {
-    await expectTypeIsFilterableBy('id', DUMMY_ID)
-    await expectTypeIsFilterableBy('email', DUMMY_STRING)
+    await expectTypeIsFilterableBy('id', DUMMY_ID, 'ID')
+    await expectTypeIsFilterableBy('email', DUMMY_STRING, 'String')
   })
 })

@@ -3,7 +3,7 @@ const { handleErrors } = require('../../lib')
 module.exports = {
   typeDefs: `
     extend type Person {
-      getOrCreateConnections(connections: [ConnectionCreateInput!]!, source: String!): [Connection]
+      getOrCreateConnections(connections: [ConnectionCreateInput!]!, source: DataSource!): [Connection]
     }
   `,
   resolvers: {

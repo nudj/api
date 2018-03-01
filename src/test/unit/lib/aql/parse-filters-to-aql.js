@@ -3,7 +3,7 @@ const chai = require('chai')
 const dedent = require('dedent')
 const expect = chai.expect
 
-const { parseFiltersToAql } = require('../../../gql/lib/aql')
+const { parseFiltersToAql } = require('../../../../gql/lib/aql')
 
 describe('parseFiltersToAql', () => {
   it('formats a basic filters object to an AQL string', () => {

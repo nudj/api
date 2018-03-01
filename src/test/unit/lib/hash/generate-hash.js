@@ -17,6 +17,7 @@ describe('generateHash', () => {
       const hash = generateHash()
       expect(hash).to.exist()
       expect(hash).to.be.a('string')
+      expect(hash).to.not.equal(generateHash())
     })
   })
 })

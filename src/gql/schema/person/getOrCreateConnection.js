@@ -1,7 +1,7 @@
 module.exports = {
   typeDefs: `
     extend type Person {
-      getOrCreateConnection(to: ConnectionCreateInput!, source: SourceCreateInput!): Connection
+      getOrCreateConnection(to: ConnectionCreateInput!, source: DataSource!): Connection
     }
   `,
   resolvers: {
@@ -38,11 +38,6 @@ module.exports = {
                 type: 'people',
                 data: pick(to, ['email'])
               }),
-              store.readOneOrCreate({
-                type: 'sources',
-                filters: { name: source.name },
-                data: source
-              }),
               to.title && store.readOneOrCreate({
                 type: 'roles',
                 filters: { name: to.title },
@@ -56,7 +51,6 @@ module.exports = {
             ])
             .then(([
               person,
-              source,
               role,
               company
             ]) => {
@@ -64,14 +58,13 @@ module.exports = {
                 type: 'connections',
                 data: Object.assign({}, omit(to, ['email', 'title']), {
                   from,
-                  source: source.id,
+                  source,
                   role: role ? role.id : null,
                   company: company ? company.id : null,
                   person: person.id
                 })
               })
               .then(connection => Object.assign({}, connection, {
-                source,
                 role,
                 company,
                 person

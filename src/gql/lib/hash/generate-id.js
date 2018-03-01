@@ -1,12 +1,8 @@
-const crypto = require('crypto')
-const createHash = require('hash-generator')
-
-const generateHash = (input = createHash(8)) => crypto
-  .createHash('md5')
-  .update(input)
-  .digest('hex')
+const generateHash = require('./generate-hash')
 
 const generateId = (type, object) => {
+  if (!type && !object) return generateHash()
+
   switch (type) {
     case 'company':
     case 'role':
@@ -15,11 +11,8 @@ const generateId = (type, object) => {
     case 'person':
       if (!object.email) throw new Error(`Invalid ${type}`)
       return generateHash(object.email)
-    case 'connection':
-      if (!object.email || !object.from) throw new Error(`Invalid ${type}`)
-      return generateHash(`${object.email}.${object.from}`)
     default:
-      return generateHash()
+      throw new Error(`Unrecognised type: ${type}`)
   }
 }
 

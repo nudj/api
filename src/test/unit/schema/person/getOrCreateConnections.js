@@ -4,28 +4,20 @@ const expect = chai.expect
 
 const schema = require('../../../../gql/schema')
 const { executeQueryOnDbUsingSchema } = require('../../helpers')
+const DataSources = require('../../../../gql/schema/enums/data-sources')
 
 describe('Person.getOrCreateConnections', () => {
   let db
   let result
   const operation = `
-    query {
+    query getOrCreateConnections (
+      $connections: [ConnectionCreateInput!]!,
+      $source: DataSource!
+    ) {
       person (id: "person1") {
         getOrCreateConnections(
-          connections: [{
-            firstName: "CONNECTION_FIRSTNAME1",
-            lastName: "CONNECTION_LASTNAME1",
-            title: "CONNECTION_TITLE1",
-            company: "CONNECTION_COMPANY1",
-            email: "CONNECTION_EMAIL1"
-          }, {
-            firstName: "CONNECTION_FIRSTNAME2",
-            lastName: "CONNECTION_LASTNAME2",
-            title: "CONNECTION_TITLE2",
-            company: "CONNECTION_COMPANY2",
-            email: "CONNECTION_EMAIL2"
-          }],
-          source: "CONNECTION_SOURCE"
+          connections: $connections,
+          source: $source
         ) {
           id
           firstName
@@ -38,20 +30,33 @@ describe('Person.getOrCreateConnections', () => {
             id
             name
           }
-          source {
-            id
-            name
-          }
           person {
             id
             email
           }
+          source
         }
       }
     }
   `
+  const variables = {
+    connections: [{
+      firstName: 'CONNECTION_FIRSTNAME1',
+      lastName: 'CONNECTION_LASTNAME1',
+      title: 'CONNECTION_TITLE1',
+      company: 'CONNECTION_COMPANY1',
+      email: 'CONNECTION_EMAIL1'
+    }, {
+      firstName: 'CONNECTION_FIRSTNAME2',
+      lastName: 'CONNECTION_LASTNAME2',
+      title: 'CONNECTION_TITLE2',
+      company: 'CONNECTION_COMPANY2',
+      email: 'CONNECTION_EMAIL2'
+    }],
+    source: DataSources.values.LINKEDIN
+  }
 
-  describe('when new sources, roles, companies and people are given', () => {
+  describe('when new roles, companies and people are given', () => {
     beforeEach(async () => {
       db = {
         people: [
@@ -59,23 +64,11 @@ describe('Person.getOrCreateConnections', () => {
             id: 'person1'
           }
         ],
-        sources: [],
         roles: [],
         companies: [],
         connections: []
       }
-      result = await executeQueryOnDbUsingSchema({ operation, db, schema })
-    })
-
-    it('should create the source', () => {
-      expect(db).to.have.deep.property('sources.0').to.deep.equal({
-        id: 'source1',
-        name: 'CONNECTION_SOURCE'
-      })
-    })
-
-    it('should only create one source', () => {
-      expect(db.sources.length).to.equal(1)
+      result = await executeQueryOnDbUsingSchema({ operation, variables, db, schema })
     })
 
     it('should create the roles', () => {
@@ -128,14 +121,11 @@ describe('Person.getOrCreateConnections', () => {
             id: 'company1',
             name: 'CONNECTION_COMPANY1'
           },
-          source: {
-            id: 'source1',
-            name: 'CONNECTION_SOURCE'
-          },
           person: {
             id: 'person2',
             email: 'CONNECTION_EMAIL1'
-          }
+          },
+          source: DataSources.values.LINKEDIN
         }, {
           id: 'connection2',
           firstName: 'CONNECTION_FIRSTNAME2',
@@ -148,54 +138,12 @@ describe('Person.getOrCreateConnections', () => {
             id: 'company2',
             name: 'CONNECTION_COMPANY2'
           },
-          source: {
-            id: 'source1',
-            name: 'CONNECTION_SOURCE'
-          },
           person: {
             id: 'person3',
             email: 'CONNECTION_EMAIL2'
-          }
+          },
+          source: DataSources.values.LINKEDIN
         }])
-    })
-  })
-
-  describe('when source already exists', () => {
-    beforeEach(async () => {
-      db = {
-        people: [
-          {
-            id: 'person1'
-          }
-        ],
-        sources: [{
-          id: 'oldId',
-          name: 'CONNECTION_SOURCE'
-        }],
-        roles: [],
-        companies: [],
-        connections: []
-      }
-      result = await executeQueryOnDbUsingSchema({ operation, db, schema })
-    })
-
-    it('should not create a new source', () => {
-      expect(db.sources.length).to.equal(1)
-    })
-
-    it('should return the existing source', () => {
-      expect(result)
-        .to.have.deep.property('data.person.getOrCreateConnections.0.source')
-        .to.deep.equal({
-          id: 'oldId',
-          name: 'CONNECTION_SOURCE'
-        })
-      expect(result)
-        .to.have.deep.property('data.person.getOrCreateConnections.1.source')
-        .to.deep.equal({
-          id: 'oldId',
-          name: 'CONNECTION_SOURCE'
-        })
     })
   })
 
@@ -207,7 +155,6 @@ describe('Person.getOrCreateConnections', () => {
             id: 'person1'
           }
         ],
-        sources: [],
         roles: [{
           id: 'oldId',
           name: 'CONNECTION_TITLE1'
@@ -215,7 +162,7 @@ describe('Person.getOrCreateConnections', () => {
         companies: [],
         connections: []
       }
-      result = await executeQueryOnDbUsingSchema({ operation, db, schema })
+      result = await executeQueryOnDbUsingSchema({ operation, variables, db, schema })
     })
 
     it('should not create a new role', () => {
@@ -240,7 +187,6 @@ describe('Person.getOrCreateConnections', () => {
             id: 'person1'
           }
         ],
-        sources: [],
         roles: [],
         companies: [{
           id: 'oldId',
@@ -248,7 +194,7 @@ describe('Person.getOrCreateConnections', () => {
         }],
         connections: []
       }
-      result = await executeQueryOnDbUsingSchema({ operation, db, schema })
+      result = await executeQueryOnDbUsingSchema({ operation, variables, db, schema })
     })
 
     it('should not create a new company', () => {
@@ -281,12 +227,11 @@ describe('Person.getOrCreateConnections', () => {
             email: 'CONNECTION_EMAIL2'
           }
         ],
-        sources: [],
         roles: [],
         companies: [],
         connections: []
       }
-      result = await executeQueryOnDbUsingSchema({ operation, db, schema })
+      result = await executeQueryOnDbUsingSchema({ operation, variables, db, schema })
     })
 
     it('should not create any new people', () => {
@@ -321,10 +266,6 @@ describe('Person.getOrCreateConnections', () => {
             email: 'CONNECTION_EMAIL1'
           }
         ],
-        sources: [{
-          id: 'source1',
-          name: 'linkedin'
-        }],
         roles: [{
           id: 'role1',
           name: 'Sales Manager'
@@ -339,12 +280,12 @@ describe('Person.getOrCreateConnections', () => {
           lastName: 'Johnson',
           from: 'person1',
           person: 'person2',
-          source: 'source1',
           role: 'role1',
-          company: 'company1'
+          company: 'company1',
+          source: DataSources.values.LINKEDIN
         }]
       }
-      result = await executeQueryOnDbUsingSchema({ operation, db, schema })
+      result = await executeQueryOnDbUsingSchema({ operation, variables, db, schema })
     })
 
     it('should not create a new connection', () => {
@@ -366,14 +307,11 @@ describe('Person.getOrCreateConnections', () => {
             id: 'company1',
             name: 'nudj'
           },
-          source: {
-            id: 'source1',
-            name: 'linkedin'
-          },
           person: {
             id: 'person2',
             email: 'CONNECTION_EMAIL1'
-          }
+          },
+          source: DataSources.values.LINKEDIN
         })
     })
   })

@@ -11,6 +11,6 @@ expectTypeIsFilterableBy = expectTypeIsFilterableBy(schema, TYPE, TYPE_PLURAL)
 
 describe('SurveyQuestion filters', () => {
   it('should be filterable by the following properties', async () => {
-    await expectTypeIsFilterableBy('id', DUMMY_ID)
+    await expectTypeIsFilterableBy('id', DUMMY_ID, 'ID')
   })
 })

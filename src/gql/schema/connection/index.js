@@ -15,7 +15,6 @@ module.exports = {
       lastName: String
       title: String
       company: String
-      source: DataSource!
     }
 
     input ConnectionFilterInput {

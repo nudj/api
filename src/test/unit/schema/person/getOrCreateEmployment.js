@@ -4,32 +4,37 @@ const expect = chai.expect
 
 const schema = require('../../../../gql/schema')
 const { executeQueryOnDbUsingSchema } = require('../../helpers')
+const DataSources = require('../../../../gql/schema/enums/data-sources')
 
 describe('Person.getOrCreateEmployment', () => {
   let db
   let result
   const operation = `
-    query {
+    query getOrCreateEmployment (
+      $company: String!,
+      $source: DataSource!
+    ) {
       person (id: "person1") {
         getOrCreateEmployment (
-          company: "EMPLOYMENT_COMPANY",
-          source: "EMPLOYMENT_SOURCE"
+          company: $company,
+          source: $source
         ) {
           id
-          source {
-            id
-            name
-          }
           company {
             id
             name
           }
+          source
         }
       }
     }
   `
+  const variables = {
+    company: 'EMPLOYMENT_COMPANY',
+    source: DataSources.values.LINKEDIN
+  }
 
-  describe('when company and source do not already exist in our data', () => {
+  describe('when company does not already exist in our data', () => {
     beforeEach(async () => {
       db = {
         people: [
@@ -38,10 +43,9 @@ describe('Person.getOrCreateEmployment', () => {
           }
         ],
         companies: [],
-        sources: [],
         employments: []
       }
-      result = await executeQueryOnDbUsingSchema({ operation, db, schema })
+      result = await executeQueryOnDbUsingSchema({ operation, variables, db, schema })
     })
 
     it('should create the company', () => {
@@ -52,58 +56,16 @@ describe('Person.getOrCreateEmployment', () => {
       })
     })
 
-    it('should create the source', () => {
-      return expect(db).to.have.deep.property('sources.0').to.deep.equal({
-        id: 'source1',
-        name: 'EMPLOYMENT_SOURCE'
-      })
-    })
-
     it('should return the employment', () => {
       return expect(result)
         .to.have.deep.property('data.person.getOrCreateEmployment')
         .to.deep.equal({
           id: 'employment1',
-          source: {
-            id: 'source1',
-            name: 'EMPLOYMENT_SOURCE'
-          },
           company: {
             id: 'company1',
             name: 'EMPLOYMENT_COMPANY'
-          }
-        })
-    })
-  })
-
-  describe('when source already exists', () => {
-    beforeEach(async () => {
-      db = {
-        people: [
-          {
-            id: 'person1'
-          }
-        ],
-        sources: [{
-          id: 'oldId',
-          name: 'EMPLOYMENT_SOURCE'
-        }],
-        companies: [],
-        employments: []
-      }
-      result = await executeQueryOnDbUsingSchema({ operation, db, schema })
-    })
-
-    it('should not create a new source', () => {
-      expect(db.sources.length).to.equal(1)
-    })
-
-    it('should return the existing source', () => {
-      return expect(result)
-        .to.have.deep.property('data.person.getOrCreateEmployment.source')
-        .to.deep.equal({
-          id: 'oldId',
-          name: 'EMPLOYMENT_SOURCE'
+          },
+          source: DataSources.values.LINKEDIN
         })
     })
   })
@@ -116,14 +78,13 @@ describe('Person.getOrCreateEmployment', () => {
             id: 'person1'
           }
         ],
-        sources: [],
         companies: [{
           id: 'oldId',
           name: 'EMPLOYMENT_COMPANY'
         }],
         employments: []
       }
-      result = await executeQueryOnDbUsingSchema({ operation, db, schema })
+      result = await executeQueryOnDbUsingSchema({ operation, variables, db, schema })
     })
 
     it('should not create a new company', () => {
@@ -148,10 +109,6 @@ describe('Person.getOrCreateEmployment', () => {
             id: 'person1'
           }
         ],
-        sources: [{
-          id: 'source1',
-          name: 'linkedin'
-        }],
         companies: [{
           id: 'company1',
           name: 'EMPLOYMENT_COMPANY'
@@ -159,11 +116,11 @@ describe('Person.getOrCreateEmployment', () => {
         employments: [{
           id: 'oldId',
           person: 'person1',
-          source: 'source1',
-          company: 'company1'
+          company: 'company1',
+          source: DataSources.values.LINKEDIN
         }]
       }
-      result = await executeQueryOnDbUsingSchema({ operation, db, schema })
+      result = await executeQueryOnDbUsingSchema({ operation, variables, db, schema })
     })
 
     it('should not create a new employments', () => {
@@ -175,14 +132,11 @@ describe('Person.getOrCreateEmployment', () => {
         .to.have.deep.property('data.person.getOrCreateEmployment')
         .to.deep.equal({
           id: 'oldId',
-          source: {
-            id: 'source1',
-            name: 'linkedin'
-          },
           company: {
             id: 'company1',
             name: 'EMPLOYMENT_COMPANY'
-          }
+          },
+          source: DataSources.values.LINKEDIN
         })
     })
   })

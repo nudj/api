@@ -12,7 +12,7 @@ expectTypeIsFilterableBy = expectTypeIsFilterableBy(schema, TYPE, TYPE_PLURAL)
 
 describe('CompanyTask filters', () => {
   it('should be filterable by the following properties', async () => {
-    await expectTypeIsFilterableBy('id', DUMMY_ID)
-    await expectTypeIsFilterableBy('completed', DUMMY_BOOLEAN)
+    await expectTypeIsFilterableBy('id', DUMMY_ID, 'ID')
+    await expectTypeIsFilterableBy('completed', DUMMY_BOOLEAN, 'Boolean')
   })
 })

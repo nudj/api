@@ -1,7 +1,7 @@
 module.exports = {
   typeDefs: `
     extend type Person {
-      getOrCreateEmployment(company: String!, source: String!): Employment
+      getOrCreateEmployment(company: String!, source: DataSource!): Employment
     }
   `,
   resolvers: {

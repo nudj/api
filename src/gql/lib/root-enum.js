@@ -15,6 +15,7 @@ module.exports = function rootEnum (props = {}) {
       }
     `,
     resolvers: {},
+    name,
     values: values.reduce((valuesMap, value) => {
       valuesMap[value] = value
       return valuesMap

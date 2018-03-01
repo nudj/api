@@ -26,6 +26,14 @@ ssh:
 test:
 	@$(DOCKERCOMPOSE) exec $(APP) /bin/zsh -c './node_modules/.bin/standard && ./node_modules/.bin/mocha --recursive test/unit'
 
+tdd:
+	@$(DOCKERCOMPOSE) exec $(APP) /bin/zsh -c './node_modules/.bin/nodemon \
+  	--config ./nodemon-tdd.json \
+		--quiet \
+		--watch ./ \
+		--delay 250ms \
+		-x "./node_modules/.bin/mocha --recursive test/unit || exit 1"'
+
 down:
 	@$(DOCKERCOMPOSE) rm -f -s $(APP)
 

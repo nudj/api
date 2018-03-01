@@ -4,7 +4,7 @@ const uniqBy = require('lodash/uniqBy')
 const expect = chai.expect
 
 const { generateFakeContextWithStore } = require('../../helpers')
-const fetchConnectionPropertyMap = require('../../../gql/lib/helpers/fetch-connection-property-map')
+const fetchConnectionPropertyMap = require('../../../../gql/lib/helpers/fetch-connection-property-map')
 
 const db = {
   connections: [{

@@ -4,16 +4,20 @@ const expect = chai.expect
 
 const schema = require('../../../../gql/schema')
 const { executeQueryOnDbUsingSchema } = require('../../helpers')
+const DataSources = require('../../../../gql/schema/enums/data-sources')
 
 describe('Person.importLinkedinConnections', () => {
   let db
   let result
   const operation = `
-    query ImportConnections($data: [Data!]!) {
+    query ImportConnections(
+      $data: [Data!]!,
+      $source: DataSource!
+    ) {
       person (id: "person1") {
         importLinkedinConnections(
           connections: $data,
-          source: "CONNECTION_SOURCE"
+          source: $source
         ) {
           id
           firstName
@@ -26,14 +30,11 @@ describe('Person.importLinkedinConnections', () => {
             id
             name
           }
-          source {
-            id
-            name
-          }
           person {
             id
             email
           }
+          source
         }
       }
     }
@@ -52,10 +53,11 @@ describe('Person.importLinkedinConnections', () => {
       EmailAddress: 'CONNECTION_EMAIL2',
       Position: 'CONNECTION_TITLE2',
       Company: 'CONNECTION_COMPANY2'
-    }]
+    }],
+    source: DataSources.values.LINKEDIN
   }
 
-  describe('when new sources, roles, companies and people are given', () => {
+  describe('when new roles, companies and people are given', () => {
     beforeEach(async () => {
       db = {
         people: [
@@ -63,23 +65,11 @@ describe('Person.importLinkedinConnections', () => {
             id: 'person1'
           }
         ],
-        sources: [],
         roles: [],
         companies: [],
         connections: []
       }
       result = await executeQueryOnDbUsingSchema({ operation, db, schema, variables })
-    })
-
-    it('should create the source', () => {
-      expect(db).to.have.deep.property('sources.0').to.deep.equal({
-        id: 'source1',
-        name: 'CONNECTION_SOURCE'
-      })
-    })
-
-    it('should only create one source', () => {
-      expect(db.sources.length).to.equal(1)
     })
 
     it('should create the roles', () => {
@@ -132,14 +122,11 @@ describe('Person.importLinkedinConnections', () => {
             id: 'company1',
             name: 'CONNECTION_COMPANY1'
           },
-          source: {
-            id: 'source1',
-            name: 'CONNECTION_SOURCE'
-          },
           person: {
             id: 'person2',
             email: 'CONNECTION_EMAIL1'
-          }
+          },
+          source: DataSources.values.LINKEDIN
         }, {
           id: 'connection2',
           firstName: 'CONNECTION_FIRSTNAME2',
@@ -152,54 +139,12 @@ describe('Person.importLinkedinConnections', () => {
             id: 'company2',
             name: 'CONNECTION_COMPANY2'
           },
-          source: {
-            id: 'source1',
-            name: 'CONNECTION_SOURCE'
-          },
           person: {
             id: 'person3',
             email: 'CONNECTION_EMAIL2'
-          }
+          },
+          source: DataSources.values.LINKEDIN
         }])
-    })
-  })
-
-  describe('when source already exists', () => {
-    beforeEach(async () => {
-      db = {
-        people: [
-          {
-            id: 'person1'
-          }
-        ],
-        sources: [{
-          id: 'oldId',
-          name: 'CONNECTION_SOURCE'
-        }],
-        roles: [],
-        companies: [],
-        connections: []
-      }
-      result = await executeQueryOnDbUsingSchema({ operation, db, schema, variables })
-    })
-
-    it('should not create a new source', () => {
-      expect(db.sources.length).to.equal(1)
-    })
-
-    it('should return the existing source', () => {
-      expect(result)
-        .to.have.deep.property('data.person.importLinkedinConnections.0.source')
-        .to.deep.equal({
-          id: 'oldId',
-          name: 'CONNECTION_SOURCE'
-        })
-      expect(result)
-        .to.have.deep.property('data.person.importLinkedinConnections.1.source')
-        .to.deep.equal({
-          id: 'oldId',
-          name: 'CONNECTION_SOURCE'
-        })
     })
   })
 
@@ -211,7 +156,6 @@ describe('Person.importLinkedinConnections', () => {
             id: 'person1'
           }
         ],
-        sources: [],
         roles: [{
           id: 'oldId',
           name: 'CONNECTION_TITLE1'
@@ -244,7 +188,6 @@ describe('Person.importLinkedinConnections', () => {
             id: 'person1'
           }
         ],
-        sources: [],
         roles: [],
         companies: [{
           id: 'oldId',
@@ -285,7 +228,6 @@ describe('Person.importLinkedinConnections', () => {
             email: 'CONNECTION_EMAIL2'
           }
         ],
-        sources: [],
         roles: [],
         companies: [],
         connections: []
@@ -325,10 +267,6 @@ describe('Person.importLinkedinConnections', () => {
             email: 'CONNECTION_EMAIL1'
           }
         ],
-        sources: [{
-          id: 'source1',
-          name: 'linkedin'
-        }],
         roles: [{
           id: 'role1',
           name: 'Sales Manager'
@@ -343,7 +281,7 @@ describe('Person.importLinkedinConnections', () => {
           lastName: 'Johnson',
           from: 'person1',
           person: 'person2',
-          source: 'source1',
+          source: DataSources.values.LINKEDIN,
           role: 'role1',
           company: 'company1'
         }]
@@ -370,14 +308,11 @@ describe('Person.importLinkedinConnections', () => {
             id: 'company1',
             name: 'nudj'
           },
-          source: {
-            id: 'source1',
-            name: 'linkedin'
-          },
           person: {
             id: 'person2',
             email: 'CONNECTION_EMAIL1'
-          }
+          },
+          source: DataSources.values.LINKEDIN
         })
     })
   })

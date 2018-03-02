@@ -4,7 +4,7 @@ const { handleErrors } = require('../../lib')
 module.exports = {
   typeDefs: `
     extend type Person {
-      importLinkedinConnections(connections: [Data!]!, source: String!): [Connection]
+      importLinkedinConnections(connections: [Data!]!, source: DataSource!): [Connection]
     }
   `,
   resolvers: {
@@ -14,17 +14,6 @@ module.exports = {
         const formattedConnections = formatLinkedinConnections(connections)
         const from = person.id
 
-        const savedSource = await context.transaction((store, params) => {
-          const { source } = params
-          return store.readOneOrCreate({
-            type: 'sources',
-            filters: { name: source },
-            data: { name: source }
-          })
-        }, { source })
-        if (!savedSource) {
-          throw new Error('Unable to create Source')
-        }
         return Promise.all(formattedConnections.map(async to => {
           return context.transaction((store, params) => {
             const omit = require('lodash/omit')
@@ -55,11 +44,6 @@ module.exports = {
                   type: 'people',
                   data: pick(to, ['email'])
                 }),
-                store.readOneOrCreate({
-                  type: 'sources',
-                  filters: { name: source.name },
-                  data: source
-                }),
                 to.title && store.readOneOrCreate({
                   type: 'roles',
                   filters: { name: to.title },
@@ -73,7 +57,6 @@ module.exports = {
               ])
               .then(([
                 person,
-                source,
                 role,
                 company
               ]) => {
@@ -81,14 +64,13 @@ module.exports = {
                   type: 'connections',
                   data: Object.assign({}, omit(to, ['email', 'title']), {
                     from,
-                    source: source.id,
+                    source,
                     role: role ? role.id : null,
                     company: company ? company.id : null,
                     person: person.id
                   })
                 })
                 .then(connection => Object.assign({}, connection, {
-                  source,
                   role,
                   company,
                   person
@@ -98,7 +80,7 @@ module.exports = {
           }, {
             from,
             to,
-            source: savedSource
+            source
           })
         }))
       })

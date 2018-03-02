@@ -1,8 +1,10 @@
-IMAGE:=nudj/api
-IMAGEDEV:=nudj/api-dev
+APP:=api
+IMAGE:=nudj/$(APP)
+IMAGEDEV:=nudj/$(APP):development
 CWD=$(shell pwd)
+DOCKERCOMPOSE:=docker-compose -p nudj
 
-.PHONY: build ssh test
+.PHONY: build buildLocal up ssh ui cmd down test
 
 build:
 	@./build.sh $(IMAGEDEV)
@@ -10,76 +12,41 @@ build:
 buildLocal:
 	@docker build \
 		-t $(IMAGE):local \
-		--build-arg NPM_TOKEN=${NPM_TOKEN} \
 		--build-arg NODE_ENV=production \
+		--build-arg NPM_TOKEN=${NPM_TOKEN} \
 		-f $(CWD)/Dockerfile \
 		.
 
+up:
+	@$(DOCKERCOMPOSE) up -d --force-recreate --no-deps $(APP)
+
 ssh:
-	-@docker rm -f api-dev 2> /dev/null || true
-	@docker run --rm -it \
-		--env-file $(CWD)/.env \
-		--name api-dev \
-		--env-file $(CWD)/.env \
-		-e NPM_TOKEN=${NPM_TOKEN} \
-		-e DB_API_URL=http://localhost:81 \
-    -e MAILGUN_API_KEY=123 \
-    -e MAILGUN_DOMAIN=abc \
-    -e INTERCOM_ACCESS_TOKEN=qwe \
-		-p 0.0.0.0:60:80 \
-		-p 0.0.0.0:61:81 \
-		-p 0.0.0.0:62:82 \
-		-v $(CWD)/.zshrc:/root/.zshrc \
-		-v $(CWD)/src/gql:/usr/src/gql \
-		-v $(CWD)/src/gql-old:/usr/src/gql-old \
-		-v $(CWD)/src/lib:/usr/src/lib \
-		-v $(CWD)/src/mock:/usr/src/mock \
-		-v $(CWD)/src/rest:/usr/src/rest \
-		-v $(CWD)/src/test:/usr/src/test \
-		-v $(CWD)/src/.npmignore:/usr/src/.npmignore \
-		-v $(CWD)/src/.npmrc:/usr/src/.npmrc \
-		-v $(CWD)/src/nodemon.json:/usr/src/nodemon.json \
-		-v $(CWD)/src/package.json:/usr/src/package.json \
-		-v $(CWD)/src/readme.md:/usr/src/readme.md \
-		-v $(CWD)/../library/src:/usr/src/@nudj/library \
-		$(IMAGEDEV) \
-		/bin/zsh
+	@$(DOCKERCOMPOSE) exec $(APP) /bin/zsh
 
 test:
-	-@docker rm -f api-test 2> /dev/null || true
-	@docker run --rm -it \
-		--env-file $(CWD)/.env \
-		--name api-test \
-		-e ENVIRONMENT=test \
-		-e DB_API_URL=http://localhost:81 \
-    -e MAILGUN_API_KEY=123 \
-    -e MAILGUN_DOMAIN=abc \
-    -e INTERCOM_ACCESS_TOKEN=qwe \
-		-v $(CWD)/src/gql:/usr/src/gql \
-		-v $(CWD)/src/dbtest:/usr/src/dbtest \
-		-v $(CWD)/src/gql-old:/usr/src/gql-old \
-		-v $(CWD)/src/lib:/usr/src/lib \
-		-v $(CWD)/src/mock:/usr/src/mock \
-		-v $(CWD)/src/rest:/usr/src/rest \
+	@$(DOCKERCOMPOSE) exec $(APP) /bin/zsh -c './node_modules/.bin/standard && ./node_modules/.bin/mocha --recursive test/unit'
+
+down:
+	@$(DOCKERCOMPOSE) rm -f -s $(APP)
+
+integration:
+	@$(DOCKERCOMPOSE) run --rm \
+		-e NPM_TOKEN=${NPM_TOKEN} \
 		-v $(CWD)/src/test:/usr/src/test \
-		$(IMAGEDEV) \
-		/bin/zsh -c './node_modules/.bin/standard && ./node_modules/.bin/mocha --recursive test'
+		api \
+		/bin/sh -c './node_modules/.bin/mocha --recursive ./test/integration || exit 1'
 
-dbtest:
-	@docker-compose -f ../server/local/docker-compose-dev.yml run --rm \
+integrationTDD:
+	@$(DOCKERCOMPOSE) run --rm \
 		-e NPM_TOKEN=${NPM_TOKEN} \
-		-v $(CWD)/src/dbtest:/usr/src/dbtest api \
-		/bin/sh -c './node_modules/.bin/mocha --recursive ./dbtest/test || exit 1'
-
-dbtdd:
-	@docker-compose -f ../server/local/docker-compose-dev.yml run --rm \
-		-e NPM_TOKEN=${NPM_TOKEN} \
-		-v $(CWD)/src/dbtest:/usr/src/dbtest api \
+		-v $(CWD)/src/test:/usr/src/test \
+		api \
 		/bin/sh -c './node_modules/.bin/nodemon \
-		--quiet \
-		--watch ./ \
-		--delay 250ms \
-		-x "./node_modules/.bin/mocha --recursive ./dbtest/test || exit 1"'
+  --config ./nodemon-tdd.json \
+	--quiet \
+	--watch ./ \
+	--delay 250ms \
+	-x "./node_modules/.bin/mocha --recursive ./test/integration || exit 1"'
 
 standardFix:
 	-@docker rm -f api-test 2> /dev/null || true

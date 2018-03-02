@@ -1,8 +1,12 @@
 const reduce = require('lodash/reduce')
 const flatten = require('lodash/flatten')
 const omit = require('lodash/omit')
+const uniq = require('lodash/uniq')
+
+const { merge } = require('@nudj/library')
 
 const { startOfDay, endOfDay } = require('../../lib/format-dates')
+const { parseFiltersToAql, createFiltersForFields } = require('../../lib/aql')
 
 module.exports = ({ db }) => {
   const normaliseData = (data) => {
@@ -22,14 +26,6 @@ module.exports = ({ db }) => {
     }, {})
   }
   const newISODate = () => (new Date()).toISOString()
-
-  const parseFiltersToAql = (filters = {}) => {
-    const keys = Object.keys(filters)
-    if (!keys.length) return ''
-    return `FILTER ${keys.map((key) => {
-      return `item.${key} == "${filters[key]}"`
-    }).join(' && ')}`
-  }
 
   const executeAqlQuery = async (query, params) => {
     const cursor = await db.query(query, params)
@@ -142,25 +138,30 @@ module.exports = ({ db }) => {
       type,
       query,
       fields,
+      fieldAliases,
       filters
     }) => {
-      const filter = parseFiltersToAql(filters)
-      const operations = fields.map(fieldGroup => `
-        (
-          FOR item IN ${type}
-            ${filter}
-            FILTER(
-              CONTAINS(
-                LOWER(CONCAT_SEPARATOR(" ", ${fieldGroup.map(
-                  field => `item.${field}`
-                )})), LOWER(@query)
-              )
-            )
-            RETURN item
-        )
-      `).join(',')
-      const aqlQuery = `RETURN UNION_DISTINCT([],${operations})`
-      return executeAqlQuery(aqlQuery, { query })
+      const querySegments = uniq([query, ...query.split(' ')])
+      const queries = merge(...querySegments.map((subQuery, index) => {
+        return { [`query${index}`]: subQuery }
+      }))
+
+      const operations = fields.map(fieldGroup => {
+        return Object.keys(queries).map(queryName => `(
+          ${parseFiltersToAql(filters)}
+          ${createFiltersForFields(fieldGroup, queryName, fieldAliases)}
+          RETURN item
+        )`)
+      }).join(',')
+      const aqlQuery = `
+        FOR item IN ${type}
+          FOR element IN UNION([], ${operations})
+            COLLECT collected = element WITH COUNT INTO matches
+            SORT matches DESC
+            RETURN collected
+      `
+
+      return executeAqlQuery(aqlQuery, queries)
     },
     countByFilters: async ({
       type,
@@ -184,6 +185,41 @@ module.exports = ({ db }) => {
       })
       const response = await cursor.all()
       return response[0] || 0
+    },
+    import: async ({
+      data
+    }) => {
+      const keyedData = data.map(collection => ({
+        name: collection.name,
+        onDuplicate: collection.onDuplicate || 'ignore',
+        data: collection.data.map(item => {
+          item._key = item.id
+          return omit(item, ['id'])
+        })
+      }))
+
+      const imports = await Promise.all(keyedData.map(collection => {
+        const { name, data, onDuplicate } = collection
+
+        return db.collection(name)
+          .import(data.map(entry => {
+            return merge(entry, {
+              created: newISODate(),
+              modified: newISODate()
+            })
+          }), { onDuplicate, details: true })
+      }))
+
+      const results = imports.map((result, index) => {
+        if (result.error || result.errors) {
+          throw new Error(`Import Error: ${result.details}`)
+        }
+
+        const collection = keyedData[index].name
+        return merge(result, { collection })
+      })
+
+      return results
     }
   }
 }

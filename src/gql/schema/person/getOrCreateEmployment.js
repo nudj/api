@@ -1,7 +1,7 @@
 module.exports = {
   typeDefs: `
     extend type Person {
-      getOrCreateEmployment(company: String!, source: String!): Employment
+      getOrCreateEmployment(company: String!, source: DataSource!): Employment
     }
   `,
   resolvers: {
@@ -11,7 +11,7 @@ module.exports = {
           const {
             person,
             newCompany,
-            newSource
+            source
           } = params
 
           return store.readOne({
@@ -37,35 +37,28 @@ module.exports = {
               company || store.create({
                 type: 'companies',
                 data: { name: newCompany, client: false }
-              }),
-              store.readOneOrCreate({
-                type: 'sources',
-                filters: { name: newSource },
-                data: { name: newSource }
               })
             ])
             .then(([
-              company,
-              source
+              company
             ]) => {
               return store.create({
                 type: 'employments',
                 data: {
                   person: person.id,
-                  source: source.id,
+                  source: source,
                   company: company.id
                 }
               })
               .then(employment => Object.assign({}, employment, {
-                company,
-                source
+                company
               }))
             })
           })
         }, {
           person,
           newCompany: args.company,
-          newSource: args.source
+          source: args.source
         })
       }
     }

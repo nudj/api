@@ -1,3 +1,5 @@
+const fetchConnectionPropertyMap = require('../../lib/helpers/fetch-connection-property-map')
+
 module.exports = {
   typeDefs: `
     extend type Person {
@@ -6,14 +8,27 @@ module.exports = {
   `,
   resolvers: {
     Person: {
-      searchConnections: (person, args, context) => {
+      searchConnections: async (person, args, context) => {
         const { query, fields } = args
-        return context.store.search({
+        const connections = await context.store.search({
           type: 'connections',
           query,
           fields,
           filters: { from: person.id }
         })
+
+        const {
+          roleMap,
+          companyMap,
+          personMap
+        } = await fetchConnectionPropertyMap(context, connections)
+
+        return connections.map(connection => ({
+          ...connection,
+          role: roleMap[connection.role],
+          company: companyMap[connection.company],
+          person: personMap[connection.person]
+        }))
       }
     }
   }

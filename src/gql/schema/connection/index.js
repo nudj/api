@@ -6,6 +6,7 @@ module.exports = {
       modified: DateTime!
       firstName: String!
       lastName: String!
+      source: DataSource!
     }
 
     input ConnectionCreateInput {
@@ -22,6 +23,7 @@ module.exports = {
       from: ID
       dateTo: DateTime
       dateFrom: DateTime
+      source: DataSource
     }
   `
 }

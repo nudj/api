@@ -22,7 +22,7 @@ alias dev='nodemon \
 
 function test {
 	export ENVIRONMENT=test
-	standard && mocha --recursive test
+	standard && mocha --recursive test/unit
 	export ENVIRONMENT=local
 }
 function tdd {
@@ -31,7 +31,21 @@ function tdd {
 		--quiet \
 		--watch ./ \
 		--delay 250ms \
-		-x "mocha --recursive test || exit 1"
+		-x "mocha --recursive test/unit || exit 1"
+	export ENVIRONMENT=local
+}
+function integration {
+	export ENVIRONMENT=test
+	mocha --recursive test/integration
+	export ENVIRONMENT=local
+}
+function integrationTdd {
+	export ENVIRONMENT=test
+	nodemon \
+		--quiet \
+		--watch ./ \
+		--delay 250ms \
+		-x "mocha --recursive test/integration || exit 1"
 	export ENVIRONMENT=local
 }
 

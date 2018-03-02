@@ -147,23 +147,7 @@ module.exports = () => {
       fields,
       filters
     }) => {
-      const filter = parseFiltersToAql(filters)
-      const operations = fields.map(fieldGroup => `
-        (
-          FOR item IN ${type}
-            ${filter}
-            FILTER(
-              CONTAINS(
-                LOWER(CONCAT_SEPARATOR(" ", ${fieldGroup.map(
-                  field => `item.${field}`
-                )})), LOWER(@query)
-              )
-            )
-            RETURN item
-        )
-      `).join(',')
-      const aqlQuery = `RETURN UNION_DISTINCT([],${operations})`
-      return executeAqlQuery(aqlQuery, { query })
+      throw new Error('Search cannot be performed as a transaction')
     },
     countByFilters: ({
       type,

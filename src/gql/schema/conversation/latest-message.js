@@ -19,10 +19,12 @@ module.exports = {
           return orderBy(messages, (message) => message.date, ['desc'])[0]
         } else {
           const { recipient, person, created: date } = conversation
+          const from = await fetchPerson(context, person)
+          const to = await fetchPerson(context, recipient)
           return {
             date,
-            to: recipient,
-            from: person
+            to: to.email,
+            from: from.email
           }
         }
       })

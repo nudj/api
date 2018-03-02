@@ -11,26 +11,22 @@ const db = {
     id: 'connection1',
     role: 'role1',
     company: 'company1',
-    person: 'person1',
-    source: 'source1'
+    person: 'person1'
   }, {
     id: 'connection2',
     role: 'role2',
     company: 'company2',
-    person: 'person2',
-    source: 'source2'
+    person: 'person2'
   }, {
     id: 'connection2',
     role: 'role1',
     company: 'company1',
-    person: 'person4',
-    source: 'source1'
+    person: 'person4'
   }, {
     id: 'connection4',
     role: null,
     company: null,
-    person: 'person3',
-    source: 'source1'
+    person: 'person3'
   }],
   roles: [{
     id: 'role1'
@@ -54,13 +50,6 @@ const db = {
     id: 'person3'
   }, {
     id: 'person4'
-  }],
-  sources: [{
-    id: 'source1'
-  }, {
-    id: 'source2'
-  }, {
-    id: 'source3'
   }]
 }
 
@@ -82,20 +71,17 @@ describe('fetchConnectionPropertyMap', () => {
           id: 'connection1',
           role: 'role1',
           company: 'company1',
-          person: 'person1',
-          source: 'source1'
+          person: 'person1'
         }, {
           id: 'connection2',
           role: 'role2',
           company: 'company2',
-          person: 'person2',
-          source: 'source2'
+          person: 'person2'
         }, {
           id: 'connection2',
           role: 'role1',
           company: 'company1',
-          person: 'person4',
-          source: 'source1'
+          person: 'person4'
         }]
       )
 
@@ -116,20 +102,17 @@ describe('fetchConnectionPropertyMap', () => {
           id: 'connection1',
           role: 'role1',
           company: 'company1',
-          person: 'person1',
-          source: 'source1'
+          person: 'person1'
         }, {
           id: 'connection2',
           role: 'role2',
           company: 'company2',
-          person: 'person2',
-          source: 'source2'
+          person: 'person2'
         }, {
           id: 'connection2',
           role: 'role1',
           company: 'company1',
-          person: 'person4',
-          source: 'source1'
+          person: 'person4'
         }]
       )
 
@@ -150,20 +133,17 @@ describe('fetchConnectionPropertyMap', () => {
           id: 'connection1',
           role: 'role1',
           company: 'company1',
-          person: 'person1',
-          source: 'source1'
+          person: 'person1'
         }, {
           id: 'connection2',
           role: 'role2',
           company: 'company2',
-          person: 'person2',
-          source: 'source2'
+          person: 'person2'
         }, {
           id: 'connection2',
           role: 'role1',
           company: 'company1',
-          person: 'person4',
-          source: 'source1'
+          person: 'person4'
         }]
       )
 
@@ -176,40 +156,6 @@ describe('fetchConnectionPropertyMap', () => {
         },
         person4: {
           id: 'person4'
-        }
-      })
-    })
-
-    it('should fetch a map of sources', async () => {
-      const { sourceMap } = await fetchConnectionPropertyMap(
-        context,
-        [{
-          id: 'connection1',
-          role: 'role1',
-          company: 'company1',
-          person: 'person1',
-          source: 'source1'
-        }, {
-          id: 'connection2',
-          role: 'role2',
-          company: 'company2',
-          person: 'person2',
-          source: 'source2'
-        }, {
-          id: 'connection2',
-          role: 'role1',
-          company: 'company1',
-          person: 'person4',
-          source: 'source1'
-        }]
-      )
-
-      expect(sourceMap).to.deep.equal({
-        source1: {
-          id: 'source1'
-        },
-        source2: {
-          id: 'source2'
         }
       })
     })

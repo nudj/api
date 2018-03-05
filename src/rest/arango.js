@@ -1,10 +1,26 @@
 const nodeFetch = require('node-fetch')
 const format = require('date-fns/format')
 const reduce = require('lodash/reduce')
-const logger = require('@nudj/library/lib/logger')
+const pluralize = require('pluralize')
 
+const logger = require('@nudj/library/lib/logger')
+const { merge } = require('@nudj/library')
+
+const { generateId } = require('../gql/lib/hash')
+const { idTypes } = require('../gql/lib/hash/constants')
 const StoreError = require('../lib/errors').StoreError
 const authHash = new Buffer(process.env.DB_USER + ':' + process.env.DB_PASS).toString('base64')
+
+function createId (type, data) {
+  switch (pluralize.singular(type)) {
+    case idTypes.PERSON:
+      return generateId(idTypes.PERSON, { email: data.email })
+    case idTypes.COMPANY:
+      return generateId(idTypes.COMPANY, { name: data.name })
+    default:
+      return generateId()
+  }
+}
 
 function fetch ({ path, options }) {
   path = `http://db:8529/_db/nudj/_api/${path}`
@@ -172,10 +188,11 @@ function getOne (type, filters) {
 }
 
 function post (type, props) {
+  const _key = createId(type, props)
   const path = `document/${type}?returnNew=true`
   const options = {
     method: 'POST',
-    body: addDateTimes(props, true)
+    body: merge({ _key }, addDateTimes(props, true))
   }
   const responseKey = 'new'
   return fetch({ path, options })

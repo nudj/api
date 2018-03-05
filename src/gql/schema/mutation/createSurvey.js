@@ -9,21 +9,13 @@ module.exports = {
   resolvers: {
     Mutation: {
       createSurvey: handleErrors((root, args, context) => {
-        return context.transaction(
-          (store, params) => {
-            return store.create({
-              type: 'surveys',
-              data: Object.assign({}, params.data, {
-                company: params.company,
-                surveySections: []
-              })
-            })
-          },
-          {
-            data: args.data,
-            company: args.company
-          }
-        )
+        return context.store.create({
+          type: 'surveys',
+          data: Object.assign({}, args.data, {
+            company: args.company,
+            surveySections: []
+          })
+        })
       })
     }
   }

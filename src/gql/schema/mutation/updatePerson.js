@@ -9,20 +9,12 @@ module.exports = {
   resolvers: {
     Mutation: {
       updatePerson: handleErrors((person, args, context) => {
-        return context.transaction(
-          (store, params) => {
-            const { person, data } = params
-            return store.update({
-              type: 'people',
-              id: person,
-              data
-            })
-          },
-          {
-            person: args.id,
-            data: args.data
-          }
-        )
+        const { id, data } = args
+        return context.store.update({
+          type: 'people',
+          id,
+          data
+        })
       })
     }
   }

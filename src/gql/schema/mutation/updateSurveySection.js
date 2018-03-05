@@ -9,19 +9,11 @@ module.exports = {
   resolvers: {
     Mutation: {
       updateSurveySection: handleErrors((root, args, context) => {
-        return context.transaction(
-          (store, params) => {
-            return store.update({
-              type: 'surveySections',
-              id: params.id,
-              data: params.data
-            })
-          },
-          {
-            id: args.id,
-            data: args.data
-          }
-        )
+        return context.store.update({
+          type: 'surveySections',
+          id: args.id,
+          data: args.data
+        })
       })
     }
   }

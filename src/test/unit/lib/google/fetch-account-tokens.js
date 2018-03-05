@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 const chai = require('chai')
-const sinon = require('sinon')
 const sinonChai = require('sinon-chai')
 const nock = require('nock')
 
@@ -35,16 +34,20 @@ describe('Google', () => {
           refreshToken
         }
       }
-      const transaction = sinon.stub().returns(account)
-      const context = { transaction }
+      const readOne = () => account
+      const context = {
+        store: { readOne }
+      }
       const person = { id: 'person1' }
       const data = await fetchAccountTokens(context, person)
       expect(data).to.equal(account.data)
     })
 
     it('throws error if no account exists', async () => {
-      const transaction = sinon.stub().returns(undefined)
-      const context = { transaction }
+      const readOne = () => {}
+      const context = {
+        store: { readOne }
+      }
       const person = { id: 'person1' }
       expect(fetchAccountTokens(context, person)).to.be.rejectedWith('No google account found')
     })

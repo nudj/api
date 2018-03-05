@@ -1,15 +1,11 @@
-const fetchPerson = async (context, personId) => {
-  return await context.transaction((store, params) => {
-    const { id } = params
-    return store.readOne({
-      type: 'people',
-      id
-    })
-    .then(person => {
-      if (!person) throw new Error('Person not found')
-      return person
-    })
-  }, { id: personId })
+const fetchPerson = async (context, id) => {
+  const person = await context.store.readOne({
+    type: 'people',
+    id
+  })
+
+  if (!person) throw new Error('Person not found')
+  return person
 }
 
 module.exports = fetchPerson

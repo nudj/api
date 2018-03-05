@@ -5,7 +5,6 @@ const sinonChai = require('sinon-chai')
 const nock = require('nock')
 const proxyquire = require('proxyquire')
 
-const sendGmailCall = require('../../../../gql/lib/google/send-gmail-by-thread')
 const {
   mockGmailSend,
   mockTokenRefresh,
@@ -20,22 +19,10 @@ const {
 const expect = chai.expect
 chai.use(sinonChai)
 
-const setupTransactions = (transaction, token) => {
-  const person = {
-    firstName: 'Steven',
-    lastName: 'Grayson',
-    email: 'thegrayson@stevemail.com'
-  }
-  const account = {
-    data: {
-      accessToken: token,
-      refreshToken: 'SUPREMELY_REFRESHING_TOKEN'
-    }
-  }
-
-  transaction.onCall(0).returns(person)
-  transaction.onCall(1).returns(person)
-  transaction.returns(account)
+const fakePerson = {
+  firstName: 'Steven',
+  lastName: 'Grayson',
+  email: 'thegrayson@stevemail.com'
 }
 
 describe('sendGmailByThread', () => {
@@ -62,20 +49,21 @@ describe('sendGmailByThread', () => {
 
   it('calls sendGmail and sends new message', async () => {
     sendGmailByThread = proxyquire('../../../../gql/lib/google/send-gmail-by-thread', {
-      './send-gmail': sendGmail
+      './send-gmail': sendGmail,
+      './fetch-gmail-subject': () => 'Re: Seen my spaceship?',
+      '../helpers/fetch-person': () => fakePerson
     })
-    mockTokenValidation()
-    setupTransactions(transaction, validAccessToken)
+
     const body = 'Hey, how\'s it going?'
     const conversation = {
       threadId: validThreadId,
       recipient: 'person99',
       person: 'person101'
     }
-    const context = { transaction }
+    const context = {}
     await sendGmailByThread({ context, body, conversation })
     expect(sendGmail).to.have.been.calledWith({
-      context: { transaction },
+      context: {},
       email: {
         body: 'Hey, how\'s it going?',
         from: 'Steven Grayson <thegrayson@stevemail.com>',
@@ -92,16 +80,23 @@ describe('sendGmailByThread', () => {
   })
 
   it('returns resolved data', async () => {
-    sendGmailByThread = sendGmailCall
+    sendGmailByThread = proxyquire('../../../../gql/lib/google/send-gmail-by-thread', {
+      './fetch-gmail-subject': () => 'Re: Seen my spaceship?',
+      '../helpers/fetch-person': () => fakePerson
+    })
     mockTokenValidation()
-    setupTransactions(transaction, validAccessToken)
+
     const body = 'Hey, how\'s it going?'
     const conversation = {
       threadId: validThreadId,
       recipient: 'person99',
       person: 'person101'
     }
-    const context = { transaction }
+    const context = {
+      store: {
+        readOne: () => ({ data: { accessToken: validAccessToken } })
+      }
+    }
     await expect(sendGmailByThread({ context, body, conversation })).to.eventually.deep.equal({
       body: 'Hey, how\'s it going?',
       response: 'gmailSentResponse',

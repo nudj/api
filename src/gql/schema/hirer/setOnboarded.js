@@ -6,19 +6,16 @@ module.exports = {
   `,
   resolvers: {
     Hirer: {
-      setOnboarded: (hirer, args, context) => {
-        return context.transaction((store, params) => {
-          return store.update({
-            type: 'hirers',
-            id: params.id,
-            data: {
-              onboarded: true
-            }
-          })
-          .then(hirer => hirer.onboarded)
-        }, {
-          id: hirer.id
+      setOnboarded: async (hirer, args, context) => {
+        const updatedHirer = await context.store.update({
+          type: 'hirers',
+          id: hirer.id,
+          data: {
+            onboarded: true
+          }
         })
+
+        return updatedHirer.onboarded
       }
     }
   }

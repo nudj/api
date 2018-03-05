@@ -49,12 +49,22 @@ module.exports = {
             }
           })
           .then(application => {
-            return intercom.createUser({
-              email: person.email,
-              custom_attributes: {
-                lastJobAppliedFor: `${job.title} at ${company.name}`
-              }
-            })
+            return Promise.all([
+              intercom.createUser({
+                email: person.email,
+                custom_attributes: {
+                  lastJobAppliedFor: `${job.title} at ${company.name}`
+                }
+              }),
+              intercom.logEvent({
+                event_name: 'new-application',
+                email: person.email,
+                metadata: {
+                  jobTitle: job.title,
+                  company: company.name
+                }
+              })
+            ])
             .then(() => application)
             .catch(error => {
               logger('error', 'Intercom error', error)

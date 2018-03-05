@@ -128,5 +128,6 @@ module.exports = {
   createUniqueUserAndTag,
   logEvent,
   convertVisitorToUser,
+  createUser,
   updateUser
 }

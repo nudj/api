@@ -2,11 +2,14 @@ const reduce = require('lodash/reduce')
 const flatten = require('lodash/flatten')
 const omit = require('lodash/omit')
 const uniq = require('lodash/uniq')
+const pluralize = require('pluralize')
 
 const { merge } = require('@nudj/library')
 
 const { startOfDay, endOfDay } = require('../../lib/format-dates')
 const { parseFiltersToAql, createFiltersForFields } = require('../../lib/aql')
+const { generateId } = require('../../lib/hash')
+const { idTypes } = require('../../lib/hash/constants')
 
 module.exports = ({ db }) => {
   const normaliseData = (data) => {
@@ -33,12 +36,27 @@ module.exports = ({ db }) => {
     return flatten(response).map(normaliseData)
   }
 
+  const createId = (type, data) => {
+    switch (pluralize.singular(type)) {
+      case idTypes.PERSON:
+        return generateId(idTypes.PERSON, data)
+      case idTypes.COMPANY:
+        return generateId(idTypes.COMPANY, data)
+      case idTypes.ROLE:
+        return generateId(idTypes.ROLE, data)
+      default:
+        return generateId()
+    }
+  }
+
   return {
     create: async ({
       type,
       data
     }) => {
+      const _key = createId(type, data)
       const response = await db.collection(type).save(Object.assign(data, {
+        _key,
         created: newISODate(),
         modified: newISODate()
       }), { returnNew: true })
@@ -126,7 +144,9 @@ module.exports = ({ db }) => {
         if (error.message !== 'no match') throw error
       }
       if (!item) {
+        const _key = createId(type, data)
         const response = await db.collection(type).save(Object.assign(data, {
+          _key,
           created: newISODate(),
           modified: newISODate()
         }), { returnNew: true })

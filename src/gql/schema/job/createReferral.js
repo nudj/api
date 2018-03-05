@@ -1,3 +1,7 @@
+const { logger } = require('@nudj/library')
+const intercom = require('../../lib/intercom')
+const handleErrors = require('../../lib/handle-errors')
+
 module.exports = {
   typeDefs: `
     extend type Job {
@@ -6,40 +10,59 @@ module.exports = {
   `,
   resolvers: {
     Job: {
-      createReferral: (job, args, context) => {
-        return context.transaction((store, params) => {
-          const { personId, jobId, parentReferralId } = params
-          return Promise.all([
-            store.readOne({
-              type: 'people',
-              id: personId
-            }),
-            store.readOne({
-              type: 'referrals',
-              id: parentReferralId
-            })
-          ])
-          .then(([ person, parent ]) => {
-            if (!person) throw new Error(`Person with id ${personId} does not exist`)
-            return store.readOneOrCreate({
-              type: 'referrals',
-              filters: {
-                job: jobId,
-                person: person.id
-              },
-              data: {
-                job: jobId,
-                person: person.id,
-                parent: parent && parent.id
+      createReferral: handleErrors((job, args, context) => {
+        const {
+          person: personId,
+          parent: parentId
+        } = args
+
+        return Promise.all([
+          context.store.readOne({
+            type: 'people',
+            id: personId
+          }),
+          context.store.readOne({
+            type: 'referrals',
+            id: parentId
+          }),
+          context.store.readOne({
+            type: 'companies',
+            id: job.company
+          })
+        ])
+        .then(([
+          person,
+          parent,
+          company
+        ]) => {
+          if (!person) throw new Error(`Person with id ${personId} does not exist`)
+          return context.store.readOneOrCreate({
+            type: 'referrals',
+            filters: {
+              job: job.id,
+              person: person.id
+            },
+            data: {
+              job: job.id,
+              person: person.id,
+              parent: parent && parent.id
+            }
+          })
+          .then(referral => {
+            return intercom.createUser({
+              email: person.email,
+              custom_attributes: {
+                lastJobReferredFor: `${job.title} at ${company.name}`
               }
             })
+            .then(() => referral)
+            .catch(error => {
+              logger('error', 'Intercom error', error)
+              return referral
+            })
           })
-        }, {
-          jobId: job.id,
-          personId: args.person,
-          parentReferralId: args.parent
         })
-      }
+      })
     }
   }
 }

@@ -10,13 +10,17 @@ module.exports = {
   `,
   resolvers: {
     Job: {
-      createReferral: handleErrors((job, args, context) => {
+      createReferral: handleErrors(async (job, args, context) => {
         const {
           person: personId,
           parent: parentId
         } = args
 
-        return Promise.all([
+        const [
+          person,
+          parent,
+          company
+        ] = await Promise.all([
           context.store.readOne({
             type: 'people',
             id: personId
@@ -30,48 +34,44 @@ module.exports = {
             id: job.company
           })
         ])
-        .then(([
-          person,
-          parent,
-          company
-        ]) => {
-          if (!person) throw new Error(`Person with id ${personId} does not exist`)
-          return context.store.readOneOrCreate({
-            type: 'referrals',
-            filters: {
-              job: job.id,
-              person: person.id
-            },
-            data: {
-              job: job.id,
-              person: person.id,
-              parent: parent && parent.id
-            }
-          })
-          .then(referral => {
-            return Promise.all([
-              intercom.createUser({
-                email: person.email,
-                custom_attributes: {
-                  lastJobReferredFor: `${job.title} at ${company.name}`
-                }
-              }),
-              intercom.logEvent({
-                event_name: 'new-referral',
-                email: person.email,
-                metadata: {
-                  jobTitle: job.title,
-                  company: company.name
-                }
-              })
-            ])
-            .then(() => referral)
-            .catch(error => {
-              logger('error', 'Intercom error', error)
-              return referral
-            })
-          })
+
+        if (!person) throw new Error(`Person with id ${personId} does not exist`)
+
+        const referral = await context.store.readOneOrCreate({
+          type: 'referrals',
+          filters: {
+            job: job.id,
+            person: person.id
+          },
+          data: {
+            job: job.id,
+            person: person.id,
+            parent: parent && parent.id
+          }
         })
+
+        try {
+          await Promise.all([
+            intercom.createUser({
+              email: person.email,
+              custom_attributes: {
+                lastJobReferredFor: `${job.title} at ${company.name}`
+              }
+            }),
+            intercom.logEvent({
+              event_name: 'new-referral',
+              email: person.email,
+              metadata: {
+                jobTitle: job.title,
+                company: company.name
+              }
+            })
+          ])
+        } catch (error) {
+          logger('error', 'Intercom error', error)
+        }
+
+        return referral
       })
     }
   }

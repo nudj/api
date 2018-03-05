@@ -10,13 +10,17 @@ module.exports = {
   `,
   resolvers: {
     Job: {
-      createApplication: handleErrors((job, args, context) => {
+      createApplication: handleErrors(async (job, args, context) => {
         const {
           person: personId,
           referral: referralId
         } = args
 
-        return Promise.all([
+        const [
+          person,
+          referral,
+          company
+        ] = await Promise.all([
           context.store.readOne({
             type: 'people',
             id: personId
@@ -30,48 +34,44 @@ module.exports = {
             id: job.company
           })
         ])
-        .then(([
-          person,
-          referral,
-          company
-        ]) => {
-          if (!person) throw new Error(`Person with id ${personId} does not exist`)
-          return context.store.readOneOrCreate({
-            type: 'applications',
-            filters: {
-              job: job.id,
-              person: person.id
-            },
-            data: {
-              job: job.id,
-              person: person.id,
-              referral: referral && referral.id
-            }
-          })
-          .then(application => {
-            return Promise.all([
-              intercom.createUser({
-                email: person.email,
-                custom_attributes: {
-                  lastJobAppliedFor: `${job.title} at ${company.name}`
-                }
-              }),
-              intercom.logEvent({
-                event_name: 'new-application',
-                email: person.email,
-                metadata: {
-                  jobTitle: job.title,
-                  company: company.name
-                }
-              })
-            ])
-            .then(() => application)
-            .catch(error => {
-              logger('error', 'Intercom error', error)
-              return application
-            })
-          })
+
+        if (!person) throw new Error(`Person with id ${personId} does not exist`)
+
+        const application = await context.store.readOneOrCreate({
+          type: 'applications',
+          filters: {
+            job: job.id,
+            person: person.id
+          },
+          data: {
+            job: job.id,
+            person: person.id,
+            referral: referral && referral.id
+          }
         })
+
+        try {
+          await Promise.all([
+            intercom.createUser({
+              email: person.email,
+              custom_attributes: {
+                lastJobAppliedFor: `${job.title} at ${company.name}`
+              }
+            }),
+            intercom.logEvent({
+              event_name: 'new-application',
+              email: person.email,
+              metadata: {
+                jobTitle: job.title,
+                company: company.name
+              }
+            })
+          ])
+        } catch (error) {
+          logger('error', 'Intercom error', error)
+        }
+
+        return application
       })
     }
   }

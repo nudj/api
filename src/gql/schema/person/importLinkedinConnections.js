@@ -2,17 +2,19 @@ const formatLinkedinConnections = require('../../lib/helpers/format-linkedin-con
 const { handleErrors } = require('../../lib')
 const { generateId } = require('../../lib/hash')
 const { idTypes } = require('../../lib/hash/constants')
+const DataSources = require('../enums/data-sources')
 
 module.exports = {
   typeDefs: `
     extend type Person {
-      importLinkedinConnections(connections: [Data!]!, source: DataSource!): [Data]
+      importLinkedinConnections(connections: [Data!]!): [Data]
     }
   `,
   resolvers: {
     Person: {
       importLinkedinConnections: handleErrors(async (person, args, context) => {
-        const { connections, source } = args
+        const { connections } = args
+        const source = DataSources.values.LINKEDIN
         const formattedConnections = formatLinkedinConnections(connections)
         const from = person.id
 

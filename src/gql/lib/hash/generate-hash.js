@@ -1,9 +1,8 @@
 const crypto = require('crypto')
-const createHash = require('hash-generator')
 
-const generateHash = (input = createHash(16)) => crypto
+const generateHash = (input) => crypto
   .createHash('md5')
-  .update(input)
+  .update(input || crypto.randomBytes(20).toString('hex'))
   .digest('hex')
 
 module.exports = generateHash

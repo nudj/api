@@ -49,12 +49,22 @@ module.exports = {
             }
           })
           .then(referral => {
-            return intercom.createUser({
-              email: person.email,
-              custom_attributes: {
-                lastJobReferredFor: `${job.title} at ${company.name}`
-              }
-            })
+            return Promise.all([
+              intercom.createUser({
+                email: person.email,
+                custom_attributes: {
+                  lastJobReferredFor: `${job.title} at ${company.name}`
+                }
+              }),
+              intercom.logEvent({
+                event_name: 'new-referral',
+                email: person.email,
+                metadata: {
+                  jobTitle: job.title,
+                  company: company.name
+                }
+              })
+            ])
             .then(() => referral)
             .catch(error => {
               logger('error', 'Intercom error', error)

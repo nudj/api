@@ -1,5 +1,6 @@
 /* eslint-env mocha */
 const chai = require('chai')
+const nock = require('nock')
 const expect = chai.expect
 
 const schema = require('../../../../gql/schema')
@@ -9,6 +10,7 @@ const {
 } = require('../../helpers')
 
 describe('Job.createApplication', () => {
+  let IntercomMock
   const operation = `
     query testQuery (
       $person: ID!
@@ -31,6 +33,17 @@ describe('Job.createApplication', () => {
     }
   `
 
+  before(() => {
+    IntercomMock = nock('https://api.intercom.io')
+  })
+  beforeEach(() => {
+    IntercomMock.post('/events').reply(200, {})
+    IntercomMock.post('/users').reply(200, {})
+  })
+  afterEach(() => {
+    nock.cleanAll()
+  })
+
   describe('when person exists and application does not', () => {
     let db
     let result
@@ -43,7 +56,13 @@ describe('Job.createApplication', () => {
         ],
         jobs: [
           {
-            id: 'job1'
+            id: 'job1',
+            company: 'company1'
+          }
+        ],
+        companies: [
+          {
+            id: 'company1'
           }
         ],
         applications: []
@@ -97,7 +116,13 @@ describe('Job.createApplication', () => {
         ],
         jobs: [
           {
-            id: 'job1'
+            id: 'job1',
+            company: 'company1'
+          }
+        ],
+        companies: [
+          {
+            id: 'company1'
           }
         ],
         referrals: [
@@ -159,7 +184,13 @@ describe('Job.createApplication', () => {
         ],
         jobs: [
           {
-            id: 'job1'
+            id: 'job1',
+            company: 'company1'
+          }
+        ],
+        companies: [
+          {
+            id: 'company1'
           }
         ],
         referrals: [],
@@ -212,7 +243,13 @@ describe('Job.createApplication', () => {
         ],
         jobs: [
           {
-            id: 'job1'
+            id: 'job1',
+            company: 'company1'
+          }
+        ],
+        companies: [
+          {
+            id: 'company1'
           }
         ],
         applications: [
@@ -260,7 +297,13 @@ describe('Job.createApplication', () => {
         people: [],
         jobs: [
           {
-            id: 'job1'
+            id: 'job1',
+            company: 'company1'
+          }
+        ],
+        companies: [
+          {
+            id: 'company1'
           }
         ],
         applications: []

@@ -7,7 +7,7 @@ const DataSources = require('../enums/data-sources')
 module.exports = {
   typeDefs: `
     extend type Person {
-      importLinkedinConnections(connections: [Data!]!): [Data]
+      importLinkedinConnections(connections: [Data!]!): [ImportLog!]!
     }
   `,
   resolvers: {

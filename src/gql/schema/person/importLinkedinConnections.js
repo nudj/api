@@ -1,10 +1,12 @@
 const formatLinkedinConnections = require('../../lib/helpers/format-linkedin-connections')
 const { handleErrors } = require('../../lib')
+const { generateId } = require('../../lib/hash')
+const { idTypes } = require('../../lib/hash/constants')
 
 module.exports = {
   typeDefs: `
     extend type Person {
-      importLinkedinConnections(connections: [Data!]!, source: DataSource!): [Connection]
+      importLinkedinConnections(connections: [Data!]!, source: DataSource!): [Data]
     }
   `,
   resolvers: {
@@ -14,75 +16,68 @@ module.exports = {
         const formattedConnections = formatLinkedinConnections(connections)
         const from = person.id
 
-        return Promise.all(formattedConnections.map(async to => {
-          return context.transaction((store, params) => {
-            const omit = require('lodash/omit')
-            const pick = require('lodash/pick')
-            const { from, to, source } = params
+        const formattedData = formattedConnections.reduce((all, connection) => {
+          const { email, company, title, firstName, lastName } = connection
+          const personId = generateId(idTypes.PERSON, { email })
+          const companyId = company ? generateId(idTypes.COMPANY, { name: company }) : null
+          const roleId = title ? generateId(idTypes.ROLE, { name: title }) : null
+          const connectionId = generateId(idTypes.CONNECTION, { email, from })
 
-            return store.readOne({
-              type: 'people',
-              filters: { email: to.email }
+          return {
+            companies: all.companies.concat({
+              id: companyId,
+              name: connection.company,
+              client: false
+            }),
+            roles: all.roles.concat({
+              id: roleId,
+              name: connection.title
+            }),
+            people: all.people.concat({
+              id: personId,
+              email: connection.email
+            }),
+            connections: all.connections.concat({
+              id: connectionId,
+              from,
+              source,
+              firstName,
+              lastName,
+              person: personId,
+              role: roleId,
+              company: companyId
             })
-            .then(person => Promise.all([
-              person,
-              person && store.readOne({
-                type: 'connections',
-                filters: {
-                  from,
-                  person: person.id
-                }
-              })
-            ]))
-            .then(([
-              person,
-              connection
-            ]) => {
-              if (connection) return Object.assign({}, connection, { person })
-              return Promise.all([
-                person || store.create({
-                  type: 'people',
-                  data: pick(to, ['email'])
-                }),
-                to.title && store.readOneOrCreate({
-                  type: 'roles',
-                  filters: { name: to.title },
-                  data: { name: to.title }
-                }),
-                to.company && store.readOneOrCreate({
-                  type: 'companies',
-                  filters: { name: to.company },
-                  data: { name: to.company, client: false }
-                })
-              ])
-              .then(([
-                person,
-                role,
-                company
-              ]) => {
-                return store.create({
-                  type: 'connections',
-                  data: Object.assign({}, omit(to, ['email', 'title']), {
-                    from,
-                    source,
-                    role: role ? role.id : null,
-                    company: company ? company.id : null,
-                    person: person.id
-                  })
-                })
-                .then(connection => Object.assign({}, connection, {
-                  role,
-                  company,
-                  person
-                }))
-              })
-            })
-          }, {
-            from,
-            to,
-            source
-          })
-        }))
+          }
+        }, {
+          companies: [],
+          roles: [],
+          people: [],
+          connections: []
+        })
+
+        const data = [
+          {
+            name: 'connections',
+            data: formattedData.connections,
+            onDuplicate: 'update'
+          },
+          {
+            name: 'companies',
+            data: formattedData.companies,
+            onDuplicate: 'update'
+          },
+          {
+            name: 'roles',
+            data: formattedData.roles,
+            onDuplicate: 'update'
+          },
+          {
+            name: 'people',
+            data: formattedData.people
+          }
+        ]
+
+        return context.store.import({ data })
       })
     }
   }

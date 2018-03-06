@@ -25,7 +25,7 @@ module.exports = {
           }
         })
         if (savedConnection) {
-          return Object.assign({}, savedConnection, { person: savedPerson })
+          return { ...savedConnection, person: savedPerson }
         }
 
         const [ personFromConnection, role, company ] = await Promise.all([
@@ -46,20 +46,22 @@ module.exports = {
         ])
         const connection = await context.store.create({
           type: 'connections',
-          data: Object.assign({}, omit(to, ['email', 'title']), {
+          data: {
+            ...omit(to, ['email', 'title']),
             from,
             source,
             role: role ? role.id : null,
             company: company ? company.id : null,
             person: personFromConnection.id
-          })
+          }
         })
 
-        return Object.assign({}, connection, {
+        return {
+          ...connection,
           role,
           company,
           person: personFromConnection
-        })
+        }
       }
     }
   }

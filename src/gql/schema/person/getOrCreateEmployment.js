@@ -20,7 +20,7 @@ module.exports = {
             company: company.id
           }
         })
-        if (employment) return Object.assign({}, employment, { company })
+        if (employment) return { ...employment, company }
 
         if (!company) {
           company = await context.store.create({
@@ -36,7 +36,7 @@ module.exports = {
             company: company.id
           }
         })
-        return Object.assign({}, newEmployment, { company })
+        return { ...newEmployment, company }
       }
     }
   }

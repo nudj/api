@@ -10,7 +10,7 @@ module.exports = {
         const { data, filters } = args
         const task = await context.store.readOne({
           type: 'personTasks',
-          filters: Object.assign({}, filters, { person: person.id })
+          filters: { ...filters, person: person.id }
         })
         if (!task) return null
 

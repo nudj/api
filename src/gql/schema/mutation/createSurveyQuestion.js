@@ -11,9 +11,10 @@ module.exports = {
       createSurveyQuestion: handleErrors(async (root, args, context) => {
         const question = await context.store.create({
           type: 'surveyQuestions',
-          data: Object.assign({}, args.data, {
+          data: {
+            ...args.data,
             surveySection: args.surveySection
-          })
+          }
         })
         const { surveyQuestions = [] } = await context.store.readOne({
           type: 'surveySections',

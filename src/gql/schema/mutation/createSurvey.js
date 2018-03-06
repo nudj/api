@@ -11,10 +11,11 @@ module.exports = {
       createSurvey: handleErrors((root, args, context) => {
         return context.store.create({
           type: 'surveys',
-          data: Object.assign({}, args.data, {
+          data: {
+            ...args.data,
             company: args.company,
             surveySections: []
-          })
+          }
         })
       })
     }

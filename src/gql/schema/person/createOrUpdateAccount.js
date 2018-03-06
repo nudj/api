@@ -19,7 +19,7 @@ module.exports = {
           return context.store.update({
             type: 'accounts',
             id: account.id,
-            data: Object.assign({}, account, data)
+            data: { ...account, ...data }
           })
         }
         return context.store.create({

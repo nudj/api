@@ -8,8 +8,8 @@ const { merge } = require('@nudj/library')
 
 const { startOfDay, endOfDay } = require('../../lib/format-dates')
 const { parseFiltersToAql, createFiltersForFields } = require('../../lib/aql')
-const { generateId } = require('../../lib/hash')
-const { idTypes } = require('../../lib/hash/constants')
+const { generateId } = require('@nudj/library')
+const { idTypes } = require('@nudj/library/constants')
 
 module.exports = ({ db }) => {
   const normaliseData = (data) => {

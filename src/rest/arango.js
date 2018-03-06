@@ -6,8 +6,8 @@ const pluralize = require('pluralize')
 const logger = require('@nudj/library/lib/logger')
 const { merge } = require('@nudj/library')
 
-const { generateId } = require('../gql/lib/hash')
-const { idTypes } = require('../gql/lib/hash/constants')
+const { generateId } = require('@nudj/library')
+const { idTypes } = require('@nudj/library/constants')
 const StoreError = require('../lib/errors').StoreError
 const authHash = new Buffer(process.env.DB_USER + ':' + process.env.DB_PASS).toString('base64')
 

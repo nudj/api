@@ -1,7 +1,7 @@
 const formatLinkedinConnections = require('../../lib/helpers/format-linkedin-connections')
 const { handleErrors } = require('../../lib')
-const { generateId } = require('../../lib/hash')
-const { idTypes } = require('../../lib/hash/constants')
+const { generateId } = require('@nudj/library')
+const { idTypes } = require('@nudj/library/constants')
 const DataSources = require('../enums/data-sources')
 
 module.exports = {

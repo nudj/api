@@ -8,7 +8,7 @@ const [migrationName, direction] = process.argv.slice(2)
 db.useDatabase(process.env.DB_NAME)
 db.useBasicAuth(process.env.DB_USER, process.env.DB_PASS)
 
-const migration = require(`./migrations/${migrationName}`)
+const migration = require(`./${migrationName}`)
 
 async function step (description, actions) {
   process.stdout.write(description)

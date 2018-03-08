@@ -55,9 +55,7 @@ standardFix:
 		-e ENVIRONMENT=test \
 		-e DB_API_URL=http://localhost:81 \
 		-v $(CWD)/src/gql:/usr/src/gql \
-		-v $(CWD)/src/gql-old:/usr/src/gql-old \
 		-v $(CWD)/src/lib:/usr/src/lib \
-		-v $(CWD)/src/mock:/usr/src/mock \
 		-v $(CWD)/src/rest:/usr/src/rest \
 		-v $(CWD)/src/test:/usr/src/test \
 		$(IMAGEDEV) \

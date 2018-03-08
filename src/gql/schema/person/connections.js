@@ -1,3 +1,5 @@
+const sortBy = require('lodash/sortBy')
+
 const handleErrors = require('../../lib/handle-errors')
 const fetchConnectionPropertyMap = require('../../lib/helpers/fetch-connection-property-map')
 
@@ -21,12 +23,15 @@ module.exports = {
           personMap
         } = await fetchConnectionPropertyMap(context, connections)
 
-        return connections.map(connection => ({
-          ...connection,
-          role: roleMap[connection.role],
-          company: companyMap[connection.company],
-          person: personMap[connection.person]
-        }))
+        return sortBy(
+          connections.map(connection => ({
+            ...connection,
+            role: roleMap[connection.role],
+            company: companyMap[connection.company],
+            person: personMap[connection.person]
+          })),
+          ['firstName', 'lastName']
+        )
       })
     }
   }

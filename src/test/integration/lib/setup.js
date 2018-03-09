@@ -13,7 +13,7 @@ const setupCollections = async (db, collections) => {
 
 const populateCollections = (db, allCollectionData) => {
   return Promise.all(allCollectionData.map(async collectionData => {
-    const collection = await db.collection(collectionData.collection)
+    const collection = await db.collection(collectionData.name)
     return collection.import(collectionData.data)
   }))
 }

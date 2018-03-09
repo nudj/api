@@ -45,14 +45,8 @@ module.exports = (server) => {
       .then(getResponder(res))
   })
   server.get('/:type/:id', (req, res) => {
-    let filters
-    if (req.params.id.match(/^\d+$/)) {
-      filters = { id: req.params.id }
-    } else {
-      filters = { slug: req.params.id }
-    }
     Store
-      .getOne(req.params.type, filters)
+      .getOne(req.params.type, { id: req.params.id })
       .then(handleResolve)
       .catch(handleReject)
       .then(getResponder(res))

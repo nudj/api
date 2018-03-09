@@ -23,7 +23,7 @@ const createNewEntry = async () => {
 
 const resetDataStore = async () => populateCollections(db, [
   {
-    collection: collectionName,
+    name: collectionName,
     data: [
       {
         firstName: 'Dave',

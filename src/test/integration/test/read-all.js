@@ -15,7 +15,7 @@ const collectionName = 'tvSeries'
 
 const resetDataStore = async () => populateCollections(db, [
   {
-    collection: collectionName,
+    name: collectionName,
     data: [
       {
         created: '2016-12-12T13:04:11.248Z',

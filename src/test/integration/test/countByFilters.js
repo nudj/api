@@ -14,7 +14,7 @@ const collectionName = 'dogs'
 
 const resetDataStore = () => populateCollections(db, [
   {
-    collection: collectionName,
+    name: collectionName,
     data: [
       {
         created: '2016-12-12T13:04:11.248Z',

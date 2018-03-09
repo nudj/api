@@ -1,17 +1,15 @@
-const truncateCollections = (db, collections) => {
-  return Promise.all(collections.map(collectionName => {
-    const collection = db.collection(collectionName)
-    return collection.truncate()
-  }))
+const truncateCollections = async (db) => {
+  const collections = await db.collections()
+  return Promise.all(collections.map(collection => collection.truncate()))
 }
 
-const teardownCollections = (db, collections) => {
-  return Promise.all(collections.map(async name => {
+const teardownCollections = async (db) => {
+  const collections = await db.collections()
+  return Promise.all(collections.map(async collection => {
     try {
-      const collection = db.collection(name)
       await collection.drop()
     } catch (error) {
-      if (error.message !== `unknown collection '${name}'`) {
+      if (!error.message.startsWith('unknown collection')) {
         throw error
       }
     }

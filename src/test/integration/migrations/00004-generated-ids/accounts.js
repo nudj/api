@@ -77,6 +77,8 @@ describe('00004 Generated Ids for the accounts collection', () => {
         '_key': NEW_HASH
       })
       expect(doc).to.have.property('prop', 'value')
+      expect(doc).to.have.property('created', '2018-01-01T12:00:00.000Z')
+      expect(doc).to.have.property('modified', '2018-01-01T12:00:00.000Z')
     })
 
     it('should replace not add the new item', async () => {

@@ -6,6 +6,8 @@ module.exports = [
     data: [
       {
         _key: ID,
+        created: '2018-01-01T12:00:00.000Z',
+        modified: '2018-01-01T12:00:00.000Z',
         prop: 'value'
       }
     ]
@@ -15,6 +17,8 @@ module.exports = [
     data: [
       {
         _key: ID,
+        created: '2018-01-01T12:00:00.000Z',
+        modified: '2018-01-01T12:00:00.000Z',
         prop: 'value',
         company: ID,
         from: ID,
@@ -28,6 +32,8 @@ module.exports = [
     data: [
       {
         _key: ID,
+        created: '2018-01-01T12:00:00.000Z',
+        modified: '2018-01-01T12:00:00.000Z',
         prop: 'value',
         company: ID,
         relatedJobs: [ID]
@@ -39,6 +45,8 @@ module.exports = [
     data: [
       {
         _key: ID,
+        created: '2018-01-01T12:00:00.000Z',
+        modified: '2018-01-01T12:00:00.000Z',
         prop: 'value',
         company: ID
       }
@@ -49,6 +57,8 @@ module.exports = [
     data: [
       {
         _key: ID,
+        created: '2018-01-01T12:00:00.000Z',
+        modified: '2018-01-01T12:00:00.000Z',
         prop: 'value',
         company: ID,
         person: ID
@@ -60,6 +70,8 @@ module.exports = [
     data: [
       {
         _key: ID,
+        created: '2018-01-01T12:00:00.000Z',
+        modified: '2018-01-01T12:00:00.000Z',
         prop: 'value',
         job: ID,
         person: ID,
@@ -72,6 +84,8 @@ module.exports = [
     data: [
       {
         _key: ID,
+        created: '2018-01-01T12:00:00.000Z',
+        modified: '2018-01-01T12:00:00.000Z',
         prop: 'value'
       }
     ]
@@ -81,6 +95,8 @@ module.exports = [
     data: [
       {
         _key: ID,
+        created: '2018-01-01T12:00:00.000Z',
+        modified: '2018-01-01T12:00:00.000Z',
         prop: 'value',
         person: ID
       }
@@ -91,6 +107,8 @@ module.exports = [
     data: [
       {
         _key: ID,
+        created: '2018-01-01T12:00:00.000Z',
+        modified: '2018-01-01T12:00:00.000Z',
         prop: 'value',
         person: ID,
         referral: ID
@@ -102,6 +120,8 @@ module.exports = [
     data: [
       {
         _key: ID,
+        created: '2018-01-01T12:00:00.000Z',
+        modified: '2018-01-01T12:00:00.000Z',
         prop: 'value',
         completedBy: ID
       }
@@ -112,6 +132,8 @@ module.exports = [
     data: [
       {
         _key: ID,
+        created: '2018-01-01T12:00:00.000Z',
+        modified: '2018-01-01T12:00:00.000Z',
         prop: 'value',
         person: ID,
         recipient: ID
@@ -123,6 +145,8 @@ module.exports = [
     data: [
       {
         _key: ID,
+        created: '2018-01-01T12:00:00.000Z',
+        modified: '2018-01-01T12:00:00.000Z',
         prop: 'value',
         from: ID,
         to: ID
@@ -134,6 +158,8 @@ module.exports = [
     data: [
       {
         _key: ID,
+        created: '2018-01-01T12:00:00.000Z',
+        modified: '2018-01-01T12:00:00.000Z',
         prop: 'value',
         person: ID
       }
@@ -144,6 +170,8 @@ module.exports = [
     data: [
       {
         _key: ID,
+        created: '2018-01-01T12:00:00.000Z',
+        modified: '2018-01-01T12:00:00.000Z',
         prop: 'value',
         company: ID,
         surveySections: [ID]
@@ -155,6 +183,8 @@ module.exports = [
     data: [
       {
         _key: ID,
+        created: '2018-01-01T12:00:00.000Z',
+        modified: '2018-01-01T12:00:00.000Z',
         prop: 'value',
         survey: ID,
         surveyQuestions: [ID]
@@ -166,6 +196,8 @@ module.exports = [
     data: [
       {
         _key: ID,
+        created: '2018-01-01T12:00:00.000Z',
+        modified: '2018-01-01T12:00:00.000Z',
         prop: 'value',
         surveySection: ID
       }
@@ -176,6 +208,8 @@ module.exports = [
     data: [
       {
         _key: ID,
+        created: '2018-01-01T12:00:00.000Z',
+        modified: '2018-01-01T12:00:00.000Z',
         prop: 'value',
         person: ID,
         connections: [ID],
@@ -188,6 +222,8 @@ module.exports = [
     data: [
       {
         _key: ID,
+        created: '2018-01-01T12:00:00.000Z',
+        modified: '2018-01-01T12:00:00.000Z',
         prop: 'value'
       }
     ]
@@ -197,6 +233,8 @@ module.exports = [
     data: [
       {
         _key: ID,
+        created: '2018-01-01T12:00:00.000Z',
+        modified: '2018-01-01T12:00:00.000Z',
         prop: 'value'
       }
     ]
@@ -206,6 +244,8 @@ module.exports = [
     data: [
       {
         _key: ID,
+        created: '2018-01-01T12:00:00.000Z',
+        modified: '2018-01-01T12:00:00.000Z',
         prop: 'value',
         entityType: 'jobs',
         entityId: ID
@@ -217,6 +257,8 @@ module.exports = [
     data: [
       {
         _key: ID,
+        created: '2018-01-01T12:00:00.000Z',
+        modified: '2018-01-01T12:00:00.000Z',
         prop: 'value'
       }
     ]

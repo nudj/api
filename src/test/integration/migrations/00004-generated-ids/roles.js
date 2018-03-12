@@ -2,6 +2,7 @@
 const proxyquire = require('proxyquire')
 const sinon = require('sinon')
 const chai = require('chai')
+const sinonChai = require('sinon-chai')
 const chaiAsPromised = require('chai-as-promised')
 const {
   db,
@@ -11,19 +12,22 @@ const {
   teardownCollections,
   expect
 } = require('../../lib')
-const data = require('./data')
+const data = require('../../lib/data')
 const {
   getFirstItemFromCollection
 } = require('../../lib/helpers')
 
+chai.use(sinonChai)
 chai.use(chaiAsPromised)
 
 describe('00004 Generated Ids for the roles collection', () => {
   const COLLECTION = 'roles'
   const NEW_ID = 'NEW_ID'
+  const NEW_HASH = 'NEW_HASH'
   let migration
   let mockLibrary = {
-    generateId: sinon.stub().returns(NEW_ID)
+    generateId: sinon.stub().returns(NEW_ID),
+    generateHash: sinon.stub().returns(NEW_HASH)
   }
   const executeMigration = () => {
     return migration.up({
@@ -46,6 +50,7 @@ describe('00004 Generated Ids for the roles collection', () => {
 
   afterEach(async () => {
     mockLibrary.generateId.reset()
+    mockLibrary.generateHash.reset()
     await truncateCollections(db)
   })
 
@@ -83,6 +88,14 @@ describe('00004 Generated Ids for the roles collection', () => {
       const collection = await db.collection(COLLECTION)
       const data = await collection.count()
       expect(data.count).to.equal(1)
+    })
+
+    it('should call `generateId` with type and item', async () => {
+      sinon.assert.calledWith(mockLibrary.generateId, 'role', sinon.match({
+        _id: 'roles/ID',
+        _key: 'ID',
+        prop: 'value'
+      }))
     })
   })
 

@@ -6,7 +6,10 @@ const {
   plural: pluralise,
   singular: singularise
 } = require('pluralize')
-const { generateId } = require('@nudj/library')
+const {
+  generateId,
+  generateHash
+} = require('@nudj/library')
 const { idTypes } = require('@nudj/library/lib/constants')
 
 const schema = require('../../gql/schema')
@@ -50,7 +53,8 @@ async function updateIdsForCollectionInDb (collection, db) {
   const cursorAll = await cursorCollection.all()
   const all = await cursorAll.all()
   const idMaps = await Promise.all(all.map(async item => {
-    const newId = generateId(idTypes.COMPANY, item)
+    const idType = idTypes[type.toUpperCase()]
+    const newId = idType ? generateId(idType, item) : generateHash()
     await cursorCollection.remove(item._key)
     await cursorCollection.save({
       ...omit(item, ['_id', '_key', '_rev']),

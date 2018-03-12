@@ -11,7 +11,7 @@ const {
   teardownCollections,
   expect
 } = require('../../lib')
-const collections = require('./data')
+const collections = require('../../lib/data')
 const {
   getFirstItemFromCollection
 } = require('../../lib/helpers')
@@ -21,9 +21,11 @@ chai.use(chaiAsPromised)
 describe('00004 Generated Ids for the surveyQuestions collection', () => {
   const COLLECTION = 'surveyQuestions'
   const NEW_ID = 'NEW_ID'
+  const NEW_HASH = 'NEW_HASH'
   let migration
   let mockLibrary = {
-    generateId: sinon.stub().returns(NEW_ID)
+    generateId: sinon.stub().returns(NEW_ID),
+    generateHash: sinon.stub().returns(NEW_HASH)
   }
   const executeMigration = () => {
     return migration.up({
@@ -46,6 +48,7 @@ describe('00004 Generated Ids for the surveyQuestions collection', () => {
 
   afterEach(async () => {
     mockLibrary.generateId.reset()
+    mockLibrary.generateHash.reset()
     await truncateCollections(db)
   })
 
@@ -66,7 +69,7 @@ describe('00004 Generated Ids for the surveyQuestions collection', () => {
     it('should recreate the document under the new id', async () => {
       const collection = await db.collection(COLLECTION)
       const doc = await collection.firstExample({
-        '_key': NEW_ID
+        '_key': NEW_HASH
       })
       expect(doc).to.exist()
     })
@@ -74,7 +77,7 @@ describe('00004 Generated Ids for the surveyQuestions collection', () => {
     it('should recreate all the static properties in the new item', async () => {
       const collection = await db.collection(COLLECTION)
       const doc = await collection.firstExample({
-        '_key': NEW_ID
+        '_key': NEW_HASH
       })
       expect(doc).to.have.property('prop', 'value')
     })
@@ -89,12 +92,12 @@ describe('00004 Generated Ids for the surveyQuestions collection', () => {
   describe('when checking for relations across the db', () => {
     it('should update SurveySection.surveyQuestions', async () => {
       const doc = await getFirstItemFromCollection('surveySections', db)
-      expect(doc).to.have.property('surveyQuestions').to.deep.equal([NEW_ID])
+      expect(doc).to.have.property('surveyQuestions').to.deep.equal([NEW_HASH])
     })
 
     it('should update SurveyAnswers.surveyQuestion', async () => {
       const doc = await getFirstItemFromCollection('surveyAnswers', db)
-      expect(doc).to.have.property('surveyQuestion', NEW_ID)
+      expect(doc).to.have.property('surveyQuestion', NEW_HASH)
     })
   })
 })

@@ -7,20 +7,8 @@ const logger = require('@nudj/library/lib/logger')
 const { merge } = require('@nudj/library')
 
 const { generateId } = require('@nudj/library')
-const { idTypes } = require('@nudj/library/constants')
 const StoreError = require('../lib/errors').StoreError
 const authHash = new Buffer(process.env.DB_USER + ':' + process.env.DB_PASS).toString('base64')
-
-function createId (type, data) {
-  switch (pluralize.singular(type)) {
-    case idTypes.PERSON:
-      return generateId(idTypes.PERSON, { email: data.email })
-    case idTypes.COMPANY:
-      return generateId(idTypes.COMPANY, { name: data.name })
-    default:
-      return generateId()
-  }
-}
 
 function fetch ({ path, options }) {
   path = `http://db:8529/_db/nudj/_api/${path}`
@@ -188,7 +176,7 @@ function getOne (type, filters) {
 }
 
 function post (type, props) {
-  const _key = createId(type, props)
+  const _key = generateId(pluralize.singular(type), props)
   const path = `document/${type}?returnNew=true`
   const options = {
     method: 'POST',

@@ -23,7 +23,18 @@ module.exports = {
           const personId = generateId(idTypes.PERSON, { email })
           const companyId = company ? generateId(idTypes.COMPANY, { name: company }) : null
           const roleId = title ? generateId(idTypes.ROLE, { name: title }) : null
-          const connectionId = generateId(idTypes.CONNECTION, { email, from })
+
+          const connectionData = {
+            from,
+            source,
+            firstName,
+            lastName,
+            person: personId,
+            role: roleId,
+            company: companyId
+          }
+
+          const connectionId = generateId(idTypes.CONNECTION, connectionData)
 
           return {
             companies: all.companies.concat({
@@ -40,14 +51,8 @@ module.exports = {
               email: connection.email
             }),
             connections: all.connections.concat({
-              id: connectionId,
-              from,
-              source,
-              firstName,
-              lastName,
-              person: personId,
-              role: roleId,
-              company: companyId
+              ...connectionData,
+              id: connectionId
             })
           }
         }, {

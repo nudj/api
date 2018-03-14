@@ -17,7 +17,7 @@ const countriesCollection = 'countries'
 
 const resetDataStore = async () => populateCollections(db, [
   {
-    collection: tvSeriesCollection,
+    name: tvSeriesCollection,
     data: [
       {
         name: 'The Walking Dead',
@@ -148,7 +148,7 @@ const resetDataStore = async () => populateCollections(db, [
     ]
   },
   {
-    collection: studiosCollection,
+    name: studiosCollection,
     data: [
       {
         _key: 'company1',
@@ -168,7 +168,7 @@ const resetDataStore = async () => populateCollections(db, [
     ]
   },
   {
-    collection: countriesCollection,
+    name: countriesCollection,
     data: [
       {
         _key: 'country1',

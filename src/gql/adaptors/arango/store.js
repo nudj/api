@@ -9,7 +9,6 @@ const { merge } = require('@nudj/library')
 const { startOfDay, endOfDay } = require('../../lib/format-dates')
 const { parseFiltersToAql, createFiltersForFields } = require('../../lib/aql')
 const { generateId } = require('@nudj/library')
-const { idTypes } = require('@nudj/library/constants')
 
 module.exports = ({ db }) => {
   const normaliseData = (data) => {
@@ -36,25 +35,12 @@ module.exports = ({ db }) => {
     return flatten(response).map(normaliseData)
   }
 
-  const createId = (type, data) => {
-    switch (pluralize.singular(type)) {
-      case idTypes.PERSON:
-        return generateId(idTypes.PERSON, data)
-      case idTypes.COMPANY:
-        return generateId(idTypes.COMPANY, data)
-      case idTypes.ROLE:
-        return generateId(idTypes.ROLE, data)
-      default:
-        return generateId()
-    }
-  }
-
   return {
     create: async ({
       type,
       data
     }) => {
-      const _key = createId(type, data)
+      const _key = generateId(pluralize.singular(type), data)
       const response = await db.collection(type).save(Object.assign(data, {
         _key,
         created: newISODate(),
@@ -144,7 +130,7 @@ module.exports = ({ db }) => {
         if (error.message !== 'no match') throw error
       }
       if (!item) {
-        const _key = createId(type, data)
+        const _key = generateId(type, data)
         const response = await db.collection(type).save(Object.assign(data, {
           _key,
           created: newISODate(),

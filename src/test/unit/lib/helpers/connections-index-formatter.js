@@ -1,6 +1,9 @@
 /* eslint-env mocha */
 const chai = require('chai')
-const uniqBy = require('lodash/uniqBy')
+const flatten = require('lodash/flatten')
+
+const { merge } = require('@nudj/library')
+
 const connectionsIndexFormatter = require('../../../../gql/lib/helpers/connections-index-formatter')
 
 const expect = chai.expect
@@ -24,6 +27,24 @@ const dbData = {
       person: 'person2',
       role: 'role2',
       source: 'LINKEDIN'
+    },
+    {
+      id: 'connection3',
+      company: 'company2',
+      firstName: 'Sam',
+      lastName: 'Smaller',
+      person: 'person3',
+      role: 'role3',
+      source: 'MANUAL'
+    },
+    {
+      id: 'connection4',
+      company: 'company3',
+      firstName: 'Jack',
+      lastName: 'Jackson',
+      person: 'person4',
+      role: 'role4',
+      source: 'LINKEDIN'
     }
   ],
   people: {
@@ -32,6 +53,12 @@ const dbData = {
     },
     'person2': {
       email: 'john@email.com'
+    },
+    'person3': {
+      email: 'sam@email.com'
+    },
+    'person4': {
+      email: 'jack@email.com'
     }
   },
   companies: {
@@ -40,6 +67,9 @@ const dbData = {
     },
     'company2': {
       name: 'Smaller & Sons'
+    },
+    'company3': {
+      name: 'BigCorp'
     }
   },
   roles: {
@@ -48,26 +78,40 @@ const dbData = {
     },
     'role2': {
       name: 'Agricultural Manager'
+    },
+    'role3': {
+      name: 'Security Consultant'
+    },
+    'role4': {
+      name: 'Lawyer'
     }
   },
   surveyAnswers: {
     'surveyAnswer1': {
       surveyQuestion: 'surveyQuestion1',
-      connections: [ 'connection1' ]
+      connections: [ 'connection1', 'connection2' ]
     },
     'surveyAnswer2': {
       surveyQuestion: 'surveyQuestion2',
-      connections: [ 'connection2' ]
+      connections: [ 'connection2', 'connection3', 'connection1' ]
+    },
+    'surveyAnswer3': {
+      surveyQuestion: 'surveyQuestion3',
+      connections: [ 'connection1', 'connection4' ]
     }
   },
   surveyQuestions: {
     'surveyQuestion1': {
       title: 'Who?',
-      tags: [ 'entityTag1', 'entityTag2' ]
+      tags: [ 'entityTag1', 'entityTag4', 'entityTag2' ]
     },
     'surveyQuestion2': {
       title: 'Why?',
       tags: [ 'entityTag2', 'entityTag3', 'entityTag4' ]
+    },
+    'surveyQuestion3': {
+      title: 'Why?',
+      tags: [ 'entityTag1', 'entityTag5' ]
     }
   },
   entityTags: {
@@ -82,6 +126,9 @@ const dbData = {
     },
     'entityTag4': {
       tagId: 'tag4'
+    },
+    'entityTag5': {
+      tagId: 'tag5'
     }
   },
   tags: {
@@ -100,19 +147,23 @@ const dbData = {
     'tag4': {
       name: 'Ice Cream',
       type: 'random'
+    },
+    'tag5': {
+      name: 'Manager',
+      type: 'seniority'
     }
   }
 }
 
-describe.only('connectionsIndexFormatter', () => {
-  it('should format the data correctly', async () => {
+describe('connectionsIndexFormatter', () => {
+  it('should combine the data into an array of indexable objects', async () => {
     expect(connectionsIndexFormatter(dbData)).to.deep.equal([
       {
         email: 'penny@email.com',
         firstName: 'Penny',
         lastName: 'Winters',
         fullName: 'Penny Winters',
-        experienceTags: [ 'Winning', 'Education' ],
+        experienceTags: [ 'Winning', 'Education', 'Organisational Skills' ],
         role: 'Teacher',
         company: 'TeachingBlok'
       },
@@ -121,10 +172,74 @@ describe.only('connectionsIndexFormatter', () => {
         firstName: 'John',
         lastName: 'Scott',
         fullName: 'John Scott',
-        experienceTags: [ 'Education', 'Organisational Skills' ],
+        experienceTags: [ 'Winning', 'Education', 'Organisational Skills' ],
         role: 'Agricultural Manager',
         company: 'Smaller & Sons'
+      },
+      {
+        company: 'Smaller & Sons',
+        email: 'sam@email.com',
+        experienceTags: [
+          'Education',
+          'Organisational Skills'
+        ],
+        firstName: 'Sam',
+        lastName: 'Smaller',
+        fullName: 'Sam Smaller',
+        role: 'Security Consultant'
+      },
+      {
+        company: 'BigCorp',
+        email: 'jack@email.com',
+        experienceTags: [
+          'Winning'
+        ],
+        firstName: 'Jack',
+        lastName: 'Jackson',
+        fullName: 'Jack Jackson',
+        role: 'Lawyer'
       }
     ])
+  })
+
+  it('should only store tags of type `expertise`', async () => {
+    const results = connectionsIndexFormatter(dbData)
+    const addedTags = results.map(result => result.experienceTags)
+    expect(flatten(addedTags)).to.not.include('Ice Cream')
+    expect(flatten(addedTags)).to.not.include('Manager')
+    expect(addedTags).to.deep.equal([
+      [
+        'Winning',
+        'Education',
+        'Organisational Skills'
+      ],
+      [
+        'Winning',
+        'Education',
+        'Organisational Skills'
+      ],
+      [
+        'Education',
+        'Organisational Skills'
+      ],
+      [
+        'Winning'
+      ]
+    ])
+  })
+
+  it('should give an empty array to connections without tags', async () => {
+    const data = merge(dbData, { connections: [{
+      id: 'connection99',
+      company: 'company1',
+      firstName: 'No',
+      lastName: 'Taggerson',
+      person: 'person1',
+      role: 'role1',
+      source: 'LINKEDIN'
+    }]
+    })
+    const results = connectionsIndexFormatter(data)
+    expect(results[0].experienceTags).to.deep.equal([])
   })
 })

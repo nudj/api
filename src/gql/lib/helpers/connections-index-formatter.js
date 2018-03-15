@@ -1,5 +1,4 @@
-const flatten = require('lodash/flatten')
-const { merge } = require('@nudj/library')
+const uniq = require('lodash/uniq')
 
 const connectionsIndexFormatter = ({
   connections,
@@ -11,39 +10,31 @@ const connectionsIndexFormatter = ({
   entityTags,
   tags
 }) => {
-  const connectionToQuestionsMap = Object.keys(surveyAnswers).reduce((all, next) => {
-    const { connections: connectionIds, surveyQuestion } = surveyAnswers[next]
+  // Reduce over surveyAnswers to find answers with connections and build a
+  // mapping of connections to their relevant tags
+  const connectionsToTagsMap = Object.keys(surveyAnswers).reduce((all, next) => {
+    const { surveyQuestion, connections: connectionIds } = surveyAnswers[next]
+    const { tags: surveyQuestionEntityTags } = surveyQuestions[surveyQuestion]
+
+    // For each survey question, fetch tags of `expertise` type
+    const newTags = surveyQuestionEntityTags.map(entityTagId => {
+      const { tagId } = entityTags[entityTagId]
+      const tag = tags[tagId]
+
+      if (tag.type === 'expertise') return tag.name
+    }).filter(Boolean)
+
+    // Using connection IDs stored against question, construct object with those
+    // connections as relating to the newly fetched tags
     connectionIds.forEach(connectionId => {
-      all[connectionId] = (all[connectionId] || []).concat(surveyQuestion)
-    })
-    return all
-  }, {})
-
-  const tagMap = Object.keys(connectionToQuestionsMap).reduce((all, next) => {
-    const questionIds = connectionToQuestionsMap[next]
-
-    questionIds.forEach(questionId => {
-      const questionTags = surveyQuestions[questionId].tags.map(entityTagId => {
-        const { tagId } = entityTags[entityTagId]
-        const tag = tags[tagId]
-        if (tag.type === 'expertise') return tag.name
-      }).filter(Boolean)
-
-      all[questionId] = (all[questionId] || []).concat(questionTags)
+      all[connectionId] = uniq((all[connectionId] || []).concat(newTags))
     })
 
     return all
-  }, {})
-
-  Object.keys(connectionToQuestionsMap).forEach(connectionId => {
-    const questionIds = connectionToQuestionsMap[connectionId]
-    connectionToQuestionsMap[connectionId] = flatten(
-      connectionToQuestionsMap[connectionId].map(id => tagMap[id])
-    )
   }, {})
 
   return connections.map(connection => {
-    const experienceTags = connectionToQuestionsMap[connection.id]
+    const experienceTags = connectionsToTagsMap[connection.id] || []
 
     return {
       email: people[connection.person].email,
@@ -58,13 +49,3 @@ const connectionsIndexFormatter = ({
 }
 
 module.exports = connectionsIndexFormatter
-
-// {
-//   email: 'penny@email.com',
-//   firstName: 'Penny',
-//   lastName: 'Winters',
-//   fullName: 'Penny Winters',
-//   experienceTags: [ 'Winning', 'Education' ],
-//   role: 'Teacher',
-//   company: 'TeachingBlok'
-// }

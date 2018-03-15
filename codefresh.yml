@@ -75,7 +75,7 @@ steps:
     title: Push Release
     type: push
     candidate: '${{build}}'
-    tag: 10.0.0
+    tag: 11.0.0
     credentials:
       username: '${{dockerUsername}}'
       password: '${{dockerPassword}}'

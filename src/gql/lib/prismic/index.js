@@ -8,12 +8,37 @@ const defaultKeys = {
   message: 'composetext'
 }
 
-async function fetchContent ({
+const fragmentToText = (fragment) => {
+  if (!fragment) return ''
+  if (fragment.value && !fragment.blocks) return fragment.value.toString()
+  if (!fragment.blocks) return ''
+
+  const text = fragment.blocks.map(block => block.text || '')
+  return text.join('\n\n')
+}
+
+const predicatesOperator = (key) => {
+  switch (key) {
+    case 'document.tags':
+      return Prismic.Predicates.any
+    default:
+      return Prismic.Predicates.at
+  }
+}
+
+const queryDocuments = ({ api, query }) => {
+  const prismicQuery = Object.keys(query).map(key => {
+    return predicatesOperator(key)(key, query[key])
+  })
+  return api.query(prismicQuery) // calling api.query('') returns all documents
+}
+
+const fetchContent = async ({
   type,
   repo = 'hirer',
   tags = ['default'],
   keys = defaultKeys
-}) {
+}) => {
   const query = {
     'document.type': type,
     'document.tags': tags
@@ -38,29 +63,4 @@ async function fetchContent ({
   }
 }
 
-function fragmentToText (fragment) {
-  if (!fragment) return ''
-  if (fragment.value && !fragment.blocks) return fragment.value.toString()
-  if (!fragment.blocks) return ''
-
-  const text = fragment.blocks.map(block => block.text || '')
-  return text.join('\n\n')
-}
-
-function predicatesOperator (key) {
-  switch (key) {
-    case 'document.tags':
-      return Prismic.Predicates.any
-    default:
-      return Prismic.Predicates.at
-  }
-}
-
-function queryDocuments ({ api, query }) {
-  const prismicQuery = Object.keys(query).map(key => {
-    return predicatesOperator(key)(key, query[key])
-  })
-  return api.query(prismicQuery) // calling api.query('') returns all documents
-}
-
-module.exports = fetchContent
+module.exports = { fetchContent }

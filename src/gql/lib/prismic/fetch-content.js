@@ -19,7 +19,6 @@ const fetchContent = async ({
   tags = ['default'],
   keys = defaultKeys
 }) => {
-
   const query = {
     'document.type': type,
     'document.tags': tags

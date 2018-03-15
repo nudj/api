@@ -9,7 +9,7 @@ chai.use(sinonChai)
 
 const prismicStub = sinon.stub()
 const fetchTemplateDefinitions = proxyquire('../../../../gql/schema/query/fetchTemplate', {
-  '../../lib/prismic': prismicStub
+  '../../lib/prismic': { fetchContent: prismicStub }
 })
 const { fetchTemplate } = fetchTemplateDefinitions.resolvers.Query
 

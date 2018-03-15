@@ -8,9 +8,8 @@ services:
     volumes:
       - ../api/.zshrc:/root/.zshrc
       - ../api/src/gql:/usr/src/gql
-      - ../api/src/gql-old:/usr/src/gql-old
       - ../api/src/lib:/usr/src/lib
-      - ../api/src/mock:/usr/src/mock
+      - ../api/src/migrations:/usr/src/migrations
       - ../api/src/rest:/usr/src/rest
       - ../api/src/test:/usr/src/test
       - ../api/src/.npmignore:/usr/src/.npmignore

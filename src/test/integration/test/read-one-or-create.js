@@ -15,7 +15,7 @@ const collectionName = 'sandwiches'
 
 const resetDataStore = async () => populateCollections(db, [
   {
-    collection: collectionName,
+    name: collectionName,
     data: [
       {
         bread: 'white',

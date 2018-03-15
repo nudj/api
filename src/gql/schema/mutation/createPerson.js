@@ -9,12 +9,8 @@ module.exports = {
   resolvers: {
     Mutation: {
       createPerson: handleErrors((root, args, context) => {
-        return context.transaction((store, params) => {
-          return store.create({
-            type: 'people',
-            data: params.data
-          })
-        }, {
+        return context.store.create({
+          type: 'people',
           data: args.input
         })
       })

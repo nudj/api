@@ -1,47 +1,23 @@
 /* eslint-env mocha */
 const chai = require('chai')
-const expect = chai.expect
+const sinonChai = require('sinon-chai')
+const sinon = require('sinon')
+const find = require('lodash/find')
 
-const schema = require('../../../../gql/schema')
-const { executeQueryOnDbUsingSchema } = require('../../helpers')
 const DataSources = require('../../../../gql/schema/enums/data-sources')
+const { resolvers } = require('../../../../gql/schema/person/importLinkedinConnections')
+
+const expect = chai.expect
+const { importLinkedinConnections } = resolvers.Person
+
+chai.use(sinonChai)
 
 describe('Person.importLinkedinConnections', () => {
-  let db
-  let result
-  const operation = `
-    query ImportConnections(
-      $data: [Data!]!,
-      $source: DataSource!
-    ) {
-      person (id: "person1") {
-        importLinkedinConnections(
-          connections: $data,
-          source: $source
-        ) {
-          id
-          firstName
-          lastName
-          role {
-            id
-            name
-          }
-          company {
-            id
-            name
-          }
-          person {
-            id
-            email
-          }
-          source
-        }
-      }
-    }
-  `
-
-  const variables = {
-    data: [{
+  const importStub = sinon.stub()
+  const person = { id: 'person1' }
+  const context = { store: { import: importStub } }
+  const args = {
+    connections: [{
       'First Name': 'CONNECTION_FIRSTNAME1',
       'Last Name': 'CONNECTION_LASTNAME1',
       'Email Address': 'CONNECTION_EMAIL1',
@@ -53,267 +29,152 @@ describe('Person.importLinkedinConnections', () => {
       EmailAddress: 'CONNECTION_EMAIL2',
       Position: 'CONNECTION_TITLE2',
       Company: 'CONNECTION_COMPANY2'
-    }],
-    source: DataSources.values.LINKEDIN
+    }]
   }
 
-  describe('when new roles, companies and people are given', () => {
-    beforeEach(async () => {
-      db = {
-        people: [
+  let resolverResult
+  beforeEach(async () => {
+    await importLinkedinConnections(person, args, context)
+    resolverResult = importStub.firstCall.args[0]
+  })
+
+  afterEach(() => {
+    importStub.reset()
+  })
+
+  it('should call store.import', () => {
+    expect(importStub).to.have.been.called()
+  })
+
+  it('should format the data for importing', () => {
+    expect(resolverResult.data).to.deep.equal([
+      {
+        data: [
           {
-            id: 'person1'
+            company: '94d0a86fcf0307a7bf8014ffbacc6631',
+            firstName: 'CONNECTION_FIRSTNAME1',
+            from: 'person1',
+            id: '7fbf424a62a8b817ef7558da45d51917',
+            lastName: 'CONNECTION_LASTNAME1',
+            person: '8836d22bd5f1ff063791931a9a84fd20',
+            role: 'e272bf4933e474065626193c69e70bdc',
+            source: 'LINKEDIN'
+          },
+          {
+            company: '4bf9065b926e002fdb7e72196287d5eb',
+            firstName: 'CONNECTION_FIRSTNAME2',
+            from: 'person1',
+            id: '1f7b1aac9196c0bf617f6f9a3b541160',
+            lastName: 'CONNECTION_LASTNAME2',
+            person: 'b54078deb464404a7156ad1e4aca79cf',
+            role: '841a3e80cdd1f02eaa8ff3b092eddefa',
+            source: 'LINKEDIN'
           }
         ],
-        roles: [],
-        companies: [],
-        connections: []
-      }
-      result = await executeQueryOnDbUsingSchema({ operation, db, schema, variables })
-    })
-
-    it('should create the roles', () => {
-      expect(db).to.have.deep.property('roles.0').to.deep.equal({
-        id: 'role1',
-        name: 'CONNECTION_TITLE1'
-      })
-      expect(db).to.have.deep.property('roles.1').to.deep.equal({
-        id: 'role2',
-        name: 'CONNECTION_TITLE2'
-      })
-    })
-
-    it('should create the companies', () => {
-      expect(db).to.have.deep.property('companies.0').to.deep.equal({
-        id: 'company1',
-        client: false,
-        name: 'CONNECTION_COMPANY1'
-      })
-      expect(db).to.have.deep.property('companies.1').to.deep.equal({
-        id: 'company2',
-        client: false,
-        name: 'CONNECTION_COMPANY2'
-      })
-    })
-
-    it('should create the people', () => {
-      expect(db).to.have.deep.property('people.1').to.deep.equal({
-        id: 'person2',
-        email: 'CONNECTION_EMAIL1'
-      })
-      expect(db).to.have.deep.property('people.2').to.deep.equal({
-        id: 'person3',
-        email: 'CONNECTION_EMAIL2'
-      })
-    })
-
-    it('should return the connections', () => {
-      return expect(result)
-        .to.have.deep.property('data.person.importLinkedinConnections')
-        .to.deep.equal([{
-          id: 'connection1',
-          firstName: 'CONNECTION_FIRSTNAME1',
-          lastName: 'CONNECTION_LASTNAME1',
-          role: {
-            id: 'role1',
-            name: 'CONNECTION_TITLE1'
-          },
-          company: {
-            id: 'company1',
+        name: 'connections',
+        onDuplicate: 'update'
+      },
+      {
+        data: [
+          {
+            client: false,
+            id: '94d0a86fcf0307a7bf8014ffbacc6631',
             name: 'CONNECTION_COMPANY1'
           },
-          person: {
-            id: 'person2',
-            email: 'CONNECTION_EMAIL1'
-          },
-          source: DataSources.values.LINKEDIN
-        }, {
-          id: 'connection2',
-          firstName: 'CONNECTION_FIRSTNAME2',
-          lastName: 'CONNECTION_LASTNAME2',
-          role: {
-            id: 'role2',
-            name: 'CONNECTION_TITLE2'
-          },
-          company: {
-            id: 'company2',
+          {
+            client: false,
+            id: '4bf9065b926e002fdb7e72196287d5eb',
             name: 'CONNECTION_COMPANY2'
-          },
-          person: {
-            id: 'person3',
-            email: 'CONNECTION_EMAIL2'
-          },
-          source: DataSources.values.LINKEDIN
-        }])
-    })
-  })
-
-  describe('when role already exists', () => {
-    beforeEach(async () => {
-      db = {
-        people: [
-          {
-            id: 'person1'
           }
         ],
-        roles: [{
-          id: 'oldId',
-          name: 'CONNECTION_TITLE1'
-        }],
-        companies: [],
-        connections: []
-      }
-      result = await executeQueryOnDbUsingSchema({ operation, db, schema, variables })
-    })
-
-    it('should not create a new role', () => {
-      expect(db.roles.length).to.equal(2)
-    })
-
-    it('should return the existing role', () => {
-      return expect(result)
-        .to.have.deep.property('data.person.importLinkedinConnections.0.role')
-        .to.deep.equal({
-          id: 'oldId',
-          name: 'CONNECTION_TITLE1'
-        })
-    })
-  })
-
-  describe('when company already exists', () => {
-    beforeEach(async () => {
-      db = {
-        people: [
+        name: 'companies',
+        onDuplicate: 'update'
+      },
+      {
+        data: [
           {
-            id: 'person1'
+            id: 'e272bf4933e474065626193c69e70bdc',
+            name: 'CONNECTION_TITLE1'
+          },
+          {
+            id: '841a3e80cdd1f02eaa8ff3b092eddefa',
+            name: 'CONNECTION_TITLE2'
           }
         ],
-        roles: [],
-        companies: [{
-          id: 'oldId',
-          name: 'CONNECTION_COMPANY1'
-        }],
-        connections: []
-      }
-      result = await executeQueryOnDbUsingSchema({ operation, db, schema, variables })
-    })
-
-    it('should not create a new company', () => {
-      expect(db.companies.length).to.equal(2)
-    })
-
-    it('should return the existing company', () => {
-      return expect(result)
-        .to.have.deep.property('data.person.importLinkedinConnections.0.company')
-        .to.deep.equal({
-          id: 'oldId',
-          name: 'CONNECTION_COMPANY1'
-        })
-    })
-  })
-
-  describe('when person already exists', () => {
-    beforeEach(async () => {
-      db = {
-        people: [
+        name: 'roles',
+        onDuplicate: 'update'
+      },
+      {
+        data: [
           {
-            id: 'person1'
+            email: 'CONNECTION_EMAIL1',
+            id: '8836d22bd5f1ff063791931a9a84fd20'
           },
           {
-            id: 'oldId1',
-            email: 'CONNECTION_EMAIL1'
-          },
-          {
-            id: 'oldId2',
-            email: 'CONNECTION_EMAIL2'
+            email: 'CONNECTION_EMAIL2',
+            id: 'b54078deb464404a7156ad1e4aca79cf'
           }
         ],
-        roles: [],
-        companies: [],
-        connections: []
+        name: 'people'
       }
-      result = await executeQueryOnDbUsingSchema({ operation, db, schema, variables })
-    })
-
-    it('should not create any new people', () => {
-      expect(db.people.length).to.equal(3)
-    })
-
-    it('should return the existing people', () => {
-      expect(result)
-        .to.have.deep.property('data.person.importLinkedinConnections.0.person')
-        .to.deep.equal({
-          id: 'oldId1',
-          email: 'CONNECTION_EMAIL1'
-        })
-      expect(result)
-        .to.have.deep.property('data.person.importLinkedinConnections.1.person')
-        .to.deep.equal({
-          id: 'oldId2',
-          email: 'CONNECTION_EMAIL2'
-        })
-    })
+    ])
   })
 
-  describe('when connection already exists', () => {
-    beforeEach(async () => {
-      db = {
-        people: [
-          {
-            id: 'person1'
-          },
-          {
-            id: 'person2',
-            email: 'CONNECTION_EMAIL1'
-          }
-        ],
-        roles: [{
-          id: 'role1',
-          name: 'Sales Manager'
-        }],
-        companies: [{
-          id: 'company1',
-          name: 'nudj'
-        }],
-        connections: [{
-          id: 'oldId',
-          firstName: 'Bob',
-          lastName: 'Johnson',
-          from: 'person1',
-          person: 'person2',
-          source: DataSources.values.LINKEDIN,
-          role: 'role1',
-          company: 'company1'
-        }]
-      }
-      result = await executeQueryOnDbUsingSchema({ operation, db, schema, variables })
-    })
+  it('appends the source to the connections', () => {
+    const connections = find(resolverResult.data, { name: 'connections' })
+    expect(connections.data[0].source).to.equal(DataSources.values.LINKEDIN)
+    expect(connections.data[1].source).to.equal(DataSources.values.LINKEDIN)
+  })
 
-    it('should not create a new connection', () => {
-      expect(db.connections.length).to.equal(2)
-    })
+  it('generates an ID for each connection', () => {
+    const connections = find(resolverResult.data, { name: 'connections' })
+    expect(connections.data[0].id).to.exist()
+    expect(connections.data[0].id).to.be.a('string')
+    expect(connections.data[1].id).to.exist()
+    expect(connections.data[1].id).to.be.a('string')
+  })
 
-    it('should return the existing connection', () => {
-      return expect(result)
-        .to.have.deep.property('data.person.importLinkedinConnections.0')
-        .to.deep.equal({
-          id: 'oldId',
-          firstName: 'Bob',
-          lastName: 'Johnson',
-          role: {
-            id: 'role1',
-            name: 'Sales Manager'
-          },
-          company: {
-            id: 'company1',
-            name: 'nudj'
-          },
-          person: {
-            id: 'person2',
-            email: 'CONNECTION_EMAIL1'
-          },
-          source: DataSources.values.LINKEDIN
-        })
-    })
+  it('generates relational company IDs', () => {
+    const companies = find(resolverResult.data, { name: 'companies' })
+    const connections = find(resolverResult.data, { name: 'connections' })
+    const firstCompanyId = companies.data[0].id
+    const secondCompanyId = companies.data[1].id
+    expect(connections.data[0].company).to.equal(firstCompanyId)
+    expect(connections.data[0].company).to.not.equal(secondCompanyId)
+    expect(connections.data[1].company).to.equal(secondCompanyId)
+    expect(connections.data[1].company).to.not.equal(firstCompanyId)
+  })
+
+  it('generates relational person IDs', () => {
+    const people = find(resolverResult.data, { name: 'people' })
+    const connections = find(resolverResult.data, { name: 'connections' })
+    const firstPersonId = people.data[0].id
+    const secondPersonId = people.data[1].id
+    expect(connections.data[0].person).to.equal(firstPersonId)
+    expect(connections.data[0].person).to.not.equal(secondPersonId)
+    expect(connections.data[1].person).to.equal(secondPersonId)
+    expect(connections.data[1].person).to.not.equal(firstPersonId)
+  })
+
+  it('generates relational person IDs', () => {
+    const people = find(resolverResult.data, { name: 'people' })
+    const connections = find(resolverResult.data, { name: 'connections' })
+    const firstPersonId = people.data[0].id
+    const secondPersonId = people.data[1].id
+    expect(connections.data[0].person).to.equal(firstPersonId)
+    expect(connections.data[0].person).to.not.equal(secondPersonId)
+    expect(connections.data[1].person).to.equal(secondPersonId)
+    expect(connections.data[1].person).to.not.equal(firstPersonId)
+  })
+
+  it('generates relational role IDs', () => {
+    const roles = find(resolverResult.data, { name: 'roles' })
+    const connections = find(resolverResult.data, { name: 'connections' })
+    const firstRoleId = roles.data[0].id
+    const secondRoleId = roles.data[1].id
+    expect(connections.data[0].role).to.equal(firstRoleId)
+    expect(connections.data[0].role).to.not.equal(secondRoleId)
+    expect(connections.data[1].role).to.equal(secondRoleId)
+    expect(connections.data[1].role).to.not.equal(firstRoleId)
   })
 })

@@ -6,60 +6,37 @@ module.exports = {
   `,
   resolvers: {
     Person: {
-      getOrCreateEmployment: (person, args, context) => {
-        return context.transaction((store, params) => {
-          const {
-            person,
-            newCompany,
-            source
-          } = params
+      getOrCreateEmployment: async (person, args, context) => {
+        const { company: newCompany, source } = args
 
-          return store.readOne({
-            type: 'companies',
-            filters: { name: newCompany }
-          })
-          .then(company => Promise.all([
-            company,
-            company && store.readOne({
-              type: 'employments',
-              filters: {
-                person: person.id,
-                company: company.id
-              }
-            })
-          ]))
-          .then(([
-            company,
-            employment
-          ]) => {
-            if (employment) return Object.assign({}, employment, { company })
-            return Promise.all([
-              company || store.create({
-                type: 'companies',
-                data: { name: newCompany, client: false }
-              })
-            ])
-            .then(([
-              company
-            ]) => {
-              return store.create({
-                type: 'employments',
-                data: {
-                  person: person.id,
-                  source: source,
-                  company: company.id
-                }
-              })
-              .then(employment => Object.assign({}, employment, {
-                company
-              }))
-            })
-          })
-        }, {
-          person,
-          newCompany: args.company,
-          source: args.source
+        let company = await context.store.readOne({
+          type: 'companies',
+          filters: { name: newCompany }
         })
+        const employment = company && await context.store.readOne({
+          type: 'employments',
+          filters: {
+            person: person.id,
+            company: company.id
+          }
+        })
+        if (employment) return { ...employment, company }
+
+        if (!company) {
+          company = await context.store.create({
+            type: 'companies',
+            data: { name: newCompany, client: false }
+          })
+        }
+        const newEmployment = await context.store.create({
+          type: 'employments',
+          data: {
+            person: person.id,
+            source: source,
+            company: company.id
+          }
+        })
+        return { ...newEmployment, company }
       }
     }
   }

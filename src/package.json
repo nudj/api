@@ -1,6 +1,6 @@
 {
   "name": "@nudj/api",
-  "version": "10.0.0",
+  "version": "11.0.0",
   "description": "Internal api for nudj data",
   "main": "index",
   "directories": {
@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/nudj/api#readme",
   "dependencies": {
-    "@nudj/library": "4.2.0",
+    "@nudj/library": "5.0.0",
     "apollo-server-express": "^1.2.0",
     "arangojs": "^6.0.1",
     "axios": "^0.17.1",
@@ -31,12 +31,10 @@
     "glob": "^7.1.2",
     "googleapis": "^21.3.0",
     "graphql": "0.10.3",
-    "graphql-server-express": "1.0.0",
     "graphql-tools": "1.1.0",
     "hash-generator": "^0.1.0",
     "js-base64": "^2.1.9",
     "intercom-client": "^2.8.7",
-    "json-server": "0.11.2",
     "lodash": "4.17.4",
     "mailgun-js": "^0.14.1",
     "morgan": "1.8.2",
@@ -61,10 +59,5 @@
     "sinon-as-promised": "4.0.2",
     "sinon-chai": "2.8.0",
     "standard": "9.0.0"
-  },
-  "standard": {
-    "ignore": [
-      "src/gql/arango-adaptor/store.js"
-    ]
   }
 }

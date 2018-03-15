@@ -1,5 +1,6 @@
 /* eslint-env mocha */
 const chai = require('chai')
+const nock = require('nock')
 const expect = chai.expect
 
 const schema = require('../../../../gql/schema')
@@ -9,6 +10,7 @@ const {
 } = require('../../helpers')
 
 describe('Job.createReferral', () => {
+  let IntercomMock
   const operation = `
     query testQuery (
       $personId: ID!
@@ -25,6 +27,17 @@ describe('Job.createReferral', () => {
     }
   `
 
+  before(() => {
+    IntercomMock = nock('https://api.intercom.io')
+  })
+  beforeEach(() => {
+    IntercomMock.post('/events').reply(200, {})
+    IntercomMock.post('/users').reply(200, {})
+  })
+  afterEach(() => {
+    nock.cleanAll()
+  })
+
   describe('when person exists and referral does not', () => {
     let db
     let result
@@ -37,7 +50,13 @@ describe('Job.createReferral', () => {
         ],
         jobs: [
           {
-            id: 'job1'
+            id: 'job1',
+            company: 'company1'
+          }
+        ],
+        companies: [
+          {
+            id: 'company1'
           }
         ],
         referrals: []
@@ -87,7 +106,13 @@ describe('Job.createReferral', () => {
         ],
         jobs: [
           {
-            id: 'job1'
+            id: 'job1',
+            company: 'company1'
+          }
+        ],
+        companies: [
+          {
+            id: 'company1'
           }
         ],
         referrals: [
@@ -144,7 +169,13 @@ describe('Job.createReferral', () => {
         ],
         jobs: [
           {
-            id: 'job1'
+            id: 'job1',
+            company: 'company1'
+          }
+        ],
+        companies: [
+          {
+            id: 'company1'
           }
         ],
         referrals: []
@@ -192,7 +223,13 @@ describe('Job.createReferral', () => {
         ],
         jobs: [
           {
-            id: 'job1'
+            id: 'job1',
+            company: 'company1'
+          }
+        ],
+        companies: [
+          {
+            id: 'company1'
           }
         ],
         referrals: [
@@ -236,7 +273,13 @@ describe('Job.createReferral', () => {
         people: [],
         jobs: [
           {
-            id: 'job1'
+            id: 'job1',
+            company: 'company1'
+          }
+        ],
+        companies: [
+          {
+            id: 'company1'
           }
         ],
         referrals: []

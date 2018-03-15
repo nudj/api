@@ -1,3 +1,5 @@
+const { logger } = require('@nudj/library')
+const intercom = require('../../lib/intercom')
 const handleErrors = require('../../lib/handle-errors')
 
 module.exports = {
@@ -8,39 +10,68 @@ module.exports = {
   `,
   resolvers: {
     Job: {
-      createApplication: handleErrors((job, args, context) => {
-        return context.transaction((store, params) => {
-          const { personId, jobId, referralId } = params
-          return Promise.all([
-            store.readOne({
-              type: 'people',
-              id: personId
+      createApplication: handleErrors(async (job, args, context) => {
+        const {
+          person: personId,
+          referral: referralId
+        } = args
+
+        const [
+          person,
+          referral,
+          company
+        ] = await Promise.all([
+          context.store.readOne({
+            type: 'people',
+            id: personId
+          }),
+          context.store.readOne({
+            type: 'referrals',
+            id: referralId
+          }),
+          context.store.readOne({
+            type: 'companies',
+            id: job.company
+          })
+        ])
+
+        if (!person) throw new Error(`Person with id ${personId} does not exist`)
+
+        const application = await context.store.readOneOrCreate({
+          type: 'applications',
+          filters: {
+            job: job.id,
+            person: person.id
+          },
+          data: {
+            job: job.id,
+            person: person.id,
+            referral: referral && referral.id
+          }
+        })
+
+        try {
+          await Promise.all([
+            intercom.createUser({
+              email: person.email,
+              custom_attributes: {
+                lastJobAppliedFor: `${job.title} at ${company.name}`
+              }
             }),
-            store.readOne({
-              type: 'referrals',
-              id: referralId
-            })
-          ])
-          .then(([ person, referral ]) => {
-            if (!person) throw new Error(`Person with id ${personId} does not exist`)
-            return store.readOneOrCreate({
-              type: 'applications',
-              filters: {
-                job: jobId,
-                person: person.id
-              },
-              data: {
-                job: jobId,
-                person: person.id,
-                referral: referral && referral.id
+            intercom.logEvent({
+              event_name: 'new-application',
+              email: person.email,
+              metadata: {
+                jobTitle: job.title,
+                company: company.name
               }
             })
-          })
-        }, {
-          jobId: job.id,
-          personId: args.person,
-          referralId: args.referral
-        })
+          ])
+        } catch (error) {
+          logger('error', 'Intercom error', error)
+        }
+
+        return application
       })
     }
   }

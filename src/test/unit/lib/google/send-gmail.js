@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 const chai = require('chai')
-const sinon = require('sinon')
 const sinonChai = require('sinon-chai')
 const nock = require('nock')
 const dedent = require('dedent')
@@ -49,8 +48,9 @@ describe('Google', () => {
           refreshToken
         }
       }
-      const transaction = sinon.stub().returns(account)
-      const context = { transaction }
+      const context = {
+        store: { readOne: () => account }
+      }
       const person = { id: 'person1' }
       const data = await sendGmail({ context, email, person })
       expect(data.response).to.equal('gmailSentResponse')
@@ -69,8 +69,9 @@ describe('Google', () => {
           refreshToken
         }
       }
-      const transaction = sinon.stub().returns(account)
-      const context = { transaction }
+      const context = {
+        store: { readOne: () => account, update: () => account }
+      }
       const person = { id: 'person1' }
       await expect(
         sendGmail({ context, email, person })
@@ -94,8 +95,9 @@ describe('Google', () => {
           refreshToken
         }
       }
-      const transaction = sinon.stub().returns(account)
-      const context = { transaction }
+      const context = {
+        store: { readOne: () => account, update: () => account }
+      }
       const person = { id: 'person1' }
       const data = await sendGmail({ context, email, person })
       expect(data.body).to.equal(dedent`

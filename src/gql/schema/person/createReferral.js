@@ -6,45 +6,36 @@ module.exports = {
   `,
   resolvers: {
     Person: {
-      createReferral: (person, args, context) => {
-        return context.transaction((store, params) => {
-          const AlreadyNudjedError = new Error('Already nudjed')
-          const { personId, jobId, parentReferralId } = params
-          return store.readOne({
+      createReferral: async (person, args, context) => {
+        const { job: jobId, parent: parentId } = args
+        const existingReferral = await context.store.readOne({
+          type: 'referrals',
+          filters: {
+            person: person.id,
+            job: jobId
+          }
+        })
+        if (existingReferral) throw new Error('Already nudjed')
+
+        const [ job, parent ] = await Promise.all([
+          context.store.readOne({
+            type: 'jobs',
+            id: jobId
+          }),
+          context.store.readOne({
             type: 'referrals',
-            filters: {
-              person: personId,
-              job: jobId
-            }
+            id: parentId
           })
-          .then(existingReferral => {
-            if (existingReferral) throw AlreadyNudjedError
-            return Promise.all([
-              store.readOne({
-                type: 'jobs',
-                id: jobId
-              }),
-              store.readOne({
-                type: 'referrals',
-                id: parentReferralId
-              })
-            ])
-            .then(([ job, parent ]) => {
-              if (!job) throw new Error(`Job with id ${jobId} does not exist`)
-              return store.create({
-                type: 'referrals',
-                data: {
-                  person: personId,
-                  job: job.id,
-                  parent: parent && parent.id
-                }
-              })
-            })
-          })
-        }, {
-          personId: person.id,
-          jobId: args.job,
-          parentReferralId: args.parent
+        ])
+        if (!job) throw new Error(`Job with id ${jobId} does not exist`)
+
+        return context.store.create({
+          type: 'referrals',
+          data: {
+            person: person.id,
+            job: job.id,
+            parent: parent && parent.id
+          }
         })
       }
     }

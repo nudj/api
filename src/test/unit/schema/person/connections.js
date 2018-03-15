@@ -58,6 +58,54 @@ describe('Person.connections', () => {
     })
   })
 
+  it('should return the list in alphabetical order, by `firstName` then `lastName`', () => {
+    const db = merge(baseData, {
+      connections: [
+        {
+          id: 'connection1',
+          from: 'person1',
+          firstName: 'B',
+          lastName: 'X'
+        },
+        {
+          id: 'connection2',
+          from: 'person1',
+          firstName: 'B',
+          lastName: 'W'
+        },
+        {
+          id: 'connection3',
+          from: 'person1',
+          firstName: 'D',
+          lastName: 'Y'
+        }, {
+          id: 'connection4',
+          from: 'person1',
+          firstName: 'A',
+          lastName: 'Z'
+        }
+      ]
+    })
+
+    return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
+      data: {
+        people: [
+          {
+            connections: [{
+              id: 'connection4'
+            }, {
+              id: 'connection2'
+            }, {
+              id: 'connection1'
+            }, {
+              id: 'connection3'
+            }]
+          }
+        ]
+      }
+    })
+  })
+
   it('should return empty array if no matches', async () => {
     const db = merge(baseData, {
       connections: [

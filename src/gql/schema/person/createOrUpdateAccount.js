@@ -1,3 +1,5 @@
+const omit = require('lodash/omit')
+
 module.exports = {
   typeDefs: `
     extend type Person {
@@ -19,7 +21,7 @@ module.exports = {
           return context.store.update({
             type: 'accounts',
             id: account.id,
-            data: Object.assign({}, account, data)
+            data: { ...omit(account, ['id']), ...data }
           })
         }
         return context.store.create({

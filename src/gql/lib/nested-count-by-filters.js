@@ -33,18 +33,10 @@ module.exports = function nestedCountByFilters (props = {}) {
       [parentType]: {
         [name]: handleErrors((parent, args, context) => {
           args.filters[parentName] = parent.id
-          return context.transaction(
-            (store, params) => {
-              return store.countByFilters({
-                type: params.collection,
-                filters: params.filters
-              })
-            },
-            {
-              collection,
-              filters: args.filters
-            }
-          )
+          return context.store.countByFilters({
+            type: collection,
+            filters: args.filters
+          })
         })
       }
     }

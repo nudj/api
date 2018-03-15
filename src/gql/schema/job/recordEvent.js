@@ -14,25 +14,19 @@ module.exports = {
   resolvers: {
     Job: {
       recordEvent: (job, args, context) => {
-        return context.transaction((store, params) => {
-          const { browserId, entityId, eventType } = params
-          return store.readOneOrCreate({
-            type: 'events',
-            filters: {
-              entityId,
-              browserId
-            },
-            data: {
-              eventType,
-              entityId,
-              browserId,
-              entityType: 'jobs'
-            }
-          })
-        }, {
-          entityId: job.id,
-          browserId: args.browserId || createNewBrowserId(),
-          eventType: args.type
+        const browserId = args.browserId || createNewBrowserId()
+        return context.store.readOneOrCreate({
+          type: 'events',
+          filters: {
+            browserId,
+            entityId: job.id
+          },
+          data: {
+            browserId,
+            eventType: args.type,
+            entityId: job.id,
+            entityType: 'jobs'
+          }
         })
       }
     }

@@ -34,8 +34,8 @@ describe('fetchTags', () => {
   let cachedPrismicAccessToken
 
   beforeEach(() => {
-    cachedPrismicAccessToken = process.env.PRISMICIO_ACCESS_TOKEN
-    process.env.PRISMICIO_ACCESS_TOKEN = 'TEST_PRISMIC_ACCESS_TOKEN'
+    cachedPrismicAccessToken = process.env.PRISMICIO_WEB_ACCESS_TOKEN
+    process.env.PRISMICIO_WEB_ACCESS_TOKEN = 'TEST_PRISMIC_ACCESS_TOKEN'
     fetchTags = proxyquire('../../../../gql/lib/prismic/fetch-tags', {
       'prismic.io': {
         api: apiStub
@@ -44,32 +44,29 @@ describe('fetchTags', () => {
   })
 
   afterEach(() => {
-    process.env.PRISMICIO_ACCESS_TOKEN = cachedPrismicAccessToken
+    process.env.PRISMICIO_WEB_ACCESS_TOKEN = cachedPrismicAccessToken
     apiStub.reset()
     queryStub.reset()
   })
 
   it('initiates Prismic api with correct data', async () => {
-    const repo = 'magical'
     const accessToken = 'TEST_PRISMIC_ACCESS_TOKEN'
-    await fetchTags({ repo })
+    await fetchTags()
 
     expect(apiStub).to.have.been.calledWith(
-      `https://nudj-${repo}.prismic.io/api`,
+      `https://nudj-web.prismic.io/api`,
       { accessToken }
     )
   })
 
   it('calls the Prismic `query` method', async () => {
-    const repo = 'magical'
-    await fetchTags({ repo })
+    await fetchTags()
 
     expect(queryStub).to.have.been.called()
   })
 
   it('returns a unique list of document tags', async () => {
-    const repo = 'magical'
-    const result = await fetchTags({ repo })
+    const result = await fetchTags()
 
     expect(result).to.deep.equal([
       'remember',

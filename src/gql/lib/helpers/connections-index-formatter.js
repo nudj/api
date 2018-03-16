@@ -1,4 +1,5 @@
 const uniq = require('lodash/uniq')
+const { values: tagTypes } = require('../../schema/enums/tag-types')
 
 const connectionsIndexFormatter = ({
   connections,
@@ -21,7 +22,7 @@ const connectionsIndexFormatter = ({
       const { tagId } = entityTags[entityTagId]
       const tag = tags[tagId]
 
-      if (tag.type === 'expertise') return tag.name
+      if (tag.type === tagTypes.EXPERTISE) return tag.name
     }).filter(Boolean)
 
     // Using connection IDs stored against question, construct object with those

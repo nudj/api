@@ -5,6 +5,7 @@ const flatten = require('lodash/flatten')
 const { merge } = require('@nudj/library')
 
 const connectionsIndexFormatter = require('../../../../gql/lib/helpers/connections-index-formatter')
+const { values: tagTypes } = require('../../../../gql/schema/enums/tag-types')
 
 const expect = chai.expect
 
@@ -134,23 +135,23 @@ const dbData = {
   tags: {
     'tag1': {
       name: 'Winning',
-      type: 'expertise'
+      type: tagTypes.EXPERTISE
     },
     'tag2': {
       name: 'Education',
-      type: 'expertise'
+      type: tagTypes.EXPERTISE
     },
     'tag3': {
       name: 'Organisational Skills',
-      type: 'expertise'
+      type: tagTypes.EXPERTISE
     },
     'tag4': {
-      name: 'Ice Cream',
-      type: 'random'
+      name: 'Junior',
+      type: tagTypes.SENIORITY
     },
     'tag5': {
       name: 'Manager',
-      type: 'seniority'
+      type: tagTypes.SENIORITY
     }
   }
 }
@@ -202,10 +203,10 @@ describe('connectionsIndexFormatter', () => {
     ])
   })
 
-  it('should only store tags of type `expertise`', async () => {
+  it('should only store tags of type `EXPERTISE`', async () => {
     const results = connectionsIndexFormatter(dbData)
     const addedTags = results.map(result => result.experienceTags)
-    expect(flatten(addedTags)).to.not.include('Ice Cream')
+    expect(flatten(addedTags)).to.not.include('Junior')
     expect(flatten(addedTags)).to.not.include('Manager')
     expect(addedTags).to.deep.equal([
       [

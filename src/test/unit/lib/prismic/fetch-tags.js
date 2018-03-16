@@ -28,6 +28,7 @@ const queryStub = sinon.stub().returns({
   ]
 })
 const apiStub = sinon.stub().returns(Promise.resolve({ query: queryStub }))
+const loggerStub = sinon.stub()
 
 describe('fetchTags', () => {
   let fetchTags
@@ -39,6 +40,9 @@ describe('fetchTags', () => {
     fetchTags = proxyquire('../../../../gql/lib/prismic/fetch-tags', {
       'prismic.io': {
         api: apiStub
+      },
+      '@nudj/library': {
+        logger: loggerStub
       }
     })
   })
@@ -78,5 +82,13 @@ describe('fetchTags', () => {
       'you',
       'try'
     ])
+  })
+
+  it('returns null if an error occurs', async () => {
+    apiStub.throws()
+    const result = await fetchTags()
+
+    expect(loggerStub).to.have.been.calledWith('error')
+    expect(result).to.equal(null)
   })
 })

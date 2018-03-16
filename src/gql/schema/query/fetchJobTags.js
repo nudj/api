@@ -1,4 +1,5 @@
 const { fetchTags } = require('../../lib/prismic')
+const { handleErrors } = require('../../lib')
 
 module.exports = {
   typeDefs: `
@@ -8,9 +9,9 @@ module.exports = {
   `,
   resolvers: {
     Query: {
-      fetchJobTags: async (root, args) => {
+      fetchJobTags: handleErrors(async (root, args) => {
         return fetchTags()
-      }
+      })
     }
   }
 }

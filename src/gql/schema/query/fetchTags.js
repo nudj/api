@@ -4,13 +4,14 @@ const { handleErrors } = require('../../lib')
 module.exports = {
   typeDefs: `
     extend type Query {
-      fetchJobTags: [String!]!
+      fetchTags(repo: String!, type: String!): [String!]!
     }
   `,
   resolvers: {
     Query: {
-      fetchJobTags: handleErrors(async (root, args) => {
-        return fetchTags()
+      fetchTags: handleErrors(async (root, args) => {
+        const { repo, type } = args
+        return fetchTags({ repo, type })
       })
     }
   }

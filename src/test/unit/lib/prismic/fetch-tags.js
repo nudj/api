@@ -27,20 +27,20 @@ const queryStub = sinon.stub().returns({
     }
   ]
 })
-const apiStub = sinon.stub().returns(Promise.resolve({ query: queryStub }))
+const PRISMIC_API_STUB = 'PRISMIC_API_STUB'
+const fetcherStub = sinon.stub().returns(PRISMIC_API_STUB)
 const loggerStub = sinon.stub()
 
-describe('fetchTags', () => {
+describe('Prismic.fetchTags', () => {
   let fetchTags
   let cachedPrismicAccessToken
 
   beforeEach(() => {
-    cachedPrismicAccessToken = process.env.PRISMICIO_WEB_ACCESS_TOKEN
-    process.env.PRISMICIO_WEB_ACCESS_TOKEN = 'TEST_PRISMIC_ACCESS_TOKEN'
+    cachedPrismicAccessToken = process.env.PRISMICIO_ACCESS_TOKEN
+    process.env.PRISMICIO_ACCESS_TOKEN = 'TEST_PRISMIC_ACCESS_TOKEN'
     fetchTags = proxyquire('../../../../gql/lib/prismic/fetch-tags', {
-      'prismic.io': {
-        api: apiStub
-      },
+      './fetch-api-for-repo': fetcherStub,
+      './query-documents': queryStub,
       '@nudj/library': {
         logger: loggerStub
       }
@@ -48,29 +48,26 @@ describe('fetchTags', () => {
   })
 
   afterEach(() => {
-    process.env.PRISMICIO_WEB_ACCESS_TOKEN = cachedPrismicAccessToken
-    apiStub.reset()
+    process.env.PRISMICIO_ACCESS_TOKEN = cachedPrismicAccessToken
     queryStub.reset()
+    loggerStub.reset()
+    fetcherStub.reset()
   })
 
-  it('initiates Prismic api with correct data', async () => {
-    const accessToken = 'TEST_PRISMIC_ACCESS_TOKEN'
-    await fetchTags()
+  it('initiates Prismic api for correct repo', async () => {
+    await fetchTags({ repo: 'platt', type: 'david' })
 
-    expect(apiStub).to.have.been.calledWith(
-      `https://nudj-web.prismic.io/api`,
-      { accessToken }
-    )
+    expect(fetcherStub).to.have.been.calledWith('platt')
   })
 
-  it('calls the Prismic `query` method', async () => {
-    await fetchTags()
+  it('querys documents with the provided type and api', async () => {
+    await fetchTags({ repo: 'platt', type: 'david' })
 
-    expect(queryStub).to.have.been.called()
+    expect(queryStub).to.have.been.calledWith({ api: PRISMIC_API_STUB, type: 'david' })
   })
 
   it('returns a unique list of document tags', async () => {
-    const result = await fetchTags()
+    const result = await fetchTags({ repo: 'platt', type: 'david' })
 
     expect(result).to.deep.equal([
       'remember',
@@ -85,8 +82,8 @@ describe('fetchTags', () => {
   })
 
   it('returns null if an error occurs', async () => {
-    apiStub.throws()
-    const result = await fetchTags()
+    fetcherStub.throws()
+    const result = await fetchTags({ repo: 'platt', type: 'david' })
 
     expect(loggerStub).to.have.been.calledWith('error')
     expect(result).to.equal(null)

@@ -1,20 +1,15 @@
-const Prismic = require('prismic.io')
 const union = require('lodash/union')
 
 const { logger } = require('@nudj/library')
 
-const accessToken = process.env.PRISMICIO_WEB_ACCESS_TOKEN
+const queryDocuments = require('./query-documents')
+const fetchApiForRepo = require('./fetch-api-for-repo')
 
-const fetchTags = async () => {
+const fetchTags = async ({ repo, type }) => {
   try {
-    const api = await Prismic.api(
-      `https://nudj-web.prismic.io/api`,
-      {
-        accessToken
-      }
-    )
-    const query = await api.query()
-    const tags = query.results.map(doc => doc.tags)
+    const api = await fetchApiForRepo(repo)
+    const documents = await queryDocuments({ api, type })
+    const tags = documents.results.map(doc => doc.tags)
 
     return union(...tags)
   } catch (error) {

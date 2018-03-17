@@ -15,15 +15,13 @@ describe('queryDocuments', () => {
   let queryDocuments
   const prismicAnyStub = sinon.stub().returns(DUMMY_PRISMIC_ANY_CALL)
   const prismicAtStub = sinon.stub().returns(DUMMY_PRISMIC_AT_CALL)
-  const query = {
-    'document.type': 'testTemplate',
-    'document.tags': [
-      'captain',
-      'face',
-      'strikes',
-      'again'
-    ]
-  }
+  const type = 'testType'
+  const tags = [
+    'captain',
+    'face',
+    'strikes',
+    'again'
+  ]
 
   beforeEach(() => {
     queryDocuments = proxyquire('../../../../gql/lib/prismic/query-documents', {
@@ -43,7 +41,7 @@ describe('queryDocuments', () => {
 
   it('should call the Prismic api with the provided query', async () => {
     const api = { query: () => {} }
-    queryDocuments({ api, query })
+    queryDocuments({ api, type, tags })
     expect(prismicAnyStub).to.have.been.calledWith(
       'document.tags',
       [
@@ -55,13 +53,13 @@ describe('queryDocuments', () => {
     )
     expect(prismicAtStub).to.have.been.calledWith(
       'document.type',
-      'testTemplate'
+      'testType'
     )
   })
 
   it('should trigger `query` method on Prismic api', async () => {
     const api = { query: sinon.stub() }
-    queryDocuments({ api, query })
+    queryDocuments({ api, tags, type })
     expect(api.query).to.have.been.calledWith([
       DUMMY_PRISMIC_AT_CALL,
       DUMMY_PRISMIC_ANY_CALL
@@ -70,7 +68,7 @@ describe('queryDocuments', () => {
 
   it('should return result of `query` method', async () => {
     const api = { query: (array) => array[1] + array[0] }
-    const result = queryDocuments({ api, query })
+    const result = queryDocuments({ api, tags, type })
     expect(result).to.equal(DUMMY_PRISMIC_ANY_CALL + DUMMY_PRISMIC_AT_CALL)
   })
 })

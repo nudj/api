@@ -1,12 +1,11 @@
-const Prismic = require('prismic.io')
 const mapValues = require('lodash/mapValues')
 
 const { merge, logger } = require('@nudj/library')
 
+const { values: prismicRepos } = require('../../schema/enums/prismic-repos')
 const queryDocuments = require('./query-documents')
 const fragmentToText = require('./fragment-to-text')
-
-const accessToken = process.env.PRISMICIO_ACCESS_TOKEN
+const fetchApiForRepo = require('./fetch-api-for-repo')
 
 const defaultKeys = {
   subject: 'composesubject',
@@ -15,19 +14,14 @@ const defaultKeys = {
 
 const fetchContent = async ({
   type,
-  repo = 'hirer',
+  repo = prismicRepos.HIRE,
   tags = ['default'],
   keys = defaultKeys
 }) => {
-  const query = {
-    'document.type': type,
-    'document.tags': tags
-  }
-  const url = `https://nudj-${repo}.prismic.io/api`
+  const api = await fetchApiForRepo(repo)
 
   try {
-    const api = await Prismic.api(url, { accessToken })
-    const response = await queryDocuments({ api, query })
+    const response = await queryDocuments({ api, type, tags })
 
     return response.results.map(doc => {
       return merge(

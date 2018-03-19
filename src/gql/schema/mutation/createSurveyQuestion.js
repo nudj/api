@@ -1,6 +1,6 @@
 const omit = require('lodash/omit')
 const { values: tagTypes } = require('../enums/tag-types')
-const { values: expertiseTags } = require('../enums/expertise-tags')
+const { values: tagSources } = require('../enums/tag-sources')
 const { handleErrors } = require('../../lib')
 
 module.exports = {
@@ -13,10 +13,6 @@ module.exports = {
     Mutation: {
       createSurveyQuestion: handleErrors(async (root, args, context) => {
         const { tags = [] } = args.data
-
-        tags.forEach(tag => {
-          if (!expertiseTags[tag]) throw new Error(`Invalid tag '${tag}'`)
-        })
 
         const surveyQuestion = await context.store.create({
           type: 'surveyQuestions',
@@ -60,7 +56,7 @@ module.exports = {
               entityType: 'surveyQuestion',
               entityId: surveyQuestion.id,
               tagId: tag.id,
-              sourceType: 'nudj',
+              sourceType: tagSources.NUDJ,
               sourceId: null
             }
           })

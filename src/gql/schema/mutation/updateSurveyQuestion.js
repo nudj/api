@@ -1,5 +1,5 @@
 const { values: tagTypes } = require('../enums/tag-types')
-const { values: expertiseTags } = require('../enums/expertise-tags')
+const { values: tagSources } = require('../enums/tag-sources')
 const { handleErrors } = require('../../lib')
 
 module.exports = {
@@ -21,10 +21,6 @@ module.exports = {
 
         const { tags = [] } = args.data
 
-        tags.forEach(tag => {
-          if (!expertiseTags[tag]) throw new Error(`Invalid tag '${tag}'`)
-        })
-
         const surveyTags = await Promise.all(tags.map(tag => {
           return context.store.readOneOrCreate({
             type: 'tags',
@@ -45,13 +41,13 @@ module.exports = {
             filters: {
               entityId: args.id,
               tagId: tag.id,
-              sourceType: 'nudj'
+              sourceType: tagSources.NUDJ
             },
             data: {
               entityType: 'surveyQuestion',
               entityId: args.id,
               tagId: tag.id,
-              sourceType: 'nudj',
+              sourceType: tagSources.NUDJ,
               sourceId: null
             }
           })

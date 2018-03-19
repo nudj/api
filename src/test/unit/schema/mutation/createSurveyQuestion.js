@@ -1,11 +1,17 @@
 /* eslint-env mocha */
 const chai = require('chai')
-const expect = chai.expect
+
+const { merge } = require('@nudj/library')
 
 const schema = require('../../../../gql/schema')
-const { executeQueryOnDbUsingSchema } = require('../../helpers')
+const {
+  executeQueryOnDbUsingSchema,
+  shouldRespondWithGqlError
+} = require('../../helpers')
+const { values: tagTypes } = require('../../../../gql/schema/enums/tag-types')
 const { values: SurveyQuestionTypes } = require('../../../../gql/schema/enums/survey-question-types')
 
+const expect = chai.expect
 const operation = `
   mutation (
     $surveySection: ID!
@@ -26,7 +32,8 @@ const variables = {
     description: 'Some description',
     name: 'someName',
     required: true,
-    type: SurveyQuestionTypes.COMPANIES
+    type: SurveyQuestionTypes.COMPANIES,
+    tags: ['ceo', 'founder']
   }
 }
 
@@ -41,7 +48,9 @@ describe('Mutation.createSurveyQuestion', () => {
           surveyQuestions: []
         }
       ],
-      surveyQuestions: []
+      surveyQuestions: [],
+      entityTags: [],
+      tags: []
     }
   })
 
@@ -59,8 +68,60 @@ describe('Mutation.createSurveyQuestion', () => {
       name: 'someName',
       required: true,
       type: SurveyQuestionTypes.COMPANIES,
+      tags: [
+        'entityTag1',
+        'entityTag2'
+      ],
       surveySection: 'surveySection1'
     })
+  })
+
+  it('should create the appropriate entity tags', async () => {
+    await executeQueryOnDbUsingSchema({
+      operation,
+      variables,
+      db,
+      schema
+    })
+    expect(db.entityTags).to.deep.equal([
+      {
+        entityId: 'surveyQuestion1',
+        entityType: 'surveyQuestion',
+        id: 'entityTag1',
+        sourceId: null,
+        sourceType: 'nudj',
+        tagId: 'tag1'
+      },
+      {
+        entityId: 'surveyQuestion1',
+        entityType: 'surveyQuestion',
+        id: 'entityTag2',
+        sourceId: null,
+        sourceType: 'nudj',
+        tagId: 'tag2'
+      }
+    ])
+  })
+
+  it('should create the appropriate tags', async () => {
+    await executeQueryOnDbUsingSchema({
+      operation,
+      variables,
+      db,
+      schema
+    })
+    expect(db.tags).to.deep.equal([
+      {
+        id: 'tag1',
+        name: 'ceo',
+        type: tagTypes.EXPERTISE
+      },
+      {
+        id: 'tag2',
+        name: 'founder',
+        type: tagTypes.EXPERTISE
+      }
+    ])
   })
 
   it('should add new id to surveySection', async () => {
@@ -85,5 +146,25 @@ describe('Mutation.createSurveyQuestion', () => {
       .to.deep.equal({
         id: 'surveyQuestion1'
       })
+  })
+
+  it('should error if given invalid tags', async () => {
+    const badVariables = merge(variables, {
+      data: {
+        tags: ['bad']
+      }
+    })
+
+    const result = await executeQueryOnDbUsingSchema({
+      operation,
+      variables: badVariables,
+      db,
+      schema
+    })
+    shouldRespondWithGqlError({
+      path: [
+        'createSurveyQuestion'
+      ]
+    })(result)
   })
 })

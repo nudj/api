@@ -9,7 +9,6 @@ module.exports = {
       name: String!
       required: Boolean!
       type: SurveyQuestionType!
-      tags: [ID!]
     }
 
     input SurveyQuestionCreateInput {

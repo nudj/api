@@ -3,8 +3,12 @@ const chai = require('chai')
 const expect = chai.expect
 
 const schema = require('../../../../gql/schema')
-const { executeQueryOnDbUsingSchema } = require('../../helpers')
+const {
+  executeQueryOnDbUsingSchema,
+  shouldRespondWithGqlError
+} = require('../../helpers')
 const { values: SurveyQuestionTypes } = require('../../../../gql/schema/enums/survey-question-types')
+const { values: tagTypes } = require('../../../../gql/schema/enums/tag-types')
 
 const operation = `
   mutation (
@@ -21,6 +25,7 @@ const operation = `
       name
       required
       type
+      tags
     }
   }
 `
@@ -31,7 +36,8 @@ let variables = {
     description: 'New description',
     name: 'New name',
     required: false,
-    type: SurveyQuestionTypes.COMPANIES
+    type: SurveyQuestionTypes.COMPANIES,
+    tags: ['ceo']
   }
 }
 
@@ -47,7 +53,27 @@ describe('Mutation.updateSurveyQuestion', () => {
           description: 'Old description',
           name: 'Old name',
           required: true,
-          type: SurveyQuestionTypes.CONNECTIONS
+          type: SurveyQuestionTypes.CONNECTIONS,
+          tags: [
+            'entityTag1'
+          ]
+        }
+      ],
+      tags: [
+        {
+          id: 'tag1',
+          name: 'ceo',
+          type: tagTypes.EXPERTISE
+        }
+      ],
+      entityTags: [
+        {
+          id: 'entityTag1',
+          entityId: 'surveyQuestion1',
+          entityType: 'surveyQuestion',
+          sourceId: null,
+          sourceType: 'nudj',
+          tagId: 'tag1'
         }
       ]
     }
@@ -66,8 +92,81 @@ describe('Mutation.updateSurveyQuestion', () => {
       description: 'New description',
       name: 'New name',
       required: false,
-      type: SurveyQuestionTypes.COMPANIES
+      type: SurveyQuestionTypes.COMPANIES,
+      tags: [
+        'entityTag1'
+      ]
     })
+  })
+
+  it('should create new tags', async () => {
+    await executeQueryOnDbUsingSchema({
+      operation,
+      schema,
+      db,
+      variables: {
+        id: 'surveyQuestion1',
+        data: {
+          tags: ['founder', 'ceo']
+        }
+      }
+    })
+    expect(db.entityTags).to.deep.equal([
+      {
+        entityId: 'surveyQuestion1',
+        entityType: 'surveyQuestion',
+        id: 'entityTag1',
+        sourceId: null,
+        sourceType: 'nudj',
+        tagId: 'tag1'
+      },
+      {
+        entityId: 'surveyQuestion1',
+        entityType: 'surveyQuestion',
+        id: 'entityTag2',
+        sourceId: null,
+        sourceType: 'nudj',
+        tagId: 'tag2'
+      }
+    ])
+    expect(db.tags).to.deep.equal([
+      {
+        id: 'tag1',
+        name: 'ceo',
+        type: tagTypes.EXPERTISE
+      },
+      {
+        id: 'tag2',
+        name: 'founder',
+        type: tagTypes.EXPERTISE
+      }
+    ])
+  })
+
+  it('should not create pre-existing tags', async () => {
+    await executeQueryOnDbUsingSchema({
+      operation,
+      variables,
+      db,
+      schema
+    })
+    expect(db.entityTags).to.deep.equal([
+      {
+        entityId: 'surveyQuestion1',
+        entityType: 'surveyQuestion',
+        id: 'entityTag1',
+        sourceId: null,
+        sourceType: 'nudj',
+        tagId: 'tag1'
+      }
+    ])
+    expect(db.tags).to.deep.equal([
+      {
+        id: 'tag1',
+        name: 'ceo',
+        type: tagTypes.EXPERTISE
+      }
+    ])
   })
 
   it('return the updated survey', async () => {
@@ -85,7 +184,29 @@ describe('Mutation.updateSurveyQuestion', () => {
         description: 'New description',
         name: 'New name',
         required: false,
-        type: SurveyQuestionTypes.COMPANIES
+        type: SurveyQuestionTypes.COMPANIES,
+        tags: [
+          'entityTag1'
+        ]
       })
+  })
+
+  it('should error if given invalid tags', async () => {
+    const result = await executeQueryOnDbUsingSchema({
+      operation,
+      variables: {
+        id: 'surveyQuestion1',
+        data: {
+          tags: ['bad']
+        }
+      },
+      db,
+      schema
+    })
+    shouldRespondWithGqlError({
+      path: [
+        'updateSurveyQuestion'
+      ]
+    })(result)
   })
 })

@@ -185,7 +185,7 @@ describe('Mutation.updateSurveyQuestion', () => {
         required: false,
         type: SurveyQuestionTypes.COMPANIES,
         tags: [
-          'entityTag1'
+          'ceo'
         ]
       })
   })

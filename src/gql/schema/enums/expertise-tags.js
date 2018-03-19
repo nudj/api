@@ -2,6 +2,7 @@ const { rootEnum } = require('../../lib')
 
 module.exports = rootEnum({
   name: 'ExpertiseTagType',
+  // Values derived from Clearbit roles
   values: [
     'ceo',
     'communications',

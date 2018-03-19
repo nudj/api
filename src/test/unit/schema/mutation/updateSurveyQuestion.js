@@ -3,12 +3,10 @@ const chai = require('chai')
 const expect = chai.expect
 
 const schema = require('../../../../gql/schema')
-const {
-  executeQueryOnDbUsingSchema,
-  shouldRespondWithGqlError
-} = require('../../helpers')
+const { executeQueryOnDbUsingSchema } = require('../../helpers')
 const { values: SurveyQuestionTypes } = require('../../../../gql/schema/enums/survey-question-types')
 const { values: tagTypes } = require('../../../../gql/schema/enums/tag-types')
+const { values: tagSources } = require('../../../../gql/schema/enums/tag-sources')
 
 const operation = `
   mutation (
@@ -72,7 +70,7 @@ describe('Mutation.updateSurveyQuestion', () => {
           entityId: 'surveyQuestion1',
           entityType: 'surveyQuestion',
           sourceId: null,
-          sourceType: 'nudj',
+          sourceType: tagSources.NUDJ,
           tagId: 'tag1'
         }
       ]
@@ -117,7 +115,7 @@ describe('Mutation.updateSurveyQuestion', () => {
         entityType: 'surveyQuestion',
         id: 'entityTag1',
         sourceId: null,
-        sourceType: 'nudj',
+        sourceType: tagSources.NUDJ,
         tagId: 'tag1'
       },
       {
@@ -125,7 +123,7 @@ describe('Mutation.updateSurveyQuestion', () => {
         entityType: 'surveyQuestion',
         id: 'entityTag2',
         sourceId: null,
-        sourceType: 'nudj',
+        sourceType: tagSources.NUDJ,
         tagId: 'tag2'
       }
     ])
@@ -156,7 +154,7 @@ describe('Mutation.updateSurveyQuestion', () => {
         entityType: 'surveyQuestion',
         id: 'entityTag1',
         sourceId: null,
-        sourceType: 'nudj',
+        sourceType: tagSources.NUDJ,
         tagId: 'tag1'
       }
     ])
@@ -169,13 +167,14 @@ describe('Mutation.updateSurveyQuestion', () => {
     ])
   })
 
-  it('return the updated survey', async () => {
+  it('should return the updated survey', async () => {
     const result = await executeQueryOnDbUsingSchema({
       operation,
       variables,
       db,
       schema
     })
+
     expect(result)
       .to.have.deep.property('data.updateSurveyQuestion')
       .to.deep.equal({
@@ -203,10 +202,8 @@ describe('Mutation.updateSurveyQuestion', () => {
       db,
       schema
     })
-    shouldRespondWithGqlError({
-      path: [
-        'updateSurveyQuestion'
-      ]
-    })(result)
+    expect(result.errors[0]).to.have.property('message').to.include(
+      'Expected type "ExpertiseTagType", found "bad"'
+    )
   })
 })

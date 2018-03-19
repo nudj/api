@@ -1,7 +1,7 @@
 const { rootEnum } = require('../../lib')
 
 module.exports = rootEnum({
-  name: 'Expertise',
+  name: 'ExpertiseTagType',
   values: [
     'ceo',
     'communications',

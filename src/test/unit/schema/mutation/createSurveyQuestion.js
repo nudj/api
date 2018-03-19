@@ -4,11 +4,9 @@ const chai = require('chai')
 const { merge } = require('@nudj/library')
 
 const schema = require('../../../../gql/schema')
-const {
-  executeQueryOnDbUsingSchema,
-  shouldRespondWithGqlError
-} = require('../../helpers')
+const { executeQueryOnDbUsingSchema } = require('../../helpers')
 const { values: tagTypes } = require('../../../../gql/schema/enums/tag-types')
+const { values: tagSources } = require('../../../../gql/schema/enums/tag-sources')
 const { values: SurveyQuestionTypes } = require('../../../../gql/schema/enums/survey-question-types')
 
 const expect = chai.expect
@@ -89,7 +87,7 @@ describe('Mutation.createSurveyQuestion', () => {
         entityType: 'surveyQuestion',
         id: 'entityTag1',
         sourceId: null,
-        sourceType: 'nudj',
+        sourceType: tagSources.NUDJ,
         tagId: 'tag1'
       },
       {
@@ -97,7 +95,7 @@ describe('Mutation.createSurveyQuestion', () => {
         entityType: 'surveyQuestion',
         id: 'entityTag2',
         sourceId: null,
-        sourceType: 'nudj',
+        sourceType: tagSources.NUDJ,
         tagId: 'tag2'
       }
     ])
@@ -134,7 +132,7 @@ describe('Mutation.createSurveyQuestion', () => {
     expect(db.surveySections[0].surveyQuestions).to.deep.equal(['surveyQuestion1'])
   })
 
-  it('return the new surveyQuestion', async () => {
+  it('should return the new surveyQuestion', async () => {
     const result = await executeQueryOnDbUsingSchema({
       operation,
       variables,
@@ -161,10 +159,8 @@ describe('Mutation.createSurveyQuestion', () => {
       db,
       schema
     })
-    shouldRespondWithGqlError({
-      path: [
-        'createSurveyQuestion'
-      ]
-    })(result)
+    expect(result.errors[0]).to.have.property('message').to.include(
+      'Expected type "ExpertiseTagType", found "bad"'
+    )
   })
 })

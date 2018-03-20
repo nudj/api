@@ -17,6 +17,7 @@ module.exports = {
       name: String!
       required: Boolean!
       type: SurveyQuestionType!
+      tags: [ExpertiseTagType!]
     }
 
     input SurveyQuestionUpdateInput {
@@ -25,6 +26,7 @@ module.exports = {
       name: String
       required: Boolean
       type: SurveyQuestionType
+      tags: [ExpertiseTagType!]
     }
 
     input SurveyQuestionFilterInput {

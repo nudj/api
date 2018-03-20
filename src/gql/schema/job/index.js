@@ -20,6 +20,40 @@ module.exports = {
       requirements: String
     }
 
+    input JobCreateInput {
+      title: String!
+      slug: String!
+      description: String!
+      bonus: Int!
+      roleDescription: String!
+      candidateDescription: String!
+      location: String!
+      remuneration: String!
+      status: JobStatus!
+      templateTags: [String!]!
+      type: String!
+      url: String!
+      experience: String
+      requirements: String
+    }
+
+    input JobUpdateInput {
+      title: String
+      slug: String
+      description: String
+      bonus: Int
+      roleDescription: String
+      candidateDescription: String
+      location: String
+      remuneration: String
+      status: JobStatus
+      templateTags: [String!]
+      type: String
+      url: String
+      experience: String
+      requirements: String
+    }
+
     input JobFilterInput {
       id: ID
       slug: String

@@ -9,7 +9,7 @@ chai.use(sinonChai)
 
 const baseArgs = {
   type: 'testing',
-  repo: 'special-test',
+  repo: 'web',
   tags: [ 'test' ],
   keys: {
     testMessage: 'document.testing'
@@ -34,43 +34,36 @@ const queryResponse = {
   ]
 }
 
-const apiStub = { query: sinon.stub().returns(queryResponse) }
-const prismicStub = sinon.stub().returns(apiStub)
+const queryDocumentsStub = sinon.stub().returns(queryResponse)
+const apiStub = sinon.stub()
 
 describe('fetchContent', () => {
   let fetchContent
   let cachedPrismicAccessToken
 
   beforeEach(() => {
-    cachedPrismicAccessToken = process.env.PRISMICIO_ACCESS_TOKEN
-    process.env.PRISMICIO_ACCESS_TOKEN = 'TEST_PRISMIC_ACCESS_TOKEN'
-    fetchContent = proxyquire('../../../../gql/lib/prismic', {
-      'prismic.io': {
-        api: prismicStub
-      }
+    cachedPrismicAccessToken = process.env.PRISMICIO_WEB_ACCESS_TOKEN
+    process.env.PRISMICIO_WEB_ACCESS_TOKEN = 'TEST_PRISMIC_ACCESS_TOKEN'
+    fetchContent = proxyquire('../../../../gql/lib/prismic/fetch-content', {
+      './query-documents': queryDocumentsStub,
+      './prismic': apiStub
     })
   })
 
   afterEach(() => {
-    process.env.PRISMICIO_ACCESS_TOKEN = cachedPrismicAccessToken
-    apiStub.query.reset()
-    prismicStub.reset()
+    process.env.PRISMICIO_WEB_ACCESS_TOKEN = cachedPrismicAccessToken
+    queryDocumentsStub.reset()
+    apiStub.reset()
   })
 
   it('calls Prismic api with repo url and access token', async () => {
     await fetchContent(baseArgs)
-    expect(prismicStub).to.have.been.calledWith(
-      `https://nudj-special-test.prismic.io/api`,
-      { accessToken: 'TEST_PRISMIC_ACCESS_TOKEN' }
-    )
+    expect(apiStub).to.have.been.calledWith('web')
   })
 
   it('queries Prismic api with formatted query', async () => {
     await fetchContent(baseArgs)
-    expect(apiStub.query).to.have.been.calledWith([
-      ['at', 'document.type', 'testing'],
-      ['any', 'document.tags', ['test']]
-    ])
+    expect(queryDocumentsStub).to.have.been.called()
   })
 
   it('fetches and returns formatted content', async () => {
@@ -94,7 +87,8 @@ describe('fetchContent', () => {
   })
 
   it('returns null when it encounters an error', async () => {
-    prismicStub.throws(new Error('Test Power: Over 9000'))
-    expect(await fetchContent(baseArgs)).to.be.null()
+    apiStub.throws(new Error('Test Power: Over 9000'))
+    expect(fetchContent(baseArgs))
+      .to.eventually.be.rejectedWith('Test Power: Over 9000')
   })
 })

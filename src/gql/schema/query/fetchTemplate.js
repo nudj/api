@@ -1,4 +1,4 @@
-const fetchContent = require('../../lib/prismic')
+const { fetchContent } = require('../../lib/prismic')
 
 module.exports = {
   typeDefs: `

@@ -1,3 +1,5 @@
+const omit = require('lodash/omit')
+
 const { values: tagTypes } = require('../enums/tag-types')
 const { values: tagSources } = require('../enums/tag-sources')
 const { handleErrors } = require('../../lib')
@@ -57,8 +59,8 @@ module.exports = {
           type: 'surveyQuestions',
           id: args.id,
           data: {
-            ...args.data,
-            tags: surveyQuestionEntityTags.map(tag => tag.id)
+            ...omit(args.data, ['tags']),
+            entityTags: surveyQuestionEntityTags.map(tag => tag.id)
           }
         })
       })

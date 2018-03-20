@@ -11,7 +11,7 @@ describe('SurveyQuestion.tags', () => {
       surveyQuestions: [
         {
           id: 'surveyQuestion1',
-          tags: [
+          entityTags: [
             'entityTag1',
             'entityTag2'
           ]
@@ -62,7 +62,7 @@ describe('SurveyQuestion.tags', () => {
       surveyQuestions: [
         {
           id: 'surveyQuestion1',
-          tags: [
+          entityTags: [
             'entityTag1',
             'entityTag2'
           ]

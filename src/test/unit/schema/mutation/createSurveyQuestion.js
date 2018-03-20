@@ -66,7 +66,7 @@ describe('Mutation.createSurveyQuestion', () => {
       name: 'someName',
       required: true,
       type: SurveyQuestionTypes.COMPANIES,
-      tags: [
+      entityTags: [
         'entityTag1',
         'entityTag2'
       ],

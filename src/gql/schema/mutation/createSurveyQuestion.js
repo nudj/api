@@ -66,7 +66,7 @@ module.exports = {
           type: 'surveyQuestions',
           id: surveyQuestion.id,
           data: {
-            tags: surveyQuestionEntityTags.map(tag => tag.id)
+            entityTags: surveyQuestionEntityTags.map(tag => tag.id)
           }
         })
       })

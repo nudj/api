@@ -71,9 +71,15 @@ async function updateIdsForCollectionInDb (collection, db) {
 
 async function up ({ db, step }) {
   try {
-    await step('Kill Ollie', () => {
-      const collection = db.collection('people')
-      return collection.remove('27643459')
+    await step('Kill Ollie', async () => {
+      try {
+        const collection = db.collection('people')
+        await collection.remove('27643459')
+      } catch (error) {
+        if (error.message !== `document not found`) {
+          throw error
+        }
+      }
     })
 
     await step('Remove redundant collections', async () => {

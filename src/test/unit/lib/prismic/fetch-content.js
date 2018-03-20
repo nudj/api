@@ -46,7 +46,7 @@ describe('fetchContent', () => {
     process.env.PRISMICIO_WEB_ACCESS_TOKEN = 'TEST_PRISMIC_ACCESS_TOKEN'
     fetchContent = proxyquire('../../../../gql/lib/prismic/fetch-content', {
       './query-documents': queryDocumentsStub,
-      './fetch-api-for-repo': apiStub
+      './prismic': apiStub
     })
   })
 

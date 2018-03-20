@@ -9,7 +9,7 @@ module.exports = {
       tags: async (surveyQuestion, args, context) => {
         const entityTags = await context.store.readMany({
           type: 'entityTags',
-          ids: surveyQuestion.tags
+          ids: surveyQuestion.entityTags || []
         })
 
         const tagIds = entityTags.map(entityTag => entityTag.tagId)

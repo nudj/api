@@ -52,7 +52,7 @@ describe('Mutation.updateSurveyQuestion', () => {
           name: 'Old name',
           required: true,
           type: SurveyQuestionTypes.CONNECTIONS,
-          tags: [
+          entityTags: [
             'entityTag1'
           ]
         }
@@ -91,7 +91,7 @@ describe('Mutation.updateSurveyQuestion', () => {
       name: 'New name',
       required: false,
       type: SurveyQuestionTypes.COMPANIES,
-      tags: [
+      entityTags: [
         'entityTag1'
       ]
     })

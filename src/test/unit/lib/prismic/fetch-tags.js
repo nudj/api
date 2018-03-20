@@ -39,7 +39,7 @@ describe('Prismic.fetchTags', () => {
     cachedPrismicAccessToken = process.env.PRISMICIO_ACCESS_TOKEN
     process.env.PRISMICIO_ACCESS_TOKEN = 'TEST_PRISMIC_ACCESS_TOKEN'
     fetchTags = proxyquire('../../../../gql/lib/prismic/fetch-tags', {
-      './fetch-api-for-repo': fetcherStub,
+      './prismic': fetcherStub,
       './query-documents': queryStub,
       '@nudj/library': {
         logger: loggerStub

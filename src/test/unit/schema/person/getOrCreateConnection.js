@@ -29,6 +29,7 @@ describe('Person.getOrCreateConnection', () => {
           company {
             id
             name
+            slug
           }
           person {
             id
@@ -76,7 +77,9 @@ describe('Person.getOrCreateConnection', () => {
       return expect(db).to.have.deep.property('companies.0').to.deep.equal({
         id: 'company1',
         client: false,
-        name: 'CONNECTION_COMPANY'
+        onboarded: false,
+        name: 'CONNECTION_COMPANY',
+        slug: 'connection_company'
       })
     })
 
@@ -100,7 +103,8 @@ describe('Person.getOrCreateConnection', () => {
           },
           company: {
             id: 'company1',
-            name: 'CONNECTION_COMPANY'
+            name: 'CONNECTION_COMPANY',
+            slug: 'connection_company'
           },
           person: {
             id: 'person2',
@@ -153,8 +157,9 @@ describe('Person.getOrCreateConnection', () => {
         ],
         roles: [],
         companies: [{
-          id: 'oldId',
-          name: 'CONNECTION_COMPANY'
+          id: '99764801b2683fb0e09442ff1cfcf23a',
+          name: 'CONNECTION_COMPANY',
+          slug: 'connection_company'
         }],
         connections: []
       }
@@ -169,8 +174,9 @@ describe('Person.getOrCreateConnection', () => {
       return expect(result)
         .to.have.deep.property('data.person.getOrCreateConnection.company')
         .to.deep.equal({
-          id: 'oldId',
-          name: 'CONNECTION_COMPANY'
+          id: '99764801b2683fb0e09442ff1cfcf23a',
+          name: 'CONNECTION_COMPANY',
+          slug: 'connection_company'
         })
     })
   })
@@ -226,7 +232,8 @@ describe('Person.getOrCreateConnection', () => {
         }],
         companies: [{
           id: 'company1',
-          name: 'nudj'
+          name: 'nudj',
+          slug: 'nudj'
         }],
         connections: [{
           id: 'oldId',
@@ -259,7 +266,8 @@ describe('Person.getOrCreateConnection', () => {
           },
           company: {
             id: 'company1',
-            name: 'nudj'
+            name: 'nudj',
+            slug: 'nudj'
           },
           person: {
             id: 'person2',
@@ -317,7 +325,8 @@ describe('Person.getOrCreateConnection', () => {
           role: null,
           company: {
             id: 'company1',
-            name: 'CONNECTION_COMPANY'
+            name: 'CONNECTION_COMPANY',
+            slug: 'connection_company'
           },
           person: {
             id: 'person2',
@@ -376,7 +385,8 @@ describe('Person.getOrCreateConnection', () => {
           role: null,
           company: {
             id: 'company1',
-            name: 'CONNECTION_COMPANY'
+            name: 'CONNECTION_COMPANY',
+            slug: 'connection_company'
           },
           person: {
             id: 'person2',
@@ -408,7 +418,8 @@ describe('Person.getOrCreateConnection', () => {
         companies: [
           {
             id: 'company1',
-            name: 'Company name'
+            name: 'Company name',
+            slug: 'company name'
           }
         ],
         connections: []

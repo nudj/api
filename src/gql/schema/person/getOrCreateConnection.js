@@ -1,5 +1,10 @@
 const omit = require('lodash/omit')
 const pick = require('lodash/pick')
+const hash = require('hash-generator')
+const { generateId } = require('@nudj/library')
+const { idTypes } = require('@nudj/library/lib/constants')
+
+const makeSlug = require('../../lib/helpers/make-slug')
 
 module.exports = {
   typeDefs: `
@@ -28,6 +33,38 @@ module.exports = {
           return { ...savedConnection, person: savedPerson }
         }
 
+        let existingCompany
+        let companySlug
+
+        if (to.company) {
+          companySlug = makeSlug(to.company)
+          const companyId = generateId(idTypes.COMPANY, { name: to.company })
+
+          existingCompany = await context.store.readOne({
+            type: 'companies',
+            id: companyId
+          })
+
+          if (!existingCompany) {
+            existingCompany = await context.store.readOne({
+              type: 'companies',
+              filters: {
+                slug: companySlug
+              }
+            })
+
+            while (existingCompany && companySlug === existingCompany.slug) {
+              companySlug = `${companySlug}-${hash(8)}`
+              existingCompany = await context.store.readOne({
+                type: 'companies',
+                filters: {
+                  slug: companySlug
+                }
+              })
+            }
+          }
+        }
+
         const [ personFromConnection, role, company ] = await Promise.all([
           savedPerson || context.store.create({
             type: 'people',
@@ -38,12 +75,18 @@ module.exports = {
             filters: { name: to.title },
             data: { name: to.title }
           }),
-          to.company && context.store.readOneOrCreate({
+          (to.company && existingCompany) || (to.company && context.store.create({
             type: 'companies',
-            filters: { name: to.company },
-            data: { name: to.company, client: false }
-          })
+            filters: { slug: companySlug },
+            data: {
+              name: to.company,
+              slug: companySlug,
+              onboarded: false,
+              client: false
+            }
+          }))
         ])
+
         const connection = await context.store.create({
           type: 'connections',
           data: {

@@ -37,6 +37,19 @@ async function up ({ db, step }) {
       })
     ])
   })
+
+  await step('Rename `job.tags` to `job.labels`', async () => {
+    const jobsCollection = db.collection('jobs')
+    const allJobs = await jobsCollection.all()
+    await allJobs.each(async job => {
+      if (job.tags && !job.labels) {
+        return jobsCollection.update(job, {
+          labels: job.tags,
+          tags: null
+        }, { keepNull: false })
+      }
+    })
+  })
 }
 
 async function down ({ db, step }) {
@@ -77,6 +90,19 @@ async function down ({ db, step }) {
         }
       })
     ])
+  })
+
+  await step('Restore `job.labels` to `job.tags`', async () => {
+    const jobsCollection = db.collection('jobs')
+    const allJobs = await jobsCollection.all()
+    await allJobs.each(async job => {
+      if (job.labels && !job.tags) {
+        return jobsCollection.update(job, {
+          tags: job.labels,
+          labels: null
+        }, { keepNull: false })
+      }
+    })
   })
 }
 

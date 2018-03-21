@@ -53,6 +53,7 @@ module.exports = {
       url: String
       experience: String
       requirements: String
+      tags: [ExpertiseTagType!]
     }
 
     input JobFilterInput {

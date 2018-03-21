@@ -9,6 +9,8 @@ module.exports = {
       getOrCreateEmployment: async (person, args, context) => {
         const { company: newCompany, source } = args
 
+        if (!newCompany) throw new Error('Please pass a company string')
+
         let company = await context.store.readOne({
           type: 'companies',
           filters: { name: newCompany }

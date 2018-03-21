@@ -36,15 +36,15 @@ module.exports = {
           const connectionId = generateId(idTypes.CONNECTION, connectionData)
 
           return {
-            companies: all.companies.concat({
+            companies: companyId ? all.companies.concat({
               id: companyId,
               name: connection.company,
               client: false
-            }),
-            roles: all.roles.concat({
+            }) : all.companies,
+            roles: roleId ? all.roles.concat({
               id: roleId,
               name: connection.title
-            }),
+            }) : all.roles,
             people: all.people.concat({
               id: personId,
               email: connection.email

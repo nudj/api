@@ -14,8 +14,14 @@ chai.use(sinonChai)
 
 describe('Person.importLinkedinConnections', () => {
   const importStub = sinon.stub()
+  const queryStub = sinon.stub().returns([])
   const person = { id: 'person1' }
-  const context = { store: { import: importStub } }
+  const context = {
+    store: {
+      import: importStub,
+      query: queryStub
+    }
+  }
   const args = {
     connections: [{
       'First Name': 'CONNECTION_FIRSTNAME1',
@@ -42,6 +48,7 @@ describe('Person.importLinkedinConnections', () => {
 
     afterEach(() => {
       importStub.reset()
+      queryStub.reset()
     })
 
     it('should call store.import', () => {
@@ -81,16 +88,19 @@ describe('Person.importLinkedinConnections', () => {
             {
               client: false,
               id: '94d0a86fcf0307a7bf8014ffbacc6631',
-              name: 'CONNECTION_COMPANY1'
+              name: 'CONNECTION_COMPANY1',
+              onboarded: false,
+              'slug': 'connection_company1'
             },
             {
               client: false,
               id: '4bf9065b926e002fdb7e72196287d5eb',
-              name: 'CONNECTION_COMPANY2'
+              name: 'CONNECTION_COMPANY2',
+              onboarded: false,
+              'slug': 'connection_company2'
             }
           ],
-          name: 'companies',
-          onDuplicate: 'update'
+          name: 'companies'
         },
         {
           data: [
@@ -103,8 +113,7 @@ describe('Person.importLinkedinConnections', () => {
               name: 'CONNECTION_TITLE2'
             }
           ],
-          name: 'roles',
-          onDuplicate: 'update'
+          name: 'roles'
         },
         {
           data: [
@@ -198,6 +207,7 @@ describe('Person.importLinkedinConnections', () => {
 
     afterEach(() => {
       importStub.reset()
+      queryStub.reset()
     })
 
     it('should not generate relational company ID', () => {
@@ -228,6 +238,7 @@ describe('Person.importLinkedinConnections', () => {
 
     afterEach(() => {
       importStub.reset()
+      queryStub.reset()
     })
 
     it('should not generate relational role ID', () => {
@@ -258,6 +269,7 @@ describe('Person.importLinkedinConnections', () => {
 
     afterEach(() => {
       importStub.reset()
+      queryStub.reset()
     })
 
     it('should not create a connection', () => {

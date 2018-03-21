@@ -26,6 +26,7 @@ describe('Person.getOrCreateEmployment', () => {
           company {
             id
             name
+            slug
           }
           source
         }
@@ -57,6 +58,8 @@ describe('Person.getOrCreateEmployment', () => {
         return expect(db).to.have.deep.property('companies.0').to.deep.equal({
           id: 'company1',
           client: false,
+          onboarded: false,
+          slug: 'employment_company',
           name: 'EMPLOYMENT_COMPANY'
         })
       })
@@ -68,6 +71,7 @@ describe('Person.getOrCreateEmployment', () => {
             id: 'employment1',
             company: {
               id: 'company1',
+              slug: 'employment_company',
               name: 'EMPLOYMENT_COMPANY'
             },
             source: DataSources.values.LINKEDIN
@@ -84,8 +88,9 @@ describe('Person.getOrCreateEmployment', () => {
             }
           ],
           companies: [{
-            id: 'oldId',
-            name: 'EMPLOYMENT_COMPANY'
+            id: 'a08491cb2f97756f0413f121ae818846',
+            name: 'EMPLOYMENT_COMPANY',
+            slug: 'employment_company'
           }],
           employments: []
         }
@@ -100,8 +105,9 @@ describe('Person.getOrCreateEmployment', () => {
         return expect(result)
           .to.have.deep.property('data.person.getOrCreateEmployment.company')
           .to.deep.equal({
-            id: 'oldId',
-            name: 'EMPLOYMENT_COMPANY'
+            id: 'a08491cb2f97756f0413f121ae818846',
+            name: 'EMPLOYMENT_COMPANY',
+            slug: 'employment_company'
           })
       })
     })
@@ -115,33 +121,45 @@ describe('Person.getOrCreateEmployment', () => {
             }
           ],
           companies: [{
-            id: 'company1',
-            name: 'EMPLOYMENT_COMPANY'
+            id: 'a08491cb2f97756f0413f121ae818846',
+            name: 'EMPLOYMENT_COMPANY',
+            slug: 'employment_company'
           }],
           employments: [{
             id: 'oldId',
             person: 'person1',
-            company: 'company1',
+            company: 'a08491cb2f97756f0413f121ae818846',
             source: DataSources.values.LINKEDIN
           }]
         }
         result = await executeQueryOnDbUsingSchema({ operation, variables, db, schema })
       })
 
-      it('should not create a new employments', () => {
+      it('should not create a new employment', () => {
         expect(db.employments.length).to.equal(1)
       })
 
-      it('should return the existing employments', () => {
+      it('should return the existing employment', () => {
         return expect(result)
           .to.have.deep.property('data.person.getOrCreateEmployment')
           .to.deep.equal({
             id: 'oldId',
             company: {
-              id: 'company1',
-              name: 'EMPLOYMENT_COMPANY'
+              id: 'a08491cb2f97756f0413f121ae818846',
+              name: 'EMPLOYMENT_COMPANY',
+              slug: 'employment_company'
             },
             source: DataSources.values.LINKEDIN
+          })
+      })
+
+      it('should return the existing company', () => {
+        return expect(result)
+          .to.have.deep.property('data.person.getOrCreateEmployment.company')
+          .to.deep.equal({
+            id: 'a08491cb2f97756f0413f121ae818846',
+            name: 'EMPLOYMENT_COMPANY',
+            slug: 'employment_company'
           })
       })
     })

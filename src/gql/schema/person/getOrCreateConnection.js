@@ -4,6 +4,7 @@ const hash = require('hash-generator')
 const { generateId } = require('@nudj/library')
 const { idTypes } = require('@nudj/library/lib/constants')
 
+const handleErrors = require('../../lib/handle-errors')
 const makeSlug = require('../../lib/helpers/make-slug')
 
 module.exports = {
@@ -14,7 +15,7 @@ module.exports = {
   `,
   resolvers: {
     Person: {
-      getOrCreateConnection: async (person, args, context) => {
+      getOrCreateConnection: handleErrors(async (person, args, context) => {
         const from = person.id
         const { to, source } = args
 
@@ -40,27 +41,40 @@ module.exports = {
           companySlug = makeSlug(to.company)
           const companyId = generateId(idTypes.COMPANY, { name: to.company })
 
-          existingCompany = await context.store.readOne({
-            type: 'companies',
-            id: companyId
-          })
-
-          if (!existingCompany) {
+          try {
             existingCompany = await context.store.readOne({
               type: 'companies',
-              filters: {
-                slug: companySlug
-              }
+              id: companyId
             })
+          } catch (error) {
+            if (error.message !== 'document not found') throw error
+          }
 
-            while (existingCompany && companySlug === existingCompany.slug) {
-              companySlug = `${companySlug}-${hash(8)}`
+          if (!existingCompany) {
+            try {
               existingCompany = await context.store.readOne({
                 type: 'companies',
                 filters: {
                   slug: companySlug
                 }
               })
+            } catch (error) {
+              if (error.message !== 'document not found') throw error
+            }
+
+            while (existingCompany && companySlug === existingCompany.slug) {
+              companySlug = `${companySlug}-${hash(8)}`
+
+              try {
+                existingCompany = await context.store.readOne({
+                  type: 'companies',
+                  filters: {
+                    slug: companySlug
+                  }
+                })
+              } catch (error) {
+                if (error.message !== 'document not found') throw error
+              }
             }
           }
         }
@@ -105,7 +119,7 @@ module.exports = {
           company,
           person: personFromConnection
         }
-      }
+      })
     }
   }
 }

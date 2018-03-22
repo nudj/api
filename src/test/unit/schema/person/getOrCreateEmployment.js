@@ -189,8 +189,7 @@ describe('Person.getOrCreateEmployment', () => {
 
     it('should respond with error', () => {
       return shouldRespondWithGqlError({
-        path: ['person', 'getOrCreateEmployment'],
-        message: 'Please pass a company string'
+        path: ['person', 'getOrCreateEmployment']
       })(result)
     })
   })

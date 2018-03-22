@@ -3,6 +3,7 @@ const hash = require('hash-generator')
 const { generateId } = require('@nudj/library')
 const { idTypes } = require('@nudj/library/lib/constants')
 
+const handleErrors = require('../../lib/handle-errors')
 const makeSlug = require('../../lib/helpers/make-slug')
 
 module.exports = {
@@ -13,35 +14,48 @@ module.exports = {
   `,
   resolvers: {
     Person: {
-      getOrCreateEmployment: async (person, args, context) => {
+      getOrCreateEmployment: handleErrors(async (person, args, context) => {
         const { company: newCompany, source } = args
 
         if (!newCompany) throw new Error('Please pass a company string')
 
         const companyId = generateId(idTypes.COMPANY, { name: newCompany })
         let companySlug = makeSlug(newCompany)
+        let company
 
-        let company = await context.store.readOne({
-          type: 'companies',
-          id: companyId
-        })
-
-        if (!company) {
+        try {
           company = await context.store.readOne({
             type: 'companies',
-            filters: {
-              slug: companySlug
-            }
+            id: companyId
           })
+        } catch (error) {
+          if (error.message !== 'document not found') throw error
+        }
 
-          while (company && companySlug === company.slug) {
-            companySlug = `${companySlug}-${hash(8)}`
+        if (!company) {
+          try {
             company = await context.store.readOne({
               type: 'companies',
               filters: {
                 slug: companySlug
               }
             })
+          } catch (error) {
+            if (error.message !== 'document not found') throw error
+          }
+
+          while (company && companySlug === company.slug) {
+            companySlug = `${companySlug}-${hash(8)}`
+            try {
+              company = await context.store.readOne({
+                type: 'companies',
+                filters: {
+                  slug: companySlug
+                }
+              })
+            } catch (error) {
+              if (error.message !== 'document not found') throw error
+            }
           }
         }
 
@@ -76,7 +90,7 @@ module.exports = {
         })
 
         return { ...newEmployment, company }
-      }
+      })
     }
   }
 }

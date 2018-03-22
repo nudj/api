@@ -66,7 +66,7 @@ module.exports = {
           type: 'jobs',
           id: job.id,
           data: {
-            entityTags: jobEntityTags.map(tag => tag.id)
+            entityTags: jobEntityTags.map(entityTag => entityTag.id)
           }
         })
       })

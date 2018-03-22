@@ -75,7 +75,7 @@ module.exports = {
           id: args.id,
           data: {
             ...omit(args.data, ['tags']),
-            entityTags: jobEntityTags.map(tag => tag.id)
+            entityTags: jobEntityTags.map(entityTag => entityTag.id)
           }
         })
       })

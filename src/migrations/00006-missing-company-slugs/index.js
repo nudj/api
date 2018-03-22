@@ -15,14 +15,19 @@ async function up ({ db, step }) {
 
     const makeUniqueSlug = getMakeUniqueCompanySlug(companyMap)
 
-    await allCursor.each(company => {
+    await Promise.all(allResults.map(company => {
       const newProps = {}
-      newProps.slug = makeUniqueSlug(company)
+
+      newProps.slug = makeUniqueSlug({
+        ...company,
+        id: company._key
+      })
+
       if (isNil(company.onboarded)) newProps.onboarded = false
       if (isNil(company.client)) newProps.client = false
 
       return collection.update(company, newProps)
-    })
+    }))
   })
 }
 

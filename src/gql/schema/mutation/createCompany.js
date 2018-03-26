@@ -3,15 +3,30 @@ const { handleErrors } = require('../../lib')
 module.exports = {
   typeDefs: `
     extend type Mutation {
-      createCompany(input: CompanyCreateInput): Company
+      createCompany(company: CompanyCreateInput): Company
     }
   `,
   resolvers: {
     Mutation: {
-      createCompany: handleErrors((root, args, context) => {
+      createCompany: handleErrors(async (root, args, context) => {
+        const {
+          slug,
+          onboarded = false,
+          client = false
+        } = args.company
+
+        const existingCompany = await context.store.readOne({
+          type: 'companies',
+          filters: { slug }
+        })
+
+        if (existingCompany) {
+          throw new Error(`Company with slug '${slug}' already exists`)
+        }
+
         return context.store.create({
           type: 'companies',
-          data: args.input
+          data: { ...args.company, onboarded, client }
         })
       })
     }

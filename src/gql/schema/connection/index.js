@@ -7,6 +7,12 @@ module.exports = {
       firstName: String!
       lastName: String!
       source: DataSource!
+      _result: ConnectionSearchResultMeta
+    }
+
+    type ConnectionSearchResultMeta {
+      score: Float
+      matches: Data
     }
 
     input ConnectionCreateInput {

@@ -30,6 +30,7 @@ steps:
           - develop
           - LEGACY-V1
           - master
+          - feature/server-basic-search
 
   push_latest:
     title: Push Latest
@@ -43,6 +44,7 @@ steps:
       branch:
         only:
           - develop
+          - feature/server-basic-search
 
   push_legacy:
     title: Push Legacy v1

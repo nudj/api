@@ -7,6 +7,13 @@ module.exports = {
       onboarded: Boolean!
     }
 
+    input HirerCreateInput {
+      company: ID!
+      email: String!
+      onboarded: Boolean
+      person: ID
+    }
+
     input HirerFilterInput {
       id: ID
       dateTo: DateTime

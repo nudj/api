@@ -11,7 +11,6 @@ module.exports = {
       company: ID!
       email: String!
       onboarded: Boolean
-      person: ID
     }
 
     input HirerFilterInput {

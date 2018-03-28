@@ -38,6 +38,18 @@ module.exports = {
           })
         }
 
+        const oldJobTags = await context.store.readAll({
+          type: 'entityTags',
+          filters: { entityId: id }
+        })
+
+        await Promise.all(oldJobTags.map(tag => {
+          return context.store.delete({
+            type: 'entityTags',
+            id: tag.id
+          })
+        }))
+
         const jobTags = await Promise.all(tags.map(tag => {
           return context.store.readOneOrCreate({
             type: 'tags',
@@ -52,7 +64,7 @@ module.exports = {
           })
         }))
 
-        const jobEntityTags = await Promise.all(jobTags.map(tag => {
+        await Promise.all(jobTags.map(tag => {
           return context.store.readOneOrCreate({
             type: 'entityTags',
             filters: {
@@ -73,10 +85,7 @@ module.exports = {
         return context.store.update({
           type: 'jobs',
           id: args.id,
-          data: {
-            ...omit(args.data, ['tags']),
-            entityTags: jobEntityTags.map(entityTag => entityTag.id)
-          }
+          data: omit(args.data, ['tags'])
         })
       })
     }

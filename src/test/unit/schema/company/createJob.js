@@ -5,6 +5,7 @@ const expect = chai.expect
 const { merge } = require('@nudj/library')
 
 const { values: tagTypes } = require('../../../../gql/schema/enums/tag-types')
+const { values: tagSources } = require('../../../../gql/schema/enums/tag-sources')
 const schema = require('../../../../gql/schema')
 const { executeQueryOnDbUsingSchema, shouldRespondWithGqlError } = require('../../helpers')
 
@@ -77,16 +78,14 @@ describe('Company.createJob', () => {
         entityId: 'job1',
         entityType: 'job',
         id: 'entityTag1',
-        sourceId: null,
-        sourceType: 'NUDJ',
+        source: tagSources.NUDJ,
         tagId: 'tag1'
       },
       {
         entityId: 'job1',
         entityType: 'job',
         id: 'entityTag2',
-        sourceId: null,
-        sourceType: 'NUDJ',
+        source: tagSources.NUDJ,
         tagId: 'tag2'
       }
     ])

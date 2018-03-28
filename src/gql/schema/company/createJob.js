@@ -56,8 +56,7 @@ module.exports = {
               entityType: 'job',
               entityId: job.id,
               tagId: tag.id,
-              sourceType: tagSources.NUDJ,
-              sourceId: null
+              source: tagSources.NUDJ
             }
           })
         }))

@@ -7,10 +7,12 @@ module.exports = {
   resolvers: {
     Job: {
       tags: async (job, args, context) => {
-        const entityTags = await context.store.readMany({
+        const entityTags = await context.store.readAll({
           type: 'entityTags',
-          ids: job.entityTags
+          filter: { entityId: job.id }
         })
+
+        if (!entityTags || !entityTags.length) return []
 
         const tagIds = entityTags.map(entityTag => entityTag.tagId)
         const tags = await context.store.readMany({

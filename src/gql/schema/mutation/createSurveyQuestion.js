@@ -49,7 +49,7 @@ module.exports = {
           })
         }))
 
-        const surveyQuestionEntityTags = await Promise.all(surveyTags.map(tag => {
+        await Promise.all(surveyTags.map(tag => {
           return context.store.create({
             type: 'entityTags',
             data: {
@@ -62,13 +62,7 @@ module.exports = {
           })
         }))
 
-        return context.store.update({
-          type: 'surveyQuestions',
-          id: surveyQuestion.id,
-          data: {
-            entityTags: surveyQuestionEntityTags.map(tag => tag.id)
-          }
-        })
+        return surveyQuestion
       })
     }
   }

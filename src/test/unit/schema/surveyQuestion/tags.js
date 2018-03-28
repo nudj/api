@@ -10,20 +10,18 @@ describe('SurveyQuestion.tags', () => {
     const db = {
       surveyQuestions: [
         {
-          id: 'surveyQuestion1',
-          entityTags: [
-            'entityTag1',
-            'entityTag2'
-          ]
+          id: 'surveyQuestion1'
         }
       ],
       entityTags: [
         {
           id: 'entityTag1',
+          entityId: 'surveyQuestion1',
           tagId: 'tag1'
         },
         {
           id: 'entityTag2',
+          entityId: 'surveyQuestion1',
           tagId: 'tag2'
         }
       ],

@@ -10,20 +10,18 @@ describe('Job.tags', () => {
     const db = {
       jobs: [
         {
-          id: 'job1',
-          entityTags: [
-            'entityTag1',
-            'entityTag2'
-          ]
+          id: 'job1'
         }
       ],
       entityTags: [
         {
           id: 'entityTag1',
+          entityId: 'job1',
           tagId: 'tag1'
         },
         {
           id: 'entityTag2',
+          entityId: 'job1',
           tagId: 'tag2'
         }
       ],

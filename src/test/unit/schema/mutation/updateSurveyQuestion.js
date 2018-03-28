@@ -66,8 +66,7 @@ describe('Mutation.updateSurveyQuestion', () => {
             id: 'entityTag1',
             entityId: 'surveyQuestion1',
             entityType: 'surveyQuestion',
-            sourceId: null,
-            sourceType: tagSources.NUDJ,
+            source: tagSources.NUDJ,
             tagId: 'tag1'
           }
         ]
@@ -108,16 +107,14 @@ describe('Mutation.updateSurveyQuestion', () => {
           entityId: 'surveyQuestion1',
           entityType: 'surveyQuestion',
           id: 'entityTag1',
-          sourceId: null,
-          sourceType: tagSources.NUDJ,
+          source: tagSources.NUDJ,
           tagId: 'tag2'
         },
         {
           entityId: 'surveyQuestion1',
           entityType: 'surveyQuestion',
           id: 'entityTag2',
-          sourceId: null,
-          sourceType: tagSources.NUDJ,
+          source: tagSources.NUDJ,
           tagId: 'tag1'
         }
       ])
@@ -147,8 +144,7 @@ describe('Mutation.updateSurveyQuestion', () => {
           entityId: 'surveyQuestion1',
           entityType: 'surveyQuestion',
           id: 'entityTag1',
-          sourceId: null,
-          sourceType: tagSources.NUDJ,
+          source: tagSources.NUDJ,
           tagId: 'tag1'
         }
       ])
@@ -231,16 +227,14 @@ describe('Mutation.updateSurveyQuestion', () => {
             id: 'entityTag1',
             entityId: 'surveyQuestion1',
             entityType: 'surveyQuestion',
-            sourceId: null,
-            sourceType: tagSources.NUDJ,
+            source: tagSources.NUDJ,
             tagId: 'tag1'
           },
           {
             id: 'entityTag2',
             entityId: 'surveyQuestion1',
             entityType: 'surveyQuestion',
-            sourceId: null,
-            sourceType: tagSources.NUDJ,
+            source: tagSources.NUDJ,
             tagId: 'tag2'
           }
         ]
@@ -276,8 +270,7 @@ describe('Mutation.updateSurveyQuestion', () => {
           id: 'entityTag1',
           entityId: 'surveyQuestion1',
           entityType: 'surveyQuestion',
-          sourceId: null,
-          sourceType: tagSources.NUDJ,
+          source: tagSources.NUDJ,
           tagId: 'tag3'
         }
       ])

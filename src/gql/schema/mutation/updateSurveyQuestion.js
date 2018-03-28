@@ -55,14 +55,13 @@ module.exports = {
             filters: {
               entityId: args.id,
               tagId: tag.id,
-              sourceType: tagSources.NUDJ
+              source: tagSources.NUDJ
             },
             data: {
               entityType: 'surveyQuestion',
               entityId: args.id,
               tagId: tag.id,
-              sourceType: tagSources.NUDJ,
-              sourceId: null
+              source: tagSources.NUDJ
             }
           })
         }))

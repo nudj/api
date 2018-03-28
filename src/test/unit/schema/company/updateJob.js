@@ -101,16 +101,14 @@ describe('Company.updateJob', () => {
           entityId: 'job1',
           entityType: 'job',
           id: 'entityTag1',
-          sourceId: null,
-          sourceType: 'NUDJ',
+          source: tagSources.NUDJ,
           tagId: 'tag1'
         },
         {
           entityId: 'job1',
           entityType: 'job',
           id: 'entityTag2',
-          sourceId: null,
-          sourceType: 'NUDJ',
+          source: tagSources.NUDJ,
           tagId: 'tag2'
         }
       ])
@@ -138,8 +136,7 @@ describe('Company.updateJob', () => {
             entityId: 'job1',
             entityType: 'job',
             id: 'entityTag1',
-            sourceId: null,
-            sourceType: 'NUDJ',
+            source: tagSources.NUDJ,
             tagId: 'tag1'
           }
         ]
@@ -175,16 +172,14 @@ describe('Company.updateJob', () => {
           entityId: 'job1',
           entityType: 'job',
           id: 'entityTag1',
-          sourceId: null,
-          sourceType: 'NUDJ',
+          source: tagSources.NUDJ,
           tagId: 'tag1'
         },
         {
           entityId: 'job1',
           entityType: 'job',
           id: 'entityTag2',
-          sourceId: null,
-          sourceType: 'NUDJ',
+          source: tagSources.NUDJ,
           tagId: 'tag2'
         }
       ])
@@ -270,16 +265,14 @@ describe('Company.updateJob', () => {
             id: 'entityTag1',
             entityId: 'job1',
             entityType: 'job',
-            sourceId: null,
-            sourceType: tagSources.NUDJ,
+            source: tagSources.NUDJ,
             tagId: 'tag1'
           },
           {
             id: 'entityTag2',
             entityId: 'job1',
             entityType: 'job',
-            sourceId: null,
-            sourceType: tagSources.NUDJ,
+            source: tagSources.NUDJ,
             tagId: 'tag2'
           }
         ]
@@ -306,8 +299,7 @@ describe('Company.updateJob', () => {
           entityId: 'job1',
           entityType: 'job',
           id: 'entityTag1',
-          sourceId: null,
-          sourceType: 'NUDJ',
+          source: tagSources.NUDJ,
           tagId: 'tag3'
         }
       ])

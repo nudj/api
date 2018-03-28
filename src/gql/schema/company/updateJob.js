@@ -70,14 +70,13 @@ module.exports = {
             filters: {
               entityId: id,
               tagId: tag.id,
-              sourceType: tagSources.NUDJ
+              source: tagSources.NUDJ
             },
             data: {
               entityType: 'job',
               entityId: id,
               tagId: tag.id,
-              sourceType: tagSources.NUDJ,
-              sourceId: null
+              source: tagSources.NUDJ
             }
           })
         }))

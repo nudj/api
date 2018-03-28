@@ -23,7 +23,19 @@ module.exports = {
 
         const { tags = [] } = args.data
 
-        const surveyTags = await Promise.all(tags.map(tag => {
+        const oldSurveyQuestionTags = await context.store.readAll({
+          type: 'entityTags',
+          filters: { entityId: args.id }
+        })
+
+        await Promise.all(oldSurveyQuestionTags.map(tag => {
+          return context.store.delete({
+            type: 'entityTags',
+            id: tag.id
+          })
+        }))
+
+        const updatedTags = await Promise.all(tags.map(tag => {
           return context.store.readOneOrCreate({
             type: 'tags',
             filters: {
@@ -37,7 +49,7 @@ module.exports = {
           })
         }))
 
-        const surveyQuestionEntityTags = await Promise.all(surveyTags.map(tag => {
+        await Promise.all(updatedTags.map(tag => {
           return context.store.readOneOrCreate({
             type: 'entityTags',
             filters: {
@@ -58,10 +70,7 @@ module.exports = {
         return context.store.update({
           type: 'surveyQuestions',
           id: args.id,
-          data: {
-            ...omit(args.data, ['tags']),
-            entityTags: surveyQuestionEntityTags.map(tag => tag.id)
-          }
+          data: omit(args.data, ['tags'])
         })
       })
     }

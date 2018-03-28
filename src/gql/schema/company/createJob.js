@@ -49,7 +49,7 @@ module.exports = {
           })
         }))
 
-        const jobEntityTags = await Promise.all(jobTags.map(tag => {
+        await Promise.all(jobTags.map(tag => {
           return context.store.create({
             type: 'entityTags',
             data: {
@@ -62,13 +62,7 @@ module.exports = {
           })
         }))
 
-        return context.store.update({
-          type: 'jobs',
-          id: job.id,
-          data: {
-            entityTags: jobEntityTags.map(entityTag => entityTag.id)
-          }
-        })
+        return job
       })
     }
   }

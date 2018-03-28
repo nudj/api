@@ -115,10 +115,6 @@ describe('Company.createJob', () => {
       remuneration: '100000',
       status: 'PUBLISHED',
       templateTags: ['film'],
-      entityTags: [
-        'entityTag1',
-        'entityTag2'
-      ],
       type: 'Permanent',
       url: 'http://www.spacex.com/careers/position/215244'
     })

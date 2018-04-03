@@ -31,7 +31,7 @@ const variables = {
     name: 'someName',
     required: true,
     type: SurveyQuestionTypes.COMPANIES,
-    tags: ['ceo', 'founder']
+    tags: ['CEO', 'FOUNDER']
   }
 }
 
@@ -105,12 +105,12 @@ describe('Mutation.createSurveyQuestion', () => {
     expect(db.tags).to.deep.equal([
       {
         id: 'tag1',
-        name: 'ceo',
+        name: 'CEO',
         type: tagTypes.EXPERTISE
       },
       {
         id: 'tag2',
-        name: 'founder',
+        name: 'FOUNDER',
         type: tagTypes.EXPERTISE
       }
     ])

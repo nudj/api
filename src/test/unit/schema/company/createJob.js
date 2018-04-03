@@ -44,7 +44,7 @@ const variables = {
     remuneration: '100000',
     status: 'PUBLISHED',
     templateTags: ['film'],
-    tags: ['ceo', 'founder'],
+    tags: ['CEO', 'FOUNDER'],
     type: 'Permanent',
     url: 'http://www.spacex.com/careers/position/215244'
   }
@@ -64,12 +64,12 @@ describe('Company.createJob', () => {
     expect(db.tags).to.deep.equal([
       {
         id: 'tag1',
-        name: 'ceo',
+        name: 'CEO',
         type: tagTypes.EXPERTISE
       },
       {
         id: 'tag2',
-        name: 'founder',
+        name: 'FOUNDER',
         type: tagTypes.EXPERTISE
       }
     ])

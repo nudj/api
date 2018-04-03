@@ -231,6 +231,7 @@ module.exports = ({ db }) => {
       })
 
       return results
-    }
+    },
+    query: executeAqlQuery
   }
 }

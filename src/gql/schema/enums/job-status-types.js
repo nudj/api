@@ -4,6 +4,7 @@ module.exports = rootEnum({
   name: 'JobStatus',
   values: [
     'PUBLISHED',
-    'ARCHIVED'
+    'ARCHIVED',
+    'DRAFT'
   ]
 })

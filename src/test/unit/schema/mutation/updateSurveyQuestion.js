@@ -23,11 +23,10 @@ const operation = `
       name
       required
       type
-      tags
     }
   }
 `
-let variables = {
+const variables = {
   id: 'surveyQuestion1',
   data: {
     title: 'New title',
@@ -42,168 +41,239 @@ let variables = {
 describe('Mutation.updateSurveyQuestion', () => {
   let db
 
-  beforeEach(() => {
-    db = {
-      surveyQuestions: [
-        {
-          id: 'surveyQuestion1',
-          title: 'Old title',
-          description: 'Old description',
-          name: 'Old name',
-          required: true,
-          type: SurveyQuestionTypes.CONNECTIONS,
-          tags: [
-            'entityTag1'
-          ]
-        }
-      ],
-      tags: [
-        {
-          id: 'tag1',
-          name: 'ceo',
-          type: tagTypes.EXPERTISE
-        }
-      ],
-      entityTags: [
-        {
-          id: 'entityTag1',
-          entityId: 'surveyQuestion1',
-          entityType: 'surveyQuestion',
-          sourceId: null,
-          sourceType: tagSources.NUDJ,
-          tagId: 'tag1'
-        }
-      ]
-    }
-  })
-
-  it('should update the surveyQuestion', async () => {
-    await executeQueryOnDbUsingSchema({
-      operation,
-      variables,
-      db,
-      schema
-    })
-    expect(db.surveyQuestions[0]).to.deep.equal({
-      id: 'surveyQuestion1',
-      title: 'New title',
-      description: 'New description',
-      name: 'New name',
-      required: false,
-      type: SurveyQuestionTypes.COMPANIES,
-      tags: [
-        'entityTag1'
-      ]
-    })
-  })
-
-  it('should create new tags', async () => {
-    await executeQueryOnDbUsingSchema({
-      operation,
-      schema,
-      db,
-      variables: {
-        id: 'surveyQuestion1',
-        data: {
-          tags: ['founder', 'ceo']
-        }
+  describe('when new tags are added', () => {
+    beforeEach(() => {
+      db = {
+        surveyQuestions: [
+          {
+            id: 'surveyQuestion1',
+            title: 'Old title',
+            description: 'Old description',
+            name: 'Old name',
+            required: true,
+            type: SurveyQuestionTypes.CONNECTIONS
+          }
+        ],
+        tags: [
+          {
+            id: 'tag1',
+            name: 'ceo',
+            type: tagTypes.EXPERTISE
+          }
+        ],
+        entityTags: [
+          {
+            id: 'entityTag1',
+            entityId: 'surveyQuestion1',
+            entityType: 'surveyQuestion',
+            source: tagSources.NUDJ,
+            tagId: 'tag1'
+          }
+        ]
       }
     })
-    expect(db.entityTags).to.deep.equal([
-      {
-        entityId: 'surveyQuestion1',
-        entityType: 'surveyQuestion',
-        id: 'entityTag1',
-        sourceId: null,
-        sourceType: tagSources.NUDJ,
-        tagId: 'tag1'
-      },
-      {
-        entityId: 'surveyQuestion1',
-        entityType: 'surveyQuestion',
-        id: 'entityTag2',
-        sourceId: null,
-        sourceType: tagSources.NUDJ,
-        tagId: 'tag2'
-      }
-    ])
-    expect(db.tags).to.deep.equal([
-      {
-        id: 'tag1',
-        name: 'ceo',
-        type: tagTypes.EXPERTISE
-      },
-      {
-        id: 'tag2',
-        name: 'founder',
-        type: tagTypes.EXPERTISE
-      }
-    ])
-  })
 
-  it('should not create pre-existing tags', async () => {
-    await executeQueryOnDbUsingSchema({
-      operation,
-      variables,
-      db,
-      schema
-    })
-    expect(db.entityTags).to.deep.equal([
-      {
-        entityId: 'surveyQuestion1',
-        entityType: 'surveyQuestion',
-        id: 'entityTag1',
-        sourceId: null,
-        sourceType: tagSources.NUDJ,
-        tagId: 'tag1'
-      }
-    ])
-    expect(db.tags).to.deep.equal([
-      {
-        id: 'tag1',
-        name: 'ceo',
-        type: tagTypes.EXPERTISE
-      }
-    ])
-  })
-
-  it('should return the updated survey', async () => {
-    const result = await executeQueryOnDbUsingSchema({
-      operation,
-      variables,
-      db,
-      schema
-    })
-
-    expect(result)
-      .to.have.deep.property('data.updateSurveyQuestion')
-      .to.deep.equal({
+    it('should update the surveyQuestion', async () => {
+      await executeQueryOnDbUsingSchema({
+        operation,
+        variables,
+        db,
+        schema
+      })
+      expect(db.surveyQuestions[0]).to.deep.equal({
         id: 'surveyQuestion1',
         title: 'New title',
         description: 'New description',
         name: 'New name',
         required: false,
-        type: SurveyQuestionTypes.COMPANIES,
-        tags: [
-          'ceo'
-        ]
+        type: SurveyQuestionTypes.COMPANIES
       })
+    })
+
+    it('should create new tags', async () => {
+      await executeQueryOnDbUsingSchema({
+        operation,
+        schema,
+        db,
+        variables: {
+          id: 'surveyQuestion1',
+          data: {
+            tags: ['founder', 'ceo']
+          }
+        }
+      })
+      expect(db.entityTags).to.deep.equal([
+        {
+          entityId: 'surveyQuestion1',
+          entityType: 'surveyQuestion',
+          id: 'entityTag1',
+          source: tagSources.NUDJ,
+          tagId: 'tag2'
+        },
+        {
+          entityId: 'surveyQuestion1',
+          entityType: 'surveyQuestion',
+          id: 'entityTag2',
+          source: tagSources.NUDJ,
+          tagId: 'tag1'
+        }
+      ])
+      expect(db.tags).to.deep.equal([
+        {
+          id: 'tag1',
+          name: 'ceo',
+          type: tagTypes.EXPERTISE
+        },
+        {
+          id: 'tag2',
+          name: 'founder',
+          type: tagTypes.EXPERTISE
+        }
+      ])
+    })
+
+    it('should not create pre-existing tags', async () => {
+      await executeQueryOnDbUsingSchema({
+        operation,
+        variables,
+        db,
+        schema
+      })
+      expect(db.entityTags).to.deep.equal([
+        {
+          entityId: 'surveyQuestion1',
+          entityType: 'surveyQuestion',
+          id: 'entityTag1',
+          source: tagSources.NUDJ,
+          tagId: 'tag1'
+        }
+      ])
+      expect(db.tags).to.deep.equal([
+        {
+          id: 'tag1',
+          name: 'ceo',
+          type: tagTypes.EXPERTISE
+        }
+      ])
+    })
+
+    it('should return the updated survey', async () => {
+      const result = await executeQueryOnDbUsingSchema({
+        operation,
+        variables,
+        db,
+        schema
+      })
+
+      expect(result)
+        .to.have.deep.property('data.updateSurveyQuestion')
+        .to.deep.equal({
+          id: 'surveyQuestion1',
+          title: 'New title',
+          description: 'New description',
+          name: 'New name',
+          required: false,
+          type: SurveyQuestionTypes.COMPANIES
+        })
+    })
+
+    it('should error if given invalid tags', async () => {
+      const result = await executeQueryOnDbUsingSchema({
+        operation,
+        variables: {
+          id: 'surveyQuestion1',
+          data: {
+            tags: ['bad']
+          }
+        },
+        db,
+        schema
+      })
+      expect(result.errors[0]).to.have.property('message').to.include(
+        'Expected type "ExpertiseTagType", found "bad"'
+      )
+    })
   })
 
-  it('should error if given invalid tags', async () => {
-    const result = await executeQueryOnDbUsingSchema({
-      operation,
-      variables: {
-        id: 'surveyQuestion1',
-        data: {
-          tags: ['bad']
-        }
-      },
-      db,
-      schema
+  describe('when old tags are removed', () => {
+    let db
+
+    beforeEach(() => {
+      db = {
+        surveyQuestions: [
+          {
+            id: 'surveyQuestion1',
+            title: 'Old title',
+            description: 'Old description',
+            name: 'Old name',
+            required: true,
+            type: SurveyQuestionTypes.CONNECTIONS
+          }
+        ],
+        tags: [
+          {
+            id: 'tag1',
+            name: 'founder',
+            type: tagTypes.EXPERTISE
+          },
+          {
+            id: 'tag2',
+            name: 'finance',
+            type: tagTypes.EXPERTISE
+          }
+        ],
+        entityTags: [
+          {
+            id: 'entityTag1',
+            entityId: 'surveyQuestion1',
+            entityType: 'surveyQuestion',
+            source: tagSources.NUDJ,
+            tagId: 'tag1'
+          },
+          {
+            id: 'entityTag2',
+            entityId: 'surveyQuestion1',
+            entityType: 'surveyQuestion',
+            source: tagSources.NUDJ,
+            tagId: 'tag2'
+          }
+        ]
+      }
     })
-    expect(result.errors[0]).to.have.property('message').to.include(
-      'Expected type "ExpertiseTagType", found "bad"'
-    )
+
+    it('should update the surveyQuestion', async () => {
+      await executeQueryOnDbUsingSchema({
+        operation,
+        variables,
+        db,
+        schema
+      })
+      expect(db.surveyQuestions[0]).to.deep.equal({
+        id: 'surveyQuestion1',
+        title: 'New title',
+        description: 'New description',
+        name: 'New name',
+        required: false,
+        type: SurveyQuestionTypes.COMPANIES
+      })
+    })
+
+    it('should delete unused entityTags', async () => {
+      await executeQueryOnDbUsingSchema({
+        operation,
+        variables,
+        db,
+        schema
+      })
+      expect(db.entityTags).to.deep.equal([
+        {
+          id: 'entityTag1',
+          entityId: 'surveyQuestion1',
+          entityType: 'surveyQuestion',
+          source: tagSources.NUDJ,
+          tagId: 'tag3'
+        }
+      ])
+    })
   })
 })

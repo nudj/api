@@ -235,7 +235,6 @@ describe('Person.sendEmail', () => {
     const variables = emailVariables
     return executeQueryOnDbUsingSchema({ operation, variables, db, schema })
       .then(shouldRespondWithGqlError({
-        message: 'NotFound',
         path: [
           'user',
           'email'

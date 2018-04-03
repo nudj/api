@@ -29,6 +29,7 @@ describe('Person.getOrCreateConnection', () => {
           company {
             id
             name
+            slug
           }
           person {
             id
@@ -76,7 +77,9 @@ describe('Person.getOrCreateConnection', () => {
       return expect(db).to.have.deep.property('companies.0').to.deep.equal({
         id: 'company1',
         client: false,
-        name: 'CONNECTION_COMPANY'
+        onboarded: false,
+        name: 'CONNECTION_COMPANY',
+        slug: 'connection_company'
       })
     })
 
@@ -100,7 +103,8 @@ describe('Person.getOrCreateConnection', () => {
           },
           company: {
             id: 'company1',
-            name: 'CONNECTION_COMPANY'
+            name: 'CONNECTION_COMPANY',
+            slug: 'connection_company'
           },
           person: {
             id: 'person2',
@@ -153,8 +157,9 @@ describe('Person.getOrCreateConnection', () => {
         ],
         roles: [],
         companies: [{
-          id: 'oldId',
-          name: 'CONNECTION_COMPANY'
+          id: '99764801b2683fb0e09442ff1cfcf23a',
+          name: 'CONNECTION_COMPANY',
+          slug: 'connection_company'
         }],
         connections: []
       }
@@ -169,8 +174,9 @@ describe('Person.getOrCreateConnection', () => {
       return expect(result)
         .to.have.deep.property('data.person.getOrCreateConnection.company')
         .to.deep.equal({
-          id: 'oldId',
-          name: 'CONNECTION_COMPANY'
+          id: '99764801b2683fb0e09442ff1cfcf23a',
+          name: 'CONNECTION_COMPANY',
+          slug: 'connection_company'
         })
     })
   })
@@ -226,7 +232,8 @@ describe('Person.getOrCreateConnection', () => {
         }],
         companies: [{
           id: 'company1',
-          name: 'nudj'
+          name: 'nudj',
+          slug: 'nudj'
         }],
         connections: [{
           id: 'oldId',
@@ -259,7 +266,8 @@ describe('Person.getOrCreateConnection', () => {
           },
           company: {
             id: 'company1',
-            name: 'nudj'
+            name: 'nudj',
+            slug: 'nudj'
           },
           person: {
             id: 'person2',
@@ -317,7 +325,68 @@ describe('Person.getOrCreateConnection', () => {
           role: null,
           company: {
             id: 'company1',
-            name: 'CONNECTION_COMPANY'
+            name: 'CONNECTION_COMPANY',
+            slug: 'connection_company'
+          },
+          person: {
+            id: 'person2',
+            email: 'CONNECTION_EMAIL'
+          },
+          source: DataSources.values.LINKEDIN
+        })
+    })
+  })
+
+  describe('when title is an empty string', () => {
+    beforeEach(async () => {
+      variables = {
+        to: {
+          firstName: 'CONNECTION_FIRSTNAME',
+          lastName: 'CONNECTION_LASTNAME',
+          company: 'CONNECTION_COMPANY',
+          email: 'CONNECTION_EMAIL',
+          title: ''
+        },
+        source: DataSources.values.LINKEDIN
+      }
+      db = {
+        people: [
+          {
+            id: 'person1'
+          }
+        ],
+        roles: [
+          {
+            id: 'role1',
+            name: 'Test role'
+          }
+        ],
+        companies: [],
+        connections: []
+      }
+      result = await executeQueryOnDbUsingSchema({ operation, variables, db, schema })
+    })
+
+    it('should not create a role', () => {
+      return expect(db.roles).to.have.length(1)
+    })
+
+    it('should set the role to null in the saved connection', () => {
+      return expect(db.connections[0]).to.have.property('role', null)
+    })
+
+    it('should return the connection with null for role', () => {
+      return expect(result)
+        .to.have.deep.property('data.person.getOrCreateConnection')
+        .to.deep.equal({
+          id: 'connection1',
+          firstName: 'CONNECTION_FIRSTNAME',
+          lastName: 'CONNECTION_LASTNAME',
+          role: null,
+          company: {
+            id: 'company1',
+            name: 'CONNECTION_COMPANY',
+            slug: 'connection_company'
           },
           person: {
             id: 'person2',
@@ -336,6 +405,66 @@ describe('Person.getOrCreateConnection', () => {
           lastName: 'CONNECTION_LASTNAME',
           title: 'CONNECTION_TITLE',
           email: 'CONNECTION_EMAIL'
+        },
+        source: DataSources.values.LINKEDIN
+      }
+      db = {
+        people: [
+          {
+            id: 'person1'
+          }
+        ],
+        roles: [],
+        companies: [
+          {
+            id: 'company1',
+            name: 'Company name',
+            slug: 'company name'
+          }
+        ],
+        connections: []
+      }
+      result = await executeQueryOnDbUsingSchema({ operation, variables, db, schema })
+    })
+
+    it('should not create a company', () => {
+      return expect(db.companies).to.have.length(1)
+    })
+
+    it('should set the company to null in the saved connection', () => {
+      return expect(db.connections[0]).to.have.property('company', null)
+    })
+
+    it('should return the connection with null for company', () => {
+      return expect(result)
+        .to.have.deep.property('data.person.getOrCreateConnection')
+        .to.deep.equal({
+          id: 'connection1',
+          firstName: 'CONNECTION_FIRSTNAME',
+          lastName: 'CONNECTION_LASTNAME',
+          role: {
+            id: 'role1',
+            name: 'CONNECTION_TITLE'
+          },
+          company: null,
+          person: {
+            id: 'person2',
+            email: 'CONNECTION_EMAIL'
+          },
+          source: DataSources.values.LINKEDIN
+        })
+    })
+  })
+
+  describe('when company is empty string', () => {
+    beforeEach(async () => {
+      variables = {
+        to: {
+          firstName: 'CONNECTION_FIRSTNAME',
+          lastName: 'CONNECTION_LASTNAME',
+          title: 'CONNECTION_TITLE',
+          email: 'CONNECTION_EMAIL',
+          company: ''
         },
         source: DataSources.values.LINKEDIN
       }

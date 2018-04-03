@@ -5,23 +5,23 @@ const expect = chai.expect
 const schema = require('../../../../gql/schema')
 const { executeQueryOnDbUsingSchema } = require('../../helpers')
 
-describe('SurveyQuestion.tags', () => {
+describe('Job.tags', () => {
   it('should fetch filtered tags', async () => {
     const db = {
-      surveyQuestions: [
+      jobs: [
         {
-          id: 'surveyQuestion1'
+          id: 'job1'
         }
       ],
       entityTags: [
         {
           id: 'entityTag1',
-          entityId: 'surveyQuestion1',
+          entityId: 'job1',
           tagId: 'tag1'
         },
         {
           id: 'entityTag2',
-          entityId: 'surveyQuestion1',
+          entityId: 'job1',
           tagId: 'tag2'
         }
       ],
@@ -38,14 +38,14 @@ describe('SurveyQuestion.tags', () => {
     }
     const operation = `
       query {
-        surveyQuestion (id: "surveyQuestion1") {
+        job (id: "job1") {
           tags
         }
       }
     `
     return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
-        surveyQuestion: {
+        job: {
           tags: [
             'First',
             'Second'
@@ -57,9 +57,9 @@ describe('SurveyQuestion.tags', () => {
 
   it('should return an empty array if no matches', async () => {
     const db = {
-      surveyQuestions: [
+      jobs: [
         {
-          id: 'surveyQuestion1',
+          id: 'job1',
           entityTags: [
             'entityTag1',
             'entityTag2'
@@ -79,14 +79,14 @@ describe('SurveyQuestion.tags', () => {
     }
     const operation = `
       query {
-        surveyQuestion (id: "surveyQuestion1") {
+        job (id: "job1") {
           tags
         }
       }
     `
     return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
-        surveyQuestion: {
+        job: {
           tags: []
         }
       }

@@ -66,10 +66,6 @@ describe('Mutation.createSurveyQuestion', () => {
       name: 'someName',
       required: true,
       type: SurveyQuestionTypes.COMPANIES,
-      tags: [
-        'entityTag1',
-        'entityTag2'
-      ],
       surveySection: 'surveySection1'
     })
   })
@@ -86,16 +82,14 @@ describe('Mutation.createSurveyQuestion', () => {
         entityId: 'surveyQuestion1',
         entityType: 'surveyQuestion',
         id: 'entityTag1',
-        sourceId: null,
-        sourceType: tagSources.NUDJ,
+        source: tagSources.NUDJ,
         tagId: 'tag1'
       },
       {
         entityId: 'surveyQuestion1',
         entityType: 'surveyQuestion',
         id: 'entityTag2',
-        sourceId: null,
-        sourceType: tagSources.NUDJ,
+        source: tagSources.NUDJ,
         tagId: 'tag2'
       }
     ])

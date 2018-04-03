@@ -17,6 +17,7 @@ module.exports = {
       type: String!
       url: String!
       experience: String
+      labels: [String!]
       requirements: String
     }
 
@@ -35,6 +36,9 @@ module.exports = {
       url: String!
       experience: String
       requirements: String
+      labels: [String!]
+      relatedJobs: [ID!]
+      tags: [ExpertiseTagType!]
     }
 
     input JobUpdateInput {
@@ -52,6 +56,9 @@ module.exports = {
       url: String
       experience: String
       requirements: String
+      labels: [String!]
+      relatedJobs: [ID!]
+      tags: [ExpertiseTagType!]
     }
 
     input JobFilterInput {

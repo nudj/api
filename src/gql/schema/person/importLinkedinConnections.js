@@ -1,7 +1,9 @@
-const formatLinkedinConnections = require('../../lib/helpers/format-linkedin-connections')
-const { handleErrors } = require('../../lib')
 const { generateId } = require('@nudj/library')
 const { idTypes } = require('@nudj/library/constants')
+
+const formatLinkedinConnections = require('../../lib/helpers/format-linkedin-connections')
+const getMakeUnqiueCompanySlug = require('../../lib/helpers/make-unique-company-slug')
+const { handleErrors } = require('../../lib')
 const DataSources = require('../enums/data-sources')
 
 module.exports = {
@@ -18,6 +20,18 @@ module.exports = {
         const formattedConnections = formatLinkedinConnections(connections)
         const from = person.id
 
+        const companies = await context.store.query(`
+          FOR company IN companies
+            RETURN { slug: company.slug, id: company._key }
+        `)
+
+        const companyMap = companies.reduce((map, item) => {
+          map[item._key] = item
+          return map
+        }, {})
+
+        const makeUniqueCompanySlug = getMakeUnqiueCompanySlug(companyMap)
+
         const formattedData = formattedConnections.reduce((all, connection) => {
           const { email, company, title, firstName, lastName } = connection
           const personId = generateId(idTypes.PERSON, { email })
@@ -33,18 +47,29 @@ module.exports = {
             role: roleId,
             company: companyId
           }
+
           const connectionId = generateId(idTypes.CONNECTION, connectionData)
+          const rawCompany = {
+            id: companyId,
+            name: company,
+            onboarded: false,
+            client: false
+          }
+
+          const companySlug = makeUniqueCompanySlug(rawCompany)
 
           return {
-            companies: all.companies.concat({
+            companies: companyId ? all.companies.concat({
               id: companyId,
               name: connection.company,
+              slug: companySlug,
+              onboarded: false,
               client: false
-            }),
-            roles: all.roles.concat({
+            }) : all.companies,
+            roles: roleId ? all.roles.concat({
               id: roleId,
               name: connection.title
-            }),
+            }) : all.roles,
             people: all.people.concat({
               id: personId,
               email: connection.email
@@ -69,13 +94,11 @@ module.exports = {
           },
           {
             name: 'companies',
-            data: formattedData.companies,
-            onDuplicate: 'update'
+            data: formattedData.companies
           },
           {
             name: 'roles',
-            data: formattedData.roles,
-            onDuplicate: 'update'
+            data: formattedData.roles
           },
           {
             name: 'people',

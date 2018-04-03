@@ -1,3 +1,7 @@
+const omit = require('lodash/omit')
+
+const { values: tagTypes } = require('../enums/tag-types')
+const { values: tagSources } = require('../enums/tag-sources')
 const handleErrors = require('../../lib/handle-errors')
 
 module.exports = {
@@ -10,25 +14,77 @@ module.exports = {
     Company: {
       updateJob: handleErrors(async (company, args, context) => {
         const { id, data } = args
+        const { tags, slug } = data
 
-        if (args.data.slug) {
+        if (slug) {
           const existingJob = await context.store.readOne({
             type: 'jobs',
             filters: {
               company: company.id,
-              slug: args.data.slug
+              slug: slug
             }
           })
 
           if (existingJob && id !== existingJob.id) {
-            throw new Error(`Company \`${company.name}\` already has a job with slug \`${args.data.slug}\``)
+            throw new Error(`Company \`${company.name}\` already has a job with slug \`${slug}\``)
           }
         }
 
+        if (!tags) {
+          return context.store.update({
+            type: 'jobs',
+            id,
+            data
+          })
+        }
+
+        const oldJobTags = await context.store.readAll({
+          type: 'entityTags',
+          filters: { entityId: id }
+        })
+
+        await Promise.all(oldJobTags.map(tag => {
+          return context.store.delete({
+            type: 'entityTags',
+            id: tag.id
+          })
+        }))
+
+        const jobTags = await Promise.all(tags.map(tag => {
+          return context.store.readOneOrCreate({
+            type: 'tags',
+            filters: {
+              name: tag,
+              type: tagTypes.EXPERTISE
+            },
+            data: {
+              name: tag,
+              type: tagTypes.EXPERTISE
+            }
+          })
+        }))
+
+        await Promise.all(jobTags.map(tag => {
+          return context.store.readOneOrCreate({
+            type: 'entityTags',
+            filters: {
+              entityId: id,
+              tagId: tag.id,
+              source: tagSources.NUDJ
+            },
+            data: {
+              entityType: 'job',
+              entityId: id,
+              tagId: tag.id,
+              source: tagSources.NUDJ
+            }
+          })
+        }))
+
         return context.store.update({
           type: 'jobs',
-          id,
-          data
+          id: args.id,
+          data: omit(args.data, ['tags'])
         })
       })
     }

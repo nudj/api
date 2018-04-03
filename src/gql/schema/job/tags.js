@@ -1,15 +1,15 @@
 module.exports = {
   typeDefs: `
-    extend type SurveyQuestion {
-      tags: [ID!]
+    extend type Job {
+      tags: [String!]
     }
   `,
   resolvers: {
-    SurveyQuestion: {
-      tags: async (surveyQuestion, args, context) => {
+    Job: {
+      tags: async (job, args, context) => {
         const entityTags = await context.store.readAll({
           type: 'entityTags',
-          filter: { entityId: surveyQuestion.id }
+          filter: { entityId: job.id }
         })
 
         if (!entityTags || !entityTags.length) return []

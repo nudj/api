@@ -1,5 +1,11 @@
 const omit = require('lodash/omit')
 const pick = require('lodash/pick')
+const hash = require('hash-generator')
+const { generateId } = require('@nudj/library')
+const { idTypes } = require('@nudj/library/lib/constants')
+
+const handleErrors = require('../../lib/handle-errors')
+const makeSlug = require('../../lib/helpers/make-slug')
 
 module.exports = {
   typeDefs: `
@@ -9,7 +15,7 @@ module.exports = {
   `,
   resolvers: {
     Person: {
-      getOrCreateConnection: async (person, args, context) => {
+      getOrCreateConnection: handleErrors(async (person, args, context) => {
         const from = person.id
         const { to, source } = args
 
@@ -28,6 +34,51 @@ module.exports = {
           return { ...savedConnection, person: savedPerson }
         }
 
+        let existingCompany
+        let companySlug
+
+        if (to.company) {
+          companySlug = makeSlug(to.company)
+          const companyId = generateId(idTypes.COMPANY, { name: to.company })
+
+          try {
+            existingCompany = await context.store.readOne({
+              type: 'companies',
+              id: companyId
+            })
+          } catch (error) {
+            if (error.message !== 'document not found') throw error
+          }
+
+          if (!existingCompany) {
+            try {
+              existingCompany = await context.store.readOne({
+                type: 'companies',
+                filters: {
+                  slug: companySlug
+                }
+              })
+            } catch (error) {
+              if (error.message !== 'document not found') throw error
+            }
+
+            while (existingCompany && companySlug === existingCompany.slug) {
+              companySlug = `${companySlug}-${hash(8)}`
+
+              try {
+                existingCompany = await context.store.readOne({
+                  type: 'companies',
+                  filters: {
+                    slug: companySlug
+                  }
+                })
+              } catch (error) {
+                if (error.message !== 'document not found') throw error
+              }
+            }
+          }
+        }
+
         const [ personFromConnection, role, company ] = await Promise.all([
           savedPerson || context.store.create({
             type: 'people',
@@ -38,12 +89,18 @@ module.exports = {
             filters: { name: to.title },
             data: { name: to.title }
           }),
-          to.company && context.store.readOneOrCreate({
+          (to.company && existingCompany) || (to.company && context.store.create({
             type: 'companies',
-            filters: { name: to.company },
-            data: { name: to.company, client: false }
-          })
+            filters: { slug: companySlug },
+            data: {
+              name: to.company,
+              slug: companySlug,
+              onboarded: false,
+              client: false
+            }
+          }))
         ])
+
         const connection = await context.store.create({
           type: 'connections',
           data: {
@@ -62,7 +119,7 @@ module.exports = {
           company,
           person: personFromConnection
         }
-      }
+      })
     }
   }
 }

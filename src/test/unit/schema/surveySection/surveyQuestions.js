@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 const chai = require('chai')
-const { merge } = require('@nudj/library')
 const expect = chai.expect
 
 const schema = require('../../../../gql/schema')
@@ -14,17 +13,20 @@ const operation = `
     }
   }
 `
-const baseData = {
-  surveySections: [
-    {
-      id: 'surveySection1'
-    }
-  ]
-}
 
 describe('SurveySection.surveyQuestions', () => {
-  it('should fetch all surveyQuestions relating to the surveySection', async () => {
-    const db = merge(baseData, {
+  it('should return the section questions in the correct order', async () => {
+    const db = {
+      surveySections: [
+        {
+          id: 'surveySection1',
+          surveyQuestions: [
+            'surveyQuestion2',
+            'surveyQuestion3',
+            'surveyQuestion1'
+          ]
+        }
+      ],
       surveyQuestions: [
         {
           id: 'surveyQuestion1',
@@ -39,17 +41,20 @@ describe('SurveySection.surveyQuestions', () => {
           surveySection: 'surveySection2'
         }
       ]
-    })
+    }
     return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
         surveySections: [
           {
             surveyQuestions: [
               {
-                id: 'surveyQuestion1'
+                id: 'surveyQuestion2'
               },
               {
-                id: 'surveyQuestion2'
+                id: 'surveyQuestion3'
+              },
+              {
+                id: 'surveyQuestion1'
               }
             ]
           }
@@ -59,14 +64,24 @@ describe('SurveySection.surveyQuestions', () => {
   })
 
   it('should return empty array if no matches', async () => {
-    const db = merge(baseData, {
+    const db = {
+      surveySections: [
+        {
+          id: 'surveySection1',
+          surveyQuestions: [
+            'surveyQuestion2',
+            'surveyQuestion3',
+            'surveyQuestion1'
+          ]
+        }
+      ],
       surveyQuestions: [
         {
           id: 'surveyQuestion1',
           surveySection: 'surveySection2'
         }
       ]
-    })
+    }
     return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
         surveySections: [

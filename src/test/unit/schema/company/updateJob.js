@@ -40,7 +40,7 @@ describe('Company.updateJob', () => {
         id: 'job1',
         data: {
           title: 'CEO',
-          tags: ['ceo'],
+          tags: ['CEO'],
           slug: 'ceo',
           description: 'SpaceX was founded under the belief that a future where humanity...'
         }
@@ -76,7 +76,7 @@ describe('Company.updateJob', () => {
         id: 'job1',
         data: {
           title: 'CEO',
-          tags: ['ceo', 'founder'],
+          tags: ['CEO', 'FOUNDER'],
           slug: 'ceo',
           description: 'SpaceX was founded under the belief that a future where humanity...'
         }
@@ -87,12 +87,12 @@ describe('Company.updateJob', () => {
       expect(db.tags).to.deep.equal([
         {
           id: 'tag1',
-          name: 'ceo',
+          name: 'CEO',
           type: 'EXPERTISE'
         },
         {
           id: 'tag2',
-          name: 'founder',
+          name: 'FOUNDER',
           type: 'EXPERTISE'
         }
       ])
@@ -127,7 +127,7 @@ describe('Company.updateJob', () => {
         tags: [
           {
             id: 'tag1',
-            name: 'ceo',
+            name: 'CEO',
             type: 'EXPERTISE'
           }
         ],
@@ -147,7 +147,7 @@ describe('Company.updateJob', () => {
         id: 'job1',
         data: {
           title: 'CEO',
-          tags: ['ceo', 'founder'],
+          tags: ['CEO', 'FOUNDER'],
           slug: 'ceo',
           description: 'SpaceX was founded under the belief that a future where humanity...'
         }
@@ -158,12 +158,12 @@ describe('Company.updateJob', () => {
       expect(db.tags).to.deep.equal([
         {
           id: 'tag1',
-          name: 'ceo',
+          name: 'CEO',
           type: 'EXPERTISE'
         },
         {
           id: 'tag2',
-          name: 'founder',
+          name: 'FOUNDER',
           type: 'EXPERTISE'
         }
       ])
@@ -228,7 +228,7 @@ describe('Company.updateJob', () => {
       id: 'job1',
       data: {
         title: 'CEO',
-        tags: ['ceo'],
+        tags: ['CEO'],
         slug: 'ceo',
         description: 'SpaceX was founded under the belief that a future where humanity...'
       }

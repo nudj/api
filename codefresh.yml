@@ -30,6 +30,7 @@ steps:
           - develop
           - LEGACY-V1
           - master
+          - feature/server-basic-search
 
   push_latest:
     title: Push Latest
@@ -43,6 +44,7 @@ steps:
       branch:
         only:
           - develop
+          - feature/server-basic-search
 
   push_legacy:
     title: Push Legacy v1
@@ -75,7 +77,7 @@ steps:
     title: Push Release
     type: push
     candidate: '${{build}}'
-    tag: 13.0.0
+    tag: 14.0.0
     credentials:
       username: '${{dockerUsername}}'
       password: '${{dockerPassword}}'

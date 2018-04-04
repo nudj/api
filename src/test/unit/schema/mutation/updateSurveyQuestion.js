@@ -34,7 +34,7 @@ const variables = {
     name: 'New name',
     required: false,
     type: SurveyQuestionTypes.COMPANIES,
-    tags: ['ceo']
+    tags: ['CEO']
   }
 }
 
@@ -57,7 +57,7 @@ describe('Mutation.updateSurveyQuestion', () => {
         tags: [
           {
             id: 'tag1',
-            name: 'ceo',
+            name: 'CEO',
             type: tagTypes.EXPERTISE
           }
         ],
@@ -98,7 +98,7 @@ describe('Mutation.updateSurveyQuestion', () => {
         variables: {
           id: 'surveyQuestion1',
           data: {
-            tags: ['founder', 'ceo']
+            tags: ['FOUNDER', 'CEO']
           }
         }
       })
@@ -121,12 +121,12 @@ describe('Mutation.updateSurveyQuestion', () => {
       expect(db.tags).to.deep.equal([
         {
           id: 'tag1',
-          name: 'ceo',
+          name: 'CEO',
           type: tagTypes.EXPERTISE
         },
         {
           id: 'tag2',
-          name: 'founder',
+          name: 'FOUNDER',
           type: tagTypes.EXPERTISE
         }
       ])
@@ -151,7 +151,7 @@ describe('Mutation.updateSurveyQuestion', () => {
       expect(db.tags).to.deep.equal([
         {
           id: 'tag1',
-          name: 'ceo',
+          name: 'CEO',
           type: tagTypes.EXPERTISE
         }
       ])
@@ -213,12 +213,12 @@ describe('Mutation.updateSurveyQuestion', () => {
         tags: [
           {
             id: 'tag1',
-            name: 'founder',
+            name: 'FOUNDER',
             type: tagTypes.EXPERTISE
           },
           {
             id: 'tag2',
-            name: 'finance',
+            name: 'FINANCE',
             type: tagTypes.EXPERTISE
           }
         ],

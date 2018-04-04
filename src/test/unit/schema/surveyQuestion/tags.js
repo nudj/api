@@ -17,11 +17,13 @@ describe('SurveyQuestion.tags', () => {
         {
           id: 'entityTag1',
           entityId: 'surveyQuestion1',
+          entityType: 'surveyQuestion',
           tagId: 'tag1'
         },
         {
           id: 'entityTag2',
-          entityId: 'surveyQuestion1',
+          entityId: 'surveyQuestion2',
+          entityType: 'surveyQuestion',
           tagId: 'tag2'
         }
       ],
@@ -39,7 +41,10 @@ describe('SurveyQuestion.tags', () => {
     const operation = `
       query {
         surveyQuestion (id: "surveyQuestion1") {
-          tags
+          tags {
+            id
+            name
+          }
         }
       }
     `
@@ -47,8 +52,10 @@ describe('SurveyQuestion.tags', () => {
       data: {
         surveyQuestion: {
           tags: [
-            'First',
-            'Second'
+            {
+              id: 'tag1',
+              name: 'First'
+            }
           ]
         }
       }
@@ -59,13 +66,10 @@ describe('SurveyQuestion.tags', () => {
     const db = {
       surveyQuestions: [
         {
-          id: 'surveyQuestion1',
-          entityTags: [
-            'entityTag1',
-            'entityTag2'
-          ]
+          id: 'surveyQuestion1'
         }
       ],
+      entityTags: [],
       tags: [
         {
           id: 'tag1',
@@ -80,7 +84,10 @@ describe('SurveyQuestion.tags', () => {
     const operation = `
       query {
         surveyQuestion (id: "surveyQuestion1") {
-          tags
+          tags {
+            id
+            name
+          }
         }
       }
     `

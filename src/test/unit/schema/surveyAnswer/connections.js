@@ -118,11 +118,12 @@ describe('SurveyAnswer.connections', () => {
           }
         ],
         surveyQuestions: [{
-          id: 'surveyQuestion1',
-          entityTags: ['et1']
+          id: 'surveyQuestion1'
         }],
         entityTags: [{
           id: 'et1',
+          entityId: 'surveyQuestion1',
+          entityType: 'surveyQuestion',
           tagId: 'tag1'
         }],
         tags: [{

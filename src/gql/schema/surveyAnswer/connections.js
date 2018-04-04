@@ -22,9 +22,12 @@ module.exports = {
         })
 
         if (connections.length) {
-          const entityTags = await context.store.readMany({
+          const entityTags = await context.store.readAll({
             type: 'entityTags',
-            ids: question.entityTags
+            filters: {
+              entityType: 'surveyQuestion',
+              entityId: question.id
+            }
           })
 
           if (entityTags.length) {

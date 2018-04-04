@@ -1,4 +1,8 @@
 const PromiseOverride = require('./promise-override')
+const loadArangoCryptoAdaptor = require('./crypto-adaptor')
+const { idTypes } = require('@nudj/library/lib/constants')
+
+const generateId = require('@nudj/library/lib/hash/generate-id')
 
 module.exports = (store, action) => {
   if (!store) {
@@ -9,6 +13,9 @@ module.exports = (store, action) => {
   }
   return `function (params) {
     const Promise = (${PromiseOverride.toString()})()
+    const idTypes = ${JSON.stringify(idTypes)}
+    const loadArangoCryptoAdaptor = ${loadArangoCryptoAdaptor.toString()}
+    const loadIdGenerator = ${generateId.toString()}
     const store = ${store.toString()}
     const action = ${action.toString()}
     const result = action(store(), params)

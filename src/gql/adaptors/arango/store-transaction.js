@@ -3,6 +3,10 @@ module.exports = () => {
   const flatten = require('lodash/flatten')
   const omit = require('lodash/omit')
   const { db } = require('@arangodb')
+  const arangoCryptoAlgorithm = require('@arangodb/crypto')
+
+  const cryptoAlgorithm = loadArangoCryptoAdaptor(arangoCryptoAlgorithm)
+  const generateId = loadIdGenerator(cryptoAlgorithm)
 
   const startOfDay = timestamp => {
     if (!timestamp) return

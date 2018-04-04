@@ -17,5 +17,6 @@ services:
       - ../api/src/nodemon.json:/usr/src/nodemon.json
       - ../api/src/package.json:/usr/src/package.json
       - ../api/src/index.js:/usr/src/index.js
+      - ../library/src:/usr/src/@nudj/library
     stdin_open: true
     command: /bin/zsh

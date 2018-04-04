@@ -1,7 +1,7 @@
 module.exports = {
   typeDefs: `
     extend type SurveyQuestion {
-      tags: [ID!]
+      tags: [Tag!]
     }
   `,
   resolvers: {
@@ -9,7 +9,10 @@ module.exports = {
       tags: async (surveyQuestion, args, context) => {
         const entityTags = await context.store.readAll({
           type: 'entityTags',
-          filter: { entityId: surveyQuestion.id }
+          filters: {
+            entityType: 'surveyQuestion',
+            entityId: surveyQuestion.id
+          }
         })
 
         if (!entityTags || !entityTags.length) return []
@@ -20,7 +23,7 @@ module.exports = {
           ids: tagIds
         })
 
-        return tags.map(tag => tag.name)
+        return tags
       }
     }
   }

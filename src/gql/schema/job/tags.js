@@ -9,7 +9,7 @@ module.exports = {
       tags: async (job, args, context) => {
         const entityTags = await context.store.readAll({
           type: 'entityTags',
-          filter: { entityId: job.id }
+          filters: { entityId: job.id }
         })
 
         if (!entityTags || !entityTags.length) return []

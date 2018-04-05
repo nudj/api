@@ -51,8 +51,11 @@ module.exports = ({ db }) => {
     readOne: async ({
       type,
       id,
-      filters
+      filters,
+      filter
     }) => {
+      filters = filter || filters
+
       if (!id && !filters) return Promise.resolve(null)
       let method = 'document'
       let arg = id
@@ -75,8 +78,11 @@ module.exports = ({ db }) => {
     },
     readAll: async ({
       type,
-      filters
+      filters,
+      filter
     }) => {
+      filters = filter || filters
+
       if (!filters) {
         const response = await db.collection(type).all()
         return response.map(normaliseData)
@@ -126,8 +132,10 @@ module.exports = ({ db }) => {
     readOneOrCreate: async ({
       type,
       filters,
+      filter,
       data
     }) => {
+      filters = filter || filters
       let item
       try {
         item = await db.collection(type).firstExample(filters)
@@ -150,8 +158,10 @@ module.exports = ({ db }) => {
       query,
       fields,
       fieldAliases,
-      filters
+      filters,
+      filter
     }) => {
+      filters = filter || filters
       const querySegments = uniq([query, ...query.split(' ')])
       const queries = merge(...querySegments.map((subQuery, index) => {
         return { [`query${index}`]: subQuery }
@@ -176,8 +186,11 @@ module.exports = ({ db }) => {
     },
     countByFilters: async ({
       type,
-      filters = {}
+      filters,
+      filter
     }) => {
+      filters = filter || filters || {}
+
       const { dateTo, dateFrom } = filters
       const generalFilters = parseFiltersToAql(omit(filters, ['dateTo', 'dateFrom']))
       const query = [

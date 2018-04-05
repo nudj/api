@@ -3,10 +3,10 @@ module.exports = () => {
   const flatten = require('lodash/flatten')
   const omit = require('lodash/omit')
   const { db } = require('@arangodb')
-  const arangoCryptoAlgorithm = require('@arangodb/crypto')
+  const arangoCrypto = require('@arangodb/crypto')
 
-  const cryptoAlgorithm = loadArangoCryptoAdaptor(arangoCryptoAlgorithm)
-  const generateId = loadIdGenerator(cryptoAlgorithm)
+  const crypto = loadArangoCryptoAdaptor(arangoCrypto)
+  const generateId = loadIdGenerator(crypto)
 
   const startOfDay = timestamp => {
     if (!timestamp) return
@@ -58,12 +58,24 @@ module.exports = () => {
     ).then(response => response.map(normaliseData))
   }
 
+  const fetchIdType = (type) => {
+    const specialTypes = {
+      companies: 'company',
+      people: 'person',
+      roles: 'role',
+      connections: 'connection'
+    }
+    return specialTypes[type]
+  }
+
   return {
     create: ({
       type,
       data
     }) => {
+      const _key = generateId(fetchIdType(type), data)
       const response = db[type].save(Object.assign(data, {
+        _key,
         created: newISODate(),
         modified: newISODate()
       }), { returnNew: true })
@@ -143,7 +155,9 @@ module.exports = () => {
       filters = filter || filters
       let item = db[type].firstExample(filters)
       if (!item) {
+        const _key = generateId(fetchIdType(type), data)
         const response = db[type].save(Object.assign(data, {
+          _key,
           created: newISODate(),
           modified: newISODate()
         }), { returnNew: true })

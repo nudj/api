@@ -6,7 +6,7 @@ module.exports = {
       CEO,
       COMMUNICATIONS,
       CONSULTING,
-      CUSTOMER SERVICE,
+      CUSTOMER_SERVICE,
       EDUCATION,
       ENGINEERING,
       FINANCE,

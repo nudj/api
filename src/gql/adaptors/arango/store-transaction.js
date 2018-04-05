@@ -68,8 +68,10 @@ module.exports = () => {
     readOne: ({
       type,
       id,
-      filters
+      filters,
+      filter
     }) => {
+      filters = filter || filters
       if (!id && !filters) return Promise.resolve(null)
       let method = 'document'
       let arg = id
@@ -87,8 +89,10 @@ module.exports = () => {
     },
     readAll: ({
       type,
-      filters
+      filters,
+      filter
     }) => {
+      filters = filter || filters
       if (!filters) return Promise.resolve(db[type].all().toArray().map(normaliseData))
       if (filters.dateTo || filters.dateFrom) {
         const { dateTo, dateFrom } = filters
@@ -129,8 +133,10 @@ module.exports = () => {
     readOneOrCreate: ({
       type,
       filters,
+      filter,
       data
     }) => {
+      filters = filter || filters
       let item = db[type].firstExample(filters)
       if (!item) {
         const response = db[type].save(Object.assign(data, {
@@ -145,14 +151,17 @@ module.exports = () => {
       type,
       query,
       fields,
-      filters
+      filters,
+      filter
     }) => {
       throw new Error('Search cannot be performed as a transaction')
     },
     countByFilters: ({
       type,
-      filters = {}
+      filters,
+      filter
     }) => {
+      filters = filter || filters || {}
       const { dateTo, dateFrom } = filters
       const generalFilters = parseFiltersToAql(omit(filters, ['dateTo', 'dateFrom']))
       const query = [

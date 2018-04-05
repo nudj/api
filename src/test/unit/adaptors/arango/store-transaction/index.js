@@ -4,13 +4,21 @@ const chai = require('chai')
 const proxyquire = require('proxyquire').noCallThru()
 const expect = chai.expect
 
+const { setupDependencies, teardownDependencies } = require('../../../helpers/transactions')
+
 describe('ArangoAdaptor Store', () => {
   let Store
 
   before(() => {
+    setupDependencies()
     Store = proxyquire('../../../../../gql/adaptors/arango/store-transaction', {
-      '@arangodb': {}
+      '@arangodb': {},
+      '@arangodb/crypto': {}
     })
+  })
+
+  after(() => {
+    teardownDependencies()
   })
 
   it('to be an function', () => {

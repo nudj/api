@@ -90,7 +90,7 @@ describe('create', () => {
 
   it('generates an id based composite key', async () => {
     const duplicationError = 'cannot create document, unique constraint violated'
-    const result = await context.transaction((store, params) => {
+    await context.transaction((store, params) => {
       return store.create({
         type: 'people',
         data: {
@@ -102,7 +102,7 @@ describe('create', () => {
     expect(store.create({
       type: 'people',
       data: {
-        email: 'conflict@email.tld',
+        email: 'conflict@email.tld'
       }
     })).to.eventually.be.rejectedWith(duplicationError)
   })

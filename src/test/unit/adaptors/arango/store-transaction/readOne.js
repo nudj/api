@@ -4,8 +4,10 @@ const chai = require('chai')
 const proxyquire = require('proxyquire').noCallThru()
 const sinon = require('sinon')
 const sinonChai = require('sinon-chai')
-const expect = chai.expect
 
+const { setupDependencies, teardownDependencies } = require('../../../helpers/transactions')
+
+const expect = chai.expect
 chai.use(sinonChai)
 
 const DOCUMENT_RESPONSE = { _key: 'id', '_id': 123, '_rev': 123, prop: 'value' }
@@ -15,6 +17,7 @@ describe('ArangoAdaptor Store().readOne', () => {
   let dbStub
 
   before(() => {
+    setupDependencies()
     dbStub = {
       db: {
         collectionName: {
@@ -24,12 +27,16 @@ describe('ArangoAdaptor Store().readOne', () => {
       }
     }
     Store = proxyquire('../../../../../gql/adaptors/arango/store-transaction', {
-      '@arangodb': dbStub
+      '@arangodb': dbStub,
+      '@arangodb/crypto': {}
     })
   })
   afterEach(() => {
     dbStub.db.collectionName.document.reset()
     dbStub.db.collectionName.firstExample.reset()
+  })
+  after(() => {
+    teardownDependencies()
   })
 
   describe('by id', () => {

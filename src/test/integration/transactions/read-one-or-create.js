@@ -9,7 +9,6 @@ const {
   expect
 } = require('../lib')
 
-const Store = require('../../../gql/adaptors/arango/store')
 const context = require('../../../gql/adaptors/arango')
 
 const resetDataStore = async () => populateCollections(db, [
@@ -33,14 +32,12 @@ const resetDataStore = async () => populateCollections(db, [
 ])
 
 describe('readOneOrCreate', () => {
-  let store
   before(async () => {
     await setupCollections(db, ['sandwiches'])
   })
 
   beforeEach(async () => {
     await resetDataStore()
-    store = Store({ db })
   })
 
   after(async () => {
@@ -59,7 +56,7 @@ describe('readOneOrCreate', () => {
       }
       const sandwichesCollection = await db.collection('sandwiches').all()
       expect(sandwichesCollection.count).to.equal(3)
-      const thing = await context.transaction((store, params) => {
+      await context.transaction((store, params) => {
         return store.readOneOrCreate({
           type: 'sandwiches',
           filters: params.sandwich,

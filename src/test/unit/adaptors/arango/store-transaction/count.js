@@ -6,6 +6,8 @@ const proxyquire = require('proxyquire').noCallThru()
 const sinon = require('sinon')
 const sinonChai = require('sinon-chai')
 
+const { setupDependencies, teardownDependencies } = require('../../../helpers/transactions')
+
 const expect = chai.expect
 chai.use(sinonChai)
 
@@ -21,6 +23,7 @@ describe('ArangoAdaptor Store().countByFilters', () => {
   let dbStub
 
   before(() => {
+    setupDependencies()
     dbStub = {
       db: {
         _query: sinon.stub().returns({ toArray: () => [47] }),
@@ -31,13 +34,17 @@ describe('ArangoAdaptor Store().countByFilters', () => {
       }
     }
     Store = proxyquire('../../../../../gql/adaptors/arango/store-transaction', {
-      '@arangodb': dbStub
+      '@arangodb': dbStub,
+      '@arangodb/crypto': {}
     })
   })
   afterEach(() => {
     dbStub.db._query.reset()
     dbStub.db.collectionName.all.reset()
     dbStub.db.collectionName.byExample.reset()
+  })
+  after(() => {
+    teardownDependencies()
   })
 
   describe('with no filters', () => {

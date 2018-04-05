@@ -1,3 +1,5 @@
+/* global loadArangoCryptoAdaptor loadIdGenerator */
+
 module.exports = () => {
   const reduce = require('lodash/reduce')
   const flatten = require('lodash/flatten')

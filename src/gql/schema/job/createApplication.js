@@ -1,3 +1,5 @@
+const omitBy = require('lodash/omitBy')
+const isNil = require('lodash/isNil')
 const { logger } = require('@nudj/library')
 const intercom = require('../../lib/intercom')
 const handleErrors = require('../../lib/handle-errors')
@@ -50,23 +52,33 @@ module.exports = {
           }
         })
 
+        const { firstName, lastName, email } = person
+        const name = firstName && lastName ? `${firstName} ${lastName}` : null
+
         try {
-          await Promise.all([
-            intercom.createUser({
-              email: person.email,
+          const lead = await intercom.fetchLeadBy({ email })
+
+          if (lead && lead.id) {
+            await intercom.convertLeadToUser({ email, id: lead.id })
+          } else {
+            const intercomUserData = omitBy({
+              email,
+              name,
               custom_attributes: {
                 lastJobAppliedFor: `${job.title} at ${company.name}`
               }
-            }),
-            intercom.logEvent({
-              event_name: 'new-application',
-              email: person.email,
-              metadata: {
-                jobTitle: job.title,
-                company: company.name
-              }
-            })
-          ])
+            }, isNil)
+            await intercom.createUser(intercomUserData)
+          }
+
+          await intercom.logEvent({
+            event_name: 'new-application',
+            email,
+            metadata: {
+              jobTitle: job.title,
+              company: company.name
+            }
+          })
         } catch (error) {
           logger('error', 'Intercom error', error)
         }

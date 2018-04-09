@@ -4,8 +4,10 @@ const chai = require('chai')
 const proxyquire = require('proxyquire').noCallThru()
 const sinon = require('sinon')
 const sinonChai = require('sinon-chai')
-const expect = chai.expect
 
+const { setupDependencies, teardownDependencies } = require('../../../helpers/transactions')
+
+const expect = chai.expect
 chai.use(sinonChai)
 
 const OLD_RESPONSE = { old: { _key: 'id', '_id': 123, '_rev': 123, prop: 'value' } }
@@ -15,6 +17,7 @@ describe('ArangoAdaptor Store().delete', () => {
   let dbStub
 
   before(() => {
+    setupDependencies()
     dbStub = {
       db: {
         collectionName: {
@@ -23,11 +26,15 @@ describe('ArangoAdaptor Store().delete', () => {
       }
     }
     Store = proxyquire('../../../../../gql/adaptors/arango/store-transaction', {
-      '@arangodb': dbStub
+      '@arangodb': dbStub,
+      '@arangodb/crypto': {}
     })
   })
   afterEach(() => {
     dbStub.db.collectionName.remove.reset()
+  })
+  after(() => {
+    teardownDependencies()
   })
 
   it('should pass the entity id', () => {

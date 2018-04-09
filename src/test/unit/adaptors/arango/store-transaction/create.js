@@ -6,8 +6,10 @@ const sinon = require('sinon')
 const sinonChai = require('sinon-chai')
 const isDate = require('date-fns/is_valid')
 const differenceInMinutes = require('date-fns/difference_in_minutes')
-const expect = chai.expect
 
+const { setupDependencies, teardownDependencies } = require('../../../helpers/transactions')
+
+const expect = chai.expect
 chai.use(sinonChai)
 
 const NEW_RESPONSE = { new: { _key: 'id', '_id': 123, '_rev': 123, prop: 'value' } }
@@ -17,6 +19,7 @@ describe('ArangoAdaptor Store().create', () => {
   let dbStub
 
   before(() => {
+    setupDependencies()
     dbStub = {
       db: {
         collectionName: {
@@ -25,11 +28,15 @@ describe('ArangoAdaptor Store().create', () => {
       }
     }
     Store = proxyquire('../../../../../gql/adaptors/arango/store-transaction', {
-      '@arangodb': dbStub
+      '@arangodb': dbStub,
+      '@arangodb/crypto': {}
     })
   })
   afterEach(() => {
     dbStub.db.collectionName.save.reset()
+  })
+  after(() => {
+    teardownDependencies()
   })
 
   it('should save the data', () => {

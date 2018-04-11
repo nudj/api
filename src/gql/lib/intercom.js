@@ -86,20 +86,33 @@ function createUniqueUserAndTag (data, tag) {
     .catch((error) => logger('error', 'Intercom', 'createUniqueUserAndTag', data, tag, error))
 }
 
-function convert (visitor, user) {
+function convertVisitorToUser ({ visitor, user }) {
+  logger('info', 'convertVisitorToUser', visitor, user)
   return intercom.visitors
     .convert({
       visitor,
       user,
       type: 'user'
     })
+    .then(response => {
+      logger('info', 'Visitor converted to user', visitor, user)
+      return response
+    })
+    .catch((error) => logger('error', 'Intercom', 'convertVisitorToUser', visitor, user, error))
 }
 
-function convertVisitorToUser (visitor, user) {
-  logger('info', 'convertVisitorToUser', visitor, user)
-  return convert(visitor, user)
-    .then(() => logger('info', 'Visitor converted to user', visitor, user))
-    .catch((error) => logger('error', 'Intercom', 'convertVisitorToUser', visitor, user, error))
+function convertLeadToUser ({ email, id }) {
+  logger('info', 'convertLeadToUser', email)
+  return intercom.leads
+    .convert({
+      contact: { email, id },
+      user: { email }
+    })
+    .then(response => {
+      logger('info', 'Lead converted to user', email)
+      return response
+    })
+    .catch((error) => logger('error', 'Intercom', 'convertLeadToUser', email, id, error))
 }
 
 function updateUser (patch) {
@@ -124,10 +137,14 @@ function logEvent ({ event_name, email, metadata }) {
 }
 
 module.exports = {
+  fetchLeadBy,
+  fetchUserBy,
   createUniqueLeadAndTag,
   createUniqueUserAndTag,
   logEvent,
   convertVisitorToUser,
+  convertLeadToUser,
   createUser,
+  createLead,
   updateUser
 }

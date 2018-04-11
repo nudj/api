@@ -39,6 +39,7 @@ describe('Job.createApplication', () => {
   beforeEach(() => {
     IntercomMock.post('/events').reply(200, {})
     IntercomMock.post('/users').reply(200, {})
+    IntercomMock.get('/contacts').reply(200, { contacts: [] })
   })
   afterEach(() => {
     nock.cleanAll()

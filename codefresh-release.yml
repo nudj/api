@@ -13,7 +13,7 @@ steps:
 
   publish:
     title: Publish package to npm
-    image: ${{build_test}}
+    image: ${{build}}
     working_directory: 'IMAGE_WORK_DIR'
     environment:
       - NPM_TOKEN=${{NPM_TOKEN}}

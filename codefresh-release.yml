@@ -1,0 +1,31 @@
+version: '1.0'
+
+steps:
+
+  build:
+    title: Build
+    type: build
+    image_name: nudj/api
+    tag: production
+    dockerfile: Dockerfile
+    build_arguments:
+      - NPM_TOKEN=${{NPM_TOKEN}}
+
+  publish:
+    title: Publish package to npm
+    image: ${{build_test}}
+    working_directory: 'IMAGE_WORK_DIR'
+    environment:
+      - NPM_TOKEN=${{NPM_TOKEN}}
+    commands:
+      - npm --no-git-tag-version version ${{CF_BRANCH}}
+      - npm publish
+
+  push_image:
+    title: Push Release
+    type: push
+    candidate: '${{build}}'
+    tag: ${{CF_BRANCH}}
+    credentials:
+      username: '${{dockerUsername}}'
+      password: '${{dockerPassword}}'

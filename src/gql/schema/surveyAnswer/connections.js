@@ -1,4 +1,5 @@
 const uniq = require('lodash/uniq')
+const union = require('lodash/union')
 
 const handleErrors = require('../../lib/handle-errors')
 
@@ -11,40 +12,41 @@ module.exports = {
   resolvers: {
     SurveyAnswer: {
       connections: handleErrors(async (answer, args, context) => {
-        const question = await context.store.readOne({
-          type: 'surveyQuestions',
-          id: answer.surveyQuestion
-        })
-
         const connections = await context.store.readMany({
           type: 'connections',
           ids: answer.connections
         })
 
-        if (connections.length) {
-          const entityTags = await context.store.readAll({
-            type: 'entityTags',
-            filters: {
-              entityType: 'surveyQuestion',
-              entityId: question.id
-            }
+        const entityTags = await context.store.readAll({
+          type: 'entityTags',
+          filters: {
+            entityType: 'surveyQuestion',
+            entityId: answer.surveyQuestion
+          }
+        })
+
+        const tagIds = uniq(entityTags.map(entityTag => entityTag.tagId))
+        const surveyQuestionTags = await context.store.readMany({
+          type: 'tags',
+          ids: tagIds
+        })
+
+        return connections.map(async connection => {
+          const tags = await context.store.readAll({
+            type: 'roleTags',
+            filters: { entityId: connection.role }
           })
 
-          if (entityTags.length) {
-            const tagIds = uniq(entityTags.map(entityTag => entityTag.tagId))
-            const tags = await context.store.readMany({
-              type: 'tags',
-              ids: tagIds
-            })
+          const roleTags = await context.store.readMany({
+            type: 'tags',
+            ids: tags.map(roleTag => roleTag.tagId)
+          })
 
-            return connections.map(connection => ({
-              ...connection,
-              tags
-            }))
+          return {
+            ...connection,
+            tags: union(surveyQuestionTags, roleTags)
           }
-        }
-
-        return connections
+        })
       })
     }
   }

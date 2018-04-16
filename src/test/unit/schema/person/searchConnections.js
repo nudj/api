@@ -112,6 +112,18 @@ const db = {
       tagId: 'tag2'
     }
   ],
+  roleTags: [
+    {
+      id: 'roleTag1',
+      entityId: 'role1',
+      tagId: 'tag3'
+    },
+    {
+      id: 'roleTag2',
+      entityId: 'role2',
+      tagId: 'tag4'
+    }
+  ],
   tags: [
     {
       id: 'tag1',
@@ -121,6 +133,16 @@ const db = {
     {
       id: 'tag2',
       name: 'Tag 2',
+      type: tagTypes.EXPERTISE
+    },
+    {
+      id: 'tag3',
+      name: 'Tag 3',
+      type: tagTypes.EXPERTISE
+    },
+    {
+      id: 'tag4',
+      name: 'Tag 4',
       type: tagTypes.EXPERTISE
     }
   ]
@@ -448,10 +470,12 @@ describe('Person.searchConnections', () => {
       it('should return tags list derived from connections prior to tag filtering', () => {
         return expect(executeQueryOnDbUsingSchema({ operation, db, schema }))
           .to.eventually.have.deep.property('data.person.searchConnections.tags')
-          .to.have.lengthOf(2)
+          .to.have.lengthOf(4)
           .to.deep.equal([
             { id: 'tag1' },
-            { id: 'tag2' }
+            { id: 'tag2' },
+            { id: 'tag3' },
+            { id: 'tag4' }
           ])
       })
     })
@@ -463,8 +487,11 @@ describe('Person.searchConnections', () => {
         query {
           person (id: "person1") {
             searchConnections(
-              query: "Boy"
+              query: "Bob"
             ) {
+              connections {
+                id
+              }
               tags {
                 id
                 name
@@ -481,6 +508,16 @@ describe('Person.searchConnections', () => {
             {
               id: 'tag1',
               name: 'Tag 1',
+              type: tagTypes.EXPERTISE
+            },
+            {
+              id: 'tag2',
+              name: 'Tag 2',
+              type: tagTypes.EXPERTISE
+            },
+            {
+              id: 'tag3',
+              name: 'Tag 3',
               type: tagTypes.EXPERTISE
             }
           ])
@@ -515,6 +552,16 @@ describe('Person.searchConnections', () => {
             {
               id: 'tag2',
               name: 'Tag 2',
+              type: tagTypes.EXPERTISE
+            },
+            {
+              id: 'tag3',
+              name: 'Tag 3',
+              type: tagTypes.EXPERTISE
+            },
+            {
+              id: 'tag4',
+              name: 'Tag 4',
               type: tagTypes.EXPERTISE
             }
           ])

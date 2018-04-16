@@ -130,15 +130,11 @@ module.exports = {
         const connectionTagMap = {}
         const tagConnectionMap = {}
         await Promise.all(surveyAnswers.map(async answer => {
-          const question = await context.store.readOne({
-            type: 'surveyQuestions',
-            id: answer.surveyQuestion
-          })
           const entityTags = await context.store.readAll({
             type: 'entityTags',
             filters: {
               entityType: 'surveyQuestion',
-              entityId: question.id
+              entityId: answer.surveyQuestion
             }
           })
           let tags = await context.store.readMany({
@@ -161,20 +157,38 @@ module.exports = {
 
         // fetch connections
         let connections
-        let storeMethod
-        let storeFilters
-        let storeIds
         if (isFilteredByFavourites) {
-          storeMethod = 'readMany'
-          storeIds = Object.keys(connectionTagMap)
+          connections = await context.store.readMany({
+            type: 'connections',
+            ids: Object.keys(connectionTagMap)
+          })
         } else {
-          storeMethod = 'readAll'
-          storeFilters = { from: person.id }
+          connections = await context.store.readAll({
+            type: 'connections',
+            filters: { from: person.id }
+          })
         }
-        connections = await context.store[storeMethod]({
-          type: 'connections',
-          filters: storeFilters,
-          ids: storeIds
+
+        // Fetch tags for each connection's role
+        connections.forEach(async connection => {
+          const roleTags = await context.store.readAll({
+            type: 'roleTags',
+            filters: {
+              entityId: connection.role
+            }
+          })
+
+          const tags = await context.store.readMany({
+            type: 'tags',
+            ids: roleTags.map(roleTag => roleTag.tagId)
+          })
+
+          if (connectionTagMap[connection.id]) {
+            const connectionTags = connectionTagMap[connection.id] || []
+            connectionTagMap[connection.id] = unionBy(connectionTags, tags, 'id')
+          } else {
+            connectionTagMap[connection.id] = tags || []
+          }
         })
 
         // fetch nested entities for connections and collate tags
@@ -183,6 +197,7 @@ module.exports = {
           companyMap,
           personMap
         } = await fetchConnectionPropertyMap(context, connections)
+
         connections = connections.map(connection => ({
           ...connection,
           role: roleMap[connection.role],

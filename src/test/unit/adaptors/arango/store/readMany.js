@@ -9,59 +9,48 @@ const Store = require('../../../../../gql/adaptors/arango/store')
 
 chai.use(sinonChai)
 
-const DOCUMENT_RESPONSE = { _key: 'id', '_id': 123, '_rev': 123, prop: 'value' }
+const DOCUMENT_RESPONSE = { _key: 123, '_id': 'collectionNames/123', '_rev': 456, prop: 'value' }
 
 describe('ArangoAdaptor store.readMany', () => {
-  let collectionStub
   let dbStub
   let store
+  let dataLoaderStub
+  let result
 
   before(() => {
-    collectionStub = {
-      lookupByKeys: sinon.stub().returns([DOCUMENT_RESPONSE, DOCUMENT_RESPONSE])
-    }
+    dataLoaderStub = {}
+    dataLoaderStub.load = sinon.stub().returns(Promise.resolve(DOCUMENT_RESPONSE))
     dbStub = {
-      db: {
-        collection: sinon.stub().returns(collectionStub)
-      }
+      getDataLoader: sinon.stub().returns(dataLoaderStub)
     }
     store = Store(dbStub)
   })
+  beforeEach(async () => {
+    result = await store.readMany({
+      type: 'collectionName',
+      ids: [1, 2]
+    })
+  })
   afterEach(() => {
-    collectionStub.lookupByKeys.reset()
-    dbStub.db.collection.reset()
+    dbStub.getDataLoader.reset()
+    dataLoaderStub.load.reset()
   })
 
-  it('should fetch the collection', () => {
-    return store.readMany({
-      type: 'collectionName',
-      ids: [1, 2]
-    })
-    .then(() => {
-      expect(dbStub.db.collection).to.have.been.calledWith('collectionName')
-    })
+  it('should fetch dataLoader for type', () => {
+    expect(dbStub.getDataLoader).to.have.been.calledWith('collectionName')
   })
 
-  it('should read the data by ids', () => {
-    return store.readMany({
-      type: 'collectionName',
-      ids: [1, 2]
-    })
-    .then(() => {
-      const dataArgument = collectionStub.lookupByKeys.firstCall.args[0]
-      expect(dataArgument).to.deep.equal([1, 2])
-    })
+  it('should load the items by id using the dataloader', () => {
+    expect(dataLoaderStub.load).to.have.been.calledWith(1)
+    expect(dataLoaderStub.load).to.have.been.calledWith(2)
   })
 
   it('should return normalised entities', () => {
-    return expect(store.readMany({
-      type: 'collectionName',
-      ids: [1, 2]
-    })).to.eventually.deep.equal([{
-      id: 'id',
+    return expect(result).to.deep.equal([{
+      id: 123,
       prop: 'value'
     }, {
-      id: 'id',
+      id: 123,
       prop: 'value'
     }])
   })

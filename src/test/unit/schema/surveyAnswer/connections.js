@@ -4,6 +4,7 @@ const expect = chai.expect
 
 const schema = require('../../../../gql/schema')
 const { executeQueryOnDbUsingSchema } = require('../../helpers')
+const { values: tagTypes } = require('../../../../gql/schema/enums/tag-types')
 
 describe('SurveyAnswer.connections', () => {
   it('should fetch filtered connections', async () => {
@@ -29,7 +30,8 @@ describe('SurveyAnswer.connections', () => {
       surveyQuestions: [{
         id: 'surveyQuestion1',
         entityTags: []
-      }]
+      }],
+      roleTags: []
     }
     const operation = `
       query {
@@ -108,13 +110,16 @@ describe('SurveyAnswer.connections', () => {
         ],
         connections: [
           {
-            id: 'connection1'
+            id: 'connection1',
+            role: 'role1'
           },
           {
-            id: 'connection2'
+            id: 'connection2',
+            role: 'role2'
           },
           {
-            id: 'connection3'
+            id: 'connection3',
+            role: 'role1'
           }
         ],
         surveyQuestions: [{
@@ -126,11 +131,45 @@ describe('SurveyAnswer.connections', () => {
           entityType: 'surveyQuestion',
           tagId: 'tag1'
         }],
-        tags: [{
-          id: 'tag1',
-          type: 'EXPTERISE',
-          name: 'Lord Timmeny'
-        }]
+        tags: [
+          {
+            id: 'tag1',
+            type: tagTypes.EXPTERISE,
+            name: 'Lord'
+          },
+          {
+            id: 'tag2',
+            type: tagTypes.EXPERTISE,
+            name: 'Admiral'
+          },
+          {
+            id: 'tag3',
+            type: tagTypes.EXPERTISE,
+            name: 'Baron'
+          },
+          {
+            id: 'tag4',
+            type: tagTypes.EXPERTISE,
+            name: 'Viscount'
+          }
+        ],
+        roleTags: [
+          {
+            id: 'roleTag1',
+            entityId: 'role1',
+            tagId: 'tag2'
+          },
+          {
+            id: 'roleTag2',
+            entityId: 'role2',
+            tagId: 'tag3'
+          },
+          {
+            id: 'roleTag3',
+            entityId: 'role2',
+            tagId: 'tag4'
+          }
+        ]
       }
       const operation = `
         query {
@@ -147,17 +186,33 @@ describe('SurveyAnswer.connections', () => {
       return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
         data: {
           surveyAnswer: {
-            connections: [{
-              id: 'connection1',
-              tags: [{
-                id: 'tag1'
-              }]
-            }, {
-              id: 'connection2',
-              tags: [{
-                id: 'tag1'
-              }]
-            }]
+            connections: [
+              {
+                id: 'connection1',
+                tags: [
+                  {
+                    id: 'tag1'
+                  },
+                  {
+                    id: 'tag2'
+                  }
+                ]
+              },
+              {
+                id: 'connection2',
+                tags: [
+                  {
+                    id: 'tag1'
+                  },
+                  {
+                    id: 'tag3'
+                  },
+                  {
+                    id: 'tag4'
+                  }
+                ]
+              }
+            ]
           }
         }
       })

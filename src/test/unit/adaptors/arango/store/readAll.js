@@ -10,28 +10,38 @@ const Store = require('../../../../../gql/adaptors/arango/store')
 
 chai.use(sinonChai)
 
-const DOCUMENT_RESPONSE = {
-  _key: 'id',
-  '_id': 123,
-  '_rev': 123,
-  prop: 'value'
+const DOCUMENT_RESPONSE_1 = {
+  _key: 123,
+  '_id': 'collectionName/123',
+  '_rev': 456,
+  prop: 'value1'
+}
+const DOCUMENT_RESPONSE_2 = {
+  _key: 234,
+  '_id': 'collectionName/123',
+  '_rev': 567,
+  prop: 'value2'
 }
 
 describe('ArangoAdaptor store.readAll', () => {
   let collectionStub
   let dbStub
   let store
+  let dataLoaderStub
 
   before(() => {
     collectionStub = {
-      all: sinon.stub().returns([DOCUMENT_RESPONSE, DOCUMENT_RESPONSE]),
-      byExample: sinon.stub().returns([DOCUMENT_RESPONSE, DOCUMENT_RESPONSE])
+      all: sinon.stub().returns({ all: () => [DOCUMENT_RESPONSE_1, DOCUMENT_RESPONSE_2] }),
+      byExample: sinon.stub().returns({ all: () => [DOCUMENT_RESPONSE_1] })
     }
+    dataLoaderStub = {}
+    dataLoaderStub.prime = sinon.stub().returns(dataLoaderStub)
     dbStub = {
       db: {
-        query: sinon.stub().returns({ all: () => [DOCUMENT_RESPONSE] }),
+        query: sinon.stub().returns({ all: () => [DOCUMENT_RESPONSE_1] }),
         collection: sinon.stub().returns(collectionStub)
-      }
+      },
+      getDataLoader: sinon.stub().returns(dataLoaderStub)
     }
     store = Store(dbStub)
   })
@@ -39,6 +49,8 @@ describe('ArangoAdaptor store.readAll', () => {
     dbStub.db.query.reset()
     collectionStub.all.reset()
     collectionStub.byExample.reset()
+    dbStub.getDataLoader.reset()
+    dataLoaderStub.prime.reset()
   })
 
   it('should fetch the collection', () => {
@@ -51,56 +63,61 @@ describe('ArangoAdaptor store.readAll', () => {
   })
 
   describe('with no filters', () => {
-    it('should fetch the data', () => {
-      return store.readAll({
+    let result
+
+    beforeEach(async () => {
+      result = await store.readAll({
         type: 'collectionName'
-      })
-      .then(() => {
-        expect(collectionStub.all).to.have.been.called()
       })
     })
 
+    it('should fetch the data', () => {
+      expect(collectionStub.all).to.have.been.called()
+    })
+
+    it('should prime the dataLoader cache', () => {
+      expect(dataLoaderStub.prime).to.have.been.calledWith(123, DOCUMENT_RESPONSE_1)
+      expect(dataLoaderStub.prime).to.have.been.calledWith(234, DOCUMENT_RESPONSE_2)
+    })
+
     it('should return normalised entities', () => {
-      return expect(store.readAll({
-        type: 'collectionName'
-      })).to.eventually.deep.equal([{
-        id: 'id',
-        prop: 'value'
+      return expect(result).to.deep.equal([{
+        id: 123,
+        prop: 'value1'
       }, {
-        id: 'id',
-        prop: 'value'
+        id: 234,
+        prop: 'value2'
       }])
     })
   })
 
   describe('with filters', () => {
-    it('should fetch the data', () => {
-      return store.readAll({
+    let result
+
+    beforeEach(async () => {
+      result = await store.readAll({
         type: 'collectionName',
         filters: {
-          test: 'value'
+          test: 'value1'
         }
-      })
-      .then(() => {
-        const dataArgument = collectionStub.byExample.firstCall.args[0]
-        expect(dataArgument).to.deep.equal({
-          test: 'value'
-        })
       })
     })
 
+    it('should fetch the data', () => {
+      const dataArgument = collectionStub.byExample.firstCall.args[0]
+      expect(dataArgument).to.deep.equal({
+        test: 'value1'
+      })
+    })
+
+    it('should prime the dataLoader cache', () => {
+      expect(dataLoaderStub.prime).to.have.been.calledWith(123, DOCUMENT_RESPONSE_1)
+    })
+
     it('should return normalised entities', () => {
-      return expect(store.readAll({
-        type: 'collectionName',
-        filters: {
-          test: 'value'
-        }
-      })).to.eventually.deep.equal([{
-        id: 'id',
-        prop: 'value'
-      }, {
-        id: 'id',
-        prop: 'value'
+      return expect(result).to.deep.equal([{
+        id: 123,
+        prop: 'value1'
       }])
     })
   })
@@ -188,6 +205,19 @@ describe('ArangoAdaptor store.readAll', () => {
       })
     })
 
+    it('should prime the dataLoader cache', () => {
+      return store.readAll({
+        type: 'collectionName',
+        filters: {
+          dateTo: '2017-12-15T11:21:51.030+00:00',
+          dateFrom: '2016-12-15T11:21:51.030+00:00'
+        }
+      })
+      .then(() => {
+        expect(dataLoaderStub.prime).to.have.been.calledWith(123, DOCUMENT_RESPONSE_1)
+      })
+    })
+
     it('should return normalised entities', () => {
       return expect(store.readAll({
         type: 'collectionName',
@@ -197,8 +227,8 @@ describe('ArangoAdaptor store.readAll', () => {
         }
       })).to.eventually.deep.equal([
         {
-          id: 'id',
-          prop: 'value'
+          id: 123,
+          prop: 'value1'
         }
       ])
     })

@@ -10,7 +10,10 @@ const { startOfDay, endOfDay } = require('../../lib/format-dates')
 const { parseFiltersToAql, createFiltersForFields } = require('../../lib/aql')
 const { generateId } = require('@nudj/library')
 
-module.exports = ({ db }) => {
+module.exports = ({
+  db,
+  getDataLoader
+}) => {
   const normaliseData = (data) => {
     if (data === null) return null
     return reduce(data, (result, value, key) => {
@@ -32,7 +35,7 @@ module.exports = ({ db }) => {
   const executeAqlQuery = async (query, params) => {
     const cursor = await db.query(query, params)
     const response = await cursor.all()
-    return flatten(response).map(normaliseData)
+    return flatten(response)
   }
 
   return {
@@ -46,7 +49,9 @@ module.exports = ({ db }) => {
         created: newISODate(),
         modified: newISODate()
       }), { returnNew: true })
-      return normaliseData(response.new)
+      const newResult = response.new
+      getDataLoader(type).prime(newResult.id, newResult)
+      return normaliseData(newResult)
     },
     readOne: async ({
       type,
@@ -54,17 +59,22 @@ module.exports = ({ db }) => {
       filters,
       filter
     }) => {
+      let result
       filters = filter || filters
 
       if (!id && !filters) return Promise.resolve(null)
-      let method = 'document'
-      let arg = id
-      if (filters) {
-        method = 'firstExample'
-        arg = filters
-      }
       try {
-        return normaliseData(await db.collection(type)[method](arg))
+        const dataLoader = getDataLoader(type)
+        if (filters) {
+          result = await db.collection(type).firstExample(filters)
+          if (result) {
+            dataLoader.prime(result._key, result)
+          }
+          result = normaliseData(result)
+        } else {
+          result = normaliseData(await dataLoader.load(id))
+        }
+        return result
       } catch (error) {
         if (error.message !== 'no match') throw error
       }
@@ -73,7 +83,8 @@ module.exports = ({ db }) => {
       type,
       ids
     }) => {
-      const response = await db.collection(type).lookupByKeys(ids)
+      const dataLoader = getDataLoader(type)
+      const response = await Promise.all(ids.map(id => dataLoader.load(id)))
       return response.map(normaliseData)
     },
     readAll: async ({
@@ -81,13 +92,13 @@ module.exports = ({ db }) => {
       filters,
       filter
     }) => {
+      let results
       filters = filter || filters
 
       if (!filters) {
-        const response = await db.collection(type).all()
-        return response.map(normaliseData)
-      }
-      if (filters.dateTo || filters.dateFrom) {
+        results = await db.collection(type).all()
+        results = await results.all()
+      } else if (filters.dateTo || filters.dateFrom) {
         const { dateTo, dateFrom } = filters
         const generalFilters = parseFiltersToAql(omit(filters, ['dateTo', 'dateFrom']))
         const query = [
@@ -98,14 +109,16 @@ module.exports = ({ db }) => {
           'RETURN item'
         ].filter(Boolean).join('\n')
 
-        return executeAqlQuery(query, {
+        results = await executeAqlQuery(query, {
           to: dateTo && endOfDay(dateTo),
           from: dateFrom && endOfDay(dateFrom)
         })
       } else {
-        const response = await db.collection(type).byExample(filters)
-        return response.map(normaliseData)
+        results = await db.collection(type).byExample(filters)
+        results = await results.all()
       }
+      results.forEach(result => getDataLoader(type).prime(result._key, result))
+      return results.map(normaliseData)
     },
     update: async ({
       type,
@@ -120,14 +133,17 @@ module.exports = ({ db }) => {
         },
         { returnNew: true }
       )
-      return Promise.resolve(normaliseData(response.new))
+      const newResult = response.new
+      getDataLoader(type).clear(id).prime(id, newResult)
+      return normaliseData(newResult)
     },
     delete: async ({
       type,
       id
     }) => {
       const response = await db.collection(type).remove(id, { returnOld: true })
-      return Promise.resolve(normaliseData(response.old))
+      getDataLoader(type).clear(id)
+      return normaliseData(response.old)
     },
     readOneOrCreate: async ({
       type,
@@ -135,25 +151,26 @@ module.exports = ({ db }) => {
       filter,
       data
     }) => {
+      let result
       filters = filter || filters
-      let item
       try {
-        item = await db.collection(type).firstExample(filters)
+        result = await db.collection(type).firstExample(filters)
       } catch (error) {
         if (error.message !== 'no match') throw error
       }
-      if (!item) {
+      if (!result) {
         const _key = generateId(pluralize.singular(type), data)
         const response = await db.collection(type).save(Object.assign(data, {
           _key,
           created: newISODate(),
           modified: newISODate()
         }), { returnNew: true })
-        item = response.new
+        result = response.new
       }
-      return Promise.resolve(normaliseData(item))
+      getDataLoader(type).clear(result._key).prime(result._key, result)
+      return normaliseData(result)
     },
-    search: ({
+    search: async ({
       type,
       query,
       fields,
@@ -182,7 +199,9 @@ module.exports = ({ db }) => {
             RETURN collected
       `
 
-      return executeAqlQuery(aqlQuery, queries)
+      const results = await executeAqlQuery(aqlQuery, queries)
+      results.forEach(result => getDataLoader(type).prime(result._key, result))
+      return results.map(normaliseData)
     },
     countByFilters: async ({
       type,
@@ -245,6 +264,9 @@ module.exports = ({ db }) => {
 
       return results
     },
-    query: executeAqlQuery
+    query: async (...args) => {
+      const results = await executeAqlQuery(...args)
+      return results.map(normaliseData)
+    }
   }
 }

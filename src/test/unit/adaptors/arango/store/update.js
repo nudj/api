@@ -17,21 +17,29 @@ describe('ArangoAdaptor store.update', () => {
   let collectionStub
   let dbStub
   let store
+  let dataLoaderStub
 
   before(() => {
     collectionStub = {
       update: sinon.stub().returns(NEW_RESPONSE)
     }
+    dataLoaderStub = {}
+    dataLoaderStub.prime = sinon.stub().returns(dataLoaderStub)
+    dataLoaderStub.clear = sinon.stub().returns(dataLoaderStub)
     dbStub = {
       db: {
         collection: sinon.stub().returns(collectionStub)
-      }
+      },
+      getDataLoader: sinon.stub().returns(dataLoaderStub)
     }
     store = Store(dbStub)
   })
   afterEach(() => {
     collectionStub.update.reset()
     dbStub.db.collection.reset()
+    dbStub.getDataLoader.reset()
+    dataLoaderStub.prime.reset()
+    dataLoaderStub.clear.reset()
   })
 
   it('should pass the entity id', () => {
@@ -90,6 +98,44 @@ describe('ArangoAdaptor store.update', () => {
       const optionsArgument = collectionStub.update.firstCall.args[2]
       expect(optionsArgument).to.have.property('returnNew', true)
     })
+  })
+
+  it('should fetch dataLoader for type', () => {
+    return store.update({
+      type: 'collectionName',
+      id: 456,
+      data: {
+        prop: 'value'
+      }
+    })
+    .then(() => expect(dbStub.getDataLoader).to.have.been.calledWith('collectionName'))
+  })
+
+  it('should clear the dataLoader cache', () => {
+    return store.update({
+      type: 'collectionName',
+      id: 456,
+      data: {
+        prop: 'value'
+      }
+    })
+    .then(() => expect(dataLoaderStub.clear).to.have.been.calledWith(456))
+  })
+
+  it('should prime the dataLoader cache', () => {
+    return store.update({
+      type: 'collectionName',
+      id: 456,
+      data: {
+        prop: 'value'
+      }
+    })
+    .then(() => expect(dataLoaderStub.prime).to.have.been.calledWith(456, {
+      _key: 'id',
+      _id: 123,
+      _rev: 123,
+      prop: 'value'
+    }))
   })
 
   it('should return normalised entity', () => {

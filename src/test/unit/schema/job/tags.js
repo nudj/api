@@ -13,16 +13,16 @@ describe('Job.tags', () => {
           id: 'job1'
         }
       ],
-      entityTags: [
+      jobTags: [
         {
-          id: 'entityTag1',
-          entityId: 'job1',
-          tagId: 'tag1'
+          id: 'jobTag1',
+          job: 'job1',
+          tag: 'tag1'
         },
         {
-          id: 'entityTag2',
-          entityId: 'job1',
-          tagId: 'tag2'
+          id: 'jobTag2',
+          job: 'job1',
+          tag: 'tag2'
         }
       ],
       tags: [
@@ -59,11 +59,7 @@ describe('Job.tags', () => {
     const db = {
       jobs: [
         {
-          id: 'job1',
-          entityTags: [
-            'entityTag1',
-            'entityTag2'
-          ]
+          id: 'job1'
         }
       ],
       tags: [

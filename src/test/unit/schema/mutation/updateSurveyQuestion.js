@@ -61,13 +61,12 @@ describe('Mutation.updateSurveyQuestion', () => {
             type: tagTypes.EXPERTISE
           }
         ],
-        entityTags: [
+        surveyQuestionTags: [
           {
-            id: 'entityTag1',
-            entityId: 'surveyQuestion1',
-            entityType: 'surveyQuestion',
+            id: 'surveyQuestionTag1',
+            surveyQuestion: 'surveyQuestion1',
             source: tagSources.NUDJ,
-            tagId: 'tag1'
+            tag: 'tag1'
           }
         ]
       }
@@ -102,20 +101,18 @@ describe('Mutation.updateSurveyQuestion', () => {
           }
         }
       })
-      expect(db.entityTags).to.deep.equal([
+      expect(db.surveyQuestionTags).to.deep.equal([
         {
-          entityId: 'surveyQuestion1',
-          entityType: 'surveyQuestion',
-          id: 'entityTag1',
+          surveyQuestion: 'surveyQuestion1',
+          id: 'surveyQuestionTag1',
           source: tagSources.NUDJ,
-          tagId: 'tag2'
+          tag: 'tag2'
         },
         {
-          entityId: 'surveyQuestion1',
-          entityType: 'surveyQuestion',
-          id: 'entityTag2',
+          surveyQuestion: 'surveyQuestion1',
+          id: 'surveyQuestionTag2',
           source: tagSources.NUDJ,
-          tagId: 'tag1'
+          tag: 'tag1'
         }
       ])
       expect(db.tags).to.deep.equal([
@@ -139,13 +136,12 @@ describe('Mutation.updateSurveyQuestion', () => {
         db,
         schema
       })
-      expect(db.entityTags).to.deep.equal([
+      expect(db.surveyQuestionTags).to.deep.equal([
         {
-          entityId: 'surveyQuestion1',
-          entityType: 'surveyQuestion',
-          id: 'entityTag1',
+          surveyQuestion: 'surveyQuestion1',
+          id: 'surveyQuestionTag1',
           source: tagSources.NUDJ,
-          tagId: 'tag1'
+          tag: 'tag1'
         }
       ])
       expect(db.tags).to.deep.equal([
@@ -222,20 +218,18 @@ describe('Mutation.updateSurveyQuestion', () => {
             type: tagTypes.EXPERTISE
           }
         ],
-        entityTags: [
+        surveyQuestionTags: [
           {
-            id: 'entityTag1',
-            entityId: 'surveyQuestion1',
-            entityType: 'surveyQuestion',
+            id: 'surveyQuestionTag1',
+            surveyQuestion: 'surveyQuestion1',
             source: tagSources.NUDJ,
-            tagId: 'tag1'
+            tag: 'tag1'
           },
           {
-            id: 'entityTag2',
-            entityId: 'surveyQuestion1',
-            entityType: 'surveyQuestion',
+            id: 'surveyQuestionTag2',
+            surveyQuestion: 'surveyQuestion1',
             source: tagSources.NUDJ,
-            tagId: 'tag2'
+            tag: 'tag2'
           }
         ]
       }
@@ -258,20 +252,19 @@ describe('Mutation.updateSurveyQuestion', () => {
       })
     })
 
-    it('should delete unused entityTags', async () => {
+    it('should delete unused surveyQuestionTags', async () => {
       await executeQueryOnDbUsingSchema({
         operation,
         variables,
         db,
         schema
       })
-      expect(db.entityTags).to.deep.equal([
+      expect(db.surveyQuestionTags).to.deep.equal([
         {
-          id: 'entityTag1',
-          entityId: 'surveyQuestion1',
-          entityType: 'surveyQuestion',
+          id: 'surveyQuestionTag1',
+          surveyQuestion: 'surveyQuestion1',
           source: tagSources.NUDJ,
-          tagId: 'tag3'
+          tag: 'tag3'
         }
       ])
     })

@@ -131,16 +131,13 @@ module.exports = {
         const connectionTagMap = {}
         const tagConnectionMap = {}
         await Promise.all(surveyAnswers.map(async answer => {
-          const entityTags = await context.store.readAll({
-            type: 'entityTags',
-            filters: {
-              entityType: 'surveyQuestion',
-              entityId: answer.surveyQuestion
-            }
+          const surveyQuestionTags = await context.store.readAll({
+            type: 'surveyQuestionTags',
+            filters: { surveyQuestion: answer.surveyQuestion }
           })
           let tags = await context.store.readMany({
             type: 'tags',
-            ids: entityTags.map(entityTag => entityTag.tagId)
+            ids: surveyQuestionTags.map(surveyQuestionTag => surveyQuestionTag.tag)
           })
           tags = tags.filter(tag => tag.type === tagTypes.EXPERTISE)
 

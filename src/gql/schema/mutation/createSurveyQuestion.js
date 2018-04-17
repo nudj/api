@@ -51,11 +51,10 @@ module.exports = {
 
         await Promise.all(surveyTags.map(tag => {
           return context.store.create({
-            type: 'entityTags',
+            type: 'surveyQuestionTags',
             data: {
-              entityType: 'surveyQuestion',
-              entityId: surveyQuestion.id,
-              tagId: tag.id,
+              surveyQuestion: surveyQuestion.id,
+              tag: tag.id,
               source: tagSources.NUDJ
             }
           })

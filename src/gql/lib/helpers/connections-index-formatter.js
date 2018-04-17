@@ -8,18 +8,18 @@ const connectionsIndexFormatter = ({
   roles,
   surveyQuestions,
   surveyAnswers,
-  entityTags,
+  surveyQuestionTags,
   tags
 }) => {
   // Reduce over surveyAnswers to find answers with connections and build a
   // mapping of connections to their relevant tags
   const connectionsToTagsMap = Object.keys(surveyAnswers).reduce((all, next) => {
-    const { surveyQuestion, connections: connectionIds } = surveyAnswers[next]
-    const { tags: surveyQuestionEntityTags } = surveyQuestions[surveyQuestion]
+    const { surveyQuestion: surveyQuestionId, connections: connectionIds } = surveyAnswers[next]
+    const surveyQuestion = surveyQuestions[surveyQuestionId]
 
     // For each survey question, fetch tags of `expertise` type
-    const newTags = surveyQuestionEntityTags.map(entityTagId => {
-      const { tagId } = entityTags[entityTagId]
+    const newTags = surveyQuestion.tags.map(surveyQuestionTagId => {
+      const { tag: tagId } = surveyQuestionTags[surveyQuestionTagId]
       const tag = tags[tagId]
 
       if (tag.type === tagTypes.EXPERTISE) return tag.name

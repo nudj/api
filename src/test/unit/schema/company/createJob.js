@@ -28,7 +28,7 @@ const baseDb = {
     }
   ],
   tags: [],
-  entityTags: []
+  jobTags: []
 }
 
 const variables = {
@@ -51,11 +51,11 @@ const variables = {
 }
 
 describe('Company.createJob', () => {
-  it('should create the related tags and entityTags', async () => {
+  it('should create the related tags and jobTags', async () => {
     const db = {
       ...baseDb,
       tags: [],
-      entityTags: [],
+      jobTags: [],
       jobs: []
     }
 
@@ -73,20 +73,18 @@ describe('Company.createJob', () => {
         type: tagTypes.EXPERTISE
       }
     ])
-    expect(db.entityTags).to.deep.equal([
+    expect(db.jobTags).to.deep.equal([
       {
-        entityId: 'job1',
-        entityType: 'job',
-        id: 'entityTag1',
+        id: 'jobTag1',
         source: tagSources.NUDJ,
-        tagId: 'tag1'
+        job: 'job1',
+        tag: 'tag1'
       },
       {
-        entityId: 'job1',
-        entityType: 'job',
-        id: 'entityTag2',
+        id: 'jobTag2',
         source: tagSources.NUDJ,
-        tagId: 'tag2'
+        job: 'job1',
+        tag: 'tag2'
       }
     ])
   })
@@ -95,7 +93,7 @@ describe('Company.createJob', () => {
     const db = {
       ...baseDb,
       tags: [],
-      entityTags: [],
+      jobTags: [],
       jobs: []
     }
 
@@ -123,7 +121,7 @@ describe('Company.createJob', () => {
     const db = {
       ...baseDb,
       tags: [],
-      entityTags: [],
+      jobTags: [],
       jobs: []
     }
     const badVariables = merge(variables, {
@@ -148,7 +146,7 @@ describe('Company.createJob', () => {
       const db = {
         ...baseDb,
         tags: [],
-        entityTags: [],
+        jobTags: [],
         jobs: [{
           id: 'job1',
           slug: 'ceo',

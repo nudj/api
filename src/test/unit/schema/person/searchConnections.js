@@ -98,18 +98,16 @@ const db = {
       connections: ['connection1']
     }
   ],
-  entityTags: [
+  surveyQuestionTags: [
     {
-      id: 'entityTag1',
-      entityType: 'surveyQuestion',
-      entityId: 'surveyQuestion1',
-      tagId: 'tag1'
+      id: 'surveyQuestionTag1',
+      surveyQuestion: 'surveyQuestion1',
+      tag: 'tag1'
     },
     {
-      id: 'entityTag2',
-      entityType: 'surveyQuestion',
-      entityId: 'surveyQuestion2',
-      tagId: 'tag2'
+      id: 'surveyQuestionTag2',
+      surveyQuestion: 'surveyQuestion2',
+      tag: 'tag2'
     }
   ],
   roleTags: [

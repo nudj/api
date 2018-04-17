@@ -13,18 +13,16 @@ describe('SurveyQuestion.tags', () => {
           id: 'surveyQuestion1'
         }
       ],
-      entityTags: [
+      surveyQuestionTags: [
         {
-          id: 'entityTag1',
-          entityId: 'surveyQuestion1',
-          entityType: 'surveyQuestion',
-          tagId: 'tag1'
+          id: 'surveyQuestionTag1',
+          surveyQuestion: 'surveyQuestion1',
+          tag: 'tag1'
         },
         {
-          id: 'entityTag2',
-          entityId: 'surveyQuestion2',
-          entityType: 'surveyQuestion',
-          tagId: 'tag2'
+          id: 'surveyQuestionTag2',
+          surveyQuestion: 'surveyQuestion2',
+          tag: 'tag2'
         }
       ],
       tags: [
@@ -69,7 +67,7 @@ describe('SurveyQuestion.tags', () => {
           id: 'surveyQuestion1'
         }
       ],
-      entityTags: [],
+      surveyQuestionTags: [],
       tags: [
         {
           id: 'tag1',

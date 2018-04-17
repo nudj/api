@@ -31,7 +31,8 @@ describe('SurveyAnswer.connections', () => {
         id: 'surveyQuestion1',
         entityTags: []
       }],
-      roleTags: []
+      roleTags: [],
+      tags: []
     }
     const operation = `
       query {
@@ -156,18 +157,18 @@ describe('SurveyAnswer.connections', () => {
         roleTags: [
           {
             id: 'roleTag1',
-            entityId: 'role1',
-            tagId: 'tag2'
+            role: 'role1',
+            tag: 'tag2'
           },
           {
             id: 'roleTag2',
-            entityId: 'role2',
-            tagId: 'tag3'
+            role: 'role2',
+            tag: 'tag3'
           },
           {
             id: 'roleTag3',
-            entityId: 'role2',
-            tagId: 'tag4'
+            role: 'role2',
+            tag: 'tag4'
           }
         ]
       }

@@ -2,6 +2,7 @@ const uniq = require('lodash/uniq')
 const union = require('lodash/union')
 
 const handleErrors = require('../../lib/handle-errors')
+const fetchRoleToTagsMap = require('../../lib/helpers/fetch-role-tag-maps')
 
 module.exports = {
   typeDefs: `
@@ -17,6 +18,8 @@ module.exports = {
           ids: answer.connections
         })
 
+        if (!connections.length) return connections
+
         const entityTags = await context.store.readAll({
           type: 'entityTags',
           filters: {
@@ -31,22 +34,12 @@ module.exports = {
           ids: tagIds
         })
 
-        return connections.map(async connection => {
-          const tags = await context.store.readAll({
-            type: 'roleTags',
-            filters: { entityId: connection.role }
-          })
+        const rolesToTagsMap = await fetchRoleToTagsMap(context)
 
-          const roleTags = await context.store.readMany({
-            type: 'tags',
-            ids: tags.map(roleTag => roleTag.tagId)
-          })
-
-          return {
-            ...connection,
-            tags: union(surveyQuestionTags, roleTags)
-          }
-        })
+        return connections.map(async connection => ({
+          ...connection,
+          tags: union(surveyQuestionTags, rolesToTagsMap[connection.role])
+        }))
       })
     }
   }

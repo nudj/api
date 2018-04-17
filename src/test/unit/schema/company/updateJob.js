@@ -32,7 +32,7 @@ describe('Company.updateJob', () => {
           slug: 'cheese'
         }],
         tags: [],
-        entityTags: []
+        jobTags: []
       }
 
       const variables = {
@@ -68,7 +68,7 @@ describe('Company.updateJob', () => {
           slug: 'cheese'
         }],
         tags: [],
-        entityTags: []
+        jobTags: []
       }
 
       const variables = {
@@ -96,20 +96,18 @@ describe('Company.updateJob', () => {
           type: 'EXPERTISE'
         }
       ])
-      expect(db.entityTags).to.deep.equal([
+      expect(db.jobTags).to.deep.equal([
         {
-          entityId: 'job1',
-          entityType: 'job',
-          id: 'entityTag1',
+          id: 'jobTag1',
           source: tagSources.NUDJ,
-          tagId: 'tag1'
+          job: 'job1',
+          tag: 'tag1'
         },
         {
-          entityId: 'job1',
-          entityType: 'job',
-          id: 'entityTag2',
+          id: 'jobTag2',
           source: tagSources.NUDJ,
-          tagId: 'tag2'
+          job: 'job1',
+          tag: 'tag2'
         }
       ])
     })
@@ -131,13 +129,12 @@ describe('Company.updateJob', () => {
             type: 'EXPERTISE'
           }
         ],
-        entityTags: [
+        jobTags: [
           {
-            entityId: 'job1',
-            entityType: 'job',
-            id: 'entityTag1',
+            id: 'jobTag1',
             source: tagSources.NUDJ,
-            tagId: 'tag1'
+            job: 'job1',
+            tag: 'tag1'
           }
         ]
       }
@@ -167,20 +164,18 @@ describe('Company.updateJob', () => {
           type: 'EXPERTISE'
         }
       ])
-      expect(db.entityTags).to.deep.equal([
+      expect(db.jobTags).to.deep.equal([
         {
-          entityId: 'job1',
-          entityType: 'job',
-          id: 'entityTag1',
+          id: 'jobTag1',
           source: tagSources.NUDJ,
-          tagId: 'tag1'
+          job: 'job1',
+          tag: 'tag1'
         },
         {
-          entityId: 'job1',
-          entityType: 'job',
-          id: 'entityTag2',
+          id: 'jobTag2',
           source: tagSources.NUDJ,
-          tagId: 'tag2'
+          job: 'job1',
+          tag: 'tag2'
         }
       ])
     })
@@ -196,7 +191,7 @@ describe('Company.updateJob', () => {
           slug: 'cheese'
         }],
         tags: [],
-        entityTags: []
+        jobTags: []
       }
       const badVariables = {
         companyId: 'company1',
@@ -260,20 +255,18 @@ describe('Company.updateJob', () => {
             type: tagTypes.EXPERTISE
           }
         ],
-        entityTags: [
+        jobTags: [
           {
-            id: 'entityTag1',
-            entityId: 'job1',
-            entityType: 'job',
+            id: 'jobTag1',
             source: tagSources.NUDJ,
-            tagId: 'tag1'
+            job: 'job1',
+            tag: 'tag1'
           },
           {
-            id: 'entityTag2',
-            entityId: 'job1',
-            entityType: 'job',
+            id: 'jobTag2',
             source: tagSources.NUDJ,
-            tagId: 'tag2'
+            job: 'job1',
+            tag: 'tag2'
           }
         ]
       }
@@ -291,16 +284,15 @@ describe('Company.updateJob', () => {
       }])
     })
 
-    it('should delete unused entityTags', async () => {
+    it('should delete unused jobTags', async () => {
       await executeQueryOnDbUsingSchema({ operation, db, schema, variables })
 
-      expect(db.entityTags).to.deep.equal([
+      expect(db.jobTags).to.deep.equal([
         {
-          entityId: 'job1',
-          entityType: 'job',
-          id: 'entityTag1',
+          id: 'jobTag1',
           source: tagSources.NUDJ,
-          tagId: 'tag3'
+          job: 'job1',
+          tag: 'tag3'
         }
       ])
     })
@@ -322,7 +314,7 @@ describe('Company.updateJob', () => {
           slug: 'ceo'
         }],
         tags: [],
-        entityTags: []
+        jobTags: []
       }
 
       const variables = {

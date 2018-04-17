@@ -104,32 +104,32 @@ const dbData = {
   surveyQuestions: {
     'surveyQuestion1': {
       title: 'Who?',
-      tags: [ 'entityTag1', 'entityTag4', 'entityTag2' ]
+      tags: [ 'surveyQuestionTag1', 'surveyQuestionTag4', 'surveyQuestionTag2' ]
     },
     'surveyQuestion2': {
       title: 'Why?',
-      tags: [ 'entityTag2', 'entityTag3', 'entityTag4' ]
+      tags: [ 'surveyQuestionTag2', 'surveyQuestionTag3', 'surveyQuestionTag4' ]
     },
     'surveyQuestion3': {
       title: 'Why?',
-      tags: [ 'entityTag1', 'entityTag5' ]
+      tags: [ 'surveyQuestionTag1', 'surveyQuestionTag5' ]
     }
   },
-  entityTags: {
-    'entityTag1': {
-      tagId: 'tag1'
+  surveyQuestionTags: {
+    'surveyQuestionTag1': {
+      tag: 'tag1'
     },
-    'entityTag2': {
-      tagId: 'tag2'
+    'surveyQuestionTag2': {
+      tag: 'tag2'
     },
-    'entityTag3': {
-      tagId: 'tag3'
+    'surveyQuestionTag3': {
+      tag: 'tag3'
     },
-    'entityTag4': {
-      tagId: 'tag4'
+    'surveyQuestionTag4': {
+      tag: 'tag4'
     },
-    'entityTag5': {
-      tagId: 'tag5'
+    'surveyQuestionTag5': {
+      tag: 'tag5'
     }
   },
   tags: {

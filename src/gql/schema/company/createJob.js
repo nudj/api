@@ -51,11 +51,10 @@ module.exports = {
 
         await Promise.all(jobTags.map(tag => {
           return context.store.create({
-            type: 'entityTags',
+            type: 'jobTags',
             data: {
-              entityType: 'job',
-              entityId: job.id,
-              tagId: tag.id,
+              job: job.id,
+              tag: tag.id,
               source: tagSources.NUDJ
             }
           })

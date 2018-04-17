@@ -7,17 +7,14 @@ module.exports = {
   resolvers: {
     SurveyQuestion: {
       tags: async (surveyQuestion, args, context) => {
-        const entityTags = await context.store.readAll({
-          type: 'entityTags',
-          filters: {
-            entityType: 'surveyQuestion',
-            entityId: surveyQuestion.id
-          }
+        const surveyQuestionTags = await context.store.readAll({
+          type: 'surveyQuestionTags',
+          filters: { surveyQuestion: surveyQuestion.id }
         })
 
-        if (!entityTags || !entityTags.length) return []
+        if (!surveyQuestionTags || !surveyQuestionTags.length) return []
 
-        const tagIds = entityTags.map(entityTag => entityTag.tagId)
+        const tagIds = surveyQuestionTags.map(surveyQuestionTag => surveyQuestionTag.tag)
         const tags = await context.store.readMany({
           type: 'tags',
           ids: tagIds

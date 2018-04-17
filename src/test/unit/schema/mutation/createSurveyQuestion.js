@@ -47,7 +47,7 @@ describe('Mutation.createSurveyQuestion', () => {
         }
       ],
       surveyQuestions: [],
-      entityTags: [],
+      surveyQuestionTags: [],
       tags: []
     }
   })
@@ -70,27 +70,25 @@ describe('Mutation.createSurveyQuestion', () => {
     })
   })
 
-  it('should create the appropriate entity tags', async () => {
+  it('should create the appropriate surveyQuestionTags', async () => {
     await executeQueryOnDbUsingSchema({
       operation,
       variables,
       db,
       schema
     })
-    expect(db.entityTags).to.deep.equal([
+    expect(db.surveyQuestionTags).to.deep.equal([
       {
-        entityId: 'surveyQuestion1',
-        entityType: 'surveyQuestion',
-        id: 'entityTag1',
+        id: 'surveyQuestionTag1',
         source: tagSources.NUDJ,
-        tagId: 'tag1'
+        surveyQuestion: 'surveyQuestion1',
+        tag: 'tag1'
       },
       {
-        entityId: 'surveyQuestion1',
-        entityType: 'surveyQuestion',
-        id: 'entityTag2',
+        id: 'surveyQuestionTag2',
         source: tagSources.NUDJ,
-        tagId: 'tag2'
+        surveyQuestion: 'surveyQuestion1',
+        tag: 'tag2'
       }
     ])
   })

@@ -39,13 +39,13 @@ module.exports = {
         }
 
         const oldJobTags = await context.store.readAll({
-          type: 'entityTags',
-          filters: { entityId: id }
+          type: 'jobTags',
+          filters: { job: id }
         })
 
         await Promise.all(oldJobTags.map(tag => {
           return context.store.delete({
-            type: 'entityTags',
+            type: 'jobTags',
             id: tag.id
           })
         }))
@@ -66,16 +66,15 @@ module.exports = {
 
         await Promise.all(jobTags.map(tag => {
           return context.store.readOneOrCreate({
-            type: 'entityTags',
+            type: 'jobTags',
             filters: {
-              entityId: id,
-              tagId: tag.id,
+              job: id,
+              tag: tag.id,
               source: tagSources.NUDJ
             },
             data: {
-              entityType: 'job',
-              entityId: id,
-              tagId: tag.id,
+              job: id,
+              tag: tag.id,
               source: tagSources.NUDJ
             }
           })

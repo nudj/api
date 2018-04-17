@@ -115,13 +115,13 @@ const db = {
   roleTags: [
     {
       id: 'roleTag1',
-      entityId: 'role1',
-      tagId: 'tag3'
+      role: 'role1',
+      tag: 'tag3'
     },
     {
       id: 'roleTag2',
-      entityId: 'role2',
-      tagId: 'tag4'
+      role: 'role2',
+      tag: 'tag4'
     }
   ],
   tags: [

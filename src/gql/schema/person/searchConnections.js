@@ -4,6 +4,7 @@ const unionBy = require('lodash/unionBy')
 const union = require('lodash/union')
 const values = require('lodash/values')
 const fetchConnectionPropertyMap = require('../../lib/helpers/fetch-connection-property-map')
+const fetchRoleToTagsMap = require('../../lib/helpers/fetch-role-tag-maps')
 const { values: tagTypes } = require('../enums/tag-types')
 
 const searchKeys = [
@@ -169,42 +170,26 @@ module.exports = {
           })
         }
 
-        // Fetch tags for each connection's role
-        connections.forEach(async connection => {
-          const roleTags = await context.store.readAll({
-            type: 'roleTags',
-            filters: {
-              entityId: connection.role
-            }
-          })
-
-          const tags = await context.store.readMany({
-            type: 'tags',
-            ids: roleTags.map(roleTag => roleTag.tagId)
-          })
-
-          if (connectionTagMap[connection.id]) {
-            const connectionTags = connectionTagMap[connection.id] || []
-            connectionTagMap[connection.id] = unionBy(connectionTags, tags, 'id')
-          } else {
-            connectionTagMap[connection.id] = tags || []
-          }
-        })
-
         // fetch nested entities for connections and collate tags
+        const rolesToTagsMap = await fetchRoleToTagsMap(context)
         const {
           roleMap,
           companyMap,
           personMap
         } = await fetchConnectionPropertyMap(context, connections)
 
-        connections = connections.map(connection => ({
-          ...connection,
-          role: roleMap[connection.role],
-          company: companyMap[connection.company],
-          person: personMap[connection.person],
-          tags: connectionTagMap[connection.id] || []
-        }))
+        connections = connections.map(connection => {
+          const savedTags = (connection.tags || []).concat(connectionTagMap[connection.id] || [])
+          const roleTags = rolesToTagsMap[connection.role]
+
+          return {
+            ...connection,
+            role: roleMap[connection.role],
+            company: companyMap[connection.company],
+            person: personMap[connection.person],
+            tags: unionBy(savedTags, roleTags, 'id')
+          }
+        })
 
         // apply search filter
         const normalisedTerm = normaliseString(query)

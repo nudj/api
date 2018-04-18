@@ -107,7 +107,7 @@ describe('00008 Separate Entity Tags Collection', () => {
       try {
         const entityTagsCollection = await db.collection('entityTags')
         await entityTagsCollection.all()
-        throw new Error('document found')
+        throw new Error('should not reach this error')
       } catch (error) {
         expect(error.message).to.equal('collection not found (entityTags)')
       }
@@ -151,7 +151,7 @@ describe('00008 Separate Entity Tags Collection', () => {
       try {
         const jobTagsCollection = await db.collection('jobTags')
         await jobTagsCollection.all()
-        throw new Error('document found')
+        throw new Error('should not reach this error')
       } catch (error) {
         expect(error.message).to.equal('collection not found (jobTags)')
       }
@@ -159,7 +159,7 @@ describe('00008 Separate Entity Tags Collection', () => {
       try {
         const surveyQuestionTagsCollection = await db.collection('surveyQuestionTags')
         await surveyQuestionTagsCollection.all()
-        throw new Error('document found')
+        throw new Error('should not reach this error')
       } catch (error) {
         expect(error.message).to.equal('collection not found (surveyQuestionTags)')
       }

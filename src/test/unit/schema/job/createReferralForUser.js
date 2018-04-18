@@ -9,17 +9,17 @@ const {
   shouldRespondWithGqlError
 } = require('../../helpers')
 
-describe('Job.createReferralAndParent', () => {
+describe('Job.createReferralForUserForUser', () => {
   let IntercomMock
   const operation = `
     query testQuery (
       $personId: ID!
-      $parentPersonId: ID!
+      $parentId: ID
     ) {
       job (id: "job1") {
-        createReferralAndParent(
+        createReferralForUser(
           person: $personId,
-          parentPerson: $parentPersonId
+          parent: $parentId
         ) {
           id
         }
@@ -39,7 +39,7 @@ describe('Job.createReferralAndParent', () => {
     nock.cleanAll()
   })
 
-  describe('when a parent referral does not exist', () => {
+  describe('when person exists and referral does not', () => {
     let db
     let result
     beforeEach(async () => {
@@ -47,9 +47,6 @@ describe('Job.createReferralAndParent', () => {
         people: [
           {
             id: 'person1'
-          },
-          {
-            id: 'parentPerson1'
           }
         ],
         jobs: [
@@ -66,30 +63,19 @@ describe('Job.createReferralAndParent', () => {
         referrals: []
       }
       const variables = {
-        personId: 'person1',
-        parentPersonId: 'parentPerson1'
+        personId: 'person1'
       }
       result = await executeQueryOnDbUsingSchema({ operation, variables, db, schema })
     })
 
-    it('should create a parent referral', async () => {
+    it('should create the referral', async () => {
       expect(db)
         .to.have.deep.property('referrals.0')
         .to.deep.equal({
           id: 'referral1',
           job: 'job1',
-          person: 'parentPerson1'
-        })
-    })
-
-    it('should create the referral', async () => {
-      expect(db)
-        .to.have.deep.property('referrals.1')
-        .to.deep.equal({
-          id: 'referral2',
-          job: 'job1',
           person: 'person1',
-          parent: 'referral1'
+          parent: null
         })
     })
 
@@ -97,8 +83,8 @@ describe('Job.createReferralAndParent', () => {
       expect(result).to.deep.equal({
         data: {
           job: {
-            createReferralAndParent: {
-              id: 'referral2'
+            createReferralForUser: {
+              id: 'referral1'
             }
           }
         }
@@ -106,7 +92,7 @@ describe('Job.createReferralAndParent', () => {
     })
   })
 
-  describe('when a parent referral does exist', () => {
+  describe('when parent referral id is provided', () => {
     let db
     let result
     beforeEach(async () => {
@@ -116,7 +102,7 @@ describe('Job.createReferralAndParent', () => {
             id: 'person1'
           },
           {
-            id: 'parentPerson1'
+            id: 'person2'
           }
         ],
         jobs: [
@@ -134,24 +120,18 @@ describe('Job.createReferralAndParent', () => {
           {
             id: 'referral1',
             job: 'job1',
-            person: 'parentPerson1'
+            person: 'person2'
           }
         ]
       }
       const variables = {
         personId: 'person1',
-        parentPersonId: 'parentPerson1'
+        parentId: 'referral1'
       }
       result = await executeQueryOnDbUsingSchema({ operation, variables, db, schema })
     })
 
-    it('should not create a parent referral', async () => {
-      expect(db)
-        .to.have.deep.property('referrals')
-        .to.have.lengthOf(2)
-    })
-
-    it('should create the referral with existing parent', async () => {
+    it('should create the referral', async () => {
       expect(db)
         .to.have.deep.property('referrals.1')
         .to.deep.equal({
@@ -166,8 +146,65 @@ describe('Job.createReferralAndParent', () => {
       expect(result).to.deep.equal({
         data: {
           job: {
-            createReferralAndParent: {
+            createReferralForUser: {
               id: 'referral2'
+            }
+          }
+        }
+      })
+    })
+  })
+
+  describe('when parent referral id is provided but does not exist', () => {
+    let db
+    let result
+    beforeEach(async () => {
+      db = {
+        people: [
+          {
+            id: 'person1'
+          },
+          {
+            id: 'person2'
+          }
+        ],
+        jobs: [
+          {
+            id: 'job1',
+            company: 'company1'
+          }
+        ],
+        companies: [
+          {
+            id: 'company1'
+          }
+        ],
+        referrals: []
+      }
+      const variables = {
+        personId: 'person1',
+        parentId: 'referral1'
+      }
+      result = await executeQueryOnDbUsingSchema({ operation, variables, db, schema })
+    })
+
+    it('should create the referral with null parent', async () => {
+      expect(db)
+        .to.have.deep.property('referrals.0')
+        .to.deep.equal({
+          id: 'referral1',
+          job: 'job1',
+          person: 'person1',
+          parent: null
+        })
+    })
+
+    it('should return the referral with null parent', async () => {
+      expect(result).to.deep.equal({
+        data: {
+          job: {
+            createReferralForUser: {
+              id: 'referral1'
             }
           }
         }
@@ -183,9 +220,6 @@ describe('Job.createReferralAndParent', () => {
         people: [
           {
             id: 'person1'
-          },
-          {
-            id: 'parentPerson1'
           }
         ],
         jobs: [
@@ -208,16 +242,9 @@ describe('Job.createReferralAndParent', () => {
         ]
       }
       const variables = {
-        personId: 'person1',
-        parentPersonId: 'parentPerson1'
+        personId: 'person1'
       }
       result = await executeQueryOnDbUsingSchema({ operation, variables, db, schema })
-    })
-
-    it('should not create a parent referral', async () => {
-      expect(db)
-        .to.have.deep.property('referrals')
-        .to.have.lengthOf(1)
     })
 
     it('should not create the referral', async () => {
@@ -230,7 +257,7 @@ describe('Job.createReferralAndParent', () => {
       expect(result).to.deep.equal({
         data: {
           job: {
-            createReferralAndParent: {
+            createReferralForUser: {
               id: 'referral1'
             }
           }
@@ -244,11 +271,7 @@ describe('Job.createReferralAndParent', () => {
     let result
     beforeEach(async () => {
       db = {
-        people: [
-          {
-            id: 'parentPerson1'
-          }
-        ],
+        people: [],
         jobs: [
           {
             id: 'job1',
@@ -263,8 +286,7 @@ describe('Job.createReferralAndParent', () => {
         referrals: []
       }
       const variables = {
-        personId: 'person1',
-        parentPersonId: 'parentPerson1'
+        personId: 'person1'
       }
       result = await executeQueryOnDbUsingSchema({ operation, variables, db, schema })
     })
@@ -279,53 +301,7 @@ describe('Job.createReferralAndParent', () => {
       shouldRespondWithGqlError({
         path: [
           'job',
-          'createReferralAndParent'
-        ]
-      })(result)
-    })
-  })
-
-  describe('when parentPerson does not exists', () => {
-    let db
-    let result
-    beforeEach(async () => {
-      db = {
-        people: [
-          {
-            id: 'person1'
-          }
-        ],
-        jobs: [
-          {
-            id: 'job1',
-            company: 'company1'
-          }
-        ],
-        companies: [
-          {
-            id: 'company1'
-          }
-        ],
-        referrals: []
-      }
-      const variables = {
-        personId: 'person1',
-        parentPersonId: 'parentPerson1'
-      }
-      result = await executeQueryOnDbUsingSchema({ operation, variables, db, schema })
-    })
-
-    it('should not create the referral', async () => {
-      expect(db)
-        .to.have.deep.property('referrals')
-        .to.have.lengthOf(0)
-    })
-
-    it('error with message', async () => {
-      shouldRespondWithGqlError({
-        path: [
-          'job',
-          'createReferralAndParent'
+          'createReferralForUser'
         ]
       })(result)
     })

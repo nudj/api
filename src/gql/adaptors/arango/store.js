@@ -50,7 +50,7 @@ module.exports = ({
         modified: newISODate()
       }), { returnNew: true })
       const newResult = response.new
-      getDataLoader(type).prime(newResult.id, newResult)
+      getDataLoader(type).prime(newResult._key, newResult)
       return normaliseData(newResult)
     },
     readOne: async ({

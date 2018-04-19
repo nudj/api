@@ -4,6 +4,7 @@ const expect = chai.expect
 
 const schema = require('../../../../gql/schema')
 const { executeQueryOnDbUsingSchema } = require('../../helpers')
+const { values: hirerTypes } = require('../../../../gql/schema/enums/hirer-types')
 
 const operation = `
   mutation ($hirer: HirerCreateInput!) {
@@ -53,7 +54,8 @@ describe('Company.createHirerByEmail', () => {
         id: 'hirer1',
         company: 'company1',
         person: 'person2',
-        onboarded: false
+        onboarded: false,
+        type: hirerTypes.ADMIN
       })
     })
 
@@ -90,7 +92,8 @@ describe('Company.createHirerByEmail', () => {
     const variables = {
       hirer: {
         company: 'Bad Wolf Incorporated',
-        email: 'hey@nudj.co'
+        email: 'hey@nudj.co',
+        type: hirerTypes.MEMBER
       }
     }
 
@@ -136,7 +139,8 @@ describe('Company.createHirerByEmail', () => {
         id: 'hirer1',
         company: 'company1',
         person: 'person1',
-        onboarded: false
+        onboarded: false,
+        type: hirerTypes.MEMBER
       })
     })
 

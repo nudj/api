@@ -1,3 +1,4 @@
+const { values: hirerTypes } = require('../enums/hirer-types')
 const { handleErrors } = require('../../lib')
 
 module.exports = {
@@ -11,7 +12,8 @@ module.exports = {
       createHirerByEmail: handleErrors(async (company, args, context) => {
         const {
           email,
-          onboarded = false
+          onboarded = false,
+          type = hirerTypes.ADMIN
         } = args.hirer
 
         const person = await context.store.readOneOrCreate({
@@ -24,6 +26,7 @@ module.exports = {
           type: 'hirers',
           data: {
             onboarded,
+            type,
             person: person.id,
             company: company.id
           }

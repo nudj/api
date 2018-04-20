@@ -11,7 +11,7 @@ module.exports = {
     input HirerCreateInput {
       company: ID!
       email: String!
-      type: HirerType
+      type: HirerType!
       onboarded: Boolean
     }
 

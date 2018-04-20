@@ -22,7 +22,8 @@ describe('Company.createHirerByEmail', () => {
     const variables = {
       hirer: {
         company: 'Bad Wolf Incorporated',
-        email: 'rose@badwolf.tld'
+        email: 'rose@badwolf.tld',
+        type: hirerTypes.ADMIN
       }
     }
 

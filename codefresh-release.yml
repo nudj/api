@@ -20,6 +20,16 @@ steps:
       username: '${{dockerUsername}}'
       password: '${{dockerPassword}}'
 
+  github_release:
+    title: Github Release
+    description: Release the latest tag on Github
+    image: nudj/create-github-release
+    working_directory: 'IMAGE_WORK_DIR'
+    environment:
+      - TOKEN=${{GITHUB_ACCESS_TOKEN}}
+    commands:
+      - /bin/sh -c "node . ${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}"
+
   push_demo:
     title: Push demo
     type: push

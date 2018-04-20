@@ -1,4 +1,3 @@
-const { values: hirerTypes } = require('../enums/hirer-types')
 const { handleErrors } = require('../../lib')
 
 module.exports = {
@@ -13,7 +12,7 @@ module.exports = {
         const {
           email,
           onboarded = false,
-          type = hirerTypes.ADMIN
+          type
         } = args.hirer
 
         const person = await context.store.readOneOrCreate({

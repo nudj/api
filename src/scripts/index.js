@@ -8,17 +8,11 @@ const [scriptName] = process.argv.slice(2)
 db.useDatabase(process.env.DB_NAME)
 db.useBasicAuth(process.env.DB_USER, process.env.DB_PASS)
 
-const script = require(`./${scriptName}`)
-
-async function step (description, actions) {
-  process.stdout.write(description)
-  await actions()
-  process.stdout.write(' 👍\n')
-}
+const script = require(`./${scriptName}`);
 
 (async () => {
   try {
-    await script({ db, step })
+    await script({ db })
   } catch (error) {
     console.log('\n\n', error)
   }

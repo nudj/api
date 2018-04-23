@@ -24,6 +24,8 @@ const executeScript = () => script({ db })
 chai.use(chaiAsPromised)
 
 describe('00000 Export Role Tags', () => {
+  let result
+
   before(async () => {
     await setupCollections(db, [
       'roles',
@@ -38,11 +40,11 @@ describe('00000 Export Role Tags', () => {
         name: 'roles',
         data: [
           {
-            id: 'role1',
+            _key: 'role1',
             name: 'Role One'
           },
           {
-            id: 'role2',
+            _key: 'role2',
             name: 'Role Two'
           }
         ]
@@ -51,12 +53,12 @@ describe('00000 Export Role Tags', () => {
         name: 'roleTags',
         data: [
           {
-            id: 'roleTag1',
+            _key: 'roleTag1',
             role: 'role1',
             tag: 'tag1'
           },
           {
-            id: 'roleTag2',
+            _key: 'roleTag2',
             role: 'role1',
             tag: 'tag2'
           }
@@ -66,16 +68,19 @@ describe('00000 Export Role Tags', () => {
         name: 'tags',
         data: [
           {
-            id: 'tag1',
+            _key: 'tag1',
             name: 'Tag One'
           },
           {
-            id: 'tag2',
+            _key: 'tag2',
             name: 'Tag Two'
           }
         ]
       }
     ])
+    await executeScript()
+    const csv = await readFile(path.join(__dirname, '../../../../scripts/00000-export-role-tags/role-tags.csv'))
+    result = await parseCsv(csv)
   })
 
   afterEach(async () => {
@@ -86,49 +91,39 @@ describe('00000 Export Role Tags', () => {
     await teardownCollections(db)
   })
 
-  describe('green path', () => {
-    let result
+  it('should write result to CV', async () => {
+    expect(result).to.not.be.null()
+  })
 
-    beforeEach(async () => {
-      await executeScript()
-      const csv = await readFile(path.join(__dirname, '../../../../scripts/00000-export-role-tags/role-tags.csv'))
-      result = await parseCsv(csv)
-    })
+  it('should write a row for each role', async () => {
+    expect(result).to.have.length(3)
+  })
 
-    it('should write result to CV', async () => {
-      expect(result).to.not.be.null()
-    })
+  it('should write the column titles', async () => {
+    expect(result[0]).to.deep.equal([
+      '_key',
+      'name',
+      'tag1',
+      'tag2'
+    ])
+  })
 
-    it('should write a row for each role', async () => {
-      expect(result).to.have.length(3)
-    })
+  it('should write the role _key and role name in the first two columns', async () => {
+    const roleOneRow = find(result, row => row[0] === 'role1')
+    expect(roleOneRow[1]).to.equal('Role One')
+    const roleTwoRow = find(result, row => row[0] === 'role2')
+    expect(roleTwoRow[1]).to.equal('Role Two')
+  })
 
-    it('should write the column titles', async () => {
-      expect(result[0]).to.deep.equal([
-        'id',
-        'name',
-        'tag1',
-        'tag2'
-      ])
-    })
+  it('should write the role tags into the role row', async () => {
+    const roleOneRow = find(result, row => row[0] === 'role1')
+    expect(roleOneRow).to.contain('Tag One')
+    expect(roleOneRow).to.contain('Tag Two')
+  })
 
-    it('should write the role id and role name in the first two columns', async () => {
-      const roleOneRow = find(result, row => row[0] === 'role1')
-      expect(roleOneRow[1]).to.equal('Role One')
-      const roleTwoRow = find(result, row => row[0] === 'role2')
-      expect(roleTwoRow[1]).to.equal('Role Two')
-    })
-
-    it('should write the role tags into the role row', async () => {
-      const roleOneRow = find(result, row => row[0] === 'role1')
-      expect(roleOneRow).to.contain('Tag One')
-      expect(roleOneRow).to.contain('Tag Two')
-    })
-
-    it('should write empty strings where roles do not have that many tags', async () => {
-      const roleTwoRow = find(result, row => row[0] === 'role2')
-      expect(roleTwoRow[2]).to.equal('')
-      expect(roleTwoRow[3]).to.equal('')
-    })
+  it('should write empty strings where roles do not have that many tags', async () => {
+    const roleTwoRow = find(result, row => row[0] === 'role2')
+    expect(roleTwoRow[2]).to.equal('')
+    expect(roleTwoRow[3]).to.equal('')
   })
 })

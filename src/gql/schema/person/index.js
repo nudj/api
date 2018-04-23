@@ -9,7 +9,6 @@ module.exports = {
       lastName: String
       url: String
       emailPreference: EmailPreference
-      title: String
       company: String
     }
 
@@ -25,7 +24,6 @@ module.exports = {
       firstName: String!
       lastName: String!
       url: String
-      title: String
       company: String
     }
 
@@ -35,7 +33,6 @@ module.exports = {
       lastName: String
       url: String
       emailPreference: EmailPreference
-      title: String
       company: String
     }
   `

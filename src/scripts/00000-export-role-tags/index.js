@@ -4,32 +4,24 @@ const path = require('path')
 const { stringify } = require('csv')
 const find = require('lodash/find')
 
+const { fetchRoleTagData } = require('../lib')
+
 const toCsvData = promisify(stringify)
 const writeFile = promisify(fs.writeFile)
 
 async function action ({ db }) {
-  const rolesCollectionCursor = db.collection('roles')
-  const allRolesCursor = await rolesCollectionCursor.all()
-  const allRoles = await allRolesCursor.all()
-
-  const roleTagsCollectionCursor = db.collection('roleTags')
-  const allRoleTagsCursor = await roleTagsCollectionCursor.all()
-  const allRoleTags = await allRoleTagsCursor.all()
-
-  const tagsCollectionCursor = db.collection('tags')
-  const allTagsCursor = await tagsCollectionCursor.all()
-  const allTags = await allTagsCursor.all()
+  const { roles, roleTags, tags } = await fetchRoleTagData(db)
 
   const columns = {
-    id: true,
+    _key: true,
     name: true
   }
-  const data = allRoles.map(role => {
-    const { id, name } = role
-    const result = { id, name }
-    allRoleTags.forEach(roleTag => {
-      if (roleTag.role === id) {
-        const tag = find(allTags, tag => tag.id === roleTag.tag).name
+  const data = roles.map(role => {
+    const { _key, name } = role
+    const result = { _key, name }
+    roleTags.forEach(roleTag => {
+      if (roleTag.role === _key) {
+        const tag = find(tags, tag => tag._key === roleTag.tag).name
         const columnName = `tag${Object.keys(result).length - 1}`
         columns[columnName] = true
         result[columnName] = tag

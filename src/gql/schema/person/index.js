@@ -9,7 +9,6 @@ module.exports = {
       lastName: String
       url: String
       emailPreference: EmailPreference
-      company: String
     }
 
     input PersonFilterInput {

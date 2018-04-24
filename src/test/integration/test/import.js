@@ -9,6 +9,7 @@ const {
 } = require('../lib')
 
 const Store = require('../../../gql/adaptors/arango/store')
+const setupDataLoaderCache = require('../../../gql/lib/setup-dataloader-cache')
 
 const primaryCollectionName = 'people'
 const secondaryCollectionName = 'pets'
@@ -20,7 +21,10 @@ describe('import', () => {
   })
 
   beforeEach(async () => {
-    store = Store({ db })
+    store = Store({
+      db,
+      getDataLoader: setupDataLoaderCache(db, {})
+    })
   })
 
   after(async () => {

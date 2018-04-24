@@ -1,6 +1,7 @@
 /* eslint-env mocha */
 const chai = require('chai')
 const chaiAsPromised = require('chai-as-promised')
+const orderBy = require('lodash/orderBy')
 const {
   db,
   setupCollections,
@@ -9,6 +10,7 @@ const {
   teardownCollections,
   expect
 } = require('../../lib')
+const { fetchAll } = require('../../../../lib')
 const migration = require('../../../../migrations/00009-add-hirer-types')
 const { values: hirerTypes } = require('../../../../gql/schema/enums/hirer-types')
 
@@ -29,13 +31,13 @@ describe('00009 Add Hirer Types', () => {
         name: 'hirers',
         data: [
           {
-            id: 'hirer1',
+            _key: 'hirer1',
             onboarded: true,
             person: 'person1',
             company: 'company1'
           },
           {
-            id: 'hirer2',
+            _key: 'hirer2',
             onboarded: false,
             person: 'person2',
             company: 'company2'
@@ -59,12 +61,11 @@ describe('00009 Add Hirer Types', () => {
     })
 
     it('should add the `type` property with value `ADMIN` to all hirers', async () => {
-      const hirersCollection = db.collection('hirers')
-      const allHirersCursor = await hirersCollection.all()
-      const allHirers = await allHirersCursor.all()
+      const allHirers = await fetchAll(db, 'hirers')
+      const orderedHirers = orderBy(allHirers, ['_key'])
 
-      expect(allHirers[0]).to.have.property('type').to.equal(hirerTypes.ADMIN)
-      expect(allHirers[1]).to.have.property('type').to.equal(hirerTypes.ADMIN)
+      expect(orderedHirers[0]).to.have.property('type').to.equal(hirerTypes.ADMIN)
+      expect(orderedHirers[1]).to.have.property('type').to.equal(hirerTypes.ADMIN)
     })
   })
 
@@ -75,12 +76,11 @@ describe('00009 Add Hirer Types', () => {
     })
 
     it('should remove the `type` property from all hirers', async () => {
-      const hirersCollection = db.collection('hirers')
-      const allHirersCursor = await hirersCollection.all()
-      const allHirers = await allHirersCursor.all()
+      const allHirers = await fetchAll(db, 'hirers')
+      const orderedHirers = orderBy(allHirers, ['_key'])
 
-      expect(allHirers[0]).to.not.have.property('type')
-      expect(allHirers[1]).to.not.have.property('type')
+      expect(orderedHirers[0]).to.not.have.property('type')
+      expect(orderedHirers[1]).to.not.have.property('type')
     })
   })
 })

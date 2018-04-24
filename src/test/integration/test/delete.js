@@ -8,6 +8,7 @@ const {
 } = require('../lib')
 
 const Store = require('../../../gql/adaptors/arango/store')
+const setupDataLoaderCache = require('../../../gql/lib/setup-dataloader-cache')
 
 const collectionName = 'emails'
 
@@ -28,7 +29,10 @@ describe('delete', () => {
 
   beforeEach(async () => {
     testId = await createNewEntry()
-    store = Store({ db })
+    store = Store({
+      db,
+      getDataLoader: setupDataLoaderCache(db, {})
+    })
   })
 
   after(async () => {

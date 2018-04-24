@@ -2,6 +2,7 @@ module.exports = {
   typeDefs: `
     type Employment {
       id: ID!
+      current: Boolean!
       created: DateTime!
       modified: DateTime!
       source: DataSource!

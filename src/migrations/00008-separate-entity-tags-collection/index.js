@@ -1,3 +1,4 @@
+const { generateId } = require('@nudj/library')
 const collections = [
   'jobTags',
   'surveyQuestionTags'
@@ -38,6 +39,7 @@ async function up ({ db, step }) {
     await Promise.all(jobEntityTags.map(jobTag => {
       const { source, created, modified, entityId, tagId } = jobTag
       return jobTagsCollection.save({
+        _key: generateId(),
         job: entityId,
         tag: tagId,
         source,
@@ -49,6 +51,7 @@ async function up ({ db, step }) {
     await Promise.all(questionEntityTags.map(surveyQuestionTag => {
       const { source, created, modified, entityId, tagId } = surveyQuestionTag
       return surveyQuestionTagsCollection.save({
+        _key: generateId(),
         surveyQuestion: entityId,
         tag: tagId,
         source,
@@ -100,6 +103,7 @@ async function down ({ db, step }) {
     await Promise.all(jobTags.map(jobTag => {
       const { source, created, modified, job, tag } = jobTag
       return entityTagsCollection.save({
+        _key: generateId(),
         entityId: job,
         entityType: 'job',
         tagId: tag,
@@ -112,6 +116,7 @@ async function down ({ db, step }) {
     await Promise.all(surveyQuestionTags.map(surveyQuestionTag => {
       const { source, created, modified, surveyQuestion, tag } = surveyQuestionTag
       return entityTagsCollection.save({
+        _key: generateId(),
         entityId: surveyQuestion,
         entityType: 'surveyQuestion',
         tagId: tag,

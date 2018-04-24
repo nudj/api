@@ -13,7 +13,7 @@ module.exports = {
     Mutation: {
       updatePerson: handleErrors(async (root, args, context) => {
         const { id, data } = args
-        const { company: companyName } = data
+        const { company: companyName, role: roleName } = data
 
         if (companyName) {
           // Fetch company by name
@@ -127,7 +127,7 @@ module.exports = {
         return context.store.update({
           type: 'people',
           id,
-          data: omit(data, ['company'])
+          data: omit(data, ['company', 'role'])
         })
       })
     }

@@ -7,8 +7,8 @@ const { executeQueryOnDbUsingSchema } = require('../../helpers')
 
 describe('Person.conversationByFilters', () => {
   const operation = `
-    query testQuery ($userId: ID!, $conversationId: ID!) {
-      person (id: $userId) {
+    query testQuery ($conversationId: ID!) {
+      user {
         conversationByFilters(filters: {id: $conversationId}) {
           id
         }
@@ -31,7 +31,6 @@ describe('Person.conversationByFilters', () => {
     }
 
     const variables = {
-      userId: 'person1',
       conversationId: 'conversation1'
     }
 
@@ -43,7 +42,7 @@ describe('Person.conversationByFilters', () => {
     }).then(result => {
       return expect(result).to.deep.equal({
         data: {
-          person: {
+          user: {
             conversationByFilters: {
               id: 'conversation1'
             }
@@ -69,7 +68,6 @@ describe('Person.conversationByFilters', () => {
     }
 
     const variables = {
-      userId: 'person1',
       conversationId: 'conversation2'
     }
 
@@ -81,7 +79,7 @@ describe('Person.conversationByFilters', () => {
     }).then(result => {
       return expect(result).to.deep.equal({
         data: {
-          person: {
+          user: {
             conversationByFilters: null
           }
         }

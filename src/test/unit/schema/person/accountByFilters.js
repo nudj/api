@@ -8,10 +8,9 @@ const { values: emailPreferences } = require('../../../../gql/schema/enums/email
 
 const operation = `
   query testQuery (
-    $userId: ID!,
     $accountType: AccountType!
   ) {
-    person (id: $userId) {
+    user {
       account: accountByFilters(filters: {
         type: $accountType
       }) {
@@ -21,7 +20,6 @@ const operation = `
   }
 `
 const variables = {
-  userId: 'person1',
   accountType: emailPreferences.GOOGLE
 }
 
@@ -50,7 +48,7 @@ describe('Person.accountByFilters', () => {
     }).then(result => {
       return expect(result).to.deep.equal({
         data: {
-          person: {
+          user: {
             account: {
               id: 'account1'
             }
@@ -84,7 +82,7 @@ describe('Person.accountByFilters', () => {
     }).then(result => {
       return expect(result).to.deep.equal({
         data: {
-          person: {
+          user: {
             account: null
           }
         }

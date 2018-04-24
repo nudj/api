@@ -13,8 +13,8 @@ const expect = chai.expect
 const schema = require('../../../../gql/schema')
 const { executeQueryOnDbUsingSchema } = require('../../helpers')
 const operation = `
-  query fetchMessages ($userId: ID!) {
-    user (id: $userId) {
+  query fetchMessages {
+    user {
       conversations {
         messages {
           id
@@ -28,13 +28,10 @@ const operation = `
     }
   }
 `
-const variables = {
-  userId: 'person3'
-}
 const baseData = {
   people: [
     {
-      id: 'person3',
+      id: 'person1',
       email: 'woody@andysroom.com'
     },
     {
@@ -44,7 +41,7 @@ const baseData = {
   ],
   accounts: [
     {
-      person: 'person3',
+      person: 'person1',
       type: 'GOOGLE',
       data: {
         accessToken: 'VALID_ACCESS_TOKEN',
@@ -70,13 +67,13 @@ describe('Conversation.messages', () => {
       conversations: [
         {
           id: 'conversation1',
-          person: 'person3',
+          person: 'person1',
           type: 'GOOGLE',
           threadId: 'VALID_THREAD_ID'
         }
       ]
     })
-    return expect(executeQueryOnDbUsingSchema({ operation, variables, db, schema })).to.eventually.deep.equal({
+    return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
         user: {
           conversations: [
@@ -86,7 +83,7 @@ describe('Conversation.messages', () => {
                   body: 'Where\'s my spaceship? Space command needs me.',
                   id: 'MESSAGE_1',
                   to: {
-                    id: 'person3',
+                    id: 'person1',
                     email: 'woody@andysroom.com'
                   }
                 },
@@ -94,7 +91,7 @@ describe('Conversation.messages', () => {
                   body: 'You\nAre\nA\nToy!',
                   id: 'MESSAGE_2',
                   to: {
-                    id: 'person3',
+                    id: 'person1',
                     email: 'woody@andysroom.com'
                   }
                 },
@@ -125,7 +122,7 @@ describe('Conversation.messages', () => {
         }
       ]
     })
-    return expect(executeQueryOnDbUsingSchema({ operation, variables, db, schema })).to.eventually.deep.equal({
+    return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
         user: {
           conversations: []

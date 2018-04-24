@@ -17,8 +17,8 @@ describe('Person.createOrUpdateAccount', () => {
       ]
     }
     const operation = `
-      mutation swankyNewAccount ($data: Data! $type: AccountType! $userId: ID!) {
-        user (id: $userId) {
+      mutation swankyNewAccount ($data: Data! $type: AccountType!) {
+        user {
           account: createOrUpdateAccount(type: $type data: $data) {
             id
             person {
@@ -30,7 +30,6 @@ describe('Person.createOrUpdateAccount', () => {
       }
     `
     const variables = {
-      userId: 'person1',
       type: 'GOOGLE',
       data: {
         data: {
@@ -64,8 +63,8 @@ describe('Person.createOrUpdateAccount', () => {
       ]
     }
     const operation = `
-      mutation swankyNewAccount ($data: Data! $type: AccountType! $userId: ID!) {
-        user (id: $userId) {
+      mutation swankyNewAccount ($data: Data! $type: AccountType!) {
+        user {
           account: createOrUpdateAccount(type: $type data: $data) {
             id
             person {
@@ -78,7 +77,6 @@ describe('Person.createOrUpdateAccount', () => {
       }
     `
     const variables = {
-      userId: 'person1',
       type: 'GOOGLE',
       data: {
         data: {
@@ -114,8 +112,8 @@ describe('Person.createOrUpdateAccount', () => {
       ]
     }
     const operation = `
-      mutation swankyNewAccount ($data: Data! $type: AccountType! $userId: ID!) {
-        user (id: $userId) {
+      mutation swankyNewAccount ($data: Data! $type: AccountType!) {
+        user {
           account: createOrUpdateAccount(type: $type data: $data) {
             id
             person {
@@ -128,7 +126,6 @@ describe('Person.createOrUpdateAccount', () => {
       }
     `
     const variables = {
-      userId: 'person1',
       type: 'GOOGLE',
       data: {
         data: {
@@ -167,8 +164,8 @@ describe('Person.createOrUpdateAccount', () => {
       ]
     }
     const operation = `
-      mutation swankyNewAccount ($data: Data! $type: AccountType! $userId: ID!) {
-        user (id: $userId) {
+      mutation swankyNewAccount ($data: Data! $type: AccountType!) {
+        user {
           account: createOrUpdateAccount(type: $type data: $data) {
             id
             person {
@@ -181,7 +178,6 @@ describe('Person.createOrUpdateAccount', () => {
       }
     `
     const variables = {
-      userId: 'person1',
       type: 'GOOGLE',
       data: {
         data: {
@@ -224,8 +220,8 @@ describe('Person.createOrUpdateAccount', () => {
       ]
     }
     const operation = `
-      mutation swankyNewAccount ($data: Data! $type: AccountType! $userId: ID!) {
-        user (id: $userId) {
+      mutation swankyNewAccount ($data: Data! $type: AccountType!) {
+        user {
           account: createOrUpdateAccount(type: $type data: $data) {
             id
             person {
@@ -238,7 +234,6 @@ describe('Person.createOrUpdateAccount', () => {
       }
     `
     const variables = {
-      userId: 'person1',
       type: 'GOOGLE',
       data: {
         data: {

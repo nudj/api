@@ -1,8 +1,17 @@
-const { rootSingle } = require('../../lib')
+const handleErrors = require('../../lib/handle-errors')
 
-module.exports = rootSingle({
-  parentType: 'Mutation',
-  name: 'user',
-  type: 'Person',
-  collection: 'people'
-})
+module.exports = {
+  typeDefs: `
+    extend type Mutation {
+      user: Person
+    }
+  `,
+  resolvers: {
+    Mutation: {
+      user: handleErrors((root, args, context) => context.store.readOne({
+        type: 'people',
+        id: context.userId
+      }))
+    }
+  }
+}

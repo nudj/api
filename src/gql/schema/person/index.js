@@ -24,6 +24,7 @@ module.exports = {
       lastName: String!
       url: String
       company: String
+      role: String
     }
 
     input PersonUpdateInput {
@@ -33,6 +34,7 @@ module.exports = {
       url: String
       emailPreference: EmailPreference
       company: String
+      role: String
     }
   `
 }

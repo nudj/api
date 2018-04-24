@@ -12,41 +12,61 @@ module.exports = {
   resolvers: {
     Mutation: {
       createPerson: handleErrors(async (root, args, context) => {
-        const { company: companyName } = args.input
+        const { company: companyName, role: roleName } = args.input
 
-        let company = await context.store.readOne({
-          type: 'companies',
-          filters: { name: companyName }
+        const person = await context.store.create({
+          type: 'people',
+          data: omit(args.input, ['company', 'role'])
         })
 
-        if (!company) {
-          const allCompanies = await context.store.readAll({
-            type: 'companies'
-          })
-          const makeSlug = getMakeUniqueCompanySlug(allCompanies)
-          company = await context.store.create({
+        if (companyName) {
+          let company = await context.store.readOne({
             type: 'companies',
+            filters: { name: companyName }
+          })
+
+          if (!company) {
+            const allCompanies = await context.store.readAll({
+              type: 'companies'
+            })
+            const makeSlug = getMakeUniqueCompanySlug(allCompanies)
+            company = await context.store.create({
+              type: 'companies',
+              data: {
+                name: companyName,
+                slug: makeSlug({ name: companyName })
+              }
+            })
+          }
+
+          await context.store.create({
+            type: 'employments',
             data: {
-              name: companyName,
-              slug: makeSlug({ name: companyName })
+              person: person.id,
+              company: company.id,
+              current: true,
+              source: dataSources.NUDJ
             }
           })
         }
 
-        const person = await context.store.create({
-          type: 'people',
-          data: omit(args.input, ['company'])
-        })
+        if (roleName) {
+          const role = await context.store.readOneOrCreate({
+            type: 'roles',
+            filters: { name: roleName },
+            data: { name: roleName }
+          })
 
-        await context.store.create({
-          type: 'employments',
-          data: {
-            person: person.id,
-            company: company.id,
-            current: true,
-            source: dataSources.NUDJ
-          }
-        })
+          await context.store.create({
+            type: 'personRoles',
+            data: {
+              person: person.id,
+              role: role.id,
+              current: true,
+              source: dataSources.NUDJ
+            }
+          })
+        }
 
         return person
       })

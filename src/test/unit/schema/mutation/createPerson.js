@@ -27,17 +27,25 @@ describe('Mutation.createPerson', () => {
           name: 'nudj'
         }
       ],
-      employments: []
+      roles: [
+        {
+          id: 'role1',
+          name: 'Killer Dev'
+        }
+      ],
+      employments: [],
+      personRoles: []
     }
   })
 
-  describe('when the company exists', () => {
+  describe('when the company and role exists', () => {
     const variables = {
       input: {
         firstName: 'Richie',
         lastName: 'Von Palmerson',
         email: 'palmtherich@test.com',
         company: 'nudj',
+        role: 'Killer Dev',
         url: 'mysite.com'
       }
     }
@@ -74,6 +82,22 @@ describe('Mutation.createPerson', () => {
       })
     })
 
+    it('should create a personRole', async () => {
+      await executeQueryOnDbUsingSchema({
+        operation,
+        variables,
+        db,
+        schema
+      })
+      expect(db.personRoles[0]).to.deep.equal({
+        id: 'personRole1',
+        role: 'role1',
+        current: true,
+        person: 'person1',
+        source: 'NUDJ'
+      })
+    })
+
     it('should not create a company', async () => {
       await executeQueryOnDbUsingSchema({
         operation,
@@ -85,6 +109,20 @@ describe('Mutation.createPerson', () => {
       expect(db.companies[0]).to.deep.equal({
         id: 'company1',
         name: 'nudj'
+      })
+    })
+
+    it('should not create a role', async () => {
+      await executeQueryOnDbUsingSchema({
+        operation,
+        variables,
+        db,
+        schema
+      })
+      expect(db.roles.length).to.equal(1)
+      expect(db.roles[0]).to.deep.equal({
+        id: 'role1',
+        name: 'Killer Dev'
       })
     })
 
@@ -103,13 +141,14 @@ describe('Mutation.createPerson', () => {
     })
   })
 
-  describe('when the company does not exist', () => {
+  describe('when the company and role do not exist', () => {
     const variables = {
       input: {
         firstName: 'Richie',
         lastName: 'Von Palmerson',
         email: 'palmtherich@test.com',
         company: 'El Nudjo Magnifico',
+        role: 'King of All Londinium',
         url: 'mysite.com'
       }
     }
@@ -146,6 +185,22 @@ describe('Mutation.createPerson', () => {
       })
     })
 
+    it('should create a personRole', async () => {
+      await executeQueryOnDbUsingSchema({
+        operation,
+        variables,
+        db,
+        schema
+      })
+      expect(db.personRoles[0]).to.deep.equal({
+        id: 'personRole1',
+        role: 'role2',
+        current: true,
+        person: 'person1',
+        source: 'NUDJ'
+      })
+    })
+
     it('should create a new company', async () => {
       await executeQueryOnDbUsingSchema({
         operation,
@@ -158,6 +213,20 @@ describe('Mutation.createPerson', () => {
         id: 'company2',
         name: 'El Nudjo Magnifico',
         slug: 'el-nudjo-magnifico'
+      })
+    })
+
+    it('should create a new role', async () => {
+      await executeQueryOnDbUsingSchema({
+        operation,
+        variables,
+        db,
+        schema
+      })
+      expect(db.roles.length).to.equal(2)
+      expect(db.roles[1]).to.deep.equal({
+        id: 'role2',
+        name: 'King of All Londinium'
       })
     })
 

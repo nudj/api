@@ -15,14 +15,17 @@ describe('Person.getOrCreateEmployment', () => {
   const operation = `
     query getOrCreateEmployment (
       $company: String!,
+      $current: Boolean!,
       $source: DataSource!
     ) {
       person (id: "person1") {
         getOrCreateEmployment (
           company: $company,
+          current: $current,
           source: $source
         ) {
           id
+          current
           company {
             id
             name
@@ -37,6 +40,7 @@ describe('Person.getOrCreateEmployment', () => {
   describe('when valid data is provided', () => {
     const variables = {
       company: 'EMPLOYMENT_COMPANY',
+      current: true,
       source: DataSources.values.LINKEDIN
     }
 
@@ -74,6 +78,7 @@ describe('Person.getOrCreateEmployment', () => {
               slug: 'employment_company',
               name: 'EMPLOYMENT_COMPANY'
             },
+            current: true,
             source: DataSources.values.LINKEDIN
           })
       })
@@ -128,6 +133,7 @@ describe('Person.getOrCreateEmployment', () => {
           employments: [{
             id: 'oldId',
             person: 'person1',
+            current: true,
             company: 'a08491cb2f97756f0413f121ae818846',
             source: DataSources.values.LINKEDIN
           }]
@@ -149,6 +155,7 @@ describe('Person.getOrCreateEmployment', () => {
               name: 'EMPLOYMENT_COMPANY',
               slug: 'employment_company'
             },
+            current: true,
             source: DataSources.values.LINKEDIN
           })
       })
@@ -168,6 +175,7 @@ describe('Person.getOrCreateEmployment', () => {
   describe('when company is an empty string', () => {
     const variables = {
       company: '',
+      current: false,
       source: DataSources.values.LINKEDIN
     }
     beforeEach(async () => {

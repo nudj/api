@@ -9,53 +9,43 @@ const makeSlug = require('../../lib/helpers/make-slug')
 module.exports = {
   typeDefs: `
     extend type Person {
-      getOrCreateEmployment(company: String!, source: DataSource!): Employment
+      getOrCreateEmployment(company: String!, current: Boolean!, source: DataSource!): Employment
     }
   `,
   resolvers: {
     Person: {
       getOrCreateEmployment: handleErrors(async (person, args, context) => {
-        const { company: newCompany, source } = args
+        const {
+          company: newCompany,
+          source,
+          current
+        } = args
 
         if (!newCompany) throw new Error('Please pass a company string')
 
         const companyId = generateId(idTypes.COMPANY, { name: newCompany })
         let companySlug = makeSlug(newCompany)
-        let company
-
-        try {
-          company = await context.store.readOne({
-            type: 'companies',
-            id: companyId
-          })
-        } catch (error) {
-          if (error.message !== 'document not found') throw error
-        }
+        let company = await context.store.readOne({
+          type: 'companies',
+          id: companyId
+        })
 
         if (!company) {
-          try {
+          company = await context.store.readOne({
+            type: 'companies',
+            filters: {
+              slug: companySlug
+            }
+          })
+
+          while (company && companySlug === company.slug) {
+            companySlug = `${companySlug}-${hash(8)}`
             company = await context.store.readOne({
               type: 'companies',
               filters: {
                 slug: companySlug
               }
             })
-          } catch (error) {
-            if (error.message !== 'document not found') throw error
-          }
-
-          while (company && companySlug === company.slug) {
-            companySlug = `${companySlug}-${hash(8)}`
-            try {
-              company = await context.store.readOne({
-                type: 'companies',
-                filters: {
-                  slug: companySlug
-                }
-              })
-            } catch (error) {
-              if (error.message !== 'document not found') throw error
-            }
           }
         }
 
@@ -83,6 +73,7 @@ module.exports = {
         const newEmployment = await context.store.create({
           type: 'employments',
           data: {
+            current,
             person: person.id,
             source: source,
             company: company.id

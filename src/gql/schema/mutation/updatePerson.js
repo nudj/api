@@ -81,6 +81,49 @@ module.exports = {
           }
         }
 
+        if (roleName) {
+          const role = await context.store.readOneOrCreate({
+            type: 'roles',
+            filters: { name: roleName },
+            data: { name: roleName }
+          })
+
+          const currentPersonRole = await context.store.readOne({
+            type: 'personRoles',
+            filters: { current: true, person: id }
+          })
+
+          if (!currentPersonRole) {
+            await context.store.create({
+              type: 'personRoles',
+              data: {
+                person: id,
+                current: true,
+                role: role.id,
+                source: dataSources.NUDJ
+              }
+            })
+          } else if (currentPersonRole.role !== role.id) {
+            // If the current role is different from the new data
+            await context.store.update({
+              type: 'personRoles',
+              id: currentPersonRole.id,
+              data: {
+                current: false
+              }
+            })
+            await context.store.create({
+              type: 'personRoles',
+              data: {
+                person: id,
+                current: true,
+                role: role.id,
+                source: dataSources.NUDJ
+              }
+            })
+          }
+        }
+
         return context.store.update({
           type: 'people',
           id,

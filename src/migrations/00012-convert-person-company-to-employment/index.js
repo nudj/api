@@ -43,17 +43,14 @@ async function up ({ db, step }) {
           company = await companiesCollection.firstExample({ name: person.company })
         } catch (error) {
           if (error.message !== 'no match') throw error
+          company = await companiesCollection.save({
+            _key: generateId(idTypes.COMPANY, { name: person.company }),
+            name: person.company,
+            slug: makeSlug(person.company),
+            onboarded: false,
+            client: false
+          })
         }
-      }
-
-      if (!company) {
-        company = await companiesCollection.save({
-          _key: generateId(idTypes.COMPANY, { name: person.company }),
-          name: person.company,
-          slug: makeSlug(person.company),
-          onboarded: false,
-          client: false
-        })
       }
 
       await employmentsCollection.save({

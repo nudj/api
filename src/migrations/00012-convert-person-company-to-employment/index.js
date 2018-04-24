@@ -1,4 +1,5 @@
 const find = require('lodash/find')
+const hash = require('hash-generator')
 
 const { generateId } = require('@nudj/library')
 const { idTypes } = require('@nudj/library/lib/constants')
@@ -6,6 +7,23 @@ const { idTypes } = require('@nudj/library/lib/constants')
 const makeSlug = require('../../gql/lib/helpers/make-slug')
 const { fetchAll } = require('../../lib')
 const { values: dataSources } = require('../../gql/schema/enums/data-sources')
+
+const makeUniqueCompanySlug = async (db, companyName) => {
+  const getHashedSlug = slug => `${slug}-${hash(8)}`
+  const companyCollection = db.collection('companies')
+  const slug = makeSlug(companyName)
+
+  let uniqueSlug = slug
+  try {
+    while (true) {
+      await companyCollection.byExample({ slug: uniqueSlug })
+      uniqueSlug = getHashedSlug(slug)
+    }
+  } catch (error) {
+    if (error.message !== 'no match') throw error
+    return uniqueSlug
+  }
+}
 
 async function up ({ db, step }) {
   await step('Add `current` flag set as `false` to employments', async () => {
@@ -46,7 +64,7 @@ async function up ({ db, step }) {
           company = await companiesCollection.save({
             _key: generateId(idTypes.COMPANY, { name: person.company }),
             name: person.company,
-            slug: makeSlug(person.company),
+            slug: makeUniqueCompanySlug(person.company),
             onboarded: false,
             client: false
           })

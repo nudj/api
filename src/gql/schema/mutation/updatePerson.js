@@ -15,7 +15,7 @@ module.exports = {
         const { id, data } = args
         const { company: companyName } = data
 
-        if (!companyName) {
+        if (companyName) {
           // Fetch company by name
           let company = await context.store.readOne({
             type: 'companies',

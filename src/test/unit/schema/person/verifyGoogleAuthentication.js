@@ -29,7 +29,7 @@ describe('Person.verifyGoogleAuthentication', () => {
     }
     const operation = `
       query {
-        user (id: "person1") {
+        user {
           googleAuth: verifyGoogleAuthentication
         }
       }
@@ -63,7 +63,7 @@ describe('Person.verifyGoogleAuthentication', () => {
     }
     const operation = `
       query {
-        user (id: "person1") {
+        user {
           googleAuth: verifyGoogleAuthentication
         }
       }
@@ -98,7 +98,7 @@ describe('Person.verifyGoogleAuthentication', () => {
     }
     const operation = `
       query {
-        user (id: "person1") {
+        user {
           googleAuth: verifyGoogleAuthentication
         }
       }
@@ -133,7 +133,7 @@ describe('Person.verifyGoogleAuthentication', () => {
     }
     const operation = `
       query {
-        user (id: "person1") {
+        user {
           googleAuth: verifyGoogleAuthentication
         }
       }

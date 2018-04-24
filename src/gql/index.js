@@ -21,6 +21,7 @@ module.exports = ({ transaction, store }) => {
     graphqlExpress(req => {
       const getDataLoader = setupDataLoaderCache(db, {})
       const context = {
+        userId: req.body.userId,
         transaction,
         store: store({
           db,

@@ -55,12 +55,11 @@ describe('Person.sendEmail', () => {
 
   const sendSwankyEmail = `
     mutation sendSwankyEmail (
-      $userId: ID!,
       $body: String!,
       $to: ID!,
       $subject: String!
     ) {
-      user (id: $userId) {
+      user {
         email: sendEmail(
           body: $body,
           to: $to,
@@ -72,7 +71,6 @@ describe('Person.sendEmail', () => {
     }
   `
   const emailVariables = {
-    userId: 'person1',
     body: 'I think it might be time we upgrade you from Demigod. Thoughts?',
     to: 'person2',
     subject: 'Demigod Status'

@@ -18,27 +18,24 @@ const expect = chai.expect
 const schema = require('../../../../gql/schema')
 const { executeQueryOnDbUsingSchema } = require('../../helpers')
 const operation = `
-  query fetchMessages ($userId: ID!) {
-    user (id: $userId) {
+  query fetchMessages {
+    user {
       conversations {
         subject
       }
     }
   }
 `
-const variables = {
-  userId: 'person3'
-}
 const baseData = {
   people: [
     {
-      id: 'person3',
+      id: 'person1',
       email: 'woody@andysroom.com'
     }
   ],
   accounts: [
     {
-      person: 'person3',
+      person: 'person1',
       type: 'GOOGLE',
       data: {
         accessToken: validAccessToken,
@@ -64,19 +61,19 @@ describe('Conversation.subject', () => {
       conversations: [
         {
           id: 'conversation1',
-          person: 'person3',
+          person: 'person1',
           type: 'GOOGLE',
           threadId: validThreadId
         }
       ],
       people: [
         {
-          id: 'person3',
+          id: 'person1',
           emailPreference: 'GOOGLE'
         }
       ]
     })
-    return expect(executeQueryOnDbUsingSchema({ operation, variables, db, schema })).to.eventually.deep.equal({
+    return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
         user: {
           conversations: [
@@ -100,7 +97,7 @@ describe('Conversation.subject', () => {
         }
       ]
     })
-    return expect(executeQueryOnDbUsingSchema({ operation, variables, db, schema })).to.eventually.deep.equal({
+    return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
         user: {
           conversations: []

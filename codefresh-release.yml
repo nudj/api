@@ -2,8 +2,8 @@ version: '1.0'
 
 steps:
 
-  build:
-    title: Build
+  build_production:
+    title: Build production
     type: build
     image_name: nudj/api
     tag: production
@@ -14,7 +14,7 @@ steps:
   push_production:
     title: Push production
     type: push
-    candidate: '${{build}}'
+    candidate: '${{build_production}}'
     tag: ${{CF_BRANCH}}
     credentials:
       username: '${{dockerUsername}}'
@@ -30,18 +30,9 @@ steps:
     commands:
       - /bin/sh -c "node . ${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}"
 
-  push_demo:
-    title: Push demo
-    type: push
-    candidate: '${{build}}'
-    tag: demo
-    credentials:
-      username: '${{dockerUsername}}'
-      password: '${{dockerPassword}}'
-
   publish:
     title: Publish package to npm
-    image: ${{build}}
+    image: ${{build_production}}
     working_directory: 'IMAGE_WORK_DIR'
     environment:
       - NPM_TOKEN=${{NPM_TOKEN}}

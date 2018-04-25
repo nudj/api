@@ -277,4 +277,36 @@ describe('Person.importLinkedinConnections', () => {
       expect(connections.data).to.have.length(0)
     })
   })
+
+  describe('when company slug already exists', () => {
+    beforeEach(async () => {
+      queryStub.returns([
+        {
+          slug: 'conflicting-slug',
+          id: 'company1'
+        }
+      ])
+      const args = {
+        connections: [{
+          'First Name': 'CONNECTION_FIRSTNAME1',
+          'Last Name': 'CONNECTION_LASTNAME1',
+          'Email Address': 'CONNECTION_EMAIL1',
+          'Position': 'CONNECTION_TITLE1',
+          'Company': 'Conflicting Slug'
+        }]
+      }
+      await importLinkedinConnections(person, args, context)
+      resolverResult = importStub.firstCall.args[0]
+    })
+
+    afterEach(() => {
+      importStub.reset()
+      queryStub.reset()
+    })
+
+    it('should create a unique company slug', () => {
+      const { data: companyData } = find(resolverResult.data, { name: 'companies' })
+      expect(companyData[0].slug).to.equal('conflicting-slug-HASH')
+    })
+  })
 })

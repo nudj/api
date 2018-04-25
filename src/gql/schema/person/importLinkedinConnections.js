@@ -26,7 +26,7 @@ module.exports = {
         `)
 
         const companyMap = companies.reduce((map, item) => {
-          map[item._key] = item
+          map[item.id] = item
           return map
         }, {})
 

@@ -1,8 +1,6 @@
 const omit = require('lodash/omit')
 const pick = require('lodash/pick')
 const hash = require('hash-generator')
-const { generateId } = require('@nudj/library')
-const { idTypes } = require('@nudj/library/lib/constants')
 
 const handleErrors = require('../../lib/handle-errors')
 const makeSlug = require('../../lib/helpers/make-slug')
@@ -39,12 +37,11 @@ module.exports = {
 
         if (to.company) {
           companySlug = makeSlug(to.company)
-          const companyId = generateId(idTypes.COMPANY, { name: to.company })
 
           try {
             existingCompany = await context.store.readOne({
               type: 'companies',
-              id: companyId
+              filters: { name: to.company }
             })
           } catch (error) {
             if (error.message !== 'document not found') throw error

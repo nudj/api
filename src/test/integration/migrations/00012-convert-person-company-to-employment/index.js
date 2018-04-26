@@ -58,6 +58,11 @@ describe('00012 Convert Person Companies to Employments', () => {
             _key: 'person3',
             firstName: 'Gavin',
             company: 'DaGhost & Sons'
+          },
+          {
+            _key: 'person4',
+            firstName: 'Asyncatesto',
+            company: 'Silly Inc.'
           }
         ]
       },
@@ -101,11 +106,16 @@ describe('00012 Convert Person Companies to Employments', () => {
     describe('when person is not a hirer', () => {
       it('should create new `employment` entities', async () => {
         const employments = orderBy(await fetchAll(db, 'employments'), 'person')
+        const createdCompany = employments[1].company
 
-        expect(employments.length).to.equal(4)
+        expect(employments.length).to.equal(5)
+
+        expect(employments[1]).to.have.property('company').to.be.equal(createdCompany)
+        expect(employments[3]).to.have.property('company').to.be.equal(createdCompany)
+
         expect(employments[0]).to.have.property('company').to.equal('company1')
-        expect(employments[1]).to.have.property('company').to.be.a('string')
         expect(employments[2]).to.have.property('company').to.equal('company2')
+        expect(employments[4]).to.have.property('company').to.equal('company9')
       })
 
       it('should not create a company for an existing company name', async () => {
@@ -126,10 +136,11 @@ describe('00012 Convert Person Companies to Employments', () => {
       it('should remove `Person.company` field', async () => {
         const people = await fetchAll(db, 'people')
 
-        expect(people.length).to.equal(3)
+        expect(people.length).to.equal(4)
         expect(people[0].company).to.be.undefined()
         expect(people[1].company).to.be.undefined()
         expect(people[2].company).to.be.undefined()
+        expect(people[3].company).to.be.undefined()
       })
     })
 
@@ -161,12 +172,14 @@ describe('00012 Convert Person Companies to Employments', () => {
     it('should restore `Person.company` fields', async () => {
       const people = orderBy(await fetchAll(db, 'people'), 'firstName')
 
-      expect(people[0]).to.have.property('firstName').to.equal('Dave')
-      expect(people[0]).to.have.property('company').to.equal('AwesomeCorp')
-      expect(people[1]).to.have.property('firstName').to.equal('Gavin')
-      expect(people[1]).to.have.property('company').to.equal('NotDaGhost & Sons')
-      expect(people[2]).to.have.property('firstName').to.equal('Steve')
-      expect(people[2]).to.have.property('company').to.equal('Silly Inc.')
+      expect(people[0]).to.have.property('firstName').to.equal('Asyncatesto')
+      expect(people[0]).to.have.property('company').to.equal('Silly Inc.')
+      expect(people[1]).to.have.property('firstName').to.equal('Dave')
+      expect(people[1]).to.have.property('company').to.equal('AwesomeCorp')
+      expect(people[2]).to.have.property('firstName').to.equal('Gavin')
+      expect(people[2]).to.have.property('company').to.equal('NotDaGhost & Sons')
+      expect(people[3]).to.have.property('firstName').to.equal('Steve')
+      expect(people[3]).to.have.property('company').to.equal('Silly Inc.')
     })
 
     it('should remove `current` flags from employments', async () => {

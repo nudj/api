@@ -317,7 +317,7 @@ bluebird@2:
   version "2.11.0"
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-2.11.0.tgz#534b9033c022c9579c56ba3b3e5a5caafbb650e1"
 
-bluebird@^3.3.4:
+bluebird@^3.3.4, bluebird@^3.4.1:
   version "3.5.1"
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.5.1.tgz#d9551f9de98f1fcda1e683d17ee91a0602ee2eb9"
 
@@ -2913,6 +2913,12 @@ process@~0.5.1:
 progress@^1.1.8:
   version "1.1.8"
   resolved "https://registry.yarnpkg.com/progress/-/progress-1.1.8.tgz#e260c78f6161cdd9b0e56cc3e0a85de17c7a57be"
+
+promise-serial@^0.1.5:
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/promise-serial/-/promise-serial-0.1.5.tgz#68fb4d0e283c912459e02377a26a8d067bf567d1"
+  dependencies:
+    bluebird "^3.4.1"
 
 promisify-call@^2.0.2:
   version "2.0.4"

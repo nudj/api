@@ -1,5 +1,6 @@
 const find = require('lodash/find')
 const hash = require('hash-generator')
+const promiseSerial = require('promise-serial')
 
 const { generateId } = require('@nudj/library')
 const { idTypes } = require('@nudj/library/lib/constants')
@@ -16,7 +17,7 @@ const makeUniqueCompanySlug = async (db, companyName) => {
   let uniqueSlug = slug
   try {
     while (true) {
-      await companyCollection.byExample({ slug: uniqueSlug })
+      await companyCollection.firstExample({ slug: uniqueSlug })
       uniqueSlug = getHashedSlug(slug)
     }
   } catch (error) {
@@ -45,7 +46,7 @@ async function up ({ db, step }) {
 
     const people = await fetchAll(db, 'people')
 
-    await Promise.all(people.map(async person => {
+    await promiseSerial(people.map(person => async () => {
       if (!person.company) return
 
       let company
@@ -64,7 +65,7 @@ async function up ({ db, step }) {
           company = await companiesCollection.save({
             _key: generateId(idTypes.COMPANY, { name: person.company }),
             name: person.company,
-            slug: makeUniqueCompanySlug(person.company),
+            slug: await makeUniqueCompanySlug(db, person.company),
             onboarded: false,
             client: false
           })

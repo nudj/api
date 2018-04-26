@@ -1,5 +1,6 @@
 const { generateId } = require('@nudj/library')
 const { idTypes } = require('@nudj/library/lib/constants')
+const promiseSerial = require('promise-serial')
 
 async function up ({ db, step }) {
   await step('Create `personRoles` collection', async () => {
@@ -20,7 +21,7 @@ async function up ({ db, step }) {
     const peopleCursor = await peopleCollection.all()
     const allPeople = await peopleCursor.all()
 
-    await Promise.all(allPeople.map(async person => {
+    await promiseSerial(allPeople.map(person => async () => {
       if (!person.title) return
 
       const roleData = { name: person.title }

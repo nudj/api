@@ -1,6 +1,6 @@
 const { nestedSingle } = require('../../lib')
 
 module.exports = nestedSingle({
-  parentType: 'SurveyQuestion',
-  type: 'SurveySection'
+  parentType: 'SurveySection',
+  type: 'Survey'
 })

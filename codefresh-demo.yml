@@ -32,4 +32,4 @@ steps:
       - eval "$(ssh-agent -s)"
       - ssh-add ~/.ssh/id_nudj_demo
       - ssh-keyscan ${{NUDJ_DEMO_HOSTNAME}} >> ~/.ssh/known_hosts
-      - ssh -t ${{NUDJ_DEMO_USER}}@${{NUDJ_DEMO_HOSTNAME}} /bin/sh -c 'echo 'Deploying' && docker pull ${{CF_REPO_OWNER}}/${{CF_REPO_NAME}} && docker-compose -f /home/${{NUDJ_DEMO_USER}}/demo/docker-compose.yml up -d --force-recreate --no-deps ${{CF_REPO_NAME}}'
+      - ssh -t ${{NUDJ_DEMO_USER}}@${{NUDJ_DEMO_HOSTNAME}} /bin/sh -c 'echo 'Deploying' && docker pull ${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}:demo && docker-compose -f /home/${{NUDJ_DEMO_USER}}/demo/docker-compose.yml up -d --force-recreate --no-deps ${{CF_REPO_NAME}}'

@@ -2,6 +2,16 @@ version: '1.0'
 
 steps:
 
+  github_release:
+    title: Github Release
+    description: Release the latest tag on Github
+    image: nudj/create-github-release
+    working_directory: 'IMAGE_WORK_DIR'
+    environment:
+      - TOKEN=${{GITHUB_ACCESS_TOKEN}}
+    commands:
+      - /bin/sh -c "node . ${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}"
+
   build_production:
     title: Build production
     type: build
@@ -19,16 +29,6 @@ steps:
     credentials:
       username: '${{dockerUsername}}'
       password: '${{dockerPassword}}'
-
-  github_release:
-    title: Github Release
-    description: Release the latest tag on Github
-    image: nudj/create-github-release
-    working_directory: 'IMAGE_WORK_DIR'
-    environment:
-      - TOKEN=${{GITHUB_ACCESS_TOKEN}}
-    commands:
-      - /bin/sh -c "node . ${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}"
 
   publish:
     title: Publish package to npm

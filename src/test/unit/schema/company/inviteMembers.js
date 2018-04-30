@@ -31,11 +31,11 @@ describe('Company.inviteMembers', () => {
     nock.disableNetConnect() // Disable all external interactions
     nock('https://api.mailgun.net')
       .persist()
-      .filteringRequestBody(() => true)
-      .post(() => {
-        mailerStub()
+      .filteringRequestBody(body => {
+        mailerStub(body)
         return true
       })
+      .post(() => true)
       .reply(200, 'OK')
   })
 
@@ -183,11 +183,12 @@ describe('Company.inviteMembers', () => {
         })
       })
 
-      it('should throw an error if the hirer is with a different company', async () => {
+      it('should throw an error and notify nudj if the hirer is with a different company', async () => {
         const db = {
           companies: [
             {
-              id: 'company1'
+              id: 'company1',
+              name: 'Umbrella Corporation'
             }
           ],
           hirers: [
@@ -201,7 +202,11 @@ describe('Company.inviteMembers', () => {
         }
 
         const result = await executeQueryOnDbUsingSchema({ operation, db, schema, variables })
+        const notifyEmailBody = decodeURI(mailerStub.getCall(0).args)
 
+        expect(notifyEmailBody).to.include('subject=Teammate invitation failed')
+        expect(notifyEmailBody).to.include('html=A hirer for Umbrella Corporation attempted to add a teammate')
+        expect(mailerStub.callCount).to.equal(1)
         shouldRespondWithGqlError({
           path: ['company', 'inviteMembers']
         })(result)

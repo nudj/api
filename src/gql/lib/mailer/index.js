@@ -3,6 +3,8 @@ const randomWords = require('random-words')
 const camelCase = require('lodash/camelCase')
 const { logger } = require('@nudj/library')
 
+const { INTERNAL_EMAIL_ADDRESS } = require('../constants')
+
 const teammateInvitationEmailBodyTemplate = require('./invite-email-template')
 
 const mailgun = Mailgun({
@@ -21,6 +23,16 @@ module.exports = {
         return {
           success: true
         }
+      })
+  },
+  sendInternalEmail: ({ subject, html }) => {
+    return mailgun
+      .messages()
+      .send({
+        from: INTERNAL_EMAIL_ADDRESS,
+        to: INTERNAL_EMAIL_ADDRESS,
+        subject,
+        html
       })
   },
   teammateInvitationEmailBodyTemplate

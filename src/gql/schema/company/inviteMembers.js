@@ -2,6 +2,7 @@ const { handleErrors } = require('../../lib')
 const { values: hirerTypes } = require('../enums/hirer-types')
 const {
   send,
+  sendInternalEmail,
   teammateInvitationEmailBodyTemplate
 } = require('../../lib/mailer')
 
@@ -42,6 +43,10 @@ module.exports = {
               }
             })
           } else if (hirer.company !== company.id) {
+            await sendInternalEmail({
+              subject: 'Teammate invitation failed',
+              html: `A hirer for ${company.name} attempted to add a teammate with the email address "${email}", but that email address is already related to a different company with id: "${hirer.company}"`
+            })
             throw new Error(`User with email address "${email}" is already signed up with another company`)
           }
 

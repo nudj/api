@@ -2,6 +2,7 @@ const reduce = require('lodash/reduce')
 const flatten = require('lodash/flatten')
 const omit = require('lodash/omit')
 const uniq = require('lodash/uniq')
+const isNil = require('lodash/isNil')
 const pluralize = require('pluralize')
 
 const { merge } = require('@nudj/library')
@@ -15,7 +16,7 @@ module.exports = ({
   getDataLoader
 }) => {
   const normaliseData = (data) => {
-    if (data === null) return null
+    if (isNil(data)) return null
     return reduce(data, (result, value, key) => {
       switch (key) {
         case '_key':

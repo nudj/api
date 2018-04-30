@@ -3,12 +3,14 @@ const randomWords = require('random-words')
 const camelCase = require('lodash/camelCase')
 const { logger } = require('@nudj/library')
 
+const teammateInvitationEmailBodyTemplate = require('./invite-email-template')
+
 const mailgun = Mailgun({
   apiKey: process.env.MAILGUN_API_KEY,
   domain: process.env.MAILGUN_DOMAIN
 })
 module.exports = {
-  send ({ from, to, subject, html }) {
+  send: ({ from, to, subject, html }) => {
     const id = camelCase(randomWords(2).join('-'))
     logger('info', 'Sending email', id, from, '>', to, subject)
     return mailgun
@@ -20,5 +22,6 @@ module.exports = {
           success: true
         }
       })
-  }
+  },
+  teammateInvitationEmailBodyTemplate
 }

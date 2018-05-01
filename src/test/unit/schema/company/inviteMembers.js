@@ -8,7 +8,7 @@ const schema = require('../../../../gql/schema')
 const { values: hirerTypes } = require('../../../../gql/schema/enums/hirer-types')
 const { executeQueryOnDbUsingSchema, shouldRespondWithGqlError } = require('../../helpers')
 
-describe('Company.inviteMembers', () => {
+describe.only('Company.inviteMembers', () => {
   const mailerStub = sinon.stub()
   const operation = `
     query ($emailAddresses: [String!]!) {
@@ -52,11 +52,18 @@ describe('Company.inviteMembers', () => {
     const db = {
       companies: [
         {
-          id: 'company1'
+          id: 'company1',
+          name: 'Fake Company'
         }
       ],
       hirers: [],
-      people: []
+      people: [
+        {
+          id: 'person1',
+          firstName: 'David',
+          lastName: 'Platt'
+        }
+      ]
     }
 
     await executeQueryOnDbUsingSchema({ operation, db, variables, schema })
@@ -65,15 +72,53 @@ describe('Company.inviteMembers', () => {
     expect(mailerStub.callCount).to.equal(3)
   })
 
+  it('should not send duplicate invites', async () => {
+    const db = {
+      companies: [
+        {
+          id: 'company1',
+          name: 'Fake Company'
+        }
+      ],
+      hirers: [],
+      people: [
+        {
+          id: 'person1',
+          firstName: 'David',
+          lastName: 'Platt'
+        }
+      ]
+    }
+    const variables = {
+      emailAddresses: [
+        'jim@nudj.co',
+        'jim@nudj.co',
+        'rich@nudj.co'
+      ]
+    }
+
+    await executeQueryOnDbUsingSchema({ operation, db, variables, schema })
+
+    expect(mailerStub).to.have.been.called()
+    expect(mailerStub.callCount).to.equal(2)
+  })
+
   it('should return with success status', async () => {
     const db = {
       companies: [
         {
-          id: 'company1'
+          id: 'company1',
+          name: 'Fake Company'
         }
       ],
       hirers: [],
-      people: []
+      people: [
+        {
+          id: 'person1',
+          firstName: 'David',
+          lastName: 'Platt'
+        }
+      ]
     }
 
     const { data } = await executeQueryOnDbUsingSchema({ operation, db, variables, schema })
@@ -90,7 +135,8 @@ describe('Company.inviteMembers', () => {
       const db = {
         companies: [
           {
-            id: 'company1'
+            id: 'company1',
+            name: 'Fake Company'
           }
         ],
         hirers: [],
@@ -125,11 +171,22 @@ describe('Company.inviteMembers', () => {
       const db = {
         companies: [
           {
-            id: 'company1'
+            id: 'company1',
+            name: 'Fake Company'
           }
         ],
         hirers: [],
-        people: []
+        people: [
+          {
+            id: 'person1',
+            firstName: 'David',
+            lastName: 'Platt'
+          },
+          {
+            id: 'person2',
+            email: 'tim@nudj.co'
+          }
+        ]
       }
 
       await executeQueryOnDbUsingSchema({ operation, db, variables, schema })
@@ -138,7 +195,7 @@ describe('Company.inviteMembers', () => {
         id: 'hirer1',
         company: 'company1',
         onboarded: false,
-        person: 'person1',
+        person: 'person2',
         type: hirerTypes.MEMBER
       })
     })
@@ -148,7 +205,8 @@ describe('Company.inviteMembers', () => {
         const db = {
           companies: [
             {
-              id: 'company1'
+              id: 'company1',
+              name: 'Fake Company'
             }
           ],
           hirers: [
@@ -168,7 +226,25 @@ describe('Company.inviteMembers', () => {
               company: 'company3'
             }
           ],
-          people: []
+          people: [
+            {
+              id: 'person1',
+              firstName: 'David',
+              lastName: 'Platt'
+            },
+            {
+              id: 'person1',
+              email: 'tim@nudj.co'
+            },
+            {
+              id: 'person2',
+              email: 'jim@nudj.co'
+            },
+            {
+              id: 'person3',
+              email: 'jamie@nudj.co'
+            }
+          ]
         }
 
         expect(db.hirers.length).to.equal(3)
@@ -194,11 +270,17 @@ describe('Company.inviteMembers', () => {
           hirers: [
             {
               id: 'hirer1',
-              person: 'person1',
+              person: 'person2',
               company: 'company3'
             }
           ],
-          people: []
+          people: [
+            {
+              id: 'person1',
+              firstName: 'David',
+              lastName: 'Platt'
+            }
+          ]
         }
 
         const result = await executeQueryOnDbUsingSchema({ operation, db, schema, variables })
@@ -219,19 +301,26 @@ describe('Company.inviteMembers', () => {
       const db = {
         companies: [
           {
-            id: 'company1'
+            id: 'company1',
+            name: 'Fake Company'
           }
         ],
         hirers: [],
-        people: []
+        people: [
+          {
+            id: 'person1',
+            firstName: 'David',
+            lastName: 'Platt'
+          }
+        ]
       }
 
-      expect(db.people.length).to.equal(0)
+      expect(db.people.length).to.equal(1)
 
       await executeQueryOnDbUsingSchema({ operation, db, variables, schema })
 
-      expect(db.people[0]).to.deep.equal({
-        id: 'person1',
+      expect(db.people[1]).to.deep.equal({
+        id: 'person2',
         email: 'tim@nudj.co'
       })
     })
@@ -240,11 +329,18 @@ describe('Company.inviteMembers', () => {
       const db = {
         companies: [
           {
-            id: 'company1'
+            id: 'company1',
+            name: 'Fake Company'
           }
         ],
         hirers: [],
-        people: []
+        people: [
+          {
+            id: 'person1',
+            firstName: 'David',
+            lastName: 'Platt'
+          }
+        ]
       }
 
       await executeQueryOnDbUsingSchema({ operation, db, variables, schema })
@@ -253,7 +349,7 @@ describe('Company.inviteMembers', () => {
         id: 'hirer1',
         company: 'company1',
         onboarded: false,
-        person: 'person1',
+        person: 'person2',
         type: hirerTypes.MEMBER
       })
     })
@@ -263,11 +359,18 @@ describe('Company.inviteMembers', () => {
     const db = {
       companies: [
         {
-          id: 'company1'
+          id: 'company1',
+          name: 'Fake Company'
         }
       ],
       hirers: [],
-      people: []
+      people: [
+        {
+          id: 'person1',
+          firstName: 'David',
+          lastName: 'Platt'
+        }
+      ]
     }
     const variables = {
       emailAddresses: []

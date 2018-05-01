@@ -1,3 +1,5 @@
+const uniq = require('lodash/uniq')
+const fetchPerson = require('../../lib/helpers/fetch-person')
 const { handleErrors } = require('../../lib')
 const { values: hirerTypes } = require('../enums/hirer-types')
 const {
@@ -15,11 +17,19 @@ module.exports = {
   resolvers: {
     Company: {
       inviteMembers: handleErrors(async (company, args, context) => {
-        const { emailAddresses } = args
+        const emailAddresses = uniq(args.emailAddresses)
 
         if (!emailAddresses.length) {
           throw new Error('No email addresses provided')
         }
+
+        const { firstName, lastName } = await fetchPerson(context, context.userId)
+        const senderName = firstName && lastName && `${firstName} ${lastName}`
+        const subject = senderName ? `${senderName} has invited you to join them on nudj` : `You've been invited to join nudj!`
+        const emailBody = teammateInvitationEmailBodyTemplate({
+          senderName,
+          companyName: company.name
+        })
 
         await Promise.all(emailAddresses.map(async email => {
           const person = await context.store.readOneOrCreate({
@@ -55,9 +65,9 @@ module.exports = {
 
         const [ sendStatus ] = await Promise.all(emailAddresses.map(email => send({
           from: 'hello@nudj.co',
-          to: `${email}`,
-          subject: 'Welcome to Nudj!',
-          html: teammateInvitationEmailBodyTemplate
+          to: email,
+          subject,
+          html: emailBody
         })))
 
         return sendStatus

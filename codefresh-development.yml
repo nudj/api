@@ -1,0 +1,35 @@
+version: '1.0'
+
+steps:
+
+  build:
+    title: Build
+    type: build
+    image_name: nudj/api
+    tag: development
+    dockerfile: Dockerfile
+    build_arguments:
+      - NPM_TOKEN=${{NPM_TOKEN}}
+
+  push:
+    title: Push
+    type: push
+    candidate: '${{build}}'
+    tag: development
+    credentials:
+      username: '${{dockerUsername}}'
+      password: '${{dockerPassword}}'
+
+  deploy:
+    title: Deploy
+    description: Deploy latest to development environment
+    image: nudj/alpine-openssh-client
+    working_directory: /home/${{NUDJ_DEVELOPMENT_USER}}/development
+    commands:
+      - mkdir ~/.ssh
+      - echo "${{NUDJ_DEVELOPMENT_SSH_KEY}}" | tr ',' '\n' > ~/.ssh/id_nudj_development
+      - chmod 0600 ~/.ssh/id_nudj_development
+      - eval "$(ssh-agent -s)"
+      - ssh-add ~/.ssh/id_nudj_development
+      - ssh-keyscan ${{NUDJ_DEVELOPMENT_HOSTNAME}} >> ~/.ssh/known_hosts
+      - ssh -t ${{NUDJ_DEVELOPMENT_USER}}@${{NUDJ_DEVELOPMENT_HOSTNAME}} /bin/sh -c 'echo 'Deploying' && docker pull ${{CF_REPO_OWNER}}/${{CF_REPO_NAME}} && docker-compose -f /home/${{NUDJ_DEVELOPMENT_USER}}/development/docker-compose.yml up -d --force-recreate --no-deps ${{CF_REPO_NAME}}'

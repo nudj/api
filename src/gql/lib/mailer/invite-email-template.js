@@ -107,7 +107,7 @@ module.exports = ({ senderName, companyName }) => dedent`
                     <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                       <td class="content-block" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;" valign="top">
                         <h3>Why should you care about nudj?</h3>
-                        Referrals are one of the best ways to hire good people, who you like to work with. Nudj is a simple tool that makes it easier for teams to make more referrals and get rewarded for successful ones.
+                        Referrals are one of the best ways to hire good people, who you like to work with. Nudj is a simple tool that makes it easier for teams to make more referrals and for you to get rewarded for successful ones.
                       </td>
                     </tr>
                     <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">

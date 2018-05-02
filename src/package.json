@@ -39,9 +39,17 @@
     "hash-generator": "^0.1.0",
     "intercom-client": "^2.9.4",
     "js-base64": "^2.1.9",
+<<<<<<< HEAD
     "lodash": "4.17.5",
     "mailgun-js": "^0.17.0",
     "morgan": "1.9.0",
+=======
+    "knex": "^0.14.6",
+    "lodash": "4.17.4",
+    "mailgun-js": "^0.14.1",
+    "morgan": "1.8.2",
+    "mysql": "^2.15.0",
+>>>>>>> major: Add initial schema migration
     "node-fetch": "1.6.3",
     "pad-right": "^0.2.2",
     "pluralize": "5.0.0",

@@ -6,8 +6,38 @@ const schema = require('../../../../gql/schema')
 const { executeQueryOnDbUsingSchema } = require('../../helpers')
 
 describe('Person.createOrUpdateAccount', () => {
+  let db
+  let variables
+  const operation = `
+    mutation swankyNewAccount ($data: AccountCreateInput!) {
+      person (id: "person1") {
+        account: createOrUpdateAccount(data: $data) {
+          id
+          person {
+            id
+            firstName
+          }
+          type
+        }
+      }
+    }
+  `
+  beforeEach(() => {
+    variables = {
+      data: {
+        type: 'GOOGLE',
+        email: 'bob@johnson.com',
+        emailAddresses: ['bob@johnson.com'],
+        data: {
+          accessToken: '12345',
+          refreshToken: 'ABCDE'
+        }
+      }
+    }
+  })
+
   it('should create account for person', async () => {
-    const db = {
+    db = {
       accounts: [],
       people: [
         {
@@ -16,40 +46,18 @@ describe('Person.createOrUpdateAccount', () => {
         }
       ]
     }
-    const operation = `
-      mutation swankyNewAccount ($data: Data! $type: AccountType!) {
-        user {
-          account: createOrUpdateAccount(type: $type data: $data) {
-            id
-            person {
-              firstName
-            }
-            type
-          }
-        }
-      }
-    `
-    const variables = {
+    await executeQueryOnDbUsingSchema({ operation, variables, db, schema })
+    expect(db.accounts[0]).to.deep.equal({
+      id: 'account1',
+      person: 'person1',
       type: 'GOOGLE',
-      data: {
-        data: {
-          accessToken: '12345',
-          refreshToken: '6789'
-        }
-      }
-    }
-    return executeQueryOnDbUsingSchema({ operation, variables, db, schema })
-      .then(() => {
-        return expect(db.accounts[0]).to.deep.equal({
-          id: 'account1',
-          person: 'person1',
-          type: 'GOOGLE',
-          data: {
-            accessToken: '12345',
-            refreshToken: '6789'
-          }
-        })
+      email: 'bob@johnson.com',
+      emailAddresses: ['bob@johnson.com'],
+      data: JSON.stringify({
+        accessToken: '12345',
+        refreshToken: 'ABCDE'
       })
+    })
   })
 
   it('should return created value', async () => {
@@ -62,32 +70,10 @@ describe('Person.createOrUpdateAccount', () => {
         }
       ]
     }
-    const operation = `
-      mutation swankyNewAccount ($data: Data! $type: AccountType!) {
-        user {
-          account: createOrUpdateAccount(type: $type data: $data) {
-            id
-            person {
-              id
-              firstName
-            }
-            type
-          }
-        }
-      }
-    `
-    const variables = {
-      type: 'GOOGLE',
+    const result = await executeQueryOnDbUsingSchema({ operation, variables, db, schema })
+    expect(result).to.deep.equal({
       data: {
-        data: {
-          accessToken: '12345',
-          refreshToken: '6789'
-        }
-      }
-    }
-    return expect(executeQueryOnDbUsingSchema({ operation, variables, db, schema })).to.eventually.deep.equal({
-      data: {
-        user: {
+        person: {
           account: {
             id: 'account1',
             person: {
@@ -101,59 +87,19 @@ describe('Person.createOrUpdateAccount', () => {
     })
   })
 
-  it('should not expose stored data', async () => {
-    const db = {
-      accounts: [],
-      people: [
-        {
-          id: 'person1',
-          firstName: 'Larry'
-        }
-      ]
-    }
-    const operation = `
-      mutation swankyNewAccount ($data: Data! $type: AccountType!) {
-        user {
-          account: createOrUpdateAccount(type: $type data: $data) {
-            id
-            person {
-              id
-              firstName
-            }
-            type
-          }
-        }
-      }
-    `
-    const variables = {
-      type: 'GOOGLE',
-      data: {
-        data: {
-          accessToken: '12345',
-          refreshToken: '6789'
-        }
-      }
-    }
-    const result = await executeQueryOnDbUsingSchema({ operation, variables, db, schema })
-    const { account } = result.data.user
-    expect(account).to.deep.equal({
-      id: 'account1',
-      person: {
-        id: 'person1',
-        firstName: 'Larry'
-      },
-      type: 'GOOGLE'
-    })
-    expect(account.data).to.be.undefined()
-  })
-
   it('should update an existing account', async () => {
     const db = {
       accounts: [
         {
           id: 'account1',
           person: 'person1',
-          type: 'GOOGLE'
+          type: 'GOOGLE',
+          email: 'john@bobson.com',
+          emailAddresses: ['john@bobson.com'],
+          data: JSON.stringify({
+            accessToken: '67890',
+            refreshToken: 'FGHIJ'
+          })
         }
       ],
       people: [
@@ -163,50 +109,31 @@ describe('Person.createOrUpdateAccount', () => {
         }
       ]
     }
-    const operation = `
-      mutation swankyNewAccount ($data: Data! $type: AccountType!) {
-        user {
-          account: createOrUpdateAccount(type: $type data: $data) {
-            id
-            person {
-              id
-              firstName
-            }
-            type
-          }
-        }
-      }
-    `
-    const variables = {
-      type: 'GOOGLE',
-      data: {
-        data: {
-          accessToken: '12345',
-          refreshToken: 'ABCDE'
-        }
-      }
-    }
     await executeQueryOnDbUsingSchema({ operation, variables, db, schema })
     expect(db.accounts).to.deep.equal([
       {
         id: 'account1',
         person: 'person1',
         type: 'GOOGLE',
-        data: {
+        email: 'bob@johnson.com',
+        emailAddresses: ['bob@johnson.com'],
+        data: JSON.stringify({
           accessToken: '12345',
           refreshToken: 'ABCDE'
-        }
+        })
       }
     ])
   })
 
-  it('should append new data to existing account data', async () => {
+  it('should update data in existing account data', async () => {
     const db = {
       accounts: [
         {
           id: 'account1',
           person: 'person1',
           type: 'GOOGLE',
+          email: 'bob@johnson.com',
+          emailAddresses: ['bob@johnson.com'],
           data: {
             refreshToken: 'I_NEED_AN_ACCESS_TOKEN'
           }
@@ -219,39 +146,18 @@ describe('Person.createOrUpdateAccount', () => {
         }
       ]
     }
-    const operation = `
-      mutation swankyNewAccount ($data: Data! $type: AccountType!) {
-        user {
-          account: createOrUpdateAccount(type: $type data: $data) {
-            id
-            person {
-              id
-              firstName
-            }
-            type
-          }
-        }
-      }
-    `
-    const variables = {
-      type: 'GOOGLE',
-      data: {
-        data: {
-          accessToken: '12345',
-          refreshToken: 'REFRESH_TOKEN'
-        }
-      }
-    }
     await executeQueryOnDbUsingSchema({ operation, variables, db, schema })
     expect(db.accounts).to.deep.equal([
       {
         id: 'account1',
         person: 'person1',
         type: 'GOOGLE',
-        data: {
+        email: 'bob@johnson.com',
+        emailAddresses: ['bob@johnson.com'],
+        data: JSON.stringify({
           accessToken: '12345',
-          refreshToken: 'REFRESH_TOKEN'
-        }
+          refreshToken: 'ABCDE'
+        })
       }
     ])
   })

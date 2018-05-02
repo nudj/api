@@ -8,7 +8,7 @@ module.exports = {
   `,
   resolvers: {
     Query: {
-      user: handleErrors((root, args, context) => context.store.readOne({
+      user: handleErrors((root, args, context) => context.sql.readOne({
         type: 'people',
         id: context.userId
       }))

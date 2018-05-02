@@ -30,7 +30,8 @@ describe('Mutation.updatePerson', () => {
           }
         ],
         companies: [],
-        employments: []
+        employments: [],
+        currentEmployments: []
       }
 
       const operation = `
@@ -120,7 +121,8 @@ describe('Mutation.updatePerson', () => {
               name: 'nudj'
             }
           ],
-          employments: []
+          employments: [],
+          currentEmployments: []
         }
 
         return executeQueryOnDbUsingSchema({
@@ -159,7 +161,8 @@ describe('Mutation.updatePerson', () => {
               name: 'nudj'
             }
           ],
-          employments: []
+          employments: [],
+          currentEmployments: []
         }
 
         return executeQueryOnDbUsingSchema({
@@ -170,7 +173,6 @@ describe('Mutation.updatePerson', () => {
         }).then(() => {
           return expect(db.employments[0]).to.deep.equal({
             company: 'company1',
-            current: true,
             id: 'employment1',
             person: 'person1',
             source: 'NUDJ'
@@ -197,7 +199,8 @@ describe('Mutation.updatePerson', () => {
               name: 'nudj'
             }
           ],
-          employments: []
+          employments: [],
+          currentEmployments: []
         }
 
         return executeQueryOnDbUsingSchema({
@@ -263,10 +266,10 @@ describe('Mutation.updatePerson', () => {
             {
               id: 'employment1',
               company: 'company1',
-              person: 'person1',
-              current: true
+              person: 'person1'
             }
-          ]
+          ],
+          currentEmployments: []
         }
 
         return executeQueryOnDbUsingSchema({
@@ -309,10 +312,10 @@ describe('Mutation.updatePerson', () => {
             {
               id: 'employment1',
               company: 'company1',
-              person: 'person1',
-              current: true
+              person: 'person1'
             }
-          ]
+          ],
+          currentEmployments: []
         }
 
         return executeQueryOnDbUsingSchema({
@@ -325,8 +328,7 @@ describe('Mutation.updatePerson', () => {
           return expect(db.employments[0]).to.deep.equal({
             id: 'employment1',
             company: 'company1',
-            person: 'person1',
-            current: true
+            person: 'person1'
           })
         })
       })
@@ -354,10 +356,10 @@ describe('Mutation.updatePerson', () => {
             {
               id: 'employment1',
               company: 'company1',
-              person: 'person1',
-              current: true
+              person: 'person1'
             }
-          ]
+          ],
+          currentEmployments: []
         }
 
         return executeQueryOnDbUsingSchema({
@@ -414,7 +416,8 @@ describe('Mutation.updatePerson', () => {
             }
           ],
           companies: [],
-          employments: []
+          employments: [],
+          currentEmployments: []
         }
 
         return executeQueryOnDbUsingSchema({
@@ -448,7 +451,8 @@ describe('Mutation.updatePerson', () => {
             }
           ],
           companies: [],
-          employments: []
+          employments: [],
+          currentEmployments: []
         }
 
         return executeQueryOnDbUsingSchema({
@@ -459,7 +463,6 @@ describe('Mutation.updatePerson', () => {
         }).then(() => {
           return expect(db.employments[0]).to.deep.equal({
             company: 'company1',
-            current: true,
             id: 'employment1',
             person: 'person1',
             source: 'NUDJ'
@@ -481,7 +484,8 @@ describe('Mutation.updatePerson', () => {
             }
           ],
           companies: [],
-          employments: []
+          employments: [],
+          currentEmployments: []
         }
 
         return executeQueryOnDbUsingSchema({
@@ -550,7 +554,9 @@ describe('Mutation.updatePerson', () => {
             }
           ],
           personRoles: [],
-          employments: []
+          currentPersonRoles: [],
+          employments: [],
+          currentEmployments: []
         }
 
         return executeQueryOnDbUsingSchema({
@@ -591,7 +597,9 @@ describe('Mutation.updatePerson', () => {
             }
           ],
           personRoles: [],
-          employments: []
+          currentPersonRoles: [],
+          employments: [],
+          currentEmployments: []
         }
 
         return executeQueryOnDbUsingSchema({
@@ -602,7 +610,6 @@ describe('Mutation.updatePerson', () => {
         }).then(() => {
           return expect(db.personRoles[0]).to.deep.equal({
             id: 'personRole1',
-            current: true,
             role: 'role1',
             person: 'person1',
             source: 'NUDJ'
@@ -631,7 +638,9 @@ describe('Mutation.updatePerson', () => {
             }
           ],
           personRoles: [],
-          employments: []
+          currentPersonRoles: [],
+          employments: [],
+          currentEmployments: []
         }
 
         return executeQueryOnDbUsingSchema({
@@ -691,10 +700,10 @@ describe('Mutation.updatePerson', () => {
             {
               id: 'personRole1',
               role: 'role1',
-              person: 'person1',
-              current: true
+              person: 'person1'
             }
           ],
+          currentPersonRoles: [],
           roles: [
             {
               id: 'role1',
@@ -702,7 +711,8 @@ describe('Mutation.updatePerson', () => {
             }
           ],
           companies: [],
-          employments: []
+          employments: [],
+          currentEmployments: []
         }
 
         return executeQueryOnDbUsingSchema({
@@ -738,10 +748,10 @@ describe('Mutation.updatePerson', () => {
             {
               id: 'personRole1',
               role: 'role1',
-              person: 'person1',
-              current: true
+              person: 'person1'
             }
           ],
+          currentPersonRoles: [],
           roles: [
             {
               id: 'role1',
@@ -749,7 +759,8 @@ describe('Mutation.updatePerson', () => {
             }
           ],
           companies: [],
-          employments: []
+          employments: [],
+          currentEmployments: []
         }
 
         return executeQueryOnDbUsingSchema({
@@ -762,8 +773,7 @@ describe('Mutation.updatePerson', () => {
           return expect(db.personRoles[0]).to.deep.equal({
             id: 'personRole1',
             role: 'role1',
-            person: 'person1',
-            current: true
+            person: 'person1'
           })
         })
       })
@@ -784,10 +794,10 @@ describe('Mutation.updatePerson', () => {
             {
               id: 'personRole1',
               role: 'role1',
-              person: 'person1',
-              current: true
+              person: 'person1'
             }
           ],
+          currentPersonRoles: [],
           roles: [
             {
               id: 'role1',
@@ -795,7 +805,8 @@ describe('Mutation.updatePerson', () => {
             }
           ],
           companies: [],
-          employments: []
+          employments: [],
+          currentEmployments: []
         }
 
         return executeQueryOnDbUsingSchema({
@@ -852,9 +863,11 @@ describe('Mutation.updatePerson', () => {
             }
           ],
           personRoles: [],
+          currentPersonRoles: [],
           roles: [],
           companies: [],
-          employments: []
+          employments: [],
+          currentEmployments: []
         }
 
         return executeQueryOnDbUsingSchema({
@@ -887,9 +900,11 @@ describe('Mutation.updatePerson', () => {
             }
           ],
           personRoles: [],
+          currentPersonRoles: [],
           roles: [],
           companies: [],
-          employments: []
+          employments: [],
+          currentEmployments: []
         }
 
         return executeQueryOnDbUsingSchema({
@@ -901,7 +916,6 @@ describe('Mutation.updatePerson', () => {
           return expect(db.personRoles[0]).to.deep.equal({
             id: 'personRole1',
             role: 'role1',
-            current: true,
             person: 'person1',
             source: 'NUDJ'
           })
@@ -921,9 +935,11 @@ describe('Mutation.updatePerson', () => {
             }
           ],
           personRoles: [],
+          currentPersonRoles: [],
           roles: [],
           companies: [],
-          employments: []
+          employments: [],
+          currentEmployments: []
         }
 
         return executeQueryOnDbUsingSchema({

@@ -12,7 +12,7 @@ module.exports = function nestedSingleViaEdge (props = {}) {
     fromEdgePropertyName,
     toEdgePropertyName
   } = props
-  if (!fromType) { throw new AppError('nestedSingleViaEdge requires a fromType') }
+  if (!fromType) throw new AppError('nestedSingleViaEdge requires a fromType')
   if (!toType) throw new AppError('nestedSingleViaEdge requires a toType')
   if (!name) throw new AppError('nestedSingleViaEdge requires a name')
   if (!edgeCollection) throw new AppError('nestedSingleViaEdge requires a edgeCollection')
@@ -29,14 +29,14 @@ module.exports = function nestedSingleViaEdge (props = {}) {
     resolvers: {
       [fromType]: {
         [name]: handleErrors(async (from, args, context) => {
-          const edge = await context.store.readOne({
+          const edge = await context.sql.readOne({
             type: edgeCollection,
             filters: {
               [fromEdgePropertyName]: from.id
             }
           })
           if (edge) {
-            return context.store.readOne({
+            return context.sql.readOne({
               type: toCollection,
               id: edge[toEdgePropertyName]
             })

@@ -7,7 +7,7 @@ module.exports = {
   resolvers: {
     Person: {
       referralByFilters: (person, args, context) => {
-        return context.store.readOne({
+        return context.sql.readOne({
           type: 'referrals',
           filters: {
             ...args.filters,

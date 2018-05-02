@@ -18,27 +18,27 @@ const resetDataStore = async () => populateCollections(db, [
     name: collectionName,
     data: [
       {
-        created: '2016-12-12T13:04:11.248Z',
+        created: '2016-12-12 13:04:11',
         name: 'The Walking Dead',
         genre: 'action'
       },
       {
-        created: '2016-12-14T13:04:11.248Z',
+        created: '2016-12-14 13:04:11',
         name: 'West Wing',
         genre: 'drama'
       },
       {
-        created: '2016-12-18T13:04:11.248Z',
+        created: '2016-12-18 13:04:11',
         name: 'Black Mirror',
         genre: 'sci-fi horror'
       },
       {
-        created: '2016-12-19T13:04:11.248Z',
+        created: '2016-12-19 13:04:11',
         name: 'Game of Thrones',
         genre: 'action'
       },
       {
-        created: '2016-12-20T13:04:11.248Z',
+        created: '2016-12-20 13:04:11',
         name: 'Daredevil',
         genre: 'action'
       }
@@ -119,7 +119,7 @@ describe('readAll', () => {
       const response = await store.readAll({
         type: collectionName,
         filters: {
-          dateTo: '2016-12-14T13:04:11.248Z'
+          dateTo: '2016-12-14 13:04:11'
         }
       })
       const results = orderBy(response, ['name'])
@@ -138,7 +138,7 @@ describe('readAll', () => {
       const response = await store.readAll({
         type: collectionName,
         filters: {
-          dateFrom: '2016-12-17T13:04:11.248Z'
+          dateFrom: '2016-12-17 13:04:11'
         }
       })
       const results = orderBy(response, ['name'])
@@ -161,8 +161,8 @@ describe('readAll', () => {
       const response = await store.readAll({
         type: collectionName,
         filters: {
-          dateFrom: '2016-12-17T13:04:11.248Z',
-          dateTo: '2016-12-19T13:04:11.248Z'
+          dateFrom: '2016-12-17 13:04:11',
+          dateTo: '2016-12-19 13:04:11'
         }
       })
       const results = orderBy(response, ['name'])
@@ -181,8 +181,8 @@ describe('readAll', () => {
       const response = await store.readAll({
         type: collectionName,
         filters: {
-          dateFrom: '2016-12-17T13:04:11.248Z',
-          dateTo: '2016-12-19T13:04:11.248Z',
+          dateFrom: '2016-12-17 13:04:11',
+          dateTo: '2016-12-19 13:04:11',
           genre: 'action'
         }
       })

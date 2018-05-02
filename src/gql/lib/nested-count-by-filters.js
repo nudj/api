@@ -33,7 +33,7 @@ module.exports = function nestedCountByFilters (props = {}) {
       [parentType]: {
         [name]: handleErrors((parent, args, context) => {
           args.filters[parentName] = parent.id
-          return context.store.countByFilters({
+          return context.sql.count({
             type: collection,
             filters: args.filters
           })

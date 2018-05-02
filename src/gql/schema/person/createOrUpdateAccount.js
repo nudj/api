@@ -3,32 +3,34 @@ const omit = require('lodash/omit')
 module.exports = {
   typeDefs: `
     extend type Person {
-      createOrUpdateAccount(type: AccountType!, data: Data!): Account!
+      createOrUpdateAccount(data: AccountCreateInput!): Account!
     }
   `,
   resolvers: {
     Person: {
       createOrUpdateAccount: async (person, args, context) => {
-        const { type, data } = args
-        const account = await context.store.readOne({
+        const { data } = args
+        if (data.data) {
+          data.data = JSON.stringify(data.data)
+        }
+        const account = await context.sql.readOne({
           type: 'accounts',
           filters: {
             person: person.id,
-            type
+            type: data.type
           }
         })
         if (account && account.id) {
-          return context.store.update({
+          return context.sql.update({
             type: 'accounts',
             id: account.id,
             data: { ...omit(account, ['id']), ...data }
           })
         }
-        return context.store.create({
+        return context.sql.create({
           type: 'accounts',
           data: {
             person: person.id,
-            type,
             ...data
           }
         })

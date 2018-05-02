@@ -25,14 +25,12 @@ const formatBody = (message) => {
 
 module.exports = async ({ context, email, person, threadId }) => {
   email.body = formatBody(email.body) // Emulates Gmail formatting
-
   const { accessToken } = await fetchAccountTokens(context, person)
   const mimeEmail = emailBuilder(email)
   const base64EncodedEmail = Base64.encodeURI(mimeEmail)
   authClient.setCredentials({
     access_token: accessToken
   })
-
   return new Promise((resolve, reject) => {
     gmail.users.messages.send({
       auth: authClient,

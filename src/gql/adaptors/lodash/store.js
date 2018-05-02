@@ -30,12 +30,19 @@ module.exports = ({ db }) => {
     readOne: ({
       type,
       id,
+      index,
+      key,
       filters
     }) => {
       return new Promise((resolve, reject) => {
-        if (!id && !filters) return resolve(null)
+        if (!id && (!index || !key) && !filters) return resolve(null)
         const all = get(db, type)
         let item
+        if (index && key) {
+          filters = {
+            [index.fields.join('')]: key
+          }
+        }
         if (filters) {
           item = first(filter(all, filters))
         } else {
@@ -140,7 +147,7 @@ module.exports = ({ db }) => {
       })
       return Promise.resolve(flatten(entity))
     },
-    countByFilters: ({
+    count: ({
       type,
       filters = {}
     }) => {

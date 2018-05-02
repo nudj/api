@@ -16,7 +16,7 @@ module.exports = {
         const { slug } = companyUpdate
 
         if (slug) {
-          const fetchedCompany = await context.store.readOne({
+          const fetchedCompany = await context.sql.readOne({
             type: 'companies',
             filters: { slug }
           })
@@ -25,7 +25,7 @@ module.exports = {
           }
         }
 
-        return context.store.update({
+        return context.sql.update({
           type: 'companies',
           id,
           data: companyUpdate

@@ -37,10 +37,10 @@ const baseData = {
     {
       person: 'person1',
       type: 'GOOGLE',
-      data: {
+      data: JSON.stringify({
         accessToken: validAccessToken,
         refreshToken: validRefreshToken
-      }
+      })
     }
   ]
 }

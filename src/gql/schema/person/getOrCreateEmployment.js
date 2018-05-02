@@ -22,13 +22,13 @@ module.exports = {
         if (!newCompany) throw new Error('Please pass a company string')
 
         let companySlug = makeSlug(newCompany)
-        let company = await context.store.readOne({
+        let company = await context.sql.readOne({
           type: 'companies',
           filters: { name: newCompany }
         })
 
         if (!company) {
-          company = await context.store.readOne({
+          company = await context.sql.readOne({
             type: 'companies',
             filters: {
               slug: companySlug
@@ -37,7 +37,7 @@ module.exports = {
 
           while (company && companySlug === company.slug) {
             companySlug = `${companySlug}-${hash(8)}`
-            company = await context.store.readOne({
+            company = await context.sql.readOne({
               type: 'companies',
               filters: {
                 slug: companySlug
@@ -46,7 +46,7 @@ module.exports = {
           }
         }
 
-        const employment = company && await context.store.readOne({
+        const employment = company && await context.sql.readOne({
           type: 'employments',
           filters: {
             person: person.id,
@@ -57,7 +57,7 @@ module.exports = {
         if (employment) return { ...employment, company }
 
         if (!company) {
-          company = await context.store.create({
+          company = await context.sql.create({
             type: 'companies',
             data: {
               name: newCompany,
@@ -68,7 +68,7 @@ module.exports = {
           })
           enrichOrFetchEnrichedCompanyByName(company, context)
         }
-        const newEmployment = await context.store.create({
+        const newEmployment = await context.sql.create({
           type: 'employments',
           data: {
             current,

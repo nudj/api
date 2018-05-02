@@ -18,18 +18,18 @@ module.exports = {
 
         if (companyName) {
           // Fetch company by name
-          let company = await context.store.readOne({
+          let company = await context.sql.readOne({
             type: 'companies',
             filters: { name: companyName }
           })
 
           // If company does not exist, create it
           if (!company) {
-            const allCompanies = await context.store.readAll({
+            const allCompanies = await context.sql.readAll({
               type: 'companies'
             })
             const makeSlug = getMakeUniqueCompanySlug(allCompanies)
-            company = await context.store.create({
+            company = await context.sql.create({
               type: 'companies',
               data: {
                 name: companyName,
@@ -41,92 +41,99 @@ module.exports = {
             enrichOrFetchEnrichedCompanyByName(company, context)
           }
 
-          // Fetch current employment for person
-          const currentEmployment = await context.store.readOne({
+          // read or create employment for person and company
+          const employment = await context.sql.readOneOrCreate({
             type: 'employments',
             filters: {
               person: id,
-              current: true
+              company: company.id
+            },
+            data: {
+              person: id,
+              company: company.id,
+              source: dataSources.NUDJ
             }
           })
 
-          // If a current employment doesn't exist, create one. Otherwise, compare that
-          // current employment to the PersonUpdateInput company.
-          if (!currentEmployment) {
-            await context.store.create({
-              type: 'employments',
+          const currentEmployment = await context.sql.readOne({
+            type: 'currentEmployments',
+            filters: {
+              person: id
+            }
+          })
+
+          if (currentEmployment) {
+            // ensure existing currentEmployment points to correct employment
+            if (currentEmployment.employment !== employment.id) {
+              await context.sql.update({
+                type: 'currentEmployments',
+                id: currentEmployment.id,
+                data: {
+                  employment: employment.id
+                }
+              })
+            }
+          } else {
+            await context.sql.create({
+              type: 'currentEmployments',
               data: {
                 person: id,
-                current: true,
-                company: company.id,
-                source: dataSources.NUDJ
-              }
-            })
-          } else if (currentEmployment.company !== company.id) {
-            // If the current employment is different from the new data
-            await context.store.update({
-              type: 'employments',
-              id: currentEmployment.id,
-              data: {
-                current: false
-              }
-            })
-            await context.store.create({
-              type: 'employments',
-              data: {
-                person: id,
-                current: true,
-                company: company.id,
-                source: dataSources.NUDJ
+                employment: employment.id
               }
             })
           }
         }
 
         if (roleName) {
-          const role = await context.store.readOneOrCreate({
+          const role = await context.sql.readOneOrCreate({
             type: 'roles',
             filters: { name: roleName },
             data: { name: roleName }
           })
 
-          const currentPersonRole = await context.store.readOne({
+          const personRole = await context.sql.readOneOrCreate({
             type: 'personRoles',
-            filters: { current: true, person: id }
+            filters: {
+              person: id,
+              role: role.id
+            },
+            data: {
+              person: id,
+              role: role.id,
+              source: dataSources.NUDJ
+            }
           })
 
-          if (!currentPersonRole) {
-            await context.store.create({
-              type: 'personRoles',
+          const currentPersonRole = await context.sql.readOne({
+            type: 'currentPersonRoles',
+            filters: {
+              person: id
+            }
+          })
+
+          if (currentPersonRole) {
+            // ensure existing currentPersonRole points to correct personRole
+            if (currentPersonRole.personRole !== personRole.id) {
+              await context.sql.update({
+                type: 'currentPersonRoles',
+                id: currentPersonRole.id,
+                data: {
+                  personRole: personRole.id
+                }
+              })
+            }
+          } else {
+            await context.sql.create({
+              type: 'currentPersonRoles',
               data: {
                 person: id,
-                current: true,
-                role: role.id,
-                source: dataSources.NUDJ
-              }
-            })
-          } else if (currentPersonRole.role !== role.id) {
-            // If the current role is different from the new data
-            await context.store.update({
-              type: 'personRoles',
-              id: currentPersonRole.id,
-              data: {
-                current: false
-              }
-            })
-            await context.store.create({
-              type: 'personRoles',
-              data: {
-                person: id,
-                current: true,
-                role: role.id,
-                source: dataSources.NUDJ
+                personRole: personRole.id
               }
             })
           }
         }
 
-        return context.store.update({
+        return context.sql.update({
           type: 'people',
           id,
           data: omit(data, ['company', 'role'])

@@ -20,7 +20,7 @@ module.exports = {
 
         // Avoid using `readOneOrCreate` to prevent unnecessarily generating a
         // slug and checking newly created companies for existing hirers.
-        let company = await context.store.readOne({
+        let company = await context.sql.readOne({
           type: 'companies',
           filters: { name: companyName }
         })
@@ -30,7 +30,7 @@ module.exports = {
             throw new Error(`${companyName} is already a company on nudj`)
           }
 
-          const userHirer = await context.store.readOne({
+          const userHirer = await context.sql.readOne({
             type: 'hirers',
             filters: {
               company: company.id,
@@ -40,7 +40,7 @@ module.exports = {
 
           if (userHirer) return userHirer
 
-          company = await context.store.update({
+          company = await context.sql.update({
             type: 'companies',
             id: company.id,
             data: {
@@ -54,7 +54,7 @@ module.exports = {
             context
           })
 
-          company = await context.store.create({
+          company = await context.sql.create({
             type: 'companies',
             filters: { name: companyName },
             data: {
@@ -68,7 +68,7 @@ module.exports = {
           })
         }
 
-        return context.store.create({
+        return context.sql.create({
           type: 'hirers',
           data: {
             person: person.id,

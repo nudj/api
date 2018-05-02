@@ -14,7 +14,8 @@ const {
   genericExpectationsForTable
 } = require('../../lib')
 const {
-  TABLES
+  TABLES,
+  COLLECTIONS
 } = require('../../../../lib/sql')
 const {
   OLD_COLLECTIONS
@@ -32,15 +33,16 @@ describe('00005 Arango to MySQL', () => {
 
   before(async () => {
     await setupCollections(db, Object.values(OLD_COLLECTIONS))
+    await setupCollections(nosql, Object.values(COLLECTIONS))
   })
 
   afterEach(async () => {
     await truncateCollections(db)
     await truncateCollections(nosql)
-    await teardownCollections(nosql)
   })
 
   after(async () => {
+    await teardownCollections(nosql)
     await teardownCollections(db)
   })
 

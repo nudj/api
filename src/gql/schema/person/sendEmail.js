@@ -6,11 +6,11 @@ const intercom = require('../../lib/intercom')
 const { values: emailPreferences } = require('../enums/email-preference-types')
 
 const createConversation = async ({ context, type, to, person, threadId }) => {
-  const recipient = await context.store.readOne({
+  const recipient = await context.sql.readOne({
     type: 'people',
     filters: { email: to }
   })
-  return context.store.create({
+  return context.sql.create({
     type: 'conversations',
     data: {
       type,
@@ -22,7 +22,7 @@ const createConversation = async ({ context, type, to, person, threadId }) => {
 }
 
 const fetchEmail = async (context, personId) => {
-  const person = await context.store.readOne({
+  const person = await context.sql.readOne({
     type: 'people',
     id: personId
   })

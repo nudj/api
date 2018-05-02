@@ -33,7 +33,7 @@ module.exports = function nestedAllByFilters (props = {}) {
     resolvers: {
       [parentType]: {
         [name]: handleErrors((parent, args, context) => {
-          return context.store.readAll({
+          return context.sql.readAll({
             type: collection,
             filters: {
               ...args.filters,

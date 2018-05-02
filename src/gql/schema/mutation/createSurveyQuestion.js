@@ -14,7 +14,7 @@ module.exports = {
       createSurveyQuestion: handleErrors(async (root, args, context) => {
         const { tags = [] } = args.data
 
-        const surveyQuestion = await context.store.create({
+        const surveyQuestion = await context.sql.create({
           type: 'surveyQuestions',
           data: {
             ...omit(args.data, ['tags']),
@@ -22,12 +22,12 @@ module.exports = {
           }
         })
 
-        const { surveyQuestions = [] } = await context.store.readOne({
+        const { surveyQuestions = [] } = await context.sql.readOne({
           type: 'surveySections',
           id: surveyQuestion.surveySection
         })
 
-        await context.store.update({
+        await context.sql.update({
           type: 'surveySections',
           id: surveyQuestion.surveySection,
           data: {
@@ -36,7 +36,7 @@ module.exports = {
         })
 
         const surveyTags = await Promise.all(tags.map(tag => {
-          return context.store.readOneOrCreate({
+          return context.sql.readOneOrCreate({
             type: 'tags',
             filters: {
               name: tag,
@@ -50,7 +50,7 @@ module.exports = {
         }))
 
         await Promise.all(surveyTags.map(tag => {
-          return context.store.create({
+          return context.sql.create({
             type: 'surveyQuestionTags',
             data: {
               surveyQuestion: surveyQuestion.id,

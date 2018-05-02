@@ -1,6 +1,8 @@
 const { merge } = require('@nudj/library')
 const invert = require('lodash/invert')
 const reduce = require('lodash/reduce')
+const hash = require('hash-generator')
+const kebabCase = require('lodash/kebabCase')
 
 const TABLES = {
   ACCOUNTS: 'accounts',
@@ -21,6 +23,7 @@ const TABLES = {
   ROLES: 'roles',
   ROLE_TAGS: 'roleTags',
   SURVEYS: 'surveys',
+  COMPANY_SURVEYS: 'companySurveys',
   SURVEY_ANSWERS: 'surveyAnswers',
   SURVEY_ANSWER_CONNECTIONS: 'surveyAnswerConnections',
   SURVEY_QUESTIONS: 'surveyQuestions',
@@ -112,11 +115,13 @@ const FIELDS = {
     EMAIL: 'email',
     FIRST_NAME: 'firstName',
     LAST_NAME: 'lastName',
-    URL: 'url'
+    URL: 'url',
+    EMAIL_PREFERENCE: 'emailPreference'
   },
   [TABLES.PERSON_ROLES]: {
     PERSON: 'person',
-    ROLE: 'role'
+    ROLE: 'role',
+    SOURCE: 'source'
   },
   [TABLES.CURRENT_PERSON_ROLES]: {
     PERSON: 'person',
@@ -142,8 +147,7 @@ const FIELDS = {
     INTRO_DESCRIPTION: 'introDescription',
     OUTRO_TITLE: 'outroTitle',
     OUTRO_DESCRIPTION: 'outroDescription',
-    SURVEY_SECTIONS: 'surveySections',
-    COMPANY: 'company'
+    SURVEY_SECTIONS: 'surveySections'
   },
   [TABLES.SURVEY_ANSWERS]: {
     PERSON: 'person',
@@ -171,6 +175,10 @@ const FIELDS = {
     TITLE: 'title',
     DESCRIPTION: 'description',
     SURVEY_QUESTIONS: 'surveyQuestions',
+    SURVEY: 'survey'
+  },
+  [TABLES.COMPANY_SURVEYS]: {
+    COMPANY: 'company',
     SURVEY: 'survey'
   },
   [TABLES.TAGS]: {
@@ -305,9 +313,9 @@ const INDICES = merge(
       }
     },
     [TABLES.SURVEYS]: {
-      [F.SURVEYS.COMPANY + F.SURVEYS.SLUG]: {
-        name: `${TABLES.SURVEYS}ByCompanySlug`,
-        fields: [F.SURVEYS.COMPANY, F.SURVEYS.SLUG]
+      [F.SURVEYS.SLUG]: {
+        name: `${TABLES.SURVEYS}BySlug`,
+        fields: [F.SURVEYS.SLUG]
       }
     },
     [TABLES.SURVEY_SECTIONS]: {
@@ -332,6 +340,12 @@ const INDICES = merge(
       [F.SURVEY_ANSWER_CONNECTIONS.CONNECTION + F.SURVEY_ANSWER_CONNECTIONS.SURVEY_ANSWER]: {
         name: `${TABLES.SURVEY_ANSWER_CONNECTIONS}ByConnectionSurveyAnswer`,
         fields: [F.SURVEY_ANSWER_CONNECTIONS.CONNECTION, F.SURVEY_ANSWER_CONNECTIONS.SURVEY_ANSWER]
+      }
+    },
+    [TABLES.COMPANY_SURVEYS]: {
+      [F.COMPANY_SURVEYS.COMPANY + F.COMPANY_SURVEYS.SURVEY]: {
+        name: `${TABLES.COMPANY_SURVEYS}ByCompanySurvey`,
+        fields: [F.COMPANY_SURVEYS.COMPANY, F.COMPANY_SURVEYS.SURVEY]
       }
     },
     [TABLES.TAGS]: {
@@ -360,6 +374,7 @@ const INDICES = merge(
     }
   }
 )
+const getIndexKey = (index, item) => index.fields.map(field => item[field]).join('|')
 
 function createEnumDefinition (items) {
   const enumDefinition = items.reduce((enumDefinition, item) => {
@@ -391,16 +406,57 @@ function relationType (fieldName, table, t, knex) {
   return t.integer(fieldName).unsigned().references(FIELDS.GENERIC.ID).inTable(table)
 }
 
+const randomSlugGenerator = () => hash(10)
+const fieldSlugGenerator = field => (data, addRandom) => {
+  let random = ''
+  if (addRandom) {
+    random = `-${hash(8)}`
+  }
+  return kebabCase(data[field]) + random
+}
+const SLUG_GENERATORS = {
+  [TABLES.REFERRALS]: {
+    generator: randomSlugGenerator
+  },
+  [TABLES.SURVEY_SECTIONS]: {
+    generator: fieldSlugGenerator(FIELDS[TABLES.SURVEY_SECTIONS].TITLE),
+    index: 'surveySectionsBySlugSurvey'
+  },
+  [TABLES.SURVEY_QUESTIONS]: {
+    generator: fieldSlugGenerator(FIELDS[TABLES.SURVEY_QUESTIONS].TITLE),
+    index: 'surveyQuestionsBySlugSurveySection'
+  },
+  [TABLES.COMPANIES]: {
+    generator: fieldSlugGenerator(FIELDS[TABLES.COMPANIES].NAME),
+    index: 'companiesBySlug'
+  },
+  [TABLES.JOBS]: {
+    generator: fieldSlugGenerator(FIELDS[TABLES.JOBS].TITLE),
+    index: 'jobsBySlug'
+  },
+  [TABLES.SURVEYS]: {
+    generator: fieldSlugGenerator(FIELDS[TABLES.SURVEYS].INTRO_TITLE),
+    index: 'surveysBySlug'
+  }
+}
+const COLLECTIONS = {
+  JOB_VIEW_EVENTS: 'jobViewEvents',
+  REFERRAL_KEY_TO_SLUG_MAP: 'referralKeyToSlugMaps'
+}
+
 module.exports = {
   // constants
   TABLES,
   FIELDS,
   ENUMS,
   INDICES,
+  SLUG_GENERATORS,
+  COLLECTIONS,
 
   // functions
   defaultConfig,
   emailType,
   urlType,
-  relationType
+  relationType,
+  getIndexKey
 }

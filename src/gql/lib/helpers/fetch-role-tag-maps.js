@@ -3,10 +3,10 @@ const fetchRoleToTagsMap = async (context) => {
     roleTags,
     roleRelatedTags
   ] = await Promise.all([
-    await context.store.readAll({
+    await context.sql.readAll({
       type: 'roleTags'
     }),
-    await context.store.readAll({
+    await context.sql.readAll({
       type: 'tags'
     })
   ])

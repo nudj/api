@@ -9,17 +9,23 @@ module.exports = {
   resolvers: {
     Person: {
       role: handleErrors(async (person, args, context) => {
-        const personRole = await context.store.readOne({
-          type: 'personRoles',
+        const currentPersonRole = await context.sql.readOne({
+          type: 'currentPersonRoles',
           filters: {
-            person: person.id,
-            current: true
+            person: person.id
           }
+        })
+
+        if (!currentPersonRole) return null
+
+        const personRole = await context.sql.readOne({
+          type: 'personRoles',
+          id: currentPersonRole.personRole
         })
 
         if (!personRole) return null
 
-        return context.store.readOne({
+        return context.sql.readOne({
           type: 'roles',
           id: personRole.role
         })

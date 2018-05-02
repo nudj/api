@@ -85,13 +85,13 @@ describe('00005 Arango to MySQL', () => {
                 url: 'https://company.com/job',
                 location: 'London',
                 remuneration: '£5',
-                template: 'some-template',
+                templateTags: ['some-template'],
                 description: 'A description',
                 candidateDescription: 'A candidate description',
                 roleDescription: 'A role description',
                 experience: 'Some experience',
                 requirements: 'Some requirements',
-                bonus: 1000,
+                bonus: '1000',
                 status: ENUMS.JOB_STATUSES.DRAFT,
                 company: 'company1',
                 batchSize: 100,
@@ -104,20 +104,19 @@ describe('00005 Arango to MySQL', () => {
 
       genericExpectationsForTable(TABLES.JOBS)
 
-      it('should transfer all scalar properties', async () => {
+      it('should transfer scalar properties', async () => {
         const records = await sql.select().from(TABLES.JOBS)
         expect(records[0]).to.have.property('title', 'Job title')
         expect(records[0]).to.have.property('slug', 'job-title')
         expect(records[0]).to.have.property('url', 'https://company.com/job')
         expect(records[0]).to.have.property('location', 'London')
         expect(records[0]).to.have.property('remuneration', '£5')
-        expect(records[0]).to.have.property('template', 'some-template')
         expect(records[0]).to.have.property('description', 'A description')
         expect(records[0]).to.have.property('candidateDescription', 'A candidate description')
         expect(records[0]).to.have.property('roleDescription', 'A role description')
         expect(records[0]).to.have.property('experience', 'Some experience')
         expect(records[0]).to.have.property('requirements', 'Some requirements')
-        expect(records[0]).to.have.property('bonus', 1000)
+        expect(records[0]).to.have.property('bonus', '1000')
         expect(records[0]).to.have.property('status', ENUMS.JOB_STATUSES.DRAFT)
       })
 
@@ -125,6 +124,11 @@ describe('00005 Arango to MySQL', () => {
         const jobs = await sql.select().from(TABLES.JOBS)
         const companies = await sql.select().from(TABLES.COMPANIES)
         expect(jobs[0]).to.have.property('company', companies[0].id)
+      })
+
+      it('should map templateTags to template', async () => {
+        const records = await sql.select().from(TABLES.JOBS)
+        expect(records[0]).to.have.property('template', 'some-template')
       })
     })
 

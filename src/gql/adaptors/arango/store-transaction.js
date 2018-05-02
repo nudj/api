@@ -15,7 +15,7 @@ module.exports = () => {
 
     const validDate = (new Date(timestamp)).getTime() > 0
     if (!validDate) throw new Error('Invalid timestamp')
-    return `${timestamp.split('T')[0]}T00:00:00.000Z`
+    return `${timestamp.split(' ')[0]} 00:00:00`
   }
 
   const endOfDay = timestamp => {
@@ -23,7 +23,7 @@ module.exports = () => {
 
     const validDate = (new Date(timestamp)).getTime() > 0
     if (!validDate) throw new Error('Invalid timestamp')
-    return `${timestamp.split('T')[0]}T23:59:59.999Z`
+    return `${timestamp.split(' ')[0]} 23:59:59`
   }
 
   const normaliseData = (data) => {
@@ -176,7 +176,7 @@ module.exports = () => {
     }) => {
       throw new Error('Search cannot be performed as a transaction')
     },
-    countByFilters: ({
+    count: ({
       type,
       filters,
       filter

@@ -5,7 +5,7 @@ const expect = chai.expect
 
 const { transaction, store } = require('../../../gql/adaptors/lodash')
 
-function executeQueryOnDbUsingSchema ({ schema, variables = {}, operation, db }) {
+function executeQueryOnDbUsingSchema ({ schema, variables = {}, operation, db, nosql }) {
   const testContext = {
     web: {
       protocol: 'https',
@@ -13,8 +13,8 @@ function executeQueryOnDbUsingSchema ({ schema, variables = {}, operation, db })
     },
     userId: 'person1',
     transaction: transaction({ db }),
-    store: store({ db }),
-    nosql: store({ db })
+    sql: store({ db }),
+    nosql: store({ db: nosql })
   }
   return graphql(schema, operation, undefined, testContext, variables)
 }
@@ -146,12 +146,12 @@ const expectPropertyContentsIsRequired = curry(async (schema, type, typePlural, 
   }))
 })
 
-function generateFakeContextWithStore (store) {
+function generateFakeContextWithStore (sql) {
   return {
     transaction: (action, params) => {
       return action(store, params)
     },
-    store
+    sql
   }
 }
 

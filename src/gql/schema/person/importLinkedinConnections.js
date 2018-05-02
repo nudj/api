@@ -1,15 +1,16 @@
-const { generateId } = require('@nudj/library')
-const { idTypes } = require('@nudj/library/constants')
-
 const formatLinkedinConnections = require('../../lib/helpers/format-linkedin-connections')
-const getMakeUnqiueCompanySlug = require('../../lib/helpers/make-unique-company-slug')
+const makeSlug = require('../../lib/helpers/make-slug')
 const { handleErrors } = require('../../lib')
 const DataSources = require('../enums/data-sources')
+const {
+  TABLES,
+  INDICES
+} = require('../../../lib/sql')
 
 module.exports = {
   typeDefs: `
     extend type Person {
-      importLinkedinConnections(connections: [Data!]!): [ImportLog!]!
+      importLinkedinConnections(connections: [Data!]!): [Connection!]!
     }
   `,
   resolvers: {
@@ -17,95 +18,73 @@ module.exports = {
       importLinkedinConnections: handleErrors(async (person, args, context) => {
         const { connections } = args
         const source = DataSources.values.LINKEDIN
-        const formattedConnections = formatLinkedinConnections(connections)
         const from = person.id
+        const formattedConnections = formatLinkedinConnections(connections)
 
-        const companies = await context.store.readAll({
-          type: 'companies'
-        })
+        const peopleData = []
+        const roleData = []
+        const companyData = []
 
-        const companyMap = companies.reduce((map, item) => {
-          map[item.id] = item
-          return map
-        }, {})
-
-        const makeUniqueCompanySlug = getMakeUnqiueCompanySlug(companyMap)
-
-        const formattedData = formattedConnections.reduce((all, connection) => {
-          const { email, company, title, firstName, lastName } = connection
-          const personId = generateId(idTypes.PERSON, { email })
-          const companyId = company ? generateId(idTypes.COMPANY, { name: company }) : null
-          const roleId = title ? generateId(idTypes.ROLE, { name: title }) : null
-
-          const connectionData = {
-            from,
-            source,
-            firstName,
-            lastName,
-            person: personId,
-            role: roleId,
-            company: companyId
+        formattedConnections.forEach(connection => {
+          if (connection.email) {
+            peopleData.push({ email: connection.email })
           }
-
-          const connectionId = generateId(idTypes.CONNECTION, connectionData)
-          const rawCompany = {
-            id: companyId,
-            name: company,
-            onboarded: false,
-            client: false
+          if (connection.title) {
+            roleData.push({ name: connection.title })
           }
-
-          const companySlug = makeUniqueCompanySlug(rawCompany)
-
-          return {
-            companies: companyId ? all.companies.concat({
-              id: companyId,
+          if (connection.company) {
+            companyData.push({
               name: connection.company,
-              slug: companySlug,
-              onboarded: false,
-              client: false
-            }) : all.companies,
-            roles: roleId ? all.roles.concat({
-              id: roleId,
-              name: connection.title
-            }) : all.roles,
-            people: all.people.concat({
-              id: personId,
-              email: connection.email
-            }),
-            connections: all.connections.concat({
-              ...connectionData,
-              id: connectionId
+              slug: makeSlug(connection.company)
             })
           }
-        }, {
-          companies: [],
-          roles: [],
-          people: [],
-          connections: []
         })
 
-        const data = [
-          {
-            name: 'connections',
-            data: formattedData.connections,
-            onDuplicate: 'update'
-          },
-          {
-            name: 'companies',
-            data: formattedData.companies
-          },
-          {
-            name: 'roles',
-            data: formattedData.roles
-          },
-          {
-            name: 'people',
-            data: formattedData.people
-          }
-        ]
+        const [
+          personIds,
+          roleIds,
+          companyIds
+        ] = await Promise.all([
+          context.sql.import({
+            type: TABLES.PEOPLE,
+            data: peopleData,
+            index: INDICES[TABLES.PEOPLE].email
+          }),
+          context.sql.import({
+            type: TABLES.ROLES,
+            data: roleData,
+            index: INDICES[TABLES.ROLES].name
+          }),
+          context.sql.import({
+            type: TABLES.COMPANIES,
+            data: companyData,
+            index: INDICES[TABLES.COMPANIES].name,
+            slugIndex: INDICES[TABLES.COMPANIES].slug
+          })
+        ])
 
-        return context.store.import({ data })
+        let personPointer = 0
+        let rolePointer = 0
+        let companyPointer = 0
+        const connectionsData = formattedConnections.map((conn, index) => {
+          return ({
+            from,
+            source,
+            person: conn.email && personIds[personPointer++],
+            role: conn.title && roleIds[rolePointer++],
+            company: conn.company && companyIds[companyPointer++],
+            firstName: conn.firstName,
+            lastName: conn.lastName
+          })
+        })
+
+        const connectionIds = await context.sql.import({
+          type: TABLES.CONNECTIONS,
+          data: connectionsData,
+          index: INDICES[TABLES.CONNECTIONS].fromperson
+        })
+
+        return connectionIds.map(id => ({ id }))
       })
     }
   }

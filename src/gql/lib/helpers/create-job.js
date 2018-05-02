@@ -12,7 +12,7 @@ const createJob = async (context, company, data) => {
     context
   })
 
-  const job = await context.store.create({
+  const job = await context.sql.create({
     type: 'jobs',
     data: {
       ...omit(data, ['tags']),
@@ -23,7 +23,7 @@ const createJob = async (context, company, data) => {
 
   if (tags) {
     const jobTags = await Promise.all(tags.map(tag => {
-      return context.store.readOneOrCreate({
+      return context.sql.readOneOrCreate({
         type: 'tags',
         filters: {
           name: tag,
@@ -37,7 +37,7 @@ const createJob = async (context, company, data) => {
     }))
 
     await Promise.all(jobTags.map(tag => {
-      return context.store.create({
+      return context.sql.create({
         type: 'jobTags',
         data: {
           job: job.id,

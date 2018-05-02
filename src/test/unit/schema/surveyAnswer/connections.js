@@ -9,13 +9,6 @@ const { values: tagTypes } = require('../../../../gql/schema/enums/tag-types')
 describe('SurveyAnswer.connections', () => {
   it('should fetch filtered connections', async () => {
     const db = {
-      surveyAnswers: [
-        {
-          id: 'surveyAnswer1',
-          surveyQuestion: 'surveyQuestion1',
-          connections: [ 'connection1', 'connection2' ]
-        }
-      ],
       connections: [
         {
           id: 'connection1'
@@ -27,9 +20,30 @@ describe('SurveyAnswer.connections', () => {
           id: 'connection3'
         }
       ],
-      surveyQuestions: [{
-        id: 'surveyQuestion1'
-      }],
+      surveyQuestions: [
+        {
+          id: 'surveyQuestion1'
+        }
+      ],
+      surveyAnswers: [
+        {
+          id: 'surveyAnswer1',
+          surveyQuestion: 'surveyQuestion1',
+          connections: [ 'connection1', 'connection2' ]
+        }
+      ],
+      surveyAnswerConnections: [
+        {
+          id: 'surveyAnswerConnection1',
+          surveyAnswer: 'surveyAnswer1',
+          connection: 'connection1'
+        },
+        {
+          id: 'surveyAnswerConnection2',
+          surveyAnswer: 'surveyAnswer1',
+          connection: 'connection2'
+        }
+      ],
       surveyQuestionTags: [],
       roleTags: [],
       tags: []
@@ -61,11 +75,11 @@ describe('SurveyAnswer.connections', () => {
 
   it('should return null if no matches', async () => {
     const db = {
+      surveyAnswerConnections: [],
       surveyAnswers: [
         {
           id: 'surveyAnswer1',
-          surveyQuestion: 'surveyQuestion1',
-          connections: [ 'connection3' ]
+          surveyQuestion: 'surveyQuestion1'
         }
       ],
       connections: [
@@ -105,8 +119,19 @@ describe('SurveyAnswer.connections', () => {
         surveyAnswers: [
           {
             id: 'surveyAnswer1',
-            surveyQuestion: 'surveyQuestion1',
-            connections: [ 'connection1', 'connection2' ]
+            surveyQuestion: 'surveyQuestion1'
+          }
+        ],
+        surveyAnswerConnections: [
+          {
+            id: 'surveyAnswerConnection1',
+            surveyAnswer: 'surveyAnswer1',
+            connection: 'connection1'
+          },
+          {
+            id: 'surveyAnswerConnection2',
+            surveyAnswer: 'surveyAnswer1',
+            connection: 'connection2'
           }
         ],
         connections: [

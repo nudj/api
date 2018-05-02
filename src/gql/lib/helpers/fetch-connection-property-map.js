@@ -37,15 +37,15 @@ const fetchPropertyValuesByIds = async (context, { roleIds, companyIds, personId
     companies,
     people
   ] = await Promise.all([
-    context.store.readMany({
+    context.sql.readMany({
       type: 'roles',
       ids: roleIds
     }),
-    context.store.readMany({
+    context.sql.readMany({
       type: 'companies',
       ids: companyIds
     }),
-    context.store.readMany({
+    context.sql.readMany({
       type: 'people',
       ids: personIds
     })

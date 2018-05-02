@@ -1,8 +1,29 @@
 const omit = require('lodash/omit')
+const isNull = require('lodash/isNull')
+const isObject = require('lodash/isObject')
+
 const setupDataLoaderCache = require('./setup-dataloader-cache')
+const {
+  INDICES,
+  getIndexKey
+} = require('../../../lib/sql')
+const makeSlug = require('../../lib/helpers/make-slug')
 
 module.exports = ({ db }) => {
   const getDataLoader = setupDataLoaderCache(db, {})
+
+  const overrideableTransaction = action => async args => {
+    if (args.transaction) {
+      return action(args)
+    } else {
+      return db.transaction(transaction => {
+        return action({
+          ...args,
+          transaction
+        })
+      })
+    }
+  }
 
   const create = async ({
     type,
@@ -15,6 +36,8 @@ module.exports = ({ db }) => {
   const readOne = async ({
     type,
     id,
+    index,
+    key,
     filters,
     filter
   }) => {
@@ -22,6 +45,8 @@ module.exports = ({ db }) => {
     switch (true) {
       case !!id:
         return getDataLoader({ type }).load(id)
+      case !!index && !!key:
+        return getDataLoader({ type, index }).load(key)
       case !!filters:
         const record = await db.first().from(type).where(filters)
         if (record) getDataLoader({ type }).prime(record.id, record)
@@ -157,46 +182,74 @@ module.exports = ({ db }) => {
     return count
   }
 
-  const importRecords = async ({
+  const getSlugClashes = ({
+    recordsByField,
+    recordsBySlug
+  }) => {
+    return recordsBySlug.reduce((clashes, record, index) => {
+      if (isNull(recordsByField[index]) && isObject(record)) {
+        clashes = clashes.concat({
+          index,
+          record
+        })
+      }
+      return clashes
+    }, [])
+  }
+
+  // using transaction as need to guarantee sequential ids when inserting new items
+  const importRecords = overrideableTransaction(async ({
     type,
     index,
-    data
+    slugIndex,
+    data,
+    transaction
   }) => {
-    // using transaction as need to guarantee sequential ids when inserting new items
-    let { records, lastId } = await db.transaction(async transaction => {
-      const dataLoader = getDataLoader({
+    index = index || INDICES[type].id
+
+    const dataLoaderByField = getDataLoader({
+      type,
+      index,
+      transaction
+    })
+    // fetch all existing records returning a null where a record does not already exist
+    // crucially it preserves the order as defined by `data`
+    const recordsByField = await dataLoaderByField.loadMany(data.map(item => getIndexKey(index, item)))
+
+    if (slugIndex) {
+      const dataLoaderBySlug = getDataLoader({
         type,
-        index,
+        index: slugIndex,
         transaction
       })
-
-      // fetch all existing records returning a null where a record does not already exist
-      // crucially it preserves the order as defined by `data`
-      const records = await dataLoader.loadMany(data.map(item => item[index.fields]))
-
-      // array of data items corresponding with null entries in the `records` array above
-      const newData = records.reduce((newData, record, index) => {
-        if (!record) {
-          newData = newData.concat(data[index])
-        }
-        return newData
-      }, [])
-
-      // insert new data into the db
-      await transaction(type).insert(newData)
-
-      // fetch the id of the first new record created by the above insert
-      const [ [ { lastId } ] ] = await transaction.raw('SELECT LAST_INSERT_ID() AS lastId;')
-
-      return {
-        records,
-        lastId
+      let recordsBySlug = await dataLoaderBySlug.loadMany(data.map(item => getIndexKey(slugIndex, item)))
+      let clashes = getSlugClashes({ recordsByField, recordsBySlug })
+      while (clashes.length) {
+        clashes.forEach(clash => {
+          data[clash.index].slug = makeSlug(data[clash.index].name, true)
+        })
+        recordsBySlug = await dataLoaderBySlug.loadMany(data.map(item => getIndexKey(slugIndex, item)))
+        clashes = getSlugClashes({ recordsByField, recordsBySlug })
       }
-    })
+    }
+
+    // array of data items corresponding with null entries in the `recordsByField` array above
+    const newData = recordsByField.reduce((newData, record, index) => {
+      if (!record) {
+        newData = newData.concat(data[index])
+      }
+      return newData
+    }, [])
+
+    // insert new data into the db
+    await transaction(type).insert(newData)
+
+    // fetch the id of the first new record created by the above insert
+    let [ [ { lastId } ] ] = await transaction.raw('SELECT LAST_INSERT_ID() AS lastId;')
 
     // return array of ids (existing or newly inserted) in requested order
-    return records.map(record => (record && record.id) || lastId++)
-  }
+    return recordsByField.map(record => (record && record.id) || lastId++)
+  })
 
   return {
     create,

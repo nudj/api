@@ -1,12 +1,10 @@
 module.exports = {
   typeDefs: `
-    type Event {
+    type JobViewEvent {
       id: ID!
       created: DateTime!
       modified: DateTime!
-      eventType: EventType!,
-      entityType: EventEntityType!,
-      entityId: ID!,
+      job: ID!
       browserId: String!
     }
   `

@@ -25,7 +25,7 @@ const resetDataStore = async () => populateCollections(db, [
   }
 ])
 
-describe('create', () => {
+xdescribe('Transactions create', () => {
   let store
   before(async () => {
     await setupCollections(db, ['people'])
@@ -114,21 +114,17 @@ describe('create', () => {
     })
 
     await Promise.all(randomEmails.map(async (email) => {
-      try {
-        await context.transaction((store, params) => {
-          return store.create({
-            type: 'people',
-            data: { email: params.email }
-          })
-        }, { email })
-
-        return expect(store.create({
+      await context.transaction((store, params) => {
+        return store.create({
           type: 'people',
-          data: { email }
-        })).to.eventually.be.rejectedWith(duplicationError)
-      } catch (err) {
-        console.log('RIGHT HERE:', email, err)
-      }
+          data: { email: params.email }
+        })
+      }, { email })
+
+      return expect(store.create({
+        type: 'people',
+        data: { email }
+      })).to.eventually.be.rejectedWith(duplicationError)
     }))
   }).timeout(5000)
 })

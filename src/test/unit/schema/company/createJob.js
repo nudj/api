@@ -42,9 +42,8 @@ const variables = {
     location: 'Mars',
     remuneration: '100000',
     status: 'PUBLISHED',
-    templateTags: ['film'],
+    template: 'film',
     tags: ['CEO', 'FOUNDER'],
-    type: 'Permanent',
     url: 'http://www.spacex.com/careers/position/215244'
   }
 }
@@ -108,8 +107,7 @@ describe('Company.createJob', () => {
       location: 'Mars',
       remuneration: '100000',
       status: 'PUBLISHED',
-      templateTags: ['film'],
-      type: 'Permanent',
+      template: 'film',
       url: 'http://www.spacex.com/careers/position/215244'
     })
   })

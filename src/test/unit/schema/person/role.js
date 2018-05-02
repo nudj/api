@@ -20,34 +20,20 @@ describe('Person.role', () => {
         {
           id: 'role1',
           name: 'Superhero'
-        },
-        {
-          id: 'role2',
-          name: 'Chess Grandmaster'
-        },
-        {
-          id: 'role3',
-          name: 'Town Crier'
         }
       ],
       personRoles: [
         {
           id: 'personRole1',
           person: 'person1',
-          role: 'role1',
-          current: false
-        },
+          role: 'role1'
+        }
+      ],
+      currentPersonRoles: [
         {
-          id: 'personRole2',
-          person: 'person2',
-          role: 'role2',
-          current: false
-        },
-        {
-          id: 'personRole3',
+          id: 'currentPersonRole1',
           person: 'person1',
-          role: 'role3',
-          current: true
+          personRole: 'personRole1'
         }
       ]
     }
@@ -64,7 +50,7 @@ describe('Person.role', () => {
       data: {
         person: {
           role: {
-            id: 'role3'
+            id: 'role1'
           }
         }
       }

@@ -1,4 +1,5 @@
 const { merge } = require('@nudj/library')
+const uniqBy = require('lodash/uniqBy')
 
 module.exports = {
   typeDefs: `
@@ -8,15 +9,14 @@ module.exports = {
   `,
   resolvers: {
     Job: {
-      viewCountByFilters: (job, args, context) => {
-        const filters = merge(args.filters, {
-          entityId: job.id,
-          eventType: 'viewed'
+      viewCountByFilters: async (job, args, context) => {
+        const allJobViews = await context.nosql.readAll({
+          type: 'jobViewEvents',
+          filters: merge(args.filters, {
+            job: job.id
+          })
         })
-        return context.store.countByFilters({
-          type: 'events',
-          filters
-        })
+        return uniqBy(allJobViews, 'browserId').length
       }
     }
   }

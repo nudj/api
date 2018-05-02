@@ -124,31 +124,37 @@ module.exports = {
         // build map of...
         // - connection to tags
         // - tag to connections (when filtering by expertise)
-        const surveyAnswers = await context.store.readAll({
+        const surveyAnswers = await context.sql.readAll({
           type: 'surveyAnswers',
           filters: { person: person.id }
         })
         const connectionTagMap = {}
         const tagConnectionMap = {}
-        await Promise.all(surveyAnswers.map(async answer => {
-          const surveyQuestionTags = await context.store.readAll({
+        await Promise.all(surveyAnswers.map(async surveyAnswer => {
+          const surveyQuestionTags = await context.sql.readAll({
             type: 'surveyQuestionTags',
-            filters: { surveyQuestion: answer.surveyQuestion }
+            filters: { surveyQuestion: surveyAnswer.surveyQuestion }
           })
-          let tags = await context.store.readMany({
+          let tags = await context.sql.readMany({
             type: 'tags',
             ids: surveyQuestionTags.map(surveyQuestionTag => surveyQuestionTag.tag)
           })
           tags = tags.filter(tag => tag.type === tagTypes.EXPERTISE)
-
-          answer.connections.forEach(connectionId => {
+          const surveyAnswerConnections = await context.sql.readAll({
+            type: 'surveyAnswerConnections',
+            filters: {
+              surveyAnswer: surveyAnswer.id
+            }
+          })
+          surveyAnswerConnections.forEach(surveyAnswerConnection => {
+            const connectionId = surveyAnswerConnection.connection
             const connectionTags = connectionTagMap[connectionId] || []
             connectionTagMap[connectionId] = unionBy(connectionTags, tags, 'id')
           })
           if (isFilteredByExpertise) {
             tags.forEach(tag => {
               const tagConnections = tagConnectionMap[tag.id] || []
-              tagConnectionMap[tag.id] = union(tagConnections, answer.connections)
+              tagConnectionMap[tag.id] = union(tagConnections, surveyAnswerConnections.map(item => item.connection))
             })
           }
         }))
@@ -156,12 +162,12 @@ module.exports = {
         // fetch connections
         let connections
         if (isFilteredByFavourites) {
-          connections = await context.store.readMany({
+          connections = await context.sql.readMany({
             type: 'connections',
             ids: Object.keys(connectionTagMap)
           })
         } else {
-          connections = await context.store.readAll({
+          connections = await context.sql.readAll({
             type: 'connections',
             filters: { from: person.id }
           })
@@ -211,7 +217,7 @@ module.exports = {
             }
             connection.tags.forEach(tag => {
               tagsMap[tag.id] = tag
-              if (isFilteredByExpertise && filters.expertiseTags.includes(tag.id)) {
+              if (isFilteredByExpertise && filters.expertiseTags.includes(`${tag.id}`)) {
                 ignore = false
               }
             })
@@ -225,7 +231,6 @@ module.exports = {
 
         // sort connections by score
         connections = connections.sort((a, b) => get(b, '_result.score') - get(a, '_result.score'))
-
         return {
           connections,
           tags

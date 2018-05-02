@@ -1,9 +1,13 @@
-const slug = require('slug')
+const generateSlug = require('slug')
+const hash = require('hash-generator')
 
-const makeSlug = str => slug(str, {
-  replacement: '-',
-  symbols: true,
-  lower: true
-})
+const makeSlug = (str, addHash) => {
+  const slug = generateSlug(str, {
+    replacement: '-',
+    symbols: true,
+    lower: true
+  })
+  return addHash ? `${slug}-${hash(8)}` : slug
+}
 
 module.exports = makeSlug

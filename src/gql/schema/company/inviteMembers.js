@@ -74,7 +74,7 @@ module.exports = {
           ? `${senderName} has invited you to join them on nudj`
           : `You've been invited to join nudj!`
 
-        const jobs = await context.store.readAll({
+        const jobs = await context.sql.readAll({
           type: 'jobs',
           filters: {
             company: company.id
@@ -82,18 +82,18 @@ module.exports = {
         })
 
         await Promise.all(emailAddresses.map(async email => {
-          const person = await context.store.readOneOrCreate({
+          const person = await context.sql.readOneOrCreate({
             type: 'people',
             filters: { email },
             data: { email }
           })
-          const hirer = await context.store.readOne({
+          const hirer = await context.sql.readOne({
             type: 'hirers',
             filters: { person: person.id }
           })
 
           if (!hirer) {
-            return context.store.create({
+            return context.sql.create({
               type: 'hirers',
               data: {
                 person: person.id,

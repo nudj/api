@@ -19,7 +19,7 @@ const DOCUMENT_RESPONSE = {
   genre: 'Arcade'
 }
 
-describe('ArangoAdaptor Store().search', () => {
+describe('ArangoAdaptor StoreTransaction().search', () => {
   let Store
   let dbStub
 

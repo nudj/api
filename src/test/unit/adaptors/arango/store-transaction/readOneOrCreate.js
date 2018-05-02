@@ -16,7 +16,7 @@ const DOCUMENT_RESPONSE = { _key: 'id', '_id': 123, '_rev': 123, prop: 'value' }
 const NEW_RESPONSE = { new: { _key: 'id', '_id': 123, '_rev': 123, prop: 'value' } }
 const FILTER_NO_MATCH = null
 
-describe('ArangoAdaptor Store().readOneOrCreate', () => {
+describe('ArangoAdaptor StoreTransaction().readOneOrCreate', () => {
   let Store
   let dbStub
 

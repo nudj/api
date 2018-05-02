@@ -1,10 +1,9 @@
 const format = require('date-fns/format')
-const hash = require('hash-generator')
-const kebabCase = require('lodash/kebabCase')
 
 const {
   TABLES,
-  FIELDS
+  FIELDS,
+  COLLECTIONS
 } = require('../../lib/sql')
 
 const OLD_COLLECTIONS = {
@@ -22,6 +21,7 @@ const OLD_COLLECTIONS = {
   ACCOUNTS: TABLES.ACCOUNTS,
   CONVERSATIONS: TABLES.CONVERSATIONS,
   SURVEYS: TABLES.SURVEYS,
+  COMPANY_SURVEYS: TABLES.COMPANY_SURVEYS,
   SURVEY_SECTIONS: TABLES.SURVEY_SECTIONS,
   SURVEY_QUESTIONS: TABLES.SURVEY_QUESTIONS,
   SURVEY_ANSWERS: TABLES.SURVEY_ANSWERS,
@@ -30,9 +30,6 @@ const OLD_COLLECTIONS = {
   ROLE_TAGS: TABLES.ROLE_TAGS,
   SURVEY_QUESTION_TAGS: TABLES.SURVEY_QUESTION_TAGS,
   EVENTS: 'events'
-}
-const NEW_COLLECTIONS = {
-  JOB_VIEW_EVENTS: 'jobViewEvents'
 }
 const TABLE_ORDER = [
   TABLES.PEOPLE,
@@ -49,6 +46,7 @@ const TABLE_ORDER = [
   TABLES.ACCOUNTS,
   TABLES.CONVERSATIONS,
   TABLES.SURVEYS,
+  TABLES.COMPANY_SURVEYS,
   TABLES.SURVEY_SECTIONS,
   TABLES.SURVEY_QUESTIONS,
   TABLES.SURVEY_ANSWERS,
@@ -57,12 +55,15 @@ const TABLE_ORDER = [
   TABLES.ROLE_TAGS,
   TABLES.SURVEY_QUESTION_TAGS
 ]
-const NEW_TO_OLD_COLLECTION = {
-  [NEW_COLLECTIONS.JOB_VIEW_EVENTS]: OLD_COLLECTIONS.EVENTS
+const NEW_TO_OLD_COLLECTIONS = {
+  [COLLECTIONS.JOB_VIEW_EVENTS]: OLD_COLLECTIONS.EVENTS
 }
-const FIELD_TO_PROP = {
+const FIELD_TO_PATH = {
   [TABLES.ACCOUNTS]: {
     [FIELDS[TABLES.ACCOUNTS].EMAIL]: 'emailAddress'
+  },
+  [TABLES.JOBS]: {
+    [FIELDS[TABLES.JOBS].TEMPLATE]: 'templateTags.0'
   }
 }
 const RELATIONS = {
@@ -108,8 +109,9 @@ const RELATIONS = {
     [FIELDS[TABLES.CONVERSATIONS].PERSON]: TABLES.PEOPLE,
     [FIELDS[TABLES.CONVERSATIONS].RECIPIENT]: TABLES.PEOPLE
   },
-  [TABLES.SURVEYS]: {
-    [FIELDS[TABLES.SURVEYS].COMPANY]: TABLES.COMPANIES
+  [TABLES.COMPANY_SURVEYS]: {
+    [FIELDS[TABLES.COMPANY_SURVEYS].COMPANY]: TABLES.COMPANIES,
+    [FIELDS[TABLES.COMPANY_SURVEYS].SURVEY]: TABLES.SURVEYS
   },
   [TABLES.SURVEY_SECTIONS]: {
     [FIELDS[TABLES.SURVEY_SECTIONS].SURVEY]: TABLES.SURVEYS
@@ -157,29 +159,16 @@ const MANY_RELATIONS = {
     }
   }
 }
-const randomSlugGenerator = () => hash(10)
-const fieldSlugGenerator = field => (data, addRandom) => {
-  let random = ''
-  if (addRandom) {
-    random = `-${hash(8)}`
-  }
-  return kebabCase(data[field]) + random
-}
-const SLUG_GENERATORS = {
-  [TABLES.REFERRALS]: {
-    generator: randomSlugGenerator
+const ORDER_CACHES = {
+  [TABLES.SURVEYS]: {
+    [FIELDS[TABLES.SURVEYS].SURVEY_SECTIONS]: TABLES.SURVEY_SECTIONS
   },
   [TABLES.SURVEY_SECTIONS]: {
-    generator: fieldSlugGenerator(FIELDS[TABLES.SURVEY_SECTIONS].TITLE),
-    index: 'surveySectionsBySlugSurvey'
-  },
-  [TABLES.SURVEY_QUESTIONS]: {
-    generator: fieldSlugGenerator(FIELDS[TABLES.SURVEY_QUESTIONS].TITLE),
-    index: 'surveyQuestionsBySlugSurveySection'
+    [FIELDS[TABLES.SURVEY_SECTIONS].SURVEY_QUESTIONS]: TABLES.SURVEY_QUESTIONS
   }
 }
-const newToOldCollection = collection => NEW_TO_OLD_COLLECTION[collection] || collection
-const fieldToProp = (table, prop) => (FIELD_TO_PROP[table] && FIELD_TO_PROP[table][prop]) || prop
+const newToOldCollection = collection => NEW_TO_OLD_COLLECTIONS[collection] || collection
+const fieldToPath = (table, prop) => (FIELD_TO_PATH[table] && FIELD_TO_PATH[table][prop]) || prop
 const dateToTimestamp = date => {
   date = date || format(new Date())
   return date.split('.')[0].replace('T', ' ')
@@ -188,12 +177,12 @@ const dateToTimestamp = date => {
 module.exports = {
   TABLE_ORDER,
   OLD_COLLECTIONS,
-  NEW_COLLECTIONS,
+  NEW_TO_OLD_COLLECTIONS,
   RELATIONS,
   SELF_RELATIONS,
   MANY_RELATIONS,
-  SLUG_GENERATORS,
+  ORDER_CACHES,
   newToOldCollection,
-  fieldToProp,
+  fieldToPath,
   dateToTimestamp
 }

@@ -65,11 +65,11 @@ const db = {
     {
       person: 'person1',
       type: 'GOOGLE',
-      emailAddress: 'hirer@differentemail.com',
-      data: {
+      email: 'hirer@differentemail.com',
+      data: JSON.stringify({
         accessToken: 'VALID_ACCESS_TOKEN',
         refreshToken: 'VALID_REFRESH_TOKEN'
-      }
+      })
     }
   ]
 }

@@ -9,8 +9,9 @@ module.exports = {
   resolvers: {
     Survey: {
       surveySections: handleErrors(async (survey, args, context) => {
-        const { surveySections: sectionIds } = survey
-        const sections = await context.store.readMany({
+        const { surveySections } = survey
+        const sectionIds = JSON.parse(surveySections)
+        const sections = await context.sql.readMany({
           type: 'surveySections',
           ids: sectionIds
         })

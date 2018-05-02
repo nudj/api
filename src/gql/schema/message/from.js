@@ -10,15 +10,15 @@ module.exports = {
     Message: {
       from: handleErrors((message, args, context) => {
         const { from } = message
-        return context.store.readOne({
+        return context.sql.readOne({
           type: 'accounts',
-          filters: { emailAddress: from }
+          filters: { email: from }
         })
-        .then(account => context.store.readOne({
-          type: 'people',
-          filters: account ? undefined : { email: from },
-          id: account && account.person
-        }))
+          .then(account => context.sql.readOne({
+            type: 'people',
+            filters: account ? undefined : { email: from },
+            id: account && account.person
+          }))
       })
     }
   }

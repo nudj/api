@@ -2,22 +2,24 @@ const reduce = require('lodash/reduce')
 const map = require('lodash/map')
 const mapValues = require('lodash/mapValues')
 const uniq = require('lodash/uniq')
+const get = require('lodash/get')
 const promiseSerial = require('promise-serial')
 const {
   OLD_COLLECTIONS,
-  NEW_COLLECTIONS,
+  NEW_TO_OLD_COLLECTIONS,
   TABLE_ORDER,
   RELATIONS,
   SELF_RELATIONS,
   MANY_RELATIONS,
-  SLUG_GENERATORS,
-  newToOldCollection,
-  fieldToProp,
+  ORDER_CACHES,
+  fieldToPath,
   dateToTimestamp
 } = require('./helpers')
 const {
   TABLES,
-  FIELDS
+  FIELDS,
+  SLUG_GENERATORS,
+  COLLECTIONS
 } = require('../../lib/sql')
 
 async function action ({ db, sql, nosql }) {
@@ -39,11 +41,11 @@ async function action ({ db, sql, nosql }) {
     // loop over every item in the corresponding Arango collection
     await promiseSerial(items.map(item => async () => {
       const scalars = reduce(FIELDS[tableName], (scalars, field) => {
-        const value = item[fieldToProp(tableName, field)]
+        const value = get(item, fieldToPath(tableName, field))
         scalars[field] = typeof value === 'object' ? JSON.stringify(value) : value
         return scalars
       }, {})
-      const relations = mapValues(RELATIONS[tableName] || {}, (foreignTable, field) => idMaps[foreignTable][item[fieldToProp(tableName, field)]])
+      const relations = mapValues(RELATIONS[tableName] || {}, (foreignTable, field) => idMaps[foreignTable][get(item, fieldToPath(tableName, field))])
 
       // prepare insert data
       const data = {
@@ -135,6 +137,22 @@ async function action ({ db, sql, nosql }) {
     }
   })) // TABLE_ORDER.map
 
+  // retroactively update order caches with new child relation ids
+  await promiseSerial(map(ORDER_CACHES, (orderCacheField, tableName) => async () => {
+    await promiseSerial(map(orderCacheField, (foreignTableName, field) => async () => {
+      const fieldValues = await sql.select('id', 'modified', field).from(tableName)
+      await promiseSerial(fieldValues.map(item => async () => {
+        const oldOrderArray = JSON.parse(item[field])
+        const newOrderArray = oldOrderArray.map(oldId => idMaps[foreignTableName][oldId])
+        await sql(tableName).where('id', '=', item.id).update({
+          // preserve existing modified timestamp
+          modified: item.modified,
+          [field]: JSON.stringify(newOrderArray)
+        })
+      }))
+    }))
+  }))
+
   // create currentEmployments
   const employmentsCursor = db.collection(OLD_COLLECTIONS.EMPLOYMENTS)
   const employmentsCurrentCursor = await employmentsCursor.byExample({
@@ -165,14 +183,9 @@ async function action ({ db, sql, nosql }) {
     })
   }))
 
-  // copy events into jobViewEvents collection in NoSQL
-  await promiseSerial(Object.values(NEW_COLLECTIONS).map(newCollectionName => async () => {
-    // create new collection
-    const newCollectionCursor = await nosql.collection(newCollectionName)
-    await newCollectionCursor.create()
-
-    // fetch all items from old collection
-    const oldCollectionName = newToOldCollection(newCollectionName)
+  // copy data from old collections to their new counterparts in the nosql store
+  await promiseSerial(map(NEW_TO_OLD_COLLECTIONS, (oldCollectionName, newCollectionName) => async () => {
+    const newCollectionCursor = nosql.collection(newCollectionName)
     const oldCollectionCursor = db.collection(oldCollectionName)
     const oldCollectionCursorAll = await oldCollectionCursor.all()
     const oldItems = await oldCollectionCursorAll.all()
@@ -181,7 +194,8 @@ async function action ({ db, sql, nosql }) {
     await promiseSerial(oldItems.map(oldItem => async () => {
       let props
       switch (newCollectionName) {
-        case NEW_COLLECTIONS.JOB_VIEW_EVENTS:
+        // copy events into jobViewEvents collection in NoSQL
+        case COLLECTIONS.JOB_VIEW_EVENTS:
           props = {
             created: dateToTimestamp(oldItem.created),
             modified: dateToTimestamp(oldItem.modified),
@@ -195,8 +209,7 @@ async function action ({ db, sql, nosql }) {
   }))
 
   // loop over referral key->slug and store in NoSQL store to help with old url remapping
-  const referralKeyToSlugMapsCursor = await nosql.collection('referralKeyToSlugMaps')
-  await referralKeyToSlugMapsCursor.create()
+  const referralKeyToSlugMapsCursor = await nosql.collection(COLLECTIONS.REFERRAL_KEY_TO_SLUG_MAP)
   await promiseSerial(map(slugMaps[TABLES.REFERRALS], (slug, _key) => () => referralKeyToSlugMapsCursor.save({ _key, slug })))
 }
 

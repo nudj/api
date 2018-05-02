@@ -205,7 +205,7 @@ module.exports = ({ db }) => {
       results.forEach(result => getDataLoader(type).prime(result._key, result))
       return results.map(normaliseData)
     },
-    countByFilters: async ({
+    count: async ({
       type,
       filters,
       filter

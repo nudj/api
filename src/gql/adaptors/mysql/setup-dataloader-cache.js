@@ -1,6 +1,10 @@
 const DataLoader = require('dataloader')
 const keyBy = require('lodash/keyBy')
-const { INDICES } = require('../../../lib/sql')
+const zipObject = require('lodash/zipObject')
+const {
+  INDICES,
+  getIndexKey
+} = require('../../../lib/sql')
 
 module.exports = (db, cache) => ({
   type,
@@ -25,7 +29,18 @@ module.exports = (db, cache) => ({
         const recordsMap = keyBy(records, field)
         return keys.map(key => recordsMap[key] || null)
       } else {
-        throw new Error('Multi field indices are not supported yet!')
+        const records = await db.select().from(type).where(builder => {
+          const filterSets = keys.map(key => zipObject(indexFields, key.split('|')))
+          filterSets.forEach((filterSet, index) => {
+            if (index) {
+              builder.orWhere(filterSet)
+            } else {
+              builder.where(filterSet)
+            }
+          })
+        })
+        const recordsMap = keyBy(records, record => getIndexKey(index, record))
+        return keys.map(key => recordsMap[key] || null)
       }
     })
   }

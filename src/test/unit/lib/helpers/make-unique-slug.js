@@ -6,7 +6,7 @@ const makeUniqueSlug = require('../../../../gql/lib/helpers/make-unique-slug')
 
 const readOneStub = sinon.stub()
 const context = {
-  store: {
+  sql: {
     readOne: readOneStub
   }
 }

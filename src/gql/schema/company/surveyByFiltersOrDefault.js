@@ -16,13 +16,13 @@ module.exports = {
             edge,
             filteredSurvey
           ] = await Promise.all([
-            context.store.readOne({
+            context.sql.readOne({
               type: 'companySurveys',
               filters: {
                 company: company.id
               }
             }),
-            context.store.readOne({
+            context.sql.readOne({
               type: 'surveys',
               filters: args.filters
             })
@@ -31,7 +31,7 @@ module.exports = {
             return filteredSurvey
           }
         }
-        return context.store.readOne({
+        return context.sql.readOne({
           type: 'surveys',
           filters: {
             slug: 'default'

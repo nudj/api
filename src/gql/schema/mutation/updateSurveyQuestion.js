@@ -14,7 +14,7 @@ module.exports = {
     Mutation: {
       updateSurveyQuestion: handleErrors(async (root, args, context) => {
         if (!args.data.tags) {
-          return context.store.update({
+          return context.sql.update({
             type: 'surveyQuestions',
             id: args.id,
             data: args.data
@@ -23,20 +23,20 @@ module.exports = {
 
         const { tags = [] } = args.data
 
-        const oldSurveyQuestionTags = await context.store.readAll({
+        const oldSurveyQuestionTags = await context.sql.readAll({
           type: 'surveyQuestionTags',
           filters: { surveyQuestion: args.id }
         })
 
         await Promise.all(oldSurveyQuestionTags.map(tag => {
-          return context.store.delete({
+          return context.sql.delete({
             type: 'surveyQuestionTags',
             id: tag.id
           })
         }))
 
         const updatedTags = await Promise.all(tags.map(tag => {
-          return context.store.readOneOrCreate({
+          return context.sql.readOneOrCreate({
             type: 'tags',
             filters: {
               name: tag,
@@ -50,7 +50,7 @@ module.exports = {
         }))
 
         await Promise.all(updatedTags.map(tag => {
-          return context.store.readOneOrCreate({
+          return context.sql.readOneOrCreate({
             type: 'surveyQuestionTags',
             filters: {
               surveyQuestion: args.id,
@@ -65,7 +65,7 @@ module.exports = {
           })
         }))
 
-        return context.store.update({
+        return context.sql.update({
           type: 'surveyQuestions',
           id: args.id,
           data: omit(args.data, ['tags'])

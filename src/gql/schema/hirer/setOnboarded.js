@@ -11,7 +11,7 @@ module.exports = {
       setOnboarded: async (hirer, args, context) => {
         const onboard = isNil(args.onboard) ? true : args.onboard
 
-        const updatedHirer = await context.store.update({
+        const updatedHirer = await context.sql.update({
           type: 'hirers',
           id: hirer.id,
           data: {

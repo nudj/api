@@ -12,21 +12,27 @@ module.exports = {
   `,
   resolvers: {
     SurveyAnswer: {
-      connections: handleErrors(async (answer, args, context) => {
-        const connections = await context.store.readMany({
+      connections: handleErrors(async (surveyAnswer, args, context) => {
+        const surveyAnswerConnections = await context.sql.readAll({
+          type: 'surveyAnswerConnections',
+          filters: {
+            surveyAnswer: surveyAnswer.id
+          }
+        })
+        const connections = await context.sql.readMany({
           type: 'connections',
-          ids: answer.connections
+          ids: surveyAnswerConnections.map(item => item.connection)
         })
 
         if (!connections.length) return connections
 
         const rolesToTagsMap = await fetchRoleToTagsMap(context)
-        const surveyQuestionTags = await context.store.readAll({
+        const surveyQuestionTags = await context.sql.readAll({
           type: 'surveyQuestionTags',
-          filters: { surveyQuestion: answer.surveyQuestion }
+          filters: { surveyQuestion: surveyAnswer.surveyQuestion }
         })
 
-        const tags = await context.store.readMany({
+        const tags = await context.sql.readMany({
           type: 'tags',
           ids: uniq(surveyQuestionTags.map(surveyQuestionTag => surveyQuestionTag.tag))
         })

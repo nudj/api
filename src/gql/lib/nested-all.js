@@ -42,7 +42,7 @@ module.exports = function nestedAll (props = {}) {
             params.storeMethod = 'readAll'
           }
 
-          return context.store[params.storeMethod]({
+          return context.sql[params.storeMethod]({
             type: params.collection,
             filters: params.filters,
             ids: params.ids

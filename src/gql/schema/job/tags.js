@@ -7,7 +7,7 @@ module.exports = {
   resolvers: {
     Job: {
       tags: async (job, args, context) => {
-        const jobTags = await context.store.readAll({
+        const jobTags = await context.sql.readAll({
           type: 'jobTags',
           filters: { job: job.id }
         })
@@ -15,7 +15,7 @@ module.exports = {
         if (!jobTags || !jobTags.length) return []
 
         const tagIds = jobTags.map(jobTag => jobTag.tag)
-        const tags = await context.store.readMany({
+        const tags = await context.sql.readMany({
           type: 'tags',
           ids: tagIds
         })

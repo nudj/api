@@ -9,7 +9,7 @@ module.exports = {
   resolvers: {
     Mutation: {
       createSurvey: handleErrors(async (root, args, context) => {
-        const survey = await context.store.create({
+        const survey = await context.sql.create({
           type: 'surveys',
           data: {
             ...args.data,
@@ -17,7 +17,7 @@ module.exports = {
           }
         })
         if (args.company) {
-          await context.store.create({
+          await context.sql.create({
             type: 'companySurveys',
             data: {
               company: args.company,

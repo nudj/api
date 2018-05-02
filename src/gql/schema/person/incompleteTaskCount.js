@@ -7,16 +7,16 @@ module.exports = {
   resolvers: {
     Person: {
       incompleteTaskCount: async (person, args, context) => {
-        const hirer = await context.store.readOne({
+        const hirer = await context.sql.readOne({
           type: 'hirers',
           filters: { person: person.id }
         })
         const tasks = await Promise.all([
-          context.store.readAll({
+          context.sql.readAll({
             type: 'companyTasks',
             filters: { company: hirer.company, completed: false }
           }),
-          context.store.readAll({
+          context.sql.readAll({
             type: 'personTasks',
             filters: { person: person.id, completed: false }
           })

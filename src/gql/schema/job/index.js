@@ -10,11 +10,10 @@ module.exports = {
       bonus: String!
       roleDescription: String
       candidateDescription: String
-      location: String!
+      location: String
       remuneration: String
       status: JobStatus!
-      templateTags: [String!]!
-      type: String!
+      template: String
       url: String
       experience: String
       labels: [String!]
@@ -26,11 +25,10 @@ module.exports = {
       slug: String
       description: String!
       bonus: String!
-      location: String!
+      location: String
       remuneration: String
       status: JobStatus!
-      templateTags: [String!]!
-      type: String!
+      template: String
       url: String
       experience: String
       requirements: String
@@ -49,8 +47,7 @@ module.exports = {
       location: String
       remuneration: String
       status: JobStatus
-      templateTags: [String!]
-      type: String
+      template: String
       url: String
       experience: String
       requirements: String

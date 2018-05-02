@@ -3,11 +3,13 @@ const {
   FIELDS,
   ENUMS,
   INDICES,
+  COLLECTIONS,
   defaultConfig,
   emailType,
   urlType,
   relationType
 } = require('../lib/sql')
+const { nosql } = require('../lib/stores')
 
 exports.up = async knex => {
   await knex.schema
@@ -17,7 +19,8 @@ exports.up = async knex => {
         EMAIL,
         FIRST_NAME,
         LAST_NAME,
-        URL
+        URL,
+        EMAIL_PREFERENCE
       } = FIELDS[TABLES.PEOPLE]
 
       defaultConfig(t, knex)
@@ -25,6 +28,7 @@ exports.up = async knex => {
       t.string(FIRST_NAME).nullable()
       t.string(LAST_NAME).nullable()
       urlType(URL, t, knex).nullable()
+      t.enum(EMAIL_PREFERENCE, ENUMS.ACCOUNT_TYPES.values).nullable()
       t.unique(EMAIL, INDICES[TABLES.PEOPLE][EMAIL].name)
     })
 
@@ -75,7 +79,7 @@ exports.up = async knex => {
       t.text(ROLE_DESCRIPTION).nullable()
       t.text(EXPERIENCE).nullable()
       t.text(REQUIREMENTS).nullable()
-      t.integer(BONUS).notNullable()
+      t.string(BONUS).notNullable()
       t.enum(STATUS, ENUMS.JOB_STATUSES.values).defaultTo(ENUMS.JOB_STATUSES.DRAFT).notNullable()
       relationType(COMPANY, TABLES.COMPANIES, t, knex).notNullable()
       t.unique([COMPANY, SLUG], INDICES[TABLES.JOBS][[COMPANY, SLUG].join('')].name)
@@ -179,12 +183,14 @@ exports.up = async knex => {
     .createTable(TABLES.PERSON_ROLES, t => {
       const {
         PERSON,
-        ROLE
+        ROLE,
+        SOURCE
       } = FIELDS[TABLES.PERSON_ROLES]
 
       defaultConfig(t, knex)
       relationType(PERSON, TABLES.PEOPLE, t, knex).notNullable()
       relationType(ROLE, TABLES.ROLES, t, knex).notNullable()
+      t.enum(SOURCE, ENUMS.DATA_SOURCES.values).notNullable()
       t.unique([PERSON, ROLE], INDICES[TABLES.PERSON_ROLES][[PERSON, ROLE].join('')].name)
     })
 
@@ -263,8 +269,7 @@ exports.up = async knex => {
         INTRO_DESCRIPTION,
         OUTRO_TITLE,
         OUTRO_DESCRIPTION,
-        SURVEY_SECTIONS,
-        COMPANY
+        SURVEY_SECTIONS
       } = FIELDS[TABLES.SURVEYS]
 
       defaultConfig(t, knex)
@@ -274,8 +279,7 @@ exports.up = async knex => {
       t.string(OUTRO_TITLE).nullable()
       t.text(OUTRO_DESCRIPTION).nullable()
       t.json(SURVEY_SECTIONS).notNullable().comment('Array of surveySection ids denoting their order')
-      relationType(COMPANY, TABLES.COMPANIES, t, knex).notNullable()
-      t.unique([COMPANY, SLUG], INDICES[TABLES.SURVEYS][[COMPANY, SLUG].join('')].name)
+      t.unique(SLUG, INDICES[TABLES.SURVEYS][SLUG].name)
     })
 
     .createTable(TABLES.SURVEY_SECTIONS, t => {
@@ -340,6 +344,18 @@ exports.up = async knex => {
       t.unique([CONNECTION, SURVEY_ANSWER], INDICES[TABLES.SURVEY_ANSWER_CONNECTIONS][[CONNECTION, SURVEY_ANSWER].join('')].name)
     })
 
+    .createTable(TABLES.COMPANY_SURVEYS, t => {
+      const {
+        COMPANY,
+        SURVEY
+      } = FIELDS[TABLES.COMPANY_SURVEYS]
+
+      defaultConfig(t, knex)
+      relationType(COMPANY, TABLES.COMPANIES, t, knex).notNullable()
+      relationType(SURVEY, TABLES.SURVEYS, t, knex).notNullable()
+      t.unique([COMPANY, SURVEY], INDICES[TABLES.COMPANY_SURVEYS][[COMPANY, SURVEY].join('')].name)
+    })
+
     .createTable(TABLES.TAGS, t => {
       const {
         NAME,
@@ -393,7 +409,20 @@ exports.up = async knex => {
       relationType(TAG, TABLES.TAGS, t, knex).notNullable()
       t.unique([SURVEY_QUESTION, TAG], INDICES[TABLES.SURVEY_QUESTION_TAGS][[SURVEY_QUESTION, TAG].join('')].name)
     })
+
+  // create all required collections in the nosql store
+  await Promise.all(Object.values(COLLECTIONS).map(async collectionName => {
+    let collection
+    try {
+      collection = nosql.collection(collectionName)
+      await collection.create()
+    } catch (error) {
+      if (error.message !== 'duplicate name: duplicate name') throw error
+    }
+    return collection.truncate()
+  }))
 }
+
 exports.down = async knex => {
   await knex.schema
     .dropTable(TABLES.SURVEY_QUESTION_TAGS)
@@ -404,6 +433,7 @@ exports.down = async knex => {
     .dropTable(TABLES.SURVEY_ANSWERS)
     .dropTable(TABLES.SURVEY_QUESTIONS)
     .dropTable(TABLES.SURVEY_SECTIONS)
+    .dropTable(TABLES.COMPANY_SURVEYS)
     .dropTable(TABLES.SURVEYS)
     .dropTable(TABLES.CONVERSATIONS)
     .dropTable(TABLES.ACCOUNTS)
@@ -420,4 +450,16 @@ exports.down = async knex => {
     .dropTable(TABLES.JOBS)
     .dropTable(TABLES.COMPANIES)
     .dropTable(TABLES.PEOPLE)
+
+  // drop all collections in the nosql store
+  const collections = await nosql.collections()
+  return Promise.all(collections.map(async collection => {
+    try {
+      await collection.drop()
+    } catch (error) {
+      if (!error.message.startsWith('unknown collection')) {
+        throw error
+      }
+    }
+  }))
 }

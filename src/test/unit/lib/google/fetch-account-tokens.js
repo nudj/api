@@ -25,24 +25,24 @@ describe('Google', () => {
 
     it('returns provided accessToken if valid', async () => {
       const account = {
-        data: {
+        data: JSON.stringify({
           accessToken: validAccessToken,
           refreshToken
-        }
+        })
       }
       const readOne = () => account
       const context = {
-        store: { readOne }
+        sql: { readOne }
       }
       const person = { id: 'person1' }
       const data = await fetchAccountTokens(context, person)
-      expect(data).to.equal(account.data)
+      expect(data).to.deep.equal(JSON.parse(account.data))
     })
 
     it('throws error if no account exists', async () => {
       const readOne = () => {}
       const context = {
-        store: { readOne }
+        sql: { readOne }
       }
       const person = { id: 'person1' }
       expect(fetchAccountTokens(context, person)).to.be.rejectedWith('No google account found')

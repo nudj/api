@@ -11,43 +11,26 @@ describe('Person.company', () => {
       people: [
         {
           id: 'person1'
-        },
-        {
-          id: 'person2'
         }
       ],
       companies: [
         {
           id: 'company1',
           name: 'Google'
-        },
-        {
-          id: 'company2',
-          name: 'Apple'
-        },
-        {
-          id: 'company3',
-          name: 'Microsoft'
         }
       ],
       employments: [
         {
           id: 'employment1',
           person: 'person1',
-          company: 'company1',
-          current: false
-        },
+          company: 'company1'
+        }
+      ],
+      currentEmployments: [
         {
-          id: 'employment2',
-          person: 'person2',
-          company: 'company2',
-          current: false
-        },
-        {
-          id: 'employment3',
+          id: 'currentEmployment1',
           person: 'person1',
-          company: 'company3',
-          current: true
+          employment: 'employment1'
         }
       ]
     }
@@ -64,7 +47,7 @@ describe('Person.company', () => {
       data: {
         person: {
           company: {
-            id: 'company3'
+            id: 'company1'
           }
         }
       }

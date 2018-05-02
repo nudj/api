@@ -36,13 +36,13 @@ module.exports = function nestedSingleByFiltersViaEdge (props = {}) {
             edges,
             filteredItem
           ] = await Promise.all([
-            context.store.readAll({
+            context.sql.readAll({
               type: edgeCollection,
               filters: {
                 [fromEdgePropertyName]: from.id
               }
             }),
-            context.store.readOne({
+            context.sql.readOne({
               type: toCollection,
               filters: args.filters
             })

@@ -11,6 +11,7 @@ services:
       - ../api/src/lib:/usr/src/lib
       - ../api/src/migrations:/usr/src/migrations
       - ../api/src/scripts:/usr/src/scripts
+      - ../api/src/seeds:/usr/src/seeds
       - ../api/src/rest:/usr/src/rest
       - ../api/src/test:/usr/src/test
       - ../api/src/.npmignore:/usr/src/.npmignore
@@ -18,6 +19,6 @@ services:
       - ../api/src/nodemon.json:/usr/src/nodemon.json
       - ../api/src/package.json:/usr/src/package.json
       - ../api/src/index.js:/usr/src/index.js
-      - ../library/src:/usr/src/@nudj/library
+      - ../api/src/knexfile.js:/usr/src/knexfile.js
     stdin_open: true
     command: /bin/zsh

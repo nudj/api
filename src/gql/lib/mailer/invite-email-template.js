@@ -128,6 +128,11 @@ module.exports = ({ senderName, companyName }) => dedent`
                         The nudj team
                       </td>
                     </tr>
+                    <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+                      <td class="content-block" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 100px; padding: 0 0 20px;" valign="top">
+                        Don’t think you were meant to receive this? <a href="mailto:hello@nudj.co?Subject=Why%20are%20you%20contacting%20me?">Let us know</a>
+                      </td>
+                    </tr>
                   </table>
                 </td>
               </tr>

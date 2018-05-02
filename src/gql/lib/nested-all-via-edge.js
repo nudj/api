@@ -29,14 +29,14 @@ module.exports = function nestedAllViaEdge (props = {}) {
     resolvers: {
       [fromType]: {
         [name]: handleErrors(async (from, args, context) => {
-          const edges = await context.store.readAll({
+          const edges = await context.sql.readAll({
             type: edgeCollection,
             filters: {
               [fromEdgePropertyName]: from.id
             }
           })
           if (edges.length) {
-            return context.store.readMany({
+            return context.sql.readMany({
               type: toCollection,
               ids: edges.map(edge => edge[toEdgePropertyName])
             })

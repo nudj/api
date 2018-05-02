@@ -14,7 +14,7 @@ chai.use(sinonChai)
 
 const NEW_RESPONSE = { new: { _key: 'id', '_id': 123, '_rev': 123, prop: 'value' } }
 
-describe('ArangoAdaptor Store().update', () => {
+describe('ArangoAdaptor StoreTransaction().update', () => {
   let Store
   let dbStub
 

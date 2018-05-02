@@ -11,12 +11,12 @@ module.exports = {
   resolvers: {
     Query: {
       hirersAsPeople: handleErrors(async (root, args, context) => {
-        const hirers = await context.store.readAll({
+        const hirers = await context.sql.readAll({
           type: 'hirers',
           filters: omitBy({ company: args.company }, isUndefined)
         })
 
-        return context.store.readMany({
+        return context.sql.readMany({
           type: 'people',
           ids: hirers.map(hirer => hirer.person)
         })

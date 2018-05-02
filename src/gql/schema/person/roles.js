@@ -9,12 +9,12 @@ module.exports = {
   resolvers: {
     Person: {
       roles: handleErrors(async (person, args, context) => {
-        const personRoles = await context.store.readAll({
+        const personRoles = await context.sql.readAll({
           type: 'personRoles',
           filters: { person: person.id }
         })
 
-        return context.store.readMany({
+        return context.sql.readMany({
           type: 'roles',
           ids: personRoles.map(personRole => personRole.role)
         })

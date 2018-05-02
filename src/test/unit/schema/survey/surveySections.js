@@ -20,11 +20,11 @@ describe('Survey.surveySections', () => {
       surveys: [
         {
           id: 'survey1',
-          surveySections: [
+          surveySections: JSON.stringify([
             'surveySection3',
             'surveySection1',
             'surveySection2'
-          ]
+          ])
         }
       ],
       surveySections: [
@@ -68,9 +68,9 @@ describe('Survey.surveySections', () => {
       surveys: [
         {
           id: 'survey1',
-          surveySections: [
+          surveySections: JSON.stringify([
             'surveySection2'
-          ]
+          ])
         }
       ],
       surveySections: [

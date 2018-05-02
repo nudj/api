@@ -18,11 +18,11 @@ module.exports = {
         const from = person.id
         const { to, source } = args
 
-        const savedPerson = await context.store.readOne({
+        const savedPerson = await context.sql.readOne({
           type: 'people',
           filters: { email: to.email }
         })
-        const savedConnection = savedPerson && await context.store.readOne({
+        const savedConnection = savedPerson && await context.sql.readOne({
           type: 'connections',
           filters: {
             from,
@@ -40,7 +40,7 @@ module.exports = {
           companySlug = makeSlug(to.company)
 
           try {
-            existingCompany = await context.store.readOne({
+            existingCompany = await context.sql.readOne({
               type: 'companies',
               filters: { name: to.company }
             })
@@ -50,7 +50,7 @@ module.exports = {
 
           if (!existingCompany) {
             try {
-              existingCompany = await context.store.readOne({
+              existingCompany = await context.sql.readOne({
                 type: 'companies',
                 filters: {
                   slug: companySlug
@@ -64,7 +64,7 @@ module.exports = {
               companySlug = `${companySlug}-${hash(8)}`
 
               try {
-                existingCompany = await context.store.readOne({
+                existingCompany = await context.sql.readOne({
                   type: 'companies',
                   filters: {
                     slug: companySlug
@@ -78,16 +78,16 @@ module.exports = {
         }
 
         const [ personFromConnection, role, company ] = await Promise.all([
-          savedPerson || context.store.create({
+          savedPerson || context.sql.create({
             type: 'people',
             data: pick(to, ['email'])
           }),
-          to.title && context.store.readOneOrCreate({
+          to.title && context.sql.readOneOrCreate({
             type: 'roles',
             filters: { name: to.title },
             data: { name: to.title }
           }),
-          (to.company && existingCompany) || (to.company && context.store.create({
+          (to.company && existingCompany) || (to.company && context.sql.create({
             type: 'companies',
             filters: { slug: companySlug },
             data: {
@@ -107,7 +107,7 @@ module.exports = {
           enrichOrFetchEnrichedCompanyByName(existingCompany, context)
         }
 
-        const connection = await context.store.create({
+        const connection = await context.sql.create({
           type: 'connections',
           data: {
             ...omit(to, ['email', 'title']),

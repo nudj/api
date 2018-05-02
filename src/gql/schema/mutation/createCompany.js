@@ -16,7 +16,7 @@ module.exports = {
           client = false
         } = args.company
 
-        const existingCompany = await context.store.readOne({
+        const existingCompany = await context.sql.readOne({
           type: 'companies',
           filters: { slug }
         })
@@ -26,7 +26,7 @@ module.exports = {
           throw new Error(`Company with slug '${slug}' already exists`)
         }
 
-        const company = await context.store.create({
+        const company = await context.sql.create({
           type: 'companies',
           data: { ...args.company, onboarded, client }
         })

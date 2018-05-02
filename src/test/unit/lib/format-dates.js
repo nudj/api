@@ -7,12 +7,12 @@ const { endOfDay, startOfDay } = require('../../../gql/lib/format-dates')
 describe('format-dates', () => {
   describe('endOfDay', () => {
     it('should format timestamps to the last second of the day', () => {
-      const today = '2018-02-06T09:51:58.000+00:00'
-      expect(endOfDay(today)).to.equal('2018-02-06T23:59:59.999Z')
+      const today = '2018-02-06 09:51:58'
+      expect(endOfDay(today)).to.equal('2018-02-06 23:59:59')
     })
 
     it('should format shorter timestamps', () => {
-      expect(endOfDay('2017-02-06')).to.equal('2017-02-06T23:59:59.999Z')
+      expect(endOfDay('2017-02-06')).to.equal('2017-02-06 23:59:59')
     })
 
     it('should return if passed a nil value', () => {
@@ -35,12 +35,12 @@ describe('format-dates', () => {
 
   describe('startOfDay', () => {
     it('should format timestamps to the first second of the day', () => {
-      const today = '2018-02-06T09:51:58.000+00:00'
-      expect(startOfDay(today)).to.equal('2018-02-06T00:00:00.000Z')
+      const today = '2018-02-06 09:51:58'
+      expect(startOfDay(today)).to.equal('2018-02-06 00:00:00')
     })
 
     it('should format shorter timestamps', () => {
-      expect(startOfDay('2017-02-06')).to.equal('2017-02-06T00:00:00.000Z')
+      expect(startOfDay('2017-02-06')).to.equal('2017-02-06 00:00:00')
     })
 
     it('should return if passed a nil value', () => {

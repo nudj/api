@@ -15,13 +15,13 @@ module.exports = {
           type
         } = args.hirer
 
-        const person = await context.store.readOneOrCreate({
+        const person = await context.sql.readOneOrCreate({
           type: 'people',
           filters: { email },
           data: { email }
         })
 
-        return context.store.create({
+        return context.sql.create({
           type: 'hirers',
           data: {
             onboarded,

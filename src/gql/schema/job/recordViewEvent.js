@@ -8,24 +8,18 @@ const createNewBrowserId = () => (
 module.exports = {
   typeDefs: `
     extend type Job {
-      recordEvent(type: EventType!, browserId: String): Event!
+      recordViewEvent(browserId: String): JobViewEvent!
     }
   `,
   resolvers: {
     Job: {
-      recordEvent: (job, args, context) => {
+      recordViewEvent: (job, args, context) => {
         const browserId = args.browserId || createNewBrowserId()
-        return context.store.readOneOrCreate({
-          type: 'events',
-          filters: {
-            browserId,
-            entityId: job.id
-          },
+        return context.nosql.create({
+          type: 'jobViewEvents',
           data: {
             browserId,
-            eventType: args.type,
-            entityId: job.id,
-            entityType: 'jobs'
+            job: job.id
           }
         })
       }

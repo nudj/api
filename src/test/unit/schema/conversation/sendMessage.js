@@ -51,10 +51,10 @@ const db = {
     {
       person: 'person3',
       type: 'GOOGLE',
-      data: {
+      data: JSON.stringify({
         accessToken: 'VALID_ACCESS_TOKEN',
         refreshToken: 'VALID_REFRESH_TOKEN'
-      }
+      })
     }
   ],
   conversations: [

@@ -1,7 +1,7 @@
 require('envkey')
 const { Database } = require('arangojs')
 
-const { NO_SQL_URL } = require('../../../gql/lib/constants')
+const { NO_SQL_URL } = require('../../../lib/constants')
 
 process.env.NO_SQL_NAME = 'test-nosql'
 

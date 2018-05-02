@@ -47,10 +47,12 @@ describe('00005 Arango to MySQL', () => {
   describe('for surveys table', () => {
     const COLLECTIONS = {
       SURVEYS: TABLES.SURVEYS,
+      SURVEY_SECTIONS: TABLES.SURVEY_SECTIONS,
       COMPANIES: TABLES.COMPANIES
     }
 
     afterEach(async () => {
+      await sql(TABLES.SURVEY_SECTIONS).whereNot('id', '').del()
       await sql(TABLES.SURVEYS).whereNot('id', '').del()
       await sql(TABLES.COMPANIES).whereNot('id', '').del()
     })
@@ -84,10 +86,26 @@ describe('00005 Arango to MySQL', () => {
                 introDescription: 'Intro description',
                 outroTitle: 'Outro Title',
                 outroDescription: 'Outro description',
-                surveySections: ['surveySection1', 'surveySection2'],
-                company: 'company1',
+                surveySections: ['surveySection1'],
                 batchSize: 100,
                 skip: 0
+              }
+            ]
+          },
+          {
+            name: COLLECTIONS.SURVEY_SECTIONS,
+            data: [
+              {
+                _id: 'surveySections/surveySection1',
+                _rev: '_WpP1l3W---',
+                _key: 'surveySection1',
+                created: '2018-02-01T01:02:03.456Z',
+                modified: '2018-03-02T02:03:04.567Z',
+                slug: 'survey-slug',
+                title: 'Intro Title',
+                description: 'Intro description',
+                survey: '123',
+                surveyQuestions: []
               }
             ]
           }
@@ -103,13 +121,12 @@ describe('00005 Arango to MySQL', () => {
         expect(surveys[0]).to.have.property('introDescription', 'Intro description')
         expect(surveys[0]).to.have.property('outroTitle', 'Outro Title')
         expect(surveys[0]).to.have.property('outroDescription', 'Outro description')
-        expect(surveys[0]).to.have.property('surveySections', JSON.stringify(['surveySection1', 'surveySection2']))
       })
 
-      it('should remap the relations', async () => {
+      it('should remap the order caches', async () => {
         const surveys = await sql.select().from(TABLES.SURVEYS)
-        const companies = await sql.select().from(TABLES.COMPANIES)
-        expect(surveys[0]).to.have.property('company', companies[0].id)
+        const surveySections = await sql.select().from(TABLES.SURVEY_SECTIONS)
+        expect(surveys[0]).to.have.property('surveySections', JSON.stringify([surveySections[0].id]))
       })
     })
   })

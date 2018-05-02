@@ -28,7 +28,7 @@ module.exports = function rootSingleByFilters (props = {}) {
       [parentType]: {
         [name]: handleErrors((root, args, context) => {
           if (isEmpty(args.filters)) return null
-          return context.store.readOne({
+          return context.sql.readOne({
             type: collection,
             filters: args.filters
           })

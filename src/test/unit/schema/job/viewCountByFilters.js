@@ -6,33 +6,27 @@ const schema = require('../../../../gql/schema')
 const { executeQueryOnDbUsingSchema } = require('../../helpers')
 
 describe('Job.viewCountByFilters', () => {
-  it('should return total count of the jobs\'s "viewed" events', () => {
+  it('should return total count of the jobViewEvents unique by browserId', () => {
     const db = {
       jobs: [
         {
           id: 'job1'
         }
-      ],
-      events: [
+      ]
+    }
+    const nosql = {
+      jobViewEvents: [
         {
-          entityId: 'job1',
-          eventType: 'viewed'
+          job: 'job1',
+          browserId: '123'
         },
         {
-          entityId: 'job1',
-          eventType: 'referred'
+          job: 'jobFiveMillion',
+          browserId: '123'
         },
         {
-          entityId: 'job1',
-          eventType: 'viewed'
-        },
-        {
-          entityId: 'jobFiveMillion',
-          eventType: 'viewed'
-        },
-        {
-          entityId: 'job1',
-          eventType: 'viewed'
+          job: 'job1',
+          browserId: '456'
         }
       ]
     }
@@ -46,22 +40,24 @@ describe('Job.viewCountByFilters', () => {
       }
     `
 
-    return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
+    return expect(executeQueryOnDbUsingSchema({ operation, db, nosql, schema })).to.eventually.deep.equal({
       data: {
         job: {
           id: 'job1',
-          viewCountByFilters: 3
+          viewCountByFilters: 2
         }
       }
     })
   })
 
-  it('should return 0 if the job has no "viewed" events', () => {
+  it('should return 0 if the job has had no views', () => {
     const db = {
       jobs: [{
         id: 'job1'
-      }],
-      events: []
+      }]
+    }
+    const nosql = {
+      jobViewEvents: []
     }
 
     const operation = `
@@ -73,7 +69,7 @@ describe('Job.viewCountByFilters', () => {
       }
     `
 
-    return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
+    return expect(executeQueryOnDbUsingSchema({ operation, db, nosql, schema })).to.eventually.deep.equal({
       data: {
         job: {
           id: 'job1',
@@ -87,32 +83,34 @@ describe('Job.viewCountByFilters', () => {
     const db = {
       jobs: [{
         id: 'job1'
-      }],
-      events: [
+      }]
+    }
+    const nosql = {
+      jobViewEvents: [
         {
-          entityId: 'job1',
-          eventType: 'viewed',
-          created: '2017-12-06T10:00:00.000Z'
+          job: 'job1',
+          browserId: '1',
+          created: '2017-12-06 10:00:00'
         },
         {
-          entityId: 'job1',
-          eventType: 'viewed',
-          created: '2017-12-07T10:00:00.000Z'
+          job: 'job1',
+          browserId: '2',
+          created: '2017-12-07 10:00:00'
         },
         {
-          entityId: 'job1',
-          eventType: 'viewed',
-          created: '2017-12-08T10:00:00.000Z'
+          job: 'job1',
+          browserId: '3',
+          created: '2017-12-08 10:00:00'
         },
         {
-          entityId: 'job1',
-          eventType: 'viewed',
-          created: '2017-12-09T10:00:00.000Z'
+          job: 'job1',
+          browserId: '4',
+          created: '2017-12-09 10:00:00'
         },
         {
-          entityId: 'job1',
-          eventType: 'viewed',
-          created: '2017-12-10T10:00:00.000Z'
+          job: 'job1',
+          browserId: '5',
+          created: '2017-12-10 10:00:00'
         }
       ]
     }
@@ -126,11 +124,11 @@ describe('Job.viewCountByFilters', () => {
       }
     `
     const variables = {
-      from: '2017-12-07T10:00:00.000Z',
-      to: '2017-12-09T10:00:00.000Z'
+      from: '2017-12-07 10:00:00',
+      to: '2017-12-09 10:00:00'
     }
 
-    return expect(executeQueryOnDbUsingSchema({ operation, variables, db, schema })).to.eventually.deep.equal({
+    return expect(executeQueryOnDbUsingSchema({ operation, variables, db, nosql, schema })).to.eventually.deep.equal({
       data: {
         job: {
           id: 'job1',

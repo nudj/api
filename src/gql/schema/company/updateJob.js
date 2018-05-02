@@ -17,7 +17,7 @@ module.exports = {
         const { tags, slug } = data
 
         if (slug) {
-          const existingJob = await context.store.readOne({
+          const existingJob = await context.sql.readOne({
             type: 'jobs',
             filters: {
               company: company.id,
@@ -31,27 +31,27 @@ module.exports = {
         }
 
         if (!tags) {
-          return context.store.update({
+          return context.sql.update({
             type: 'jobs',
             id,
             data
           })
         }
 
-        const oldJobTags = await context.store.readAll({
+        const oldJobTags = await context.sql.readAll({
           type: 'jobTags',
           filters: { job: id }
         })
 
         await Promise.all(oldJobTags.map(tag => {
-          return context.store.delete({
+          return context.sql.delete({
             type: 'jobTags',
             id: tag.id
           })
         }))
 
         const jobTags = await Promise.all(tags.map(tag => {
-          return context.store.readOneOrCreate({
+          return context.sql.readOneOrCreate({
             type: 'tags',
             filters: {
               name: tag,
@@ -65,7 +65,7 @@ module.exports = {
         }))
 
         await Promise.all(jobTags.map(tag => {
-          return context.store.readOneOrCreate({
+          return context.sql.readOneOrCreate({
             type: 'jobTags',
             filters: {
               job: id,
@@ -80,7 +80,7 @@ module.exports = {
           })
         }))
 
-        return context.store.update({
+        return context.sql.update({
           type: 'jobs',
           id: args.id,
           data: omit(args.data, ['tags'])

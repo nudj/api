@@ -23,15 +23,15 @@ module.exports = {
           referral,
           company
         ] = await Promise.all([
-          context.store.readOne({
+          context.sql.readOne({
             type: 'people',
             id: personId
           }),
-          context.store.readOne({
+          context.sql.readOne({
             type: 'referrals',
             id: referralId
           }),
-          context.store.readOne({
+          context.sql.readOne({
             type: 'companies',
             id: job.company
           })
@@ -39,7 +39,7 @@ module.exports = {
 
         if (!person) throw new Error(`Person with id ${personId} does not exist`)
 
-        const application = await context.store.readOneOrCreate({
+        const application = await context.sql.readOneOrCreate({
           type: 'applications',
           filters: {
             job: job.id,

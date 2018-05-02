@@ -73,24 +73,20 @@ describe('Job.createReferralWithParentForPerson', () => {
     })
 
     it('should create a parent referral', async () => {
-      expect(db)
-        .to.have.deep.property('referrals.0')
-        .to.deep.equal({
-          id: 'referral1',
-          job: 'job1',
-          person: 'parentPerson1'
-        })
+      expect(db).to.have.deep.property('referrals.0')
+      expect(db.referrals[0]).to.have.deep.property('id', 'referral1')
+      expect(db.referrals[0]).to.have.deep.property('job', 'job1')
+      expect(db.referrals[0]).to.have.deep.property('person', 'parentPerson1')
+      expect(db.referrals[0]).to.have.deep.property('slug').to.match(/[a-z0-9]{10}/)
     })
 
     it('should create the referral', async () => {
-      expect(db)
-        .to.have.deep.property('referrals.1')
-        .to.deep.equal({
-          id: 'referral2',
-          job: 'job1',
-          person: 'person1',
-          parent: 'referral1'
-        })
+      expect(db).to.have.deep.property('referrals.1')
+      expect(db.referrals[1]).to.have.deep.property('id', 'referral2')
+      expect(db.referrals[1]).to.have.deep.property('job', 'job1')
+      expect(db.referrals[1]).to.have.deep.property('person', 'person1')
+      expect(db.referrals[1]).to.have.deep.property('parent', 'referral1')
+      expect(db.referrals[1]).to.have.deep.property('slug').to.match(/[a-z0-9]{10}/)
     })
 
     it('should return the referral', async () => {
@@ -152,14 +148,12 @@ describe('Job.createReferralWithParentForPerson', () => {
     })
 
     it('should create the referral with existing parent', async () => {
-      expect(db)
-        .to.have.deep.property('referrals.1')
-        .to.deep.equal({
-          id: 'referral2',
-          job: 'job1',
-          person: 'person1',
-          parent: 'referral1'
-        })
+      expect(db).to.have.deep.property('referrals.1')
+      expect(db.referrals[1]).to.have.deep.property('id', 'referral2')
+      expect(db.referrals[1]).to.have.deep.property('job', 'job1')
+      expect(db.referrals[1]).to.have.deep.property('person', 'person1')
+      expect(db.referrals[1]).to.have.deep.property('parent', 'referral1')
+      expect(db.referrals[1]).to.have.deep.property('slug').to.match(/[a-z0-9]{10}/)
     })
 
     it('should return the referral', async () => {

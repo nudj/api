@@ -3,8 +3,7 @@ const { AppError } = require('@nudj/library/errors')
 
 const handleErrors = require('./handle-errors')
 
-module.exports =
-function rootSingle (props = {}) {
+module.exports = function rootSingle (props = {}) {
   let {
     parentType,
     type,
@@ -29,7 +28,7 @@ function rootSingle (props = {}) {
           if (id === undefined) {
             return null
           }
-          return context.store.readOne({
+          return context.sql.readOne({
             type: collection,
             id: args.id
           })

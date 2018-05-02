@@ -7,7 +7,7 @@ module.exports = {
   resolvers: {
     Person: {
       connectionsCount: (person, args, context) => {
-        return context.store.readAll({
+        return context.sql.readAll({
           type: 'connections',
           filters: { from: person.id }
         })

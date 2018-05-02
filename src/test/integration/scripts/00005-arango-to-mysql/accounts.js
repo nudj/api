@@ -81,7 +81,7 @@ describe('00005 Arango to MySQL', () => {
                 _key: '123',
                 created: '2018-02-01T01:02:03.456Z',
                 modified: '2018-03-02T02:03:04.567Z',
-                emailAddress: 'email1@domain.com',
+                email: 'email1@domain.com',
                 emailAddresses: ['email1@domain.com', 'email2@domain.com'],
                 data: { key: true },
                 type: ENUMS.ACCOUNT_TYPES.GOOGLE,

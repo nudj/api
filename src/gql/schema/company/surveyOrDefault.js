@@ -9,19 +9,19 @@ module.exports = {
   resolvers: {
     Company: {
       surveyOrDefault: handleErrors(async (company, args, context) => {
-        const edge = await context.store.readOne({
+        const edge = await context.sql.readOne({
           type: 'companySurveys',
           filters: {
             company: company.id
           }
         })
         if (edge) {
-          return context.store.readOne({
+          return context.sql.readOne({
             type: 'surveys',
             id: edge.survey
           })
         } else {
-          return context.store.readOne({
+          return context.sql.readOne({
             type: 'surveys',
             filters: {
               slug: 'default'

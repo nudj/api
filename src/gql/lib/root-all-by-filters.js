@@ -26,7 +26,7 @@ module.exports = function rootAllByFilters (props = {}) {
     resolvers: {
       [parentType]: {
         [name]: handleErrors((root, args, context) => {
-          return context.store.readAll({
+          return context.sql.readAll({
             type: collection,
             filters: args.filters
           })

@@ -6,7 +6,7 @@ const expect = chai.expect
 
 const { setupDependencies, teardownDependencies } = require('../../../helpers/transactions')
 
-describe('ArangoAdaptor Store', () => {
+describe('ArangoAdaptor StoreTransaction', () => {
   let Store
 
   before(() => {

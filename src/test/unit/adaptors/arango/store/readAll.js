@@ -127,15 +127,15 @@ xdescribe('ArangoAdaptor store.readAll', () => {
       return store.readAll({
         type: 'collectionName',
         filters: {
-          dateTo: '2017-12-15T11:21:51.030+00:00',
-          dateFrom: '2016-12-15T11:21:51.030+00:00'
+          dateTo: '2017-12-15 11:21:51',
+          dateFrom: '2016-12-15 11:21:51'
         }
       })
       .then(() => {
         const [ query, bindVars ] = dbStub.db.query.firstCall.args
         expect(bindVars).to.deep.equal({
-          from: '2016-12-15T23:59:59.999Z',
-          to: '2017-12-15T23:59:59.999Z'
+          from: '2016-12-15 23:59:59',
+          to: '2017-12-15 23:59:59'
         })
         expect(dedent(query)).to.equal(dedent`
           FOR item in collectionName
@@ -150,12 +150,12 @@ xdescribe('ArangoAdaptor store.readAll', () => {
       return store.readAll({
         type: 'collectionName',
         filters: {
-          dateTo: '2017-12-15T11:21:51.030+00:00'
+          dateTo: '2017-12-15 11:21:51'
         }
       })
       .then(() => {
         const [ query, bindVars ] = dbStub.db.query.firstCall.args
-        expect(bindVars.to).to.equal('2017-12-15T23:59:59.999Z')
+        expect(bindVars.to).to.equal('2017-12-15 23:59:59')
         expect(bindVars.from).to.be.undefined()
         expect(dedent(query)).to.equal(dedent`
           FOR item in collectionName
@@ -169,12 +169,12 @@ xdescribe('ArangoAdaptor store.readAll', () => {
       return store.readAll({
         type: 'collectionName',
         filters: {
-          dateFrom: '2017-12-19T11:21:51.030+00:00'
+          dateFrom: '2017-12-19 11:21:51'
         }
       })
       .then(() => {
         const [ query, bindVars ] = dbStub.db.query.firstCall.args
-        expect(bindVars.from).to.equal('2017-12-19T23:59:59.999Z')
+        expect(bindVars.from).to.equal('2017-12-19 23:59:59')
         expect(bindVars.to).to.be.undefined()
         expect(dedent(query)).to.equal(dedent`
           FOR item in collectionName
@@ -190,12 +190,12 @@ xdescribe('ArangoAdaptor store.readAll', () => {
         filters: {
           email: 'test@email.com',
           address: '1 Test Drive',
-          dateFrom: '2010-12-19T11:21:51.030+00:00'
+          dateFrom: '2010-12-19 11:21:51'
         }
       })
       .then(() => {
         const [ query, params ] = dbStub.db.query.firstCall.args
-        expect(params).to.have.property('from').to.equal('2010-12-19T23:59:59.999Z')
+        expect(params).to.have.property('from').to.equal('2010-12-19 11:21:51')
         expect(params).to.have.property('email').to.equal('test@email.com')
         expect(params).to.have.property('address').to.equal('1 Test Drive')
         expect(dedent(query)).to.equal(dedent`
@@ -211,8 +211,8 @@ xdescribe('ArangoAdaptor store.readAll', () => {
       return store.readAll({
         type: 'collectionName',
         filters: {
-          dateTo: '2017-12-15T11:21:51.030+00:00',
-          dateFrom: '2016-12-15T11:21:51.030+00:00'
+          dateTo: '2017-12-15 11:21:51',
+          dateFrom: '2016-12-15 11:21:51'
         }
       })
       .then(() => {
@@ -224,8 +224,8 @@ xdescribe('ArangoAdaptor store.readAll', () => {
       return expect(store.readAll({
         type: 'collectionName',
         filters: {
-          dateTo: '2017-12-15T11:21:51.030+00:00',
-          dateFrom: '2016-12-15T11:21:51.030+00:00'
+          dateTo: '2017-12-15 11:21:51',
+          dateFrom: '2016-12-15 11:21:51'
         }
       })).to.eventually.deep.equal([
         {

@@ -9,7 +9,7 @@ module.exports = {
   resolvers: {
     Mutation: {
       updateSurvey: handleErrors((root, args, context) => {
-        return context.store.update({
+        return context.sql.update({
           type: 'surveys',
           id: args.id,
           data: args.data

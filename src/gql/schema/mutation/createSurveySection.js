@@ -9,7 +9,7 @@ module.exports = {
   resolvers: {
     Mutation: {
       createSurveySection: handleErrors(async (root, args, context) => {
-        const section = await context.store.create({
+        const section = await context.sql.create({
           type: 'surveySections',
           data: {
             ...args.data,
@@ -17,12 +17,12 @@ module.exports = {
             surveyQuestions: []
           }
         })
-        const { surveySections = [] } = await context.store.readOne({
+        const { surveySections = [] } = await context.sql.readOne({
           type: 'surveys',
           id: section.survey
         })
 
-        await context.store.update({
+        await context.sql.update({
           type: 'surveys',
           id: section.survey,
           data: {

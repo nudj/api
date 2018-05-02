@@ -89,8 +89,8 @@ describe('sendGmailByThread', () => {
       person: 'person101'
     }
     const context = {
-      store: {
-        readOne: () => ({ data: { accessToken: validAccessToken } })
+      sql: {
+        readOne: () => ({ data: JSON.stringify({ accessToken: validAccessToken }) })
       }
     }
     await expect(sendGmailByThread({ context, body, conversation })).to.eventually.deep.equal({

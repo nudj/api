@@ -88,14 +88,28 @@ const db = {
   ],
   surveyAnswers: [
     {
+      id: 'surveyAnswer1',
       person: 'person1',
-      surveyQuestion: 'surveyQuestion1',
-      connections: ['connection1', 'connection2']
+      surveyQuestion: 'surveyQuestion1'
     },
     {
+      id: 'surveyAnswer2',
       person: 'person1',
-      surveyQuestion: 'surveyQuestion2',
-      connections: ['connection1']
+      surveyQuestion: 'surveyQuestion2'
+    }
+  ],
+  surveyAnswerConnections: [
+    {
+      surveyAnswer: 'surveyAnswer1',
+      connection: 'connection1'
+    },
+    {
+      surveyAnswer: 'surveyAnswer1',
+      connection: 'connection2'
+    },
+    {
+      surveyAnswer: 'surveyAnswer2',
+      connection: 'connection1'
     }
   ],
   surveyQuestionTags: [

@@ -35,27 +35,27 @@ describe('LodashAdaptor transaction', () => {
         {
           name: 'Frankenstein',
           type: 'classic',
-          created: '1986-07-06T07:34:54.000'
+          created: '1986-07-06 07:34:54'
         },
         {
           name: 'Dracula',
           type: 'classic',
-          created: '1986-07-07T07:34:54.000'
+          created: '1986-07-07 07:34:54'
         },
         {
           name: 'Jason Voorhees',
           type: 'modern',
-          created: '1986-07-08T07:34:54.000'
+          created: '1986-07-08 07:34:54'
         },
         {
           name: 'Loch Ness Monster',
           type: 'mythological',
-          created: '1986-07-09T07:34:54.000'
+          created: '1986-07-09 07:34:54'
         },
         {
           name: 'Gremlin',
           type: 'modern',
-          created: '1986-07-10T07:34:54.000'
+          created: '1986-07-10 07:34:54'
         }
       ]
     }
@@ -156,24 +156,24 @@ describe('LodashAdaptor transaction', () => {
       return store.readAll({
         type: 'monsters',
         filters: {
-          dateTo: '1986-07-08T07:34:54.000'
+          dateTo: '1986-07-08 07:34:54'
         }
       })
     })).to.eventually.deep.equal([
       {
         name: 'Frankenstein',
         type: 'classic',
-        created: '1986-07-06T07:34:54.000'
+        created: '1986-07-06 07:34:54'
       },
       {
         name: 'Dracula',
         type: 'classic',
-        created: '1986-07-07T07:34:54.000'
+        created: '1986-07-07 07:34:54'
       },
       {
         name: 'Jason Voorhees',
         type: 'modern',
-        created: '1986-07-08T07:34:54.000'
+        created: '1986-07-08 07:34:54'
       }
     ])
   })
@@ -183,24 +183,24 @@ describe('LodashAdaptor transaction', () => {
       return store.readAll({
         type: 'monsters',
         filters: {
-          dateFrom: '1986-07-08T07:34:54.000'
+          dateFrom: '1986-07-08 07:34:54'
         }
       })
     })).to.eventually.deep.equal([
       {
         name: 'Jason Voorhees',
         type: 'modern',
-        created: '1986-07-08T07:34:54.000'
+        created: '1986-07-08 07:34:54'
       },
       {
         name: 'Loch Ness Monster',
         type: 'mythological',
-        created: '1986-07-09T07:34:54.000'
+        created: '1986-07-09 07:34:54'
       },
       {
         name: 'Gremlin',
         type: 'modern',
-        created: '1986-07-10T07:34:54.000'
+        created: '1986-07-10 07:34:54'
       }
     ])
   })
@@ -210,18 +210,18 @@ describe('LodashAdaptor transaction', () => {
       return store.readAll({
         type: 'monsters',
         filters: {
-          dateTo: '1986-07-08T07:34:54.000',
-          dateFrom: '1986-07-07T07:34:54.000'
+          dateTo: '1986-07-08 07:34:54',
+          dateFrom: '1986-07-07 07:34:54'
         }
       })
     })).to.eventually.deep.equal([
       {
         name: 'Dracula',
         type: 'classic',
-        created: '1986-07-07T07:34:54.000'
+        created: '1986-07-07 07:34:54'
       },
       {
-        created: '1986-07-08T07:34:54.000',
+        created: '1986-07-08 07:34:54',
         name: 'Jason Voorhees',
         type: 'modern'
       }
@@ -233,8 +233,8 @@ describe('LodashAdaptor transaction', () => {
       return store.readAll({
         type: 'monsters',
         filters: {
-          dateTo: '1986-07-07T07:34:54.000',
-          dateFrom: '1986-07-06T07:34:54.000',
+          dateTo: '1986-07-07 07:34:54',
+          dateFrom: '1986-07-06 07:34:54',
           type: 'classic'
         }
       })
@@ -242,12 +242,12 @@ describe('LodashAdaptor transaction', () => {
       {
         name: 'Frankenstein',
         type: 'classic',
-        created: '1986-07-06T07:34:54.000'
+        created: '1986-07-06 07:34:54'
       },
       {
         name: 'Dracula',
         type: 'classic',
-        created: '1986-07-07T07:34:54.000'
+        created: '1986-07-07 07:34:54'
       }
     ])
   })
@@ -530,9 +530,9 @@ describe('LodashAdaptor transaction', () => {
     })
   })
 
-  it('countByFilters', () => {
+  it('count', () => {
     return transaction({ db })(store => {
-      return store.countByFilters({
+      return store.count({
         type: 'monsters',
         filters: {
           type: 'classic'
@@ -544,13 +544,13 @@ describe('LodashAdaptor transaction', () => {
     })
   })
 
-  it('countByFilters with date filters', () => {
+  it('count with date filters', () => {
     return transaction({ db })(store => {
-      return store.countByFilters({
+      return store.count({
         type: 'monsters',
         filters: {
-          dateTo: '1986-07-08T07:34:54.000',
-          dateFrom: '1986-07-07T07:34:54.000'
+          dateTo: '1986-07-08 07:34:54',
+          dateFrom: '1986-07-07 07:34:54'
         }
       })
     })
@@ -559,12 +559,12 @@ describe('LodashAdaptor transaction', () => {
     })
   })
 
-  it('countByFilters with \'from\' date filter', () => {
+  it('count with \'from\' date filter', () => {
     return transaction({ db })(store => {
-      return store.countByFilters({
+      return store.count({
         type: 'monsters',
         filters: {
-          dateFrom: '1986-07-07T07:34:54.000'
+          dateFrom: '1986-07-07 07:34:54'
         }
       })
     })
@@ -573,12 +573,12 @@ describe('LodashAdaptor transaction', () => {
     })
   })
 
-  it('countByFilters with \'to\' date filter', () => {
+  it('count with \'to\' date filter', () => {
     return transaction({ db })(store => {
-      return store.countByFilters({
+      return store.count({
         type: 'monsters',
         filters: {
-          dateTo: '1986-07-08T07:34:54.000'
+          dateTo: '1986-07-08 07:34:54'
         }
       })
     })
@@ -587,14 +587,14 @@ describe('LodashAdaptor transaction', () => {
     })
   })
 
-  it('countByFilters with both prop and date filters', () => {
+  it('count with both prop and date filters', () => {
     return transaction({ db })(store => {
-      return store.countByFilters({
+      return store.count({
         type: 'monsters',
         filters: {
           type: 'modern',
-          dateTo: '1986-07-08T07:34:54.000',
-          dateFrom: '1986-07-07T07:34:54.000'
+          dateTo: '1986-07-08 07:34:54',
+          dateFrom: '1986-07-07 07:34:54'
         }
       })
     })
@@ -603,9 +603,9 @@ describe('LodashAdaptor transaction', () => {
     })
   })
 
-  it('countByFilters with empty filter params', () => {
+  it('count with empty filter params', () => {
     return transaction({ db })(store => {
-      return store.countByFilters({
+      return store.count({
         type: 'dogs',
         filters: {}
       })

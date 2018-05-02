@@ -54,7 +54,7 @@ describe('nestedCountByFilters', () => {
       }).resolvers.Parent.relationsCountByFilters
     })
 
-    it('should call store.countByFilters', () => {
+    it('should call store.count', () => {
       const parent = {
         id: 'parent1'
       }
@@ -62,10 +62,10 @@ describe('nestedCountByFilters', () => {
         slug: 'someSlug'
       }
       const fakeContext = generateFakeContextWithStore({
-        countByFilters: () => 'calling store.countByFilters'
+        count: () => 'calling store.count'
       })
       return expect(resolver(parent, { filters }, fakeContext))
-        .to.eventually.equal('calling store.countByFilters')
+        .to.eventually.equal('calling store.count')
     })
   })
 

@@ -9,17 +9,23 @@ module.exports = {
   resolvers: {
     Person: {
       company: handleErrors(async (person, args, context) => {
-        const employment = await context.store.readOne({
-          type: 'employments',
+        const currentEmployment = await context.sql.readOne({
+          type: 'currentEmployments',
           filters: {
-            person: person.id,
-            current: true
+            person: person.id
           }
+        })
+
+        if (!currentEmployment) return null
+
+        const employment = await context.sql.readOne({
+          type: 'employments',
+          id: currentEmployment.employment
         })
 
         if (!employment) return null
 
-        return context.store.readOne({
+        return context.sql.readOne({
           type: 'companies',
           id: employment.company
         })

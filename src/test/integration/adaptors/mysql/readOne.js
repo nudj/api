@@ -8,7 +8,8 @@ const {
   expect
 } = require('../../lib')
 const {
-  TABLES
+  TABLES,
+  INDICES
 } = require('../../../../lib/sql')
 
 const { store: Store } = require('../../../../gql/adaptors/mysql')
@@ -55,6 +56,37 @@ describe('mysql: store.readOne', () => {
       expect(result).to.have.property('created')
       expect(result).to.have.property('modified')
       expect(result).to.have.property('email', 'bim@job.com')
+      expect(result).to.have.property('firstName', 'Bim')
+      expect(result).to.have.property('lastName', 'Job')
+      expect(result).to.have.property('url', 'https://bimjob.com/hi')
+    })
+  })
+
+  describe('when reading by index', () => {
+    let result
+
+    beforeEach(async () => {
+      [ id ] = await sql(table).insert({
+        email: 'bim@job.com',
+        firstName: 'Bim',
+        lastName: 'Job',
+        url: 'https://bimjob.com/hi'
+      })
+      result = await readOne({
+        type: table,
+        index: INDICES[TABLES.PEOPLE].email,
+        key: 'bim@job.com'
+      })
+    })
+
+    it('should return the record', async () => {
+      expect(result).to.have.property('email', 'bim@job.com')
+    })
+
+    it('should return all the fields', async () => {
+      expect(result).to.have.property('id', id)
+      expect(result).to.have.property('created')
+      expect(result).to.have.property('modified')
       expect(result).to.have.property('firstName', 'Bim')
       expect(result).to.have.property('lastName', 'Job')
       expect(result).to.have.property('url', 'https://bimjob.com/hi')

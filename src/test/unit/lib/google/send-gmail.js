@@ -39,13 +39,13 @@ describe('Google', () => {
         body: 'How many Bothans were there, anyway?'
       }
       const account = {
-        data: {
+        data: JSON.stringify({
           accessToken: validAccessToken,
           refreshToken
-        }
+        })
       }
       const context = {
-        store: { readOne: () => account }
+        sql: { readOne: () => account }
       }
       const person = { id: 'person1' }
       const data = await sendGmail({ context, email, person })
@@ -60,13 +60,13 @@ describe('Google', () => {
         body: 'How many Bothans were there, anyway?'
       }
       const account = {
-        data: {
+        data: JSON.stringify({
           accessToken: invalidAccessToken,
           refreshToken
-        }
+        })
       }
       const context = {
-        store: { readOne: () => account, update: () => account }
+        sql: { readOne: () => account, update: () => account }
       }
       const person = { id: 'person1' }
       await expect(
@@ -86,13 +86,13 @@ describe('Google', () => {
         body
       }
       const account = {
-        data: {
+        data: JSON.stringify({
           accessToken: validAccessToken,
           refreshToken
-        }
+        })
       }
       const context = {
-        store: { readOne: () => account, update: () => account }
+        sql: { readOne: () => account, update: () => account }
       }
       const person = { id: 'person1' }
       const data = await sendGmail({ context, email, person })

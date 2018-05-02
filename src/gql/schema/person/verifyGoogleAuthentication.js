@@ -8,19 +8,20 @@ module.exports = {
   `,
   resolvers: {
     Person: {
-      verifyGoogleAuthentication: (person, args, context) => {
-        return context.store.readOne({
-          type: 'accounts',
-          filters: {
-            person: person.id,
-            type: 'GOOGLE'
-          }
-        })
-        .then(account => !!(account && account.data && account.data.refreshToken))
-        .catch(error => {
+      verifyGoogleAuthentication: async (person, args, context) => {
+        try {
+          const account = await context.sql.readOne({
+            type: 'accounts',
+            filters: {
+              person: person.id,
+              type: 'GOOGLE'
+            }
+          })
+          return !!(account && account.data && JSON.parse(account.data).refreshToken)
+        } catch (error) {
           if (error.constructor === NotFound) return false
           throw error
-        })
+        }
       }
     }
   }

@@ -20,10 +20,10 @@ describe('Person.verifyGoogleAuthentication', () => {
           id: 'account1',
           person: 'person1',
           type: 'GOOGLE',
-          data: {
+          data: JSON.stringify({
             accessToken: 'BIG_FAT_ACCESS_TOKEN',
             refreshToken: 'BIG_FAT_REFRESH_TOKEN'
-          }
+          })
         }
       ]
     }
@@ -55,9 +55,9 @@ describe('Person.verifyGoogleAuthentication', () => {
           id: 'account1',
           person: 'person1',
           type: 'GOOGLE',
-          data: {
+          data: JSON.stringify({
             accessToken: 'BIG_FAT_ACCESS_TOKEN'
-          }
+          })
         }
       ]
     }
@@ -89,10 +89,10 @@ describe('Person.verifyGoogleAuthentication', () => {
           id: 'account1',
           person: 'not_the_right_person',
           type: 'GOOGLE',
-          data: {
+          data: JSON.stringify({
             accessToken: 'BIG_FAT_ACCESS_TOKEN',
             refreshToken: 'BIG_FAT_REFRESH_TOKEN'
-          }
+          })
         }
       ]
     }
@@ -124,10 +124,10 @@ describe('Person.verifyGoogleAuthentication', () => {
           id: 'account1',
           person: 'person1',
           type: 'OUTLOOK',
-          data: {
+          data: JSON.stringify({
             accessToken: 'BIG_FAT_ACCESS_TOKEN',
             refreshToken: 'BIG_FAT_REFRESH_TOKEN'
-          }
+          })
         }
       ]
     }

@@ -17,31 +17,31 @@ const resetDataStore = () => populateCollections(db, [
     name: collectionName,
     data: [
       {
-        created: '2016-12-12T13:04:11.248Z',
+        created: '2016-12-12 13:04:11',
         name: 'Patches',
         breed: 'Mutt',
         type: 'good boy'
       },
       {
-        created: '2016-12-14T13:04:11.248Z',
+        created: '2016-12-14 13:04:11',
         name: 'Biscuit',
         breed: 'Golden Retriever',
         type: 'good boy'
       },
       {
-        created: '2016-12-18T13:04:11.248Z',
+        created: '2016-12-18 13:04:11',
         name: 'Jaffa',
         breed: 'Chihuahua',
         type: 'good boy'
       },
       {
-        created: '2016-12-19T13:04:11.248Z',
+        created: '2016-12-19 13:04:11',
         name: 'Fluff',
         breed: 'Poodle',
         type: 'good girl'
       },
       {
-        created: '2016-12-20T13:04:11.248Z',
+        created: '2016-12-20 13:04:11',
         name: 'Sheva',
         breed: 'German Shepherd',
         type: 'good girl'
@@ -50,7 +50,7 @@ const resetDataStore = () => populateCollections(db, [
   }
 ])
 
-describe('countByFilters', () => {
+describe('count', () => {
   let store
   before(async () => {
     await setupCollections(db, [collectionName])
@@ -70,7 +70,7 @@ describe('countByFilters', () => {
   })
 
   it('returns total count of entites', async () => {
-    const result = await store.countByFilters({
+    const result = await store.count({
       type: collectionName
     })
     expect(result).to.equal(5)
@@ -78,7 +78,7 @@ describe('countByFilters', () => {
 
   describe('with prop filters', () => {
     it('returns total count of filtered entities', async () => {
-      const result = await store.countByFilters({
+      const result = await store.count({
         type: collectionName,
         filters: {
           type: 'good boy'
@@ -90,10 +90,10 @@ describe('countByFilters', () => {
 
   describe('with dateTo filter', () => {
     it('returns total count of filtered entities', async () => {
-      const result = await store.countByFilters({
+      const result = await store.count({
         type: collectionName,
         filters: {
-          dateTo: '2016-12-14T13:04:11.248Z'
+          dateTo: '2016-12-14 13:04:11'
         }
       })
       expect(result).to.deep.equal(2)
@@ -102,10 +102,10 @@ describe('countByFilters', () => {
 
   describe('with dateFrom filter', () => {
     it('returns total count of filtered entities', async () => {
-      const result = await store.countByFilters({
+      const result = await store.count({
         type: collectionName,
         filters: {
-          dateFrom: '2016-12-14T19:04:11.248Z'
+          dateFrom: '2016-12-14 19:04:11'
         }
       })
       expect(result).to.deep.equal(4)
@@ -114,11 +114,11 @@ describe('countByFilters', () => {
 
   describe('with date filters', () => {
     it('returns total count of filtered entities', async () => {
-      const result = await store.countByFilters({
+      const result = await store.count({
         type: collectionName,
         filters: {
-          dateFrom: '2016-12-13T19:04:11.248Z',
-          dateTo: '2016-12-14T13:04:11.248Z'
+          dateFrom: '2016-12-13 19:04:11',
+          dateTo: '2016-12-14 13:04:11'
         }
       })
       expect(result).to.deep.equal(1)
@@ -127,11 +127,11 @@ describe('countByFilters', () => {
 
   describe('with both date and prop filters', () => {
     it('returns total count of filtered entities', async () => {
-      const result = await store.countByFilters({
+      const result = await store.count({
         type: collectionName,
         filters: {
-          dateFrom: '2016-12-18T19:04:11.248Z',
-          dateTo: '2016-12-19T13:04:11.248Z',
+          dateFrom: '2016-12-18 19:04:11',
+          dateTo: '2016-12-19 13:04:11',
           type: 'good girl'
         }
       })

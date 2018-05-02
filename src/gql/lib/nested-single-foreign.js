@@ -31,7 +31,7 @@ module.exports = function nestedSingleForeign (props = {}) {
         [name]: handleErrors((parent, args, context) => {
           if (!parent.id) return null
           if (isObject(parent.id)) return parent.id
-          return context.store.readOne({
+          return context.sql.readOne({
             type: collection,
             filters: {
               [propertyName]: parent.id

@@ -13,11 +13,11 @@ module.exports = {
         const job = await createJob(context, company, args.data)
 
         // Set hirer as onboarded
-        const hirer = await context.store.readOne({
+        const hirer = await context.sql.readOne({
           type: 'hirers',
           filters: { person: context.userId }
         })
-        await context.store.update({
+        await context.sql.update({
           type: 'hirers',
           id: hirer.id,
           data: {

@@ -3,6 +3,7 @@ const handleErrors = require('./handle-errors')
 
 const rootEnum = require('./root-enum')
 const rootSingle = require('./root-single')
+const rootSingleBySlug = require('./root-single-by-slug')
 const rootSingleByFilters = require('./root-single-by-filters')
 const rootAll = require('./root-all')
 const rootAllByFilters = require('./root-all-by-filters')
@@ -23,12 +24,12 @@ module.exports = {
   handleErrors,
 
   rootEnum,
-  rootAllByFilters,
   rootAll,
-  rootSingleByFilters,
+  rootAllByFilters,
   rootSingle,
+  rootSingleBySlug,
+  rootSingleByFilters,
 
-  nestedAllByFilters,
   nestedAll,
   nestedSingleByFilters,
   nestedSingleByFiltersViaEdge,
@@ -37,5 +38,6 @@ module.exports = {
   nestedSingleForeign,
   nestedAllViaEdge,
   nestedAllByFiltersViaEdge,
+  nestedAllByFilters,
   nestedCountByFilters
 }

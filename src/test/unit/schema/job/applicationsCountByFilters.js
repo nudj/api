@@ -4,10 +4,11 @@ const expect = chai.expect
 
 const schema = require('../../../../gql/schema')
 const { executeQueryOnDbUsingSchema } = require('../../helpers')
+const getDateString = (year, month, day) => (new Date(year, month, day)).toISOString().replace('T', ' ').replace('.000Z', '')
 
 describe('Job.applicationsCountByFilters', () => {
-  const getOlderDate = () => (new Date('1970', '01', '01')).toISOString()
-  const getNewerDate = () => (new Date('1970', '01', '03')).toISOString()
+  const olderDate = getDateString('1970', '01', '01')
+  const newerDate = getDateString('1970', '01', '03')
 
   const db = {
     jobs: [{
@@ -16,15 +17,15 @@ describe('Job.applicationsCountByFilters', () => {
       id: 'job2'
     }],
     applications: [{
-      created: getOlderDate(),
+      created: olderDate,
       id: 'app1',
       job: 'job1'
     }, {
-      created: getNewerDate(),
+      created: newerDate,
       id: 'app2',
       job: 'job1'
     }, {
-      created: getNewerDate(),
+      created: newerDate,
       id: 'app3',
       job: 'job2'
     }]
@@ -41,7 +42,7 @@ describe('Job.applicationsCountByFilters', () => {
     `
 
     const variables = {
-      dateFrom: (new Date('1970', '01', '02')).toISOString()
+      dateFrom: getDateString('1970', '01', '02')
     }
 
     return expect(executeQueryOnDbUsingSchema({ operation, variables, db, schema })).to.eventually.deep.equal({
@@ -65,7 +66,7 @@ describe('Job.applicationsCountByFilters', () => {
     `
 
     const variables = {
-      dateFrom: (new Date('1970', '01', '05')).toISOString()
+      dateFrom: getDateString('1970', '01', '05')
     }
 
     return expect(executeQueryOnDbUsingSchema({ operation, variables, db, schema })).to.eventually.deep.equal({

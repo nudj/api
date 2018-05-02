@@ -31,7 +31,7 @@ module.exports = function nestedSingle (props = {}) {
           const id = parent[propertyName]
           if (!id) return null
           if (isObject(id)) return id
-          return context.store.readOne({
+          return context.sql.readOne({
             type: collection,
             id
           })

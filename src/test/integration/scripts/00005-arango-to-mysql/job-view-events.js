@@ -13,11 +13,11 @@ const {
   expect
 } = require('../../lib')
 const {
-  TABLES
+  TABLES,
+  COLLECTIONS
 } = require('../../../../lib/sql')
 const {
-  OLD_COLLECTIONS,
-  NEW_COLLECTIONS
+  OLD_COLLECTIONS
 } = require('../../../../scripts/00005-arango-to-mysql/helpers')
 
 const script = require('../../../../scripts/00005-arango-to-mysql')
@@ -32,15 +32,16 @@ describe('00005 Arango to MySQL', () => {
 
   before(async () => {
     await setupCollections(db, Object.values(OLD_COLLECTIONS))
+    await setupCollections(nosql, Object.values(COLLECTIONS))
   })
 
   afterEach(async () => {
     await truncateCollections(db)
     await truncateCollections(nosql)
-    await teardownCollections(nosql)
   })
 
   after(async () => {
+    await teardownCollections(nosql)
     await teardownCollections(db)
   })
 
@@ -101,7 +102,7 @@ describe('00005 Arango to MySQL', () => {
       })
 
       it('should copy item from old events collection to new jobViewEvents collection', async () => {
-        const jobViewEventsCollectionCursor = await nosql.collection(NEW_COLLECTIONS.JOB_VIEW_EVENTS)
+        const jobViewEventsCollectionCursor = await nosql.collection(COLLECTIONS.JOB_VIEW_EVENTS)
         const jobViewEventsAllCursor = await jobViewEventsCollectionCursor.all()
         const jobViewEventsAll = await jobViewEventsAllCursor.all()
 
@@ -170,7 +171,7 @@ describe('00005 Arango to MySQL', () => {
       })
 
       it('should create one entry per event', async () => {
-        const jobViewEventsCollectionCursor = await nosql.collection(NEW_COLLECTIONS.JOB_VIEW_EVENTS)
+        const jobViewEventsCollectionCursor = await nosql.collection(COLLECTIONS.JOB_VIEW_EVENTS)
         const jobViewEventsAllCursor = await jobViewEventsCollectionCursor.all()
         const jobViewEventsAll = await jobViewEventsAllCursor.all()
 

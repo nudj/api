@@ -2,8 +2,7 @@
 const schema = require('../../../../gql/schema')
 let {
   expectPropertyReceivesValue,
-  expectPropertyIsRequired,
-  expectPropertyContentsIsRequired
+  expectPropertyIsRequired
 } = require('../../helpers')
 const { values: statusTypes } = require('../../../../gql/schema/enums/job-status-types')
 
@@ -12,11 +11,9 @@ const TYPE_PLURAL = 'jobs'
 const DUMMY_ID = '123'
 const DUMMY_STRING = 'abc'
 const DUMMY_DATETIME = '2000-01-17T02:51:58.000+00:00'
-const DUMMY_ARRAY_STRINGS = ['abc']
 const DUMMY_STATUS = statusTypes.PUBLISHED
 expectPropertyReceivesValue = expectPropertyReceivesValue(schema, TYPE, TYPE_PLURAL)
 expectPropertyIsRequired = expectPropertyIsRequired(schema, TYPE, TYPE_PLURAL)
-expectPropertyContentsIsRequired = expectPropertyContentsIsRequired(schema, TYPE, TYPE_PLURAL)
 
 describe('Job properties', () => {
   it('should be queriable by the following properties', async () => {
@@ -32,8 +29,7 @@ describe('Job properties', () => {
     await expectPropertyReceivesValue('location', DUMMY_STRING)
     await expectPropertyReceivesValue('remuneration', DUMMY_STRING)
     await expectPropertyReceivesValue('status', DUMMY_STATUS)
-    await expectPropertyReceivesValue('templateTags', DUMMY_ARRAY_STRINGS)
-    await expectPropertyReceivesValue('type', DUMMY_STRING)
+    await expectPropertyReceivesValue('template', DUMMY_STRING)
     await expectPropertyReceivesValue('url', DUMMY_STRING)
     await expectPropertyReceivesValue('experience', DUMMY_STRING)
     await expectPropertyReceivesValue('requirements', DUMMY_STRING)
@@ -45,13 +41,6 @@ describe('Job properties', () => {
     await expectPropertyIsRequired('title')
     await expectPropertyIsRequired('slug')
     await expectPropertyIsRequired('bonus')
-    await expectPropertyIsRequired('roleDescription')
-    await expectPropertyIsRequired('candidateDescription')
-    await expectPropertyIsRequired('location')
-    await expectPropertyIsRequired('remuneration')
     await expectPropertyIsRequired('status')
-    await expectPropertyIsRequired('templateTags')
-    await expectPropertyContentsIsRequired('templateTags')
-    await expectPropertyIsRequired('type')
   })
 })

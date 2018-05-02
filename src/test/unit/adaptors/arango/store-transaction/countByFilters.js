@@ -18,7 +18,7 @@ const DOCUMENT_RESPONSE = {
   prop: 'value'
 }
 
-describe('ArangoAdaptor Store().countByFilters', () => {
+describe('ArangoAdaptor StoreTransaction().count', () => {
   let Store
   let dbStub
 
@@ -49,7 +49,7 @@ describe('ArangoAdaptor Store().countByFilters', () => {
 
   describe('with no filters', () => {
     it('should fetch the data', () => {
-      return Store().countByFilters({
+      return Store().count({
         type: 'collectionName',
         filters: {}
       })
@@ -58,8 +58,8 @@ describe('ArangoAdaptor Store().countByFilters', () => {
       })
     })
 
-    it('should return the cumulative countByFilters of filtered entities', () => {
-      return expect(Store().countByFilters({
+    it('should return the cumulative count of filtered entities', () => {
+      return expect(Store().count({
         type: 'collectionName',
         filters: {}
       })).to.eventually.deep.equal(47)
@@ -68,7 +68,7 @@ describe('ArangoAdaptor Store().countByFilters', () => {
 
   describe('with filters', () => {
     it('should fetch the data', () => {
-      return Store().countByFilters({
+      return Store().count({
         type: 'collectionName',
         filters: {
           test: 'value'
@@ -82,7 +82,7 @@ describe('ArangoAdaptor Store().countByFilters', () => {
     })
 
     it('should return normalised entities', () => {
-      return expect(Store().countByFilters({
+      return expect(Store().count({
         type: 'collectionName',
         filters: {
           test: 'value'
@@ -93,18 +93,18 @@ describe('ArangoAdaptor Store().countByFilters', () => {
 
   describe('with date filters', () => {
     it('should fetch the data', () => {
-      return Store().countByFilters({
+      return Store().count({
         type: 'collectionName',
         filters: {
-          dateTo: '2017-12-15T11:21:51.030+00:00',
-          dateFrom: '2016-12-15T11:21:51.030+00:00'
+          dateTo: '2017-12-15 11:21:51',
+          dateFrom: '2016-12-15 11:21:51'
         }
       })
       .then(() => {
         const [ query, bindVars ] = dbStub.db._query.firstCall.args
         expect(bindVars).to.deep.equal({
-          from: '2016-12-15T00:00:00.000Z',
-          to: '2017-12-15T23:59:59.999Z'
+          from: '2016-12-15 00:00:00',
+          to: '2017-12-15 23:59:59'
         })
         expect(dedent(query)).to.equal(dedent`
           RETURN COUNT(
@@ -118,11 +118,11 @@ describe('ArangoAdaptor Store().countByFilters', () => {
     })
 
     it('should return normalised entities', () => {
-      return expect(Store().countByFilters({
+      return expect(Store().count({
         type: 'collectionName',
         filters: {
-          dateTo: '2017-12-15T11:21:51.030+00:00',
-          dateFrom: '2016-12-15T11:21:51.030+00:00'
+          dateTo: '2017-12-15 11:21:51',
+          dateFrom: '2016-12-15 11:21:51'
         }
       })).to.eventually.deep.equal(47)
     })

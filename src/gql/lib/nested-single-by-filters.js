@@ -42,14 +42,14 @@ module.exports = function nestedSingleByFilters (props = {}) {
           if (filters.id) {
             // arango does not support filtering by an id
             // so fetches by id and confirms match retrospectively
-            return context.store.readOne({
+            return context.sql.readOne({
               type: collection,
               id: filters.id
             })
             // checks to make sure the result matches the non-id filters
             .then(result => first(filter([result], omit(filters, 'id'))))
           } else {
-            return context.store.readOne({
+            return context.sql.readOne({
               type: collection,
               filters
             })

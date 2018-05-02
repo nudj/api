@@ -238,4 +238,28 @@ describe('mysql: store.import', () => {
       ])
     })
   })
+
+  describe('when not passing an index', () => {
+    let id
+
+    beforeEach(async () => {
+      [ id ] = await sql(table).insert({
+        email: 'bom@jib.com'
+      })
+      await imp({
+        type: table,
+        data: [
+          {
+            id,
+            email: 'bom@jib.com'
+          }
+        ]
+      })
+    })
+
+    it('should use id index', async () => {
+      const records = await sql.select().from(table)
+      expect(records).to.have.length(1)
+    })
+  })
 })

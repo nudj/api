@@ -9,7 +9,7 @@ const createStub = sinon.stub()
 const readOneStub = sinon.stub()
 const readOneOrCreateStub = sinon.stub()
 const context = {
-  store: {
+  sql: {
     create: createStub,
     readOne: readOneStub,
     readOneOrCreate: readOneOrCreateStub

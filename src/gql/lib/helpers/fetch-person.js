@@ -1,5 +1,5 @@
 const fetchPerson = async (context, id) => {
-  const person = await context.store.readOne({
+  const person = await context.sql.readOne({
     type: 'people',
     id
   })

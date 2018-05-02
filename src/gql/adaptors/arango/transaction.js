@@ -6,12 +6,12 @@ const get = require('lodash/get')
 const store = require('./store-transaction')
 const actionToCollectionLock = require('./action-to-collection-lock')
 const actionToString = require('./action-to-string')
-const { DB_URL } = require('../../lib/constants')
+const { OLD_DB_URL } = require('../../../lib/constants')
 
 const authHash = Buffer.from(process.env.DB_USER + ':' + process.env.DB_PASS).toString('base64')
 const request = (options = {}) => {
   return axios(Object.assign({
-    url: `${DB_URL}/_db/${process.env.DB_NAME}/_api/transaction`,
+    url: `${OLD_DB_URL}/_db/${process.env.DB_NAME}/_api/transaction`,
     method: 'post',
     headers: {
       'Authorization': 'Basic ' + authHash

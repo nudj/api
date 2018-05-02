@@ -84,10 +84,10 @@ describe('Person.sendEmail', () => {
           id: 'account1',
           person: 'person1',
           type: 'GOOGLE',
-          data: {
+          data: JSON.stringify({
             accessToken: 'VALID_ACCESS_TOKEN',
             refreshToken: 'SUPREMELY_REFRESHING_TOKEN'
-          }
+          })
         }
       ],
       people: [
@@ -117,10 +117,10 @@ describe('Person.sendEmail', () => {
           id: 'account1',
           person: 'person1',
           type: 'GOOGLE',
-          data: {
+          data: JSON.stringify({
             accessToken: 'I_AINT_NO_STINKIN_TOKEN',
             refreshToken: 'SUPREMELY_REFRESHING_TOKEN'
-          }
+          })
         }
       ],
       people: [
@@ -149,10 +149,10 @@ describe('Person.sendEmail', () => {
           id: 'account1',
           person: 'person1',
           type: 'GOOGLE',
-          data: {
+          data: JSON.stringify({
             accessToken: 'I_AINT_NO_STINKIN_TOKEN',
             refreshToken: 'SUPREMELY_REFRESHING_TOKEN'
-          }
+          })
         }
       ],
       people: [
@@ -174,10 +174,10 @@ describe('Person.sendEmail', () => {
         id: 'account1',
         person: 'person1',
         type: 'GOOGLE',
-        data: {
+        data: JSON.stringify({
           accessToken: 'VALID_ACCESS_TOKEN',
           refreshToken: 'SUPREMELY_REFRESHING_TOKEN'
-        }
+        })
       }
     ])
   })
@@ -190,10 +190,10 @@ describe('Person.sendEmail', () => {
           id: 'account1',
           person: 'person1',
           type: 'GOOGLE',
-          data: {
+          data: JSON.stringify({
             accessToken: 'I_AINT_NO_STINKIN_TOKEN',
             refreshToken: 'SUPREMELY_REFRESHING_TOKEN'
-          }
+          })
         }
       ],
       people: [

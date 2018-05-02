@@ -1,4 +1,5 @@
 const handleErrors = require('../../lib/handle-errors')
+const makeUniqueSlug = require('../../lib/helpers/make-unique-slug')
 
 module.exports = {
   typeDefs: `
@@ -18,11 +19,11 @@ module.exports = {
           person,
           parentPerson
         ] = await Promise.all([
-          context.store.readOne({
+          context.sql.readOne({
             type: 'people',
             id: personId
           }),
-          context.store.readOne({
+          context.sql.readOne({
             type: 'people',
             id: parentPersonId
           })
@@ -31,7 +32,7 @@ module.exports = {
         if (!person) throw new Error(`Person with id ${personId} does not exist`)
         if (!parentPerson) throw new Error(`Parent person with id ${parentPersonId} does not exist`)
 
-        let referral = await context.store.readOne({
+        let referral = await context.sql.readOne({
           type: 'referrals',
           filters: {
             job: job.id,
@@ -41,7 +42,12 @@ module.exports = {
 
         if (referral) return referral
 
-        const parent = await context.store.readOneOrCreate({
+        const parentSlug = await makeUniqueSlug({
+          type: 'referrals',
+          context
+        })
+
+        const parent = await context.sql.readOneOrCreate({
           type: 'referrals',
           filters: {
             job: job.id,
@@ -49,16 +55,23 @@ module.exports = {
           },
           data: {
             job: job.id,
-            person: parentPersonId
+            person: parentPersonId,
+            slug: parentSlug
           }
         })
 
-        return context.store.create({
+        const slug = await makeUniqueSlug({
+          type: 'referrals',
+          context
+        })
+
+        return context.sql.create({
           type: 'referrals',
           data: {
             job: job.id,
             person: person.id,
-            parent: parent && parent.id
+            parent: parent && parent.id,
+            slug
           }
         })
       })

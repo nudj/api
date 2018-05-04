@@ -1,4 +1,5 @@
 const uniq = require('lodash/uniq')
+const { logger } = require('@nudj/library')
 const fetchPerson = require('../../lib/helpers/fetch-person')
 const { handleErrors } = require('../../lib')
 const { values: hirerTypes } = require('../enums/hirer-types')
@@ -7,6 +8,43 @@ const {
   sendInternalEmail,
   teammateInvitationEmailBodyTemplate
 } = require('../../lib/mailer')
+const intercom = require('../../lib/intercom')
+
+const triggerIntercomTracking = async ({
+  company,
+  emailAddresses,
+  senderName,
+  senderEmail
+}) => {
+  const intercomCompany = await intercom.fetchOrCreateCompanyByName(company.name)
+
+  await emailAddresses.map(async email => {
+    await intercom.createUniqueUserAndTag({
+      email,
+      companies: [
+        {
+          name: intercomCompany.name,
+          company_id: intercomCompany.company_id
+        }
+      ]
+    }, 'team-member')
+    await intercom.logEvent({
+      event_name: 'invited',
+      email,
+      metadata: {
+        category: 'onboarding',
+        invited_by: senderName || senderEmail
+      }
+    })
+  })
+  await intercom.logEvent({
+    event_name: 'invites-sent',
+    email: senderEmail,
+    metadata: {
+      category: 'onboarding'
+    }
+  })
+}
 
 module.exports = {
   typeDefs: `
@@ -23,9 +61,16 @@ module.exports = {
           throw new Error('No email addresses provided')
         }
 
-        const { firstName, lastName } = await fetchPerson(context, context.userId)
+        const {
+          firstName,
+          lastName,
+          email: senderEmail
+        } = await fetchPerson(context, context.userId)
         const senderName = firstName && lastName && `${firstName} ${lastName}`
-        const subject = senderName ? `${senderName} has invited you to join them on nudj` : `You've been invited to join nudj!`
+        const subject = senderName
+          ? `${senderName} has invited you to join them on nudj`
+          : `You've been invited to join nudj!`
+
         const emailBody = teammateInvitationEmailBodyTemplate({
           senderName,
           companyName: company.name
@@ -69,6 +114,17 @@ module.exports = {
           subject,
           html: emailBody
         })))
+
+        try {
+          triggerIntercomTracking({
+            company,
+            emailAddresses,
+            senderName,
+            senderEmail
+          })
+        } catch (error) {
+          logger('error', 'Intercom error', error)
+        }
 
         return sendStatus
       })

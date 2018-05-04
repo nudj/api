@@ -1,6 +1,8 @@
 const get = require('lodash/get')
+const { logger } = require('@nudj/library')
 const { sendGmail } = require('../../lib/google')
 const { handleErrors } = require('../../lib')
+const intercom = require('../../lib/intercom')
 const { values: emailPreferences } = require('../enums/email-preference-types')
 
 const createConversation = async ({ context, type, to, person, threadId }) => {
@@ -26,6 +28,20 @@ const fetchEmail = async (context, personId) => {
   })
   if (!person) throw new Error(`No person for id ${personId} found`)
   return person.email
+}
+
+const trackEmailEvent = (email, recipient) => {
+  try {
+    intercom.logEvent({
+      event_name: 'conversation started',
+      email,
+      metadata: {
+        recipient
+      }
+    })
+  } catch (error) {
+    logger('error', 'Intercom Error', error)
+  }
 }
 
 module.exports = {
@@ -55,8 +71,10 @@ module.exports = {
         switch (type) {
           case emailPreferences.GOOGLE:
             const { threadId } = await sendGmail({ context, email, person })
+            trackEmailEvent(person.email, to)
             return createConversation({ context, type, to, person, threadId })
           default:
+            trackEmailEvent(person.email, to)
             return createConversation({ context, type, to, person })
         }
       })

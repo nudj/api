@@ -22,6 +22,16 @@ function getFirstFromResult (result) {
   return result.contacts[0]
 }
 
+function fetchCompanyBy (filter) {
+  return intercom.companies
+    .listBy(filter)
+    .then(getBody)
+    .catch(error => {
+      logger('error', 'fetchCompanyBy', filter, error)
+      return null
+    })
+}
+
 function fetchLeadBy (filter) {
   return intercom.leads
     .listBy(filter)
@@ -45,6 +55,17 @@ function createUser (data) {
   return intercom.users
     .create(data)
     .then(getBody)
+}
+
+function createCompany (data) {
+  return intercom.companies
+    .create(data)
+    .then(getBody)
+}
+
+async function fetchOrCreateCompanyByName (name) {
+  const company = await fetchCompanyBy({ name })
+  return company || createCompany({ name, company_id: name })
 }
 
 function tagUser (user, tag) {
@@ -139,6 +160,8 @@ function logEvent ({ event_name, email, metadata }) {
 module.exports = {
   fetchLeadBy,
   fetchUserBy,
+  fetchCompanyBy,
+  fetchOrCreateCompanyByName,
   createUniqueLeadAndTag,
   createUniqueUserAndTag,
   logEvent,
@@ -146,5 +169,6 @@ module.exports = {
   convertLeadToUser,
   createUser,
   createLead,
+  createCompany,
   updateUser
 }

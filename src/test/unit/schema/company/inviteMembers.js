@@ -8,7 +8,7 @@ const schema = require('../../../../gql/schema')
 const { values: hirerTypes } = require('../../../../gql/schema/enums/hirer-types')
 const { executeQueryOnDbUsingSchema, shouldRespondWithGqlError } = require('../../helpers')
 
-describe.only('Company.inviteMembers', () => {
+describe('Company.inviteMembers', () => {
   const mailerStub = sinon.stub()
   const operation = `
     query ($emailAddresses: [String!]!) {
@@ -37,6 +37,20 @@ describe.only('Company.inviteMembers', () => {
       })
       .post(() => true)
       .reply(200, 'OK')
+  })
+
+  beforeEach(() => {
+    nock('https://api.intercom.io')
+      .persist()
+      .filteringRequestBody(() => true)
+      .get(() => true)
+      .reply(200, { name: 'COMPANY', company_id: 'COMPANY' })
+
+    nock('https://api.intercom.io')
+      .persist()
+      .filteringRequestBody(() => true)
+      .post(() => true)
+      .reply(200, { tags: { tags: [] } })
   })
 
   after(() => {

@@ -9,6 +9,7 @@ module.exports = {
         lastName: String
         email: String!
         company: String
+        externalJobUrl: String
       ): Status
     }
   `,
@@ -19,7 +20,8 @@ module.exports = {
           firstName,
           lastName,
           email,
-          company
+          company,
+          externalJobUrl
         } = args
         intercom.createUniqueLeadAndTag({
           name: `${firstName} ${lastName}`,
@@ -46,6 +48,7 @@ module.exports = {
                 <strong>Full name:</strong> ${firstName} ${lastName}<br/>
                 <strong>Email:</strong> ${email}<br/>
                 <strong>Company Name:</strong> ${company}<br/>
+                <strong>Job(s):</strong> <a href='${externalJobUrl}'>${externalJobUrl}</a><br/>
               </p>
               <br/>
               <p>Love<br/> Your friendly nudj bot.</p>

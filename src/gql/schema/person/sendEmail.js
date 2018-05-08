@@ -30,14 +30,11 @@ const fetchEmail = async (context, personId) => {
   return person.email
 }
 
-const trackEmailEvent = (email, recipient) => {
+const trackEmailEvent = (email) => {
   try {
     intercom.logEvent({
-      event_name: 'conversation started',
-      email,
-      metadata: {
-        recipient
-      }
+      event_name: 'request sent',
+      email
     })
   } catch (error) {
     logger('error', 'Intercom Error', error)
@@ -71,10 +68,10 @@ module.exports = {
         switch (type) {
           case emailPreferences.GOOGLE:
             const { threadId } = await sendGmail({ context, email, person })
-            trackEmailEvent(person.email, to)
+            trackEmailEvent(person.email)
             return createConversation({ context, type, to, person, threadId })
           default:
-            trackEmailEvent(person.email, to)
+            trackEmailEvent(person.email)
             return createConversation({ context, type, to, person })
         }
       })

@@ -93,20 +93,23 @@ exports.up = async knex => {
       t.enum(TYPE, ENUMS.HIRER_TYPES.values).defaultTo(ENUMS.HIRER_TYPES.MEMBER).notNullable()
       relationType(PERSON, TABLES.PEOPLE, t, knex).notNullable()
       relationType(COMPANY, TABLES.COMPANIES, t, knex).notNullable()
-      t.unique([PERSON], 'byPerson')
+      t.unique(PERSON, 'byPerson')
     })
 
     .createTable(TABLES.REFERRALS, t => {
       const {
+        SLUG,
         PERSON,
         JOB,
         PARENT
       } = FIELDS[TABLES.REFERRALS]
 
       defaultConfig(t, knex)
+      t.string(SLUG, 10).notNullable()
       relationType(PERSON, TABLES.PEOPLE, t, knex).notNullable()
       relationType(JOB, TABLES.JOBS, t, knex).notNullable()
       relationType(PARENT, TABLES.REFERRALS, t, knex).nullable()
+      t.unique(SLUG, 'bySlug')
       t.unique([PERSON, JOB], 'byPersonJob')
     })
 
@@ -126,19 +129,28 @@ exports.up = async knex => {
 
     .createTable(TABLES.EMPLOYMENTS, t => {
       const {
-        CURRENT,
         SOURCE,
         PERSON,
         COMPANY
       } = FIELDS[TABLES.EMPLOYMENTS]
 
       defaultConfig(t, knex)
-      t.boolean(CURRENT).defaultTo(false).notNullable()
       t.enum(SOURCE, ENUMS.DATA_SOURCES.values).notNullable()
       relationType(PERSON, TABLES.PEOPLE, t, knex).notNullable()
       relationType(COMPANY, TABLES.COMPANIES, t, knex).notNullable()
       t.unique([PERSON, COMPANY], 'byPersonCompany')
-      t.unique([PERSON, CURRENT], 'byPersonCurrent')
+    })
+
+    .createTable(TABLES.CURRENT_EMPLOYMENTS, t => {
+      const {
+        EMPLOYMENT,
+        PERSON
+      } = FIELDS[TABLES.CURRENT_EMPLOYMENTS]
+
+      defaultConfig(t, knex)
+      relationType(EMPLOYMENT, TABLES.EMPLOYMENTS, t, knex).notNullable()
+      relationType(PERSON, TABLES.PEOPLE, t, knex).notNullable()
+      t.unique(PERSON, 'byPerson')
     })
 
     .createTable(TABLES.EMPLOYEES, t => {
@@ -165,17 +177,26 @@ exports.up = async knex => {
 
     .createTable(TABLES.PERSON_ROLES, t => {
       const {
-        CURRENT,
         PERSON,
         ROLE
       } = FIELDS[TABLES.PERSON_ROLES]
 
       defaultConfig(t, knex)
-      t.boolean(CURRENT).defaultTo(false).notNullable()
       relationType(PERSON, TABLES.PEOPLE, t, knex).notNullable()
       relationType(ROLE, TABLES.ROLES, t, knex).notNullable()
       t.unique([PERSON, ROLE], 'byPersonRole')
-      t.unique([PERSON, CURRENT], 'byPersonCurrent')
+    })
+
+    .createTable(TABLES.CURRENT_PERSON_ROLES, t => {
+      const {
+        PERSON,
+        PERSON_ROLE
+      } = FIELDS[TABLES.CURRENT_PERSON_ROLES]
+
+      defaultConfig(t, knex)
+      relationType(PERSON, TABLES.PEOPLE, t, knex).notNullable()
+      relationType(PERSON_ROLE, TABLES.PERSON_ROLES, t, knex).notNullable()
+      t.unique(PERSON, 'byPerson')
     })
 
     .createTable(TABLES.CONNECTIONS, t => {
@@ -234,19 +255,6 @@ exports.up = async knex => {
       t.unique(THREAD_ID, 'byThreadId')
     })
 
-    .createTable(TABLES.VIEW_EVENTS, t => {
-      const {
-        BROWSER_ID,
-        JOB
-      } = FIELDS[TABLES.VIEW_EVENTS]
-
-      defaultConfig(t, knex)
-      t.comment('Reworked from the events collection in Arango')
-      t.string(BROWSER_ID).notNullable()
-      relationType(JOB, TABLES.JOBS, t, knex).notNullable()
-      t.unique(BROWSER_ID, 'byBrowserId')
-    })
-
     .createTable(TABLES.SURVEYS, t => {
       const {
         SLUG,
@@ -262,8 +270,8 @@ exports.up = async knex => {
       t.string(SLUG).notNullable()
       t.string(INTRO_TITLE).notNullable()
       t.text(INTRO_DESCRIPTION).notNullable()
-      t.string(OUTRO_TITLE).notNullable()
-      t.text(OUTRO_DESCRIPTION).notNullable()
+      t.string(OUTRO_TITLE).nullable()
+      t.text(OUTRO_DESCRIPTION).nullable()
       t.json(SURVEY_SECTIONS).notNullable().comment('Array of surveySection ids denoting their order')
       relationType(COMPANY, TABLES.COMPANIES, t, knex).notNullable()
       t.unique([COMPANY, SLUG], 'byCompanySlug')
@@ -396,13 +404,14 @@ exports.down = async knex => {
     .dropTable(TABLES.SURVEY_QUESTIONS)
     .dropTable(TABLES.SURVEY_SECTIONS)
     .dropTable(TABLES.SURVEYS)
-    .dropTable(TABLES.VIEW_EVENTS)
     .dropTable(TABLES.CONVERSATIONS)
     .dropTable(TABLES.ACCOUNTS)
     .dropTable(TABLES.CONNECTIONS)
+    .dropTable(TABLES.CURRENT_PERSON_ROLES)
     .dropTable(TABLES.PERSON_ROLES)
     .dropTable(TABLES.ROLES)
     .dropTable(TABLES.EMPLOYEES)
+    .dropTable(TABLES.CURRENT_EMPLOYMENTS)
     .dropTable(TABLES.EMPLOYMENTS)
     .dropTable(TABLES.APPLICATIONS)
     .dropTable(TABLES.REFERRALS)

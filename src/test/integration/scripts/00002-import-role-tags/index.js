@@ -16,13 +16,13 @@ const {
 
 const { fetchRoleTagData } = require('../../../../scripts/lib')
 
-const script = require('../../../../scripts/00001-import-role-tags')
+const script = require('../../../../scripts/00002-import-role-tags')
 const getFullPathFor = relativePath => path.join(__dirname, relativePath)
-const importCsvPath = getFullPathFor('../../../../scripts/00001-import-role-tags/role-tags.csv')
+const importCsvPath = getFullPathFor('../../../../scripts/00002-import-role-tags/role-tags.csv')
 
 chai.use(chaiAsPromised)
 
-describe('00001 Import Role Tags', () => {
+describe('00002 Import Role Tags', () => {
   before(async () => {
     await setupCollections(db, [
       'roles',

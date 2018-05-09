@@ -1,9 +1,11 @@
 /* eslint-env mocha */
 const chai = require('chai')
+const nock = require('nock')
 const expect = chai.expect
 
 const schema = require('../../../../gql/schema')
 const { executeQueryOnDbUsingSchema } = require('../../helpers')
+const mockClearbitRequests = require('../../helpers/clearbit/mock-requests')
 
 const operation = `
   mutation (
@@ -17,6 +19,14 @@ const operation = `
 
 describe('Mutation.createPerson', () => {
   let db
+
+  before(() => {
+    mockClearbitRequests()
+  })
+
+  after(() => {
+    nock.cleanAll()
+  })
 
   beforeEach(() => {
     db = {

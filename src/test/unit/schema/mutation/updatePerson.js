@@ -1,11 +1,21 @@
 /* eslint-env mocha */
 const chai = require('chai')
+const nock = require('nock')
 const expect = chai.expect
 
 const schema = require('../../../../gql/schema')
 const { executeQueryOnDbUsingSchema } = require('../../helpers')
+const mockClearbitRequests = require('../../helpers/clearbit/mock-requests')
 
 describe('Mutation.updatePerson', () => {
+  before(() => {
+    mockClearbitRequests()
+  })
+
+  after(() => {
+    nock.cleanAll()
+  })
+
   describe('when a company name or role name is not specified', () => {
     it('should update the person\'s data', () => {
       const db = {

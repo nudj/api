@@ -1,11 +1,13 @@
 /* eslint-env mocha */
 const chai = require('chai')
+const nock = require('nock')
 const sinonChai = require('sinon-chai')
 const sinon = require('sinon')
 const find = require('lodash/find')
 
 const DataSources = require('../../../../gql/schema/enums/data-sources')
 const { resolvers } = require('../../../../gql/schema/person/importLinkedinConnections')
+const mockClearbitRequests = require('../../helpers/clearbit/mock-requests')
 
 const expect = chai.expect
 const { importLinkedinConnections } = resolvers.Person
@@ -13,6 +15,14 @@ const { importLinkedinConnections } = resolvers.Person
 chai.use(sinonChai)
 
 describe('Person.importLinkedinConnections', () => {
+  before(() => {
+    mockClearbitRequests()
+  })
+
+  after(() => {
+    nock.cleanAll()
+  })
+
   const importStub = sinon.stub()
   const queryStub = sinon.stub().returns([])
   const person = { id: 'person1' }

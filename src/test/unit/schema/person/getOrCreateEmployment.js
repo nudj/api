@@ -1,5 +1,6 @@
 /* eslint-env mocha */
 const chai = require('chai')
+const nock = require('nock')
 const expect = chai.expect
 
 const schema = require('../../../../gql/schema')
@@ -7,9 +8,18 @@ const {
   executeQueryOnDbUsingSchema,
   shouldRespondWithGqlError
 } = require('../../helpers')
+const mockClearbitRequests = require('../../helpers/clearbit/mock-requests')
 const DataSources = require('../../../../gql/schema/enums/data-sources')
 
 describe('Person.getOrCreateEmployment', () => {
+  before(() => {
+    mockClearbitRequests()
+  })
+
+  after(() => {
+    nock.cleanAll()
+  })
+
   let db
   let result
   const operation = `

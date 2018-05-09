@@ -13,10 +13,6 @@ chai.use(chaiAsPromised)
 chai.use(sinonChai)
 chai.use(dirtyChai)
 
-nock.emitter.on('no match', function (req) {
-  console.log('No match for request:', req)
-})
-
 const ACTION_STRING_RESPONSE = `function () {
   return 'test'
 }`

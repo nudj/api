@@ -14,10 +14,6 @@ const {
 const expect = chai.expect
 
 describe('Google.fetchThread', () => {
-  nock.emitter.on('no match', function (req) {
-    console.log('No match for request:', req)
-  })
-
   beforeEach(() => {
     mockThreadFetch()
   })

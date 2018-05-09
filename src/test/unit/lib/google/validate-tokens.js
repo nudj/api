@@ -18,10 +18,6 @@ const expect = chai.expect
 chai.use(sinonChai)
 
 describe('Google', () => {
-  nock.emitter.on('no match', function (req) {
-    console.log('No match for request:', req)
-  })
-
   afterEach(() => {
     nock.cleanAll()
   })

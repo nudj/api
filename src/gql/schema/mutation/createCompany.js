@@ -1,4 +1,5 @@
 const { handleErrors } = require('../../lib')
+const { enrichOrFetchCachedCompanyByName } = require('../../lib/clearbit')
 
 module.exports = {
   typeDefs: `
@@ -24,10 +25,13 @@ module.exports = {
           throw new Error(`Company with slug '${slug}' already exists`)
         }
 
-        return context.store.create({
+        const company = await context.store.create({
           type: 'companies',
           data: { ...args.company, onboarded, client }
         })
+        enrichOrFetchCachedCompanyByName(company.name, context)
+
+        return company
       })
     }
   }

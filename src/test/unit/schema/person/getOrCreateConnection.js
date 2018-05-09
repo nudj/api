@@ -1,12 +1,22 @@
 /* eslint-env mocha */
 const chai = require('chai')
+const nock = require('nock')
 const expect = chai.expect
 
 const schema = require('../../../../gql/schema')
 const { executeQueryOnDbUsingSchema } = require('../../helpers')
+const mockClearbitRequests = require('../../helpers/clearbit/mock-requests')
 const DataSources = require('../../../../gql/schema/enums/data-sources')
 
 describe('Person.getOrCreateConnection', () => {
+  before(() => {
+    mockClearbitRequests()
+  })
+
+  after(() => {
+    nock.cleanAll()
+  })
+
   let db
   let result
   let operation = `

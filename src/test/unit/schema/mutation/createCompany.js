@@ -1,5 +1,6 @@
 /* eslint-env mocha */
 const chai = require('chai')
+const nock = require('nock')
 const expect = chai.expect
 
 const schema = require('../../../../gql/schema')
@@ -7,6 +8,7 @@ const {
   executeQueryOnDbUsingSchema,
   shouldRespondWithGqlError
 } = require('../../helpers')
+const mockClearbitRequests = require('../../helpers/clearbit/mock-requests')
 
 const operation = `
   mutation (
@@ -27,6 +29,14 @@ const variables = {
 
 describe('Mutation.createCompany', () => {
   let db
+
+  before(() => {
+    mockClearbitRequests()
+  })
+
+  after(() => {
+    nock.cleanAll()
+  })
 
   describe('when the slug is unique', () => {
     beforeEach(() => {

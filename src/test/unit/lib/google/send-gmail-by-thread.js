@@ -30,10 +30,6 @@ describe('sendGmailByThread', () => {
   const transaction = sinon.stub()
   let sendGmailByThread
 
-  nock.emitter.on('no match', function (req) {
-    console.log('No match for request:', req)
-  })
-
   beforeEach(() => {
     mockThreadFetch()
     mockGmailSend()

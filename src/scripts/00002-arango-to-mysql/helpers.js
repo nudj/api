@@ -1,5 +1,6 @@
 const {
-  TABLES
+  TABLES,
+  FIELDS
 } = require('../../lib/sql')
 
 const TABLE_ORDER = [
@@ -30,11 +31,17 @@ const TABLE_ORDER = [
 const TABLE_TO_COLLECTION = {
   [TABLES.VIEW_EVENTS]: 'events'
 }
+const RELATIONS = {
+  [TABLES.JOBS]: {
+    [FIELDS[TABLES.JOBS].COMPANY]: TABLES.COMPANIES
+  }
+}
 const tableToCollection = table => TABLE_TO_COLLECTION[table] || table
 const dateToTimestamp = date => date.replace('T', ' ').replace('Z', '')
 
 module.exports = {
   TABLE_ORDER,
+  RELATIONS,
   tableToCollection,
   dateToTimestamp
 }

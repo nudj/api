@@ -118,9 +118,7 @@ describe('00002 Arango to MySQL', () => {
                 _key: '123',
                 created: '2018-02-01T01:02:03.456Z',
                 modified: '2018-03-02T02:03:04.567Z',
-                email: 'jim@bob.com',
-                firstName: 'Jim',
-                lastName: 'Bob'
+                email: 'jim@bob.com'
               }
             ]
           }
@@ -129,6 +127,8 @@ describe('00002 Arango to MySQL', () => {
 
       it('should use defaults', async () => {
         const records = await sql.select().from(TABLE)
+        expect(records[0]).to.have.property('firstName', null)
+        expect(records[0]).to.have.property('lastName', null)
         expect(records[0]).to.have.property('url', null)
       })
     })

@@ -7,7 +7,6 @@ const {
   dateToTimestamp
 } = require('./helpers')
 const {
-  TABLES,
   FIELDS
 } = require('../../lib/sql')
 
@@ -26,7 +25,7 @@ async function action ({ db, sql }) {
           id,
           created: dateToTimestamp(item.created),
           modified: dateToTimestamp(item.modified),
-          ...pick(item, Object.values(FIELDS[TABLES.PEOPLE]))
+          ...pick(item, Object.values(FIELDS[tableName]))
         })
         idMaps[tableName][item._key] = id
       }))

@@ -11,6 +11,10 @@ const db = new Database({ url })
 db.useDatabase(process.env.DB_NAME)
 db.useBasicAuth(process.env.DB_USER, process.env.DB_PASS)
 
+const noSQL = new Database({ url })
+noSQL.useDatabase(process.env.NO_SQL_NAME)
+noSQL.useBasicAuth(process.env.NO_SQL_USER, process.env.NO_SQL_PASS)
+
 module.exports = ({ transaction, store }) => {
   const app = express()
   app.use(
@@ -23,6 +27,10 @@ module.exports = ({ transaction, store }) => {
       const context = {
         userId: req.body.userId,
         transaction,
+        noSQL: store({
+          db: noSQL,
+          getDataLoader
+        }),
         store: store({
           db,
           getDataLoader

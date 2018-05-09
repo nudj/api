@@ -1,16 +1,20 @@
 const uuid = require('uuid/v4')
-const omit = require('lodash/omit')
+const pick = require('lodash/pick')
 const promiseSerial = require('promise-serial')
 const {
   TABLE_ORDER,
   tableToCollection,
   dateToTimestamp
 } = require('./helpers')
+const {
+  TABLES,
+  FIELDS
+} = require('../../lib/sql')
 
 async function action ({ db, sql }) {
   const idMaps = {}
   await promiseSerial(TABLE_ORDER.map(tableName => async () => {
-    try {
+    // try {
       idMaps[tableName] = {}
       const collectionName = tableToCollection(tableName)
       const collectionCursor = db.collection(collectionName)
@@ -22,21 +26,15 @@ async function action ({ db, sql }) {
           id,
           created: dateToTimestamp(item.created),
           modified: dateToTimestamp(item.modified),
-          ...omit(item, [
-            '_id',
-            '_rev',
-            '_key',
-            'created',
-            'modified'
-          ])
+          ...pick(item, Object.values(FIELDS[TABLES.PEOPLE]))
         })
         idMaps[tableName][item._key] = id
       }))
-    } catch (error) {
-      console.log(error)
-    }
+    // } catch (error) {
+    //   console.log(error)
+    // }
   }))
-  console.log('idMaps', idMaps)
+  // console.log('idMaps', idMaps)
 }
 
 module.exports = action

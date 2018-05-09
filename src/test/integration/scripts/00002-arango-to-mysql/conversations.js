@@ -65,8 +65,8 @@ describe('00002 Arango to MySQL', () => {
     await teardownCollections(db)
   })
 
-  describe('for accounts table', () => {
-    const TABLE = tableToCollection(TABLES.ACCOUNTS)
+  describe('for conversations table', () => {
+    const TABLE = tableToCollection(TABLES.CONVERSATIONS)
     const TABLE_PEOPLE = tableToCollection(TABLES.PEOPLE)
 
     afterEach(async () => {
@@ -84,9 +84,13 @@ describe('00002 Arango to MySQL', () => {
                 _key: 'person1',
                 created: '2018-02-01T01:02:03.456Z',
                 modified: '2018-03-02T02:03:04.567Z',
-                email: 'jim@bob.com',
-                firstName: 'Jim',
-                lastName: 'Bob'
+                email: 'jim@bob.com'
+              },
+              {
+                _key: 'person2',
+                created: '2019-02-01T01:02:03.456Z',
+                modified: '2019-03-02T02:03:04.567Z',
+                email: 'jom@bib.com'
               }
             ]
           },
@@ -94,16 +98,15 @@ describe('00002 Arango to MySQL', () => {
             name: TABLE,
             data: [
               {
-                _id: 'employments/123',
+                _id: 'conversations/123',
                 _rev: '_WpP1l3W---',
                 _key: '123',
                 created: '2018-02-01T01:02:03.456Z',
                 modified: '2018-03-02T02:03:04.567Z',
-                email: 'email1@domain.com',
-                emailAddresses: JSON.stringify(['email1@domain.com', 'email2@domain.com']),
-                data: JSON.stringify({ key: true }),
+                threadId: 'abc123',
                 type: ENUMS.ACCOUNT_TYPES.GOOGLE,
                 person: 'person1',
+                recipient: 'person2',
                 batchSize: 100,
                 skip: 0
               }
@@ -115,17 +118,16 @@ describe('00002 Arango to MySQL', () => {
       genericExpectationsForTable(TABLE)
 
       it('should transfer all scalar properties', async () => {
-        const accounts = await sql.select().from(TABLE)
-        expect(accounts[0]).to.have.property('email', 'email1@domain.com')
-        expect(accounts[0]).to.have.property('emailAddresses', '["email1@domain.com","email2@domain.com"]')
-        expect(accounts[0]).to.have.property('data', '{"key":true}')
-        expect(accounts[0]).to.have.property('type', ENUMS.ACCOUNT_TYPES.GOOGLE)
+        const conversations = await sql.select().from(TABLE)
+        expect(conversations[0]).to.have.property('threadId', 'abc123')
+        expect(conversations[0]).to.have.property('type', ENUMS.ACCOUNT_TYPES.GOOGLE)
       })
 
       it('should remap the relations', async () => {
-        const accounts = await sql.select().from(TABLE)
-        const people = await sql.select().from(TABLE_PEOPLE)
-        expect(accounts[0]).to.have.property('person', people[0].id)
+        const conversations = await sql.select().from(TABLE)
+        const people = await sql.select().from(TABLE_PEOPLE).orderBy('created', 'asc')
+        expect(conversations[0]).to.have.property('person', people[0].id)
+        expect(conversations[0]).to.have.property('recipient', people[1].id)
       })
     })
   })

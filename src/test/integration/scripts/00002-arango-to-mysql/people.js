@@ -125,7 +125,7 @@ describe('00002 Arango to MySQL', () => {
         ])
       })
 
-      it('should use defaults', async () => {
+      it('should set to null', async () => {
         const records = await sql.select().from(TABLE)
         expect(records[0]).to.have.property('firstName', null)
         expect(records[0]).to.have.property('lastName', null)

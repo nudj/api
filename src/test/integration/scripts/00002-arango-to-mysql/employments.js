@@ -13,7 +13,8 @@ const {
   expect
 } = require('../../lib')
 const {
-  TABLES
+  TABLES,
+  ENUMS
 } = require('../../../../lib/sql')
 const {
   TABLE_ORDER,
@@ -64,29 +65,58 @@ describe('00002 Arango to MySQL', () => {
     await teardownCollections(db)
   })
 
-  describe('for companies table', () => {
-    const TABLE = tableToCollection(TABLES.COMPANIES)
+  describe('for employments table', () => {
+    const TABLE = tableToCollection(TABLES.EMPLOYMENTS)
+    const TABLE_PEOPLE = tableToCollection(TABLES.PEOPLE)
+    const TABLE_COMPANIES = tableToCollection(TABLES.COMPANIES)
 
     afterEach(async () => {
       await sql(TABLE).whereNot('id', '').del()
+      await sql(TABLE_PEOPLE).whereNot('id', '').del()
+      await sql(TABLE_COMPANIES).whereNot('id', '').del()
     })
 
     describe('with a full data set', () => {
       beforeEach(async () => {
         await seedRun([
           {
+            name: TABLE_PEOPLE,
+            data: [
+              {
+                _key: 'person1',
+                created: '2018-02-01T01:02:03.456Z',
+                modified: '2018-03-02T02:03:04.567Z',
+                email: 'jim@bob.com',
+                firstName: 'Jim',
+                lastName: 'Bob'
+              }
+            ]
+          },
+          {
+            name: TABLE_COMPANIES,
+            data: [
+              {
+                _key: 'company1',
+                created: '2018-02-01T01:02:03.456Z',
+                modified: '2018-03-02T02:03:04.567Z',
+                name: 'Company Ltd',
+                slug: 'company-ltd'
+              }
+            ]
+          },
+          {
             name: TABLE,
             data: [
               {
-                _id: 'companies/123',
+                _id: 'employments/123',
                 _rev: '_WpP1l3W---',
                 _key: '123',
                 created: '2018-02-01T01:02:03.456Z',
                 modified: '2018-03-02T02:03:04.567Z',
-                name: 'Company Ltd',
-                slug: 'company-ltd',
-                client: true,
-                onboarded: false,
+                current: true,
+                source: ENUMS.DATA_SOURCES.MANUAL,
+                person: 'person1',
+                company: 'company1',
                 batchSize: 100,
                 skip: 0
               }
@@ -98,12 +128,17 @@ describe('00002 Arango to MySQL', () => {
       genericExpectationsForTable(TABLE)
 
       it('should transfer all scalar properties', async () => {
-        const records = await sql.select().from(TABLE)
-        expect(records[0]).to.have.property('name', 'Company Ltd')
-        expect(records[0]).to.have.property('slug', 'company-ltd')
-        // booleans returns as 1 or 0
-        expect(records[0]).to.have.property('client', 1)
-        expect(records[0]).to.have.property('onboarded', 0)
+        const employments = await sql.select().from(TABLE)
+        expect(employments[0]).to.have.property('current', 1)
+        expect(employments[0]).to.have.property('source', ENUMS.DATA_SOURCES.MANUAL)
+      })
+
+      it('should remap the relations', async () => {
+        const employments = await sql.select().from(TABLE)
+        const people = await sql.select().from(TABLE_PEOPLE)
+        const companies = await sql.select().from(TABLE_COMPANIES)
+        expect(employments[0]).to.have.property('person', people[0].id)
+        expect(employments[0]).to.have.property('company', companies[0].id)
       })
     })
 
@@ -111,16 +146,40 @@ describe('00002 Arango to MySQL', () => {
       beforeEach(async () => {
         await seedRun([
           {
-            name: TABLE,
+            name: TABLE_PEOPLE,
             data: [
               {
-                _id: 'companies/123',
-                _rev: '_WpP1l3W---',
-                _key: '123',
+                _key: 'person1',
+                created: '2018-02-01T01:02:03.456Z',
+                modified: '2018-03-02T02:03:04.567Z',
+                email: 'jim@bob.com',
+                firstName: 'Jim',
+                lastName: 'Bob'
+              }
+            ]
+          },
+          {
+            name: TABLE_COMPANIES,
+            data: [
+              {
+                _key: 'company1',
                 created: '2018-02-01T01:02:03.456Z',
                 modified: '2018-03-02T02:03:04.567Z',
                 name: 'Company Ltd',
                 slug: 'company-ltd'
+              }
+            ]
+          },
+          {
+            name: TABLE,
+            data: [
+              {
+                _key: '123',
+                created: '2018-02-01T01:02:03.456Z',
+                modified: '2018-03-02T02:03:04.567Z',
+                source: ENUMS.DATA_SOURCES.MANUAL,
+                person: 'person1',
+                company: 'company1'
               }
             ]
           }
@@ -128,9 +187,8 @@ describe('00002 Arango to MySQL', () => {
       })
 
       it('should use defaults', async () => {
-        const records = await sql.select().from(TABLE)
-        expect(records[0]).to.have.property('client', 0)
-        expect(records[0]).to.have.property('onboarded', 0)
+        const employments = await sql.select().from(TABLE)
+        expect(employments[0]).to.have.property('current', 0)
       })
     })
   })

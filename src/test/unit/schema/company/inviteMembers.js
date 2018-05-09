@@ -28,7 +28,6 @@ describe('Company.inviteMembers', () => {
   }
 
   before(() => {
-    nock.disableNetConnect() // Disable all external interactions
     nock('https://api.mailgun.net')
       .persist()
       .filteringRequestBody(body => {
@@ -54,7 +53,6 @@ describe('Company.inviteMembers', () => {
   })
 
   after(() => {
-    nock.enableNetConnect()
     nock.cleanAll()
   })
 

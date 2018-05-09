@@ -38,7 +38,15 @@ const RELATIONS = {
   [TABLES.HIRERS]: {
     [FIELDS[TABLES.HIRERS].PERSON]: TABLES.PEOPLE,
     [FIELDS[TABLES.HIRERS].COMPANY]: TABLES.COMPANIES
+  },
+  [TABLES.REFERRALS]: {
+    [FIELDS[TABLES.REFERRALS].PERSON]: TABLES.PEOPLE,
+    [FIELDS[TABLES.REFERRALS].JOB]: TABLES.JOBS,
+    [FIELDS[TABLES.REFERRALS].PARENT]: TABLES.REFERRALS
   }
+}
+const SELF_RELATIONS = {
+  [TABLES.REFERRALS]: [FIELDS[TABLES.REFERRALS].PARENT]
 }
 const tableToCollection = table => TABLE_TO_COLLECTION[table] || table
 const dateToTimestamp = date => date.replace('T', ' ').replace('Z', '')
@@ -46,6 +54,7 @@ const dateToTimestamp = date => date.replace('T', ' ').replace('Z', '')
 module.exports = {
   TABLE_ORDER,
   RELATIONS,
+  SELF_RELATIONS,
   tableToCollection,
   dateToTimestamp
 }

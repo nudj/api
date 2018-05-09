@@ -5,6 +5,7 @@ const promiseSerial = require('promise-serial')
 const {
   TABLE_ORDER,
   RELATIONS,
+  SELF_RELATIONS,
   tableToCollection,
   dateToTimestamp
 } = require('./helpers')
@@ -33,6 +34,21 @@ async function action ({ db, sql }) {
       })
       idMaps[tableName][item._key] = id
     }))
+    if (SELF_RELATIONS[tableName]) {
+      await promiseSerial(items.map(item => async () => {
+        const selfRelations = SELF_RELATIONS[tableName].reduce((selfRelations, field) => {
+          const value = idMaps[tableName][item[field]]
+          if (value) {
+            selfRelations[field] = value
+          }
+          return selfRelations
+        }, {})
+        if (Object.keys(selfRelations).length) {
+          const recordId = idMaps[tableName][item._key]
+          await sql(tableName).where('id', '=', recordId).update(selfRelations)
+        }
+      }))
+    }
   }))
 }
 

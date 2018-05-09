@@ -469,7 +469,7 @@ describe.only('00002 Arango to MySQL', () => {
     })
   })
 
-  describe.only('for referrals table', () => {
+  describe('for referrals table', () => {
     const TABLE = tableToCollection(TABLES.REFERRALS)
     const TABLE_PEOPLE = tableToCollection(TABLES.PEOPLE)
     const TABLE_COMPANIES = tableToCollection(TABLES.COMPANIES)

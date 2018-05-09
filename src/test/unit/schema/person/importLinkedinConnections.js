@@ -20,6 +20,10 @@ describe('Person.importLinkedinConnections', () => {
     store: {
       import: importStub,
       query: queryStub
+    },
+    noSQL: {
+      readOne: () => ({}),
+      create: () => ({})
     }
   }
   const args = {

@@ -9,7 +9,8 @@ function executeQueryOnDbUsingSchema ({ schema, variables = {}, operation, db })
   const testContext = {
     userId: 'person1',
     transaction: transaction({ db }),
-    store: store({ db })
+    store: store({ db }),
+    noSQL: store({ db })
   }
   return graphql(schema, operation, undefined, testContext, variables)
 }

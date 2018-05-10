@@ -12,17 +12,17 @@ const loggerStub = sinon.stub()
 
 chai.use(sinonChai)
 
-describe('Clearbit.enrichOrFetchCachedCompanyByName', () => {
+describe('Clearbit.enrichOrFetchEnrichedCompanyByName', () => {
   const fakeContext = {
     noSQL: {
       readOne: readOneStub,
       create: createStub
     }
   }
-  let enrichOrFetchCachedCompanyByName
+  let enrichOrFetchEnrichedCompanyByName
   let cachedClearbitStatus
   beforeEach(() => {
-    enrichOrFetchCachedCompanyByName = proxyquire('../../../../gql/lib/clearbit/enrich-or-fetch-cached-company-by-name', {
+    enrichOrFetchEnrichedCompanyByName = proxyquire('../../../../gql/lib/clearbit/enrich-or-fetch-enriched-company-by-name', {
       './enrich-company-by-name': enrichCompanyByNameStub,
       '@nudj/library': {
         logger: loggerStub
@@ -47,7 +47,7 @@ describe('Clearbit.enrichOrFetchCachedCompanyByName', () => {
   })
 
   it('calls `fetchCompanyByName` with provided company name', async () => {
-    await enrichOrFetchCachedCompanyByName('Comapny Inc', fakeContext)
+    await enrichOrFetchEnrichedCompanyByName('Comapny Inc', fakeContext)
     expect(enrichCompanyByNameStub).to.have.been.calledWith('Comapny Inc')
   })
 
@@ -57,12 +57,12 @@ describe('Clearbit.enrichOrFetchCachedCompanyByName', () => {
     })
 
     it('does not enrich the data', async () => {
-      await enrichOrFetchCachedCompanyByName('Comapny Inc', fakeContext)
+      await enrichOrFetchEnrichedCompanyByName('Comapny Inc', fakeContext)
       expect(enrichCompanyByNameStub).to.not.have.been.called()
     })
 
     it('does not create a company', async () => {
-      await enrichOrFetchCachedCompanyByName('Comapny Inc', fakeContext)
+      await enrichOrFetchEnrichedCompanyByName('Comapny Inc', fakeContext)
       expect(createStub).to.not.have.been.called()
     })
   })
@@ -75,7 +75,7 @@ describe('Clearbit.enrichOrFetchCachedCompanyByName', () => {
       })
 
       it('creates an enriched company', async () => {
-        await enrichOrFetchCachedCompanyByName('Comapny Inc', fakeContext)
+        await enrichOrFetchEnrichedCompanyByName('Comapny Inc', fakeContext)
         expect(createStub).to.have.been.called()
       })
     })
@@ -87,12 +87,12 @@ describe('Clearbit.enrichOrFetchCachedCompanyByName', () => {
       })
 
       it('does not create an enriched company', async () => {
-        await enrichOrFetchCachedCompanyByName('Comapny Inc', fakeContext)
+        await enrichOrFetchEnrichedCompanyByName('Comapny Inc', fakeContext)
         expect(createStub).to.not.have.been.called()
       })
 
       it('returns the result of the attempted enrichment', async () => {
-        const result = await enrichOrFetchCachedCompanyByName('Comapny Inc', fakeContext)
+        const result = await enrichOrFetchEnrichedCompanyByName('Comapny Inc', fakeContext)
         expect(result).to.be.null()
       })
 
@@ -103,12 +103,12 @@ describe('Clearbit.enrichOrFetchCachedCompanyByName', () => {
         })
 
         it('logs the error', async () => {
-          await enrichOrFetchCachedCompanyByName('Comapny Inc', fakeContext)
+          await enrichOrFetchEnrichedCompanyByName('Comapny Inc', fakeContext)
           expect(loggerStub).to.have.been.called()
         })
 
         it('returns null', async () => {
-          const result = await enrichOrFetchCachedCompanyByName('Comapny Inc', fakeContext)
+          const result = await enrichOrFetchEnrichedCompanyByName('Comapny Inc', fakeContext)
           expect(result).to.be.null()
         })
       })

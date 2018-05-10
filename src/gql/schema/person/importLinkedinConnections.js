@@ -1,7 +1,7 @@
 const { generateId } = require('@nudj/library')
 const { idTypes } = require('@nudj/library/constants')
 
-const { enrichOrFetchCachedCompanyByName } = require('../../lib/clearbit')
+const { enrichOrFetchEnrichedCompanyByName } = require('../../lib/clearbit')
 const formatLinkedinConnections = require('../../lib/helpers/format-linkedin-connections')
 const getMakeUnqiueCompanySlug = require('../../lib/helpers/make-unique-company-slug')
 const { handleErrors } = require('../../lib')
@@ -109,7 +109,7 @@ module.exports = {
 
         const result = await context.store.import({ data })
         Promise.all(formattedData.companies.map(company => {
-          return enrichOrFetchCachedCompanyByName(company.name, context)
+          return enrichOrFetchEnrichedCompanyByName(company.name, context)
         }))
 
         return result

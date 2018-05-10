@@ -13,6 +13,7 @@ chai.use(sinonChai)
 
 describe('Clearbit.enrichCompanyByName', () => {
   let enrichCompanyByName
+  let cachedClearbitStatus
   beforeEach(() => {
     enrichCompanyByName = proxyquire('../../../../gql/lib/clearbit/enrich-company-by-name', {
       './fetch-domain-for-company': fetchDomainForCompanyStub,
@@ -23,6 +24,15 @@ describe('Clearbit.enrichCompanyByName', () => {
   afterEach(() => {
     fetchDomainForCompanyStub.reset()
     enrichCompanyByDomainStub.reset()
+  })
+
+  before(() => {
+    cachedClearbitStatus = process.env.CLEARBIT_ENABLED
+    process.env.CLEARBIT_ENABLED = 'true'
+  })
+
+  after(() => {
+    process.env.CLEARBIT_ENABLED = cachedClearbitStatus
   })
 
   describe('when the request succeeds', () => {

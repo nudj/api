@@ -3,6 +3,7 @@ const { logger } = require('@nudj/library')
 const enrichCompanyByName = require('./enrich-company-by-name')
 
 const enrichOrFetchCachedCompanyByName = async (companyName, context, options) => {
+  if (process.env.CLEARBIT_ENABLED !== 'true') return null
   try {
     const enrichedCompany = await context.noSQL.readOne({
       type: 'enrichedCompanies',

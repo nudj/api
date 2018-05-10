@@ -19,6 +19,7 @@ const apiStub = {
 
 describe('Clearbit.enrichCompanyByDomain', () => {
   let enrichCompanyByDomain
+  let cachedClearbitStatus
   beforeEach(() => {
     enrichCompanyByDomain = proxyquire('../../../../gql/lib/clearbit/enrich-company-by-domain', {
       './api': apiStub
@@ -27,6 +28,15 @@ describe('Clearbit.enrichCompanyByDomain', () => {
 
   afterEach(() => {
     companyFindStub.reset()
+  })
+
+  before(() => {
+    cachedClearbitStatus = process.env.CLEARBIT_ENABLED
+    process.env.CLEARBIT_ENABLED = 'true'
+  })
+
+  after(() => {
+    process.env.CLEARBIT_ENABLED = cachedClearbitStatus
   })
 
   describe('when the request succeeds', () => {

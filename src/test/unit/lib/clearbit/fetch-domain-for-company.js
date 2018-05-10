@@ -19,6 +19,16 @@ const apiStub = {
 
 describe('Clearbit.fetchDomainForCompany', () => {
   let fetchDomainForCompany
+  let cachedClearbitStatus
+  before(() => {
+    cachedClearbitStatus = process.env.CLEARBIT_ENABLED
+    process.env.CLEARBIT_ENABLED = 'true'
+  })
+
+  after(() => {
+    process.env.CLEARBIT_ENABLED = cachedClearbitStatus
+  })
+
   beforeEach(() => {
     fetchDomainForCompany = proxyquire('../../../../gql/lib/clearbit/fetch-domain-for-company', {
       './api': apiStub

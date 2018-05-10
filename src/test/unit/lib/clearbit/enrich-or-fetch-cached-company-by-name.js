@@ -20,6 +20,7 @@ describe('Clearbit.enrichOrFetchCachedCompanyByName', () => {
     }
   }
   let enrichOrFetchCachedCompanyByName
+  let cachedClearbitStatus
   beforeEach(() => {
     enrichOrFetchCachedCompanyByName = proxyquire('../../../../gql/lib/clearbit/enrich-or-fetch-cached-company-by-name', {
       './enrich-company-by-name': enrichCompanyByNameStub,
@@ -34,6 +35,15 @@ describe('Clearbit.enrichOrFetchCachedCompanyByName', () => {
     readOneStub.reset()
     createStub.reset()
     loggerStub.reset()
+  })
+
+  before(() => {
+    cachedClearbitStatus = process.env.CLEARBIT_ENABLED
+    process.env.CLEARBIT_ENABLED = 'true'
+  })
+
+  after(() => {
+    process.env.CLEARBIT_ENABLED = cachedClearbitStatus
   })
 
   it('calls `fetchCompanyByName` with provided company name', async () => {

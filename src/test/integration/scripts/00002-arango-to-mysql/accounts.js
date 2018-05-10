@@ -66,19 +66,21 @@ describe('00002 Arango to MySQL', () => {
   })
 
   describe('for accounts table', () => {
-    const TABLE = tableToCollection(TABLES.ACCOUNTS)
-    const TABLE_PEOPLE = tableToCollection(TABLES.PEOPLE)
+    const COLLECTIONS = {
+      ACCOUNTS: tableToCollection(TABLES.ACCOUNTS),
+      PEOPLE: tableToCollection(TABLES.PEOPLE)
+    }
 
     afterEach(async () => {
-      await sql(TABLE).whereNot('id', '').del()
-      await sql(TABLE_PEOPLE).whereNot('id', '').del()
+      await sql(TABLES.ACCOUNTS).whereNot('id', '').del()
+      await sql(TABLES.PEOPLE).whereNot('id', '').del()
     })
 
     describe('with a full data set', () => {
       beforeEach(async () => {
         await seedRun([
           {
-            name: TABLE_PEOPLE,
+            name: COLLECTIONS.PEOPLE,
             data: [
               {
                 _key: 'person1',
@@ -91,7 +93,7 @@ describe('00002 Arango to MySQL', () => {
             ]
           },
           {
-            name: TABLE,
+            name: COLLECTIONS.ACCOUNTS,
             data: [
               {
                 _id: 'employments/123',
@@ -112,10 +114,10 @@ describe('00002 Arango to MySQL', () => {
         ])
       })
 
-      genericExpectationsForTable(TABLE)
+      genericExpectationsForTable(TABLES.ACCOUNTS)
 
       it('should transfer all scalar properties', async () => {
-        const accounts = await sql.select().from(TABLE)
+        const accounts = await sql.select().from(TABLES.ACCOUNTS)
         expect(accounts[0]).to.have.property('email', 'email1@domain.com')
         expect(accounts[0]).to.have.property('emailAddresses', '["email1@domain.com","email2@domain.com"]')
         expect(accounts[0]).to.have.property('data', '{"key":true}')
@@ -123,8 +125,8 @@ describe('00002 Arango to MySQL', () => {
       })
 
       it('should remap the relations', async () => {
-        const accounts = await sql.select().from(TABLE)
-        const people = await sql.select().from(TABLE_PEOPLE)
+        const accounts = await sql.select().from(TABLES.ACCOUNTS)
+        const people = await sql.select().from(TABLES.PEOPLE)
         expect(accounts[0]).to.have.property('person', people[0].id)
       })
     })

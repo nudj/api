@@ -1,7 +1,6 @@
 /* eslint-env mocha */
 const chai = require('chai')
 const chaiAsPromised = require('chai-as-promised')
-const isEqual = require('date-fns/is_equal')
 
 const {
   db,
@@ -10,7 +9,8 @@ const {
   populateCollections,
   truncateCollections,
   teardownCollections,
-  expect
+  expect,
+  genericExpectationsForTable
 } = require('../../lib')
 const {
   TABLES,
@@ -31,28 +31,6 @@ describe('00002 Arango to MySQL', () => {
     await script({ db, sql })
   }
 
-  function genericExpectationsForTable (TABLE, count = 1) {
-    it('should create record for each item in collection', async () => {
-      const records = await sql.select().from(TABLE)
-      expect(records).to.have.length(count)
-    })
-
-    it('should convert dates to mysql timestamps', async () => {
-      const records = await sql.select().from(TABLE).orderBy('created', 'asc')
-      expect(records[0]).to.have.property('created')
-      expect(isEqual(records[0].created, '2018-02-01 01:02:03'), 'created date was not inserted correctly').to.be.true()
-      expect(records[0]).to.have.property('modified')
-      // milliseconds are rounded to the nearest second
-      expect(isEqual(records[0].modified, '2018-03-02 02:03:05'), 'modified date was not inserted correctly').to.be.true()
-    })
-
-    it('should not transfer extraneous properties', async () => {
-      const records = await sql.select().from(TABLE)
-      expect(records[0]).to.not.have.property('batchSize')
-      expect(records[0]).to.not.have.property('skip')
-    })
-  }
-
   before(async () => {
     await setupCollections(db, TABLE_ORDER.map(table => tableToCollection(table)))
   })
@@ -66,21 +44,23 @@ describe('00002 Arango to MySQL', () => {
   })
 
   describe('for hirers table', () => {
-    const TABLE = tableToCollection(TABLES.HIRERS)
-    const TABLE_PEOPLE = tableToCollection(TABLES.PEOPLE)
-    const TABLE_COMPANIES = tableToCollection(TABLES.COMPANIES)
+    const COLLECTIONS = {
+      HIRERS: tableToCollection(TABLES.HIRERS),
+      PEOPLE: tableToCollection(TABLES.PEOPLE),
+      COMPANIES: tableToCollection(TABLES.COMPANIES)
+    }
 
     afterEach(async () => {
-      await sql(TABLE).whereNot('id', '').del()
-      await sql(TABLE_PEOPLE).whereNot('id', '').del()
-      await sql(TABLE_COMPANIES).whereNot('id', '').del()
+      await sql(TABLES.HIRERS).whereNot('id', '').del()
+      await sql(TABLES.PEOPLE).whereNot('id', '').del()
+      await sql(TABLES.COMPANIES).whereNot('id', '').del()
     })
 
     describe('with a full data set', () => {
       beforeEach(async () => {
         await seedRun([
           {
-            name: TABLE_PEOPLE,
+            name: COLLECTIONS.PEOPLE,
             data: [
               {
                 _key: 'person1',
@@ -93,7 +73,7 @@ describe('00002 Arango to MySQL', () => {
             ]
           },
           {
-            name: TABLE_COMPANIES,
+            name: COLLECTIONS.COMPANIES,
             data: [
               {
                 _key: 'company1',
@@ -105,7 +85,7 @@ describe('00002 Arango to MySQL', () => {
             ]
           },
           {
-            name: TABLE,
+            name: COLLECTIONS.HIRERS,
             data: [
               {
                 _id: 'hirers/123',
@@ -125,17 +105,17 @@ describe('00002 Arango to MySQL', () => {
         ])
       })
 
-      genericExpectationsForTable(TABLE)
+      genericExpectationsForTable(TABLES.HIRERS)
 
       it('should transfer all scalar properties', async () => {
-        const records = await sql.select().from(TABLE)
+        const records = await sql.select().from(TABLES.HIRERS)
         expect(records[0]).to.have.property('onboarded', 1)
         expect(records[0]).to.have.property('type', ENUMS.HIRER_TYPES.ADMIN)
       })
 
       it('should remap the relations', async () => {
-        const jobs = await sql.select().from(TABLE)
-        const companies = await sql.select().from(TABLE_COMPANIES)
+        const jobs = await sql.select().from(TABLES.HIRERS)
+        const companies = await sql.select().from(TABLES.COMPANIES)
         expect(jobs[0]).to.have.property('company', companies[0].id)
       })
     })
@@ -144,7 +124,7 @@ describe('00002 Arango to MySQL', () => {
       beforeEach(async () => {
         await seedRun([
           {
-            name: TABLE_PEOPLE,
+            name: COLLECTIONS.PEOPLE,
             data: [
               {
                 _key: 'person1',
@@ -157,7 +137,7 @@ describe('00002 Arango to MySQL', () => {
             ]
           },
           {
-            name: TABLE_COMPANIES,
+            name: COLLECTIONS.COMPANIES,
             data: [
               {
                 _key: 'company1',
@@ -169,7 +149,7 @@ describe('00002 Arango to MySQL', () => {
             ]
           },
           {
-            name: TABLE,
+            name: COLLECTIONS.HIRERS,
             data: [
               {
                 _id: 'hirers/123',
@@ -186,7 +166,7 @@ describe('00002 Arango to MySQL', () => {
       })
 
       it('should use defaults', async () => {
-        const records = await sql.select().from(TABLE)
+        const records = await sql.select().from(TABLES.HIRERS)
         expect(records[0]).to.have.property('onboarded', 0)
         expect(records[0]).to.have.property('type', ENUMS.HIRER_TYPES.MEMBER)
       })

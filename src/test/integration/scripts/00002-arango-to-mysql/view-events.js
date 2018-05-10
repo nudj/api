@@ -1,7 +1,6 @@
 /* eslint-env mocha */
 const chai = require('chai')
 const chaiAsPromised = require('chai-as-promised')
-const isEqual = require('date-fns/is_equal')
 
 const {
   db,
@@ -10,7 +9,8 @@ const {
   populateCollections,
   truncateCollections,
   teardownCollections,
-  expect
+  expect,
+  genericExpectationsForTable
 } = require('../../lib')
 const {
   TABLES
@@ -28,28 +28,6 @@ describe('00002 Arango to MySQL', () => {
   async function seedRun (data) {
     await populateCollections(db, data)
     await script({ db, sql })
-  }
-
-  function genericExpectationsForTable (table, count = 1) {
-    it('should create record for each item in collection', async () => {
-      const records = await sql.select().from(table)
-      expect(records).to.have.length(count)
-    })
-
-    it('should convert dates to mysql timestamps', async () => {
-      const records = await sql.select().from(table).orderBy('created', 'asc')
-      expect(records[0]).to.have.property('created')
-      expect(isEqual(records[0].created, '2018-02-01 01:02:03'), 'created date was not inserted correctly').to.be.true()
-      expect(records[0]).to.have.property('modified')
-      // milliseconds are rounded to the nearest second
-      expect(isEqual(records[0].modified, '2018-03-02 02:03:05'), 'modified date was not inserted correctly').to.be.true()
-    })
-
-    it('should not transfer extraneous properties', async () => {
-      const records = await sql.select().from(table)
-      expect(records[0]).to.not.have.property('batchSize')
-      expect(records[0]).to.not.have.property('skip')
-    })
   }
 
   before(async () => {

@@ -1,7 +1,6 @@
 /* eslint-env mocha */
 const chai = require('chai')
 const chaiAsPromised = require('chai-as-promised')
-const isEqual = require('date-fns/is_equal')
 
 const {
   db,
@@ -10,7 +9,8 @@ const {
   populateCollections,
   truncateCollections,
   teardownCollections,
-  expect
+  expect,
+  genericExpectationsForTable
 } = require('../../lib')
 const {
   TABLES
@@ -30,28 +30,6 @@ describe('00002 Arango to MySQL', () => {
     await script({ db, sql })
   }
 
-  function genericExpectationsForTable (TABLE, count = 1) {
-    it('should create record for each item in collection', async () => {
-      const records = await sql.select().from(TABLE)
-      expect(records).to.have.length(count)
-    })
-
-    it('should convert dates to mysql timestamps', async () => {
-      const records = await sql.select().from(TABLE).orderBy('created', 'asc')
-      expect(records[0]).to.have.property('created')
-      expect(isEqual(records[0].created, '2018-02-01 01:02:03'), 'created date was not inserted correctly').to.be.true()
-      expect(records[0]).to.have.property('modified')
-      // milliseconds are rounded to the nearest second
-      expect(isEqual(records[0].modified, '2018-03-02 02:03:05'), 'modified date was not inserted correctly').to.be.true()
-    })
-
-    it('should not transfer extraneous properties', async () => {
-      const records = await sql.select().from(TABLE)
-      expect(records[0]).to.not.have.property('batchSize')
-      expect(records[0]).to.not.have.property('skip')
-    })
-  }
-
   before(async () => {
     await setupCollections(db, TABLE_ORDER.map(table => tableToCollection(table)))
   })
@@ -65,17 +43,19 @@ describe('00002 Arango to MySQL', () => {
   })
 
   describe('for people table', () => {
-    const TABLE = tableToCollection(TABLES.PEOPLE)
+    const COLLECTIONS = {
+      PEOPLE: tableToCollection(TABLES.PEOPLE)
+    }
 
     afterEach(async () => {
-      await sql(TABLE).whereNot('id', '').del()
+      await sql(TABLES.PEOPLE).whereNot('id', '').del()
     })
 
     describe('with a full data set', () => {
       beforeEach(async () => {
         await seedRun([
           {
-            name: TABLE,
+            name: COLLECTIONS.PEOPLE,
             data: [
               {
                 _id: 'people/123',
@@ -95,10 +75,10 @@ describe('00002 Arango to MySQL', () => {
         ])
       })
 
-      genericExpectationsForTable(TABLE)
+      genericExpectationsForTable(TABLES.PEOPLE)
 
       it('should transfer all scalar properties', async () => {
-        const records = await sql.select().from(TABLE)
+        const records = await sql.select().from(TABLES.PEOPLE)
         expect(records[0]).to.have.property('firstName', 'Jim')
         expect(records[0]).to.have.property('lastName', 'Bob')
         expect(records[0]).to.have.property('email', 'jim@bob.com')
@@ -110,7 +90,7 @@ describe('00002 Arango to MySQL', () => {
       beforeEach(async () => {
         await seedRun([
           {
-            name: TABLE,
+            name: COLLECTIONS.PEOPLE,
             data: [
               {
                 _id: 'people/123',
@@ -126,7 +106,7 @@ describe('00002 Arango to MySQL', () => {
       })
 
       it('should set to null', async () => {
-        const records = await sql.select().from(TABLE)
+        const records = await sql.select().from(TABLES.PEOPLE)
         expect(records[0]).to.have.property('firstName', null)
         expect(records[0]).to.have.property('lastName', null)
         expect(records[0]).to.have.property('url', null)

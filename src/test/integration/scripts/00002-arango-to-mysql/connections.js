@@ -1,7 +1,6 @@
 /* eslint-env mocha */
 const chai = require('chai')
 const chaiAsPromised = require('chai-as-promised')
-const isEqual = require('date-fns/is_equal')
 
 const {
   db,
@@ -10,7 +9,8 @@ const {
   populateCollections,
   truncateCollections,
   teardownCollections,
-  expect
+  expect,
+  genericExpectationsForTable
 } = require('../../lib')
 const {
   TABLES,
@@ -31,28 +31,6 @@ describe('00002 Arango to MySQL', () => {
     await script({ db, sql })
   }
 
-  function genericExpectationsForTable (TABLE, count = 1) {
-    it('should create record for each item in collection', async () => {
-      const records = await sql.select().from(TABLE)
-      expect(records).to.have.length(count)
-    })
-
-    it('should convert dates to mysql timestamps', async () => {
-      const records = await sql.select().from(TABLE).orderBy('created', 'asc')
-      expect(records[0]).to.have.property('created')
-      expect(isEqual(records[0].created, '2018-02-01 01:02:03'), 'created date was not inserted correctly').to.be.true()
-      expect(records[0]).to.have.property('modified')
-      // milliseconds are rounded to the nearest second
-      expect(isEqual(records[0].modified, '2018-03-02 02:03:05'), 'modified date was not inserted correctly').to.be.true()
-    })
-
-    it('should not transfer extraneous properties', async () => {
-      const records = await sql.select().from(TABLE)
-      expect(records[0]).to.not.have.property('batchSize')
-      expect(records[0]).to.not.have.property('skip')
-    })
-  }
-
   before(async () => {
     await setupCollections(db, TABLE_ORDER.map(table => tableToCollection(table)))
   })
@@ -66,23 +44,25 @@ describe('00002 Arango to MySQL', () => {
   })
 
   describe('for connections table', () => {
-    const TABLE = tableToCollection(TABLES.CONNECTIONS)
-    const TABLE_PEOPLE = tableToCollection(TABLES.PEOPLE)
-    const TABLE_COMPANIES = tableToCollection(TABLES.COMPANIES)
-    const TABLE_ROLES = tableToCollection(TABLES.ROLES)
+    const COLLECTIONS = {
+      CONNECTIONS: tableToCollection(TABLES.CONNECTIONS),
+      PEOPLE: tableToCollection(TABLES.PEOPLE),
+      COMPANIES: tableToCollection(TABLES.COMPANIES),
+      ROLES: tableToCollection(TABLES.ROLES)
+    }
 
     afterEach(async () => {
-      await sql(TABLE).whereNot('id', '').del()
-      await sql(TABLE_ROLES).whereNot('id', '').del()
-      await sql(TABLE_COMPANIES).whereNot('id', '').del()
-      await sql(TABLE_PEOPLE).whereNot('id', '').del()
+      await sql(TABLES.CONNECTIONS).whereNot('id', '').del()
+      await sql(TABLES.ROLES).whereNot('id', '').del()
+      await sql(TABLES.COMPANIES).whereNot('id', '').del()
+      await sql(TABLES.PEOPLE).whereNot('id', '').del()
     })
 
     describe('with a full data set', () => {
       beforeEach(async () => {
         await seedRun([
           {
-            name: TABLE_PEOPLE,
+            name: COLLECTIONS.PEOPLE,
             data: [
               {
                 _key: 'person1',
@@ -101,7 +81,7 @@ describe('00002 Arango to MySQL', () => {
             ]
           },
           {
-            name: TABLE_COMPANIES,
+            name: COLLECTIONS.COMPANIES,
             data: [
               {
                 _key: 'company1',
@@ -113,7 +93,7 @@ describe('00002 Arango to MySQL', () => {
             ]
           },
           {
-            name: TABLE_ROLES,
+            name: COLLECTIONS.ROLES,
             data: [
               {
                 _key: 'role1',
@@ -124,7 +104,7 @@ describe('00002 Arango to MySQL', () => {
             ]
           },
           {
-            name: TABLE,
+            name: COLLECTIONS.CONNECTIONS,
             data: [
               {
                 _id: 'applications/123',
@@ -147,20 +127,20 @@ describe('00002 Arango to MySQL', () => {
         ])
       })
 
-      genericExpectationsForTable(TABLE)
+      genericExpectationsForTable(TABLES.CONNECTIONS)
 
       it('should transfer all scalar properties', async () => {
-        const connections = await sql.select().from(TABLE)
+        const connections = await sql.select().from(TABLES.CONNECTIONS)
         expect(connections[0]).to.have.property('firstName', 'Jom')
         expect(connections[0]).to.have.property('lastName', 'Bib')
         expect(connections[0]).to.have.property('source', ENUMS.DATA_SOURCES.LINKEDIN)
       })
 
       it('should remap the relations', async () => {
-        const connections = await sql.select().from(TABLE)
-        const roles = await sql.select().from(TABLE_ROLES)
-        const companies = await sql.select().from(TABLE_COMPANIES)
-        const people = await sql.select().from(TABLE_PEOPLE).orderBy('created', 'asc')
+        const connections = await sql.select().from(TABLES.CONNECTIONS)
+        const roles = await sql.select().from(TABLES.ROLES)
+        const companies = await sql.select().from(TABLES.COMPANIES)
+        const people = await sql.select().from(TABLES.PEOPLE).orderBy('created', 'asc')
 
         expect(connections[0]).to.have.property('from', people[0].id)
         expect(connections[0]).to.have.property('person', people[1].id)
@@ -173,7 +153,7 @@ describe('00002 Arango to MySQL', () => {
       beforeEach(async () => {
         await seedRun([
           {
-            name: TABLE_PEOPLE,
+            name: COLLECTIONS.PEOPLE,
             data: [
               {
                 _key: 'person1',
@@ -192,7 +172,7 @@ describe('00002 Arango to MySQL', () => {
             ]
           },
           {
-            name: TABLE,
+            name: COLLECTIONS.CONNECTIONS,
             data: [
               {
                 _key: 'application1',
@@ -210,7 +190,7 @@ describe('00002 Arango to MySQL', () => {
       })
 
       it('should set null', async () => {
-        const connections = await sql.select().from(TABLE)
+        const connections = await sql.select().from(TABLES.CONNECTIONS)
         expect(connections[0]).to.have.property('role', null)
         expect(connections[0]).to.have.property('company', null)
       })

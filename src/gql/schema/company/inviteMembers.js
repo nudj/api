@@ -67,6 +67,9 @@ module.exports = {
           email: senderEmail
         } = await fetchPerson(context, context.userId)
         const senderName = firstName && lastName && `${firstName} ${lastName}`
+        const from = senderName
+          ? `${senderName} via nudj <hello@nudj.co>`
+          : `Nudj <hello@nudj.co>`
         const subject = senderName
           ? `${senderName} has invited you to join them on nudj`
           : `You've been invited to join nudj!`
@@ -109,7 +112,7 @@ module.exports = {
         }))
 
         const [ sendStatus ] = await Promise.all(emailAddresses.map(email => send({
-          from: 'hello@nudj.co',
+          from,
           to: email,
           subject,
           html: emailBody

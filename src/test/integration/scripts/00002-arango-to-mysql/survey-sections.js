@@ -42,13 +42,15 @@ describe.only('00002 Arango to MySQL', () => {
     await teardownCollections(db)
   })
 
-  describe('for surveys table', () => {
+  describe.only('for surveySections table', () => {
     const COLLECTIONS = {
+      SURVEY_SECTIONS: tableToCollection(TABLES.SURVEY_SECTIONS),
       SURVEYS: tableToCollection(TABLES.SURVEYS),
       COMPANIES: tableToCollection(TABLES.COMPANIES)
     }
 
     afterEach(async () => {
+      await sql(TABLES.SURVEY_SECTIONS).whereNot('id', '').del()
       await sql(TABLES.SURVEYS).whereNot('id', '').del()
       await sql(TABLES.COMPANIES).whereNot('id', '').del()
     })
@@ -72,9 +74,7 @@ describe.only('00002 Arango to MySQL', () => {
             name: COLLECTIONS.SURVEYS,
             data: [
               {
-                _id: 'employments/123',
-                _rev: '_WpP1l3W---',
-                _key: '123',
+                _key: 'survey1',
                 created: '2018-02-01T01:02:03.456Z',
                 modified: '2018-03-02T02:03:04.567Z',
                 slug: 'survey-slug',
@@ -83,7 +83,24 @@ describe.only('00002 Arango to MySQL', () => {
                 outroTitle: 'Outro Title',
                 outroDescription: 'Outro description',
                 surveySections: JSON.stringify(['surveySection1', 'surveySection2']),
-                company: 'company1',
+                company: 'company1'
+              }
+            ]
+          },
+          {
+            name: COLLECTIONS.SURVEY_SECTIONS,
+            data: [
+              {
+                _id: 'employments/123',
+                _rev: '_WpP1l3W---',
+                _key: '123',
+                created: '2018-02-01T01:02:03.456Z',
+                modified: '2018-03-02T02:03:04.567Z',
+                slug: 'survey-section-slug',
+                title: 'Title',
+                description: 'Description',
+                surveyQuestions: JSON.stringify(['surveyQuestion1', 'surveyQuestion2']),
+                survey: 'survey1',
                 batchSize: 100,
                 skip: 0
               }
@@ -92,22 +109,20 @@ describe.only('00002 Arango to MySQL', () => {
         ])
       })
 
-      genericExpectationsForTable(TABLES.SURVEYS)
+      genericExpectationsForTable(TABLES.SURVEY_SECTIONS)
 
       it('should transfer all scalar properties', async () => {
-        const surveys = await sql.select().from(TABLES.SURVEYS)
-        expect(surveys[0]).to.have.property('slug', 'survey-slug')
-        expect(surveys[0]).to.have.property('introTitle', 'Intro Title')
-        expect(surveys[0]).to.have.property('introDescription', 'Intro description')
-        expect(surveys[0]).to.have.property('outroTitle', 'Outro Title')
-        expect(surveys[0]).to.have.property('outroDescription', 'Outro description')
-        expect(surveys[0]).to.have.property('surveySections', JSON.stringify(['surveySection1', 'surveySection2']))
+        const surveySections = await sql.select().from(TABLES.SURVEY_SECTIONS)
+        expect(surveySections[0]).to.have.property('slug', 'survey-section-slug')
+        expect(surveySections[0]).to.have.property('title', 'Title')
+        expect(surveySections[0]).to.have.property('description', 'Description')
+        expect(surveySections[0]).to.have.property('surveyQuestions', JSON.stringify(['surveyQuestion1', 'surveyQuestion2']))
       })
 
       it('should remap the relations', async () => {
+        const surveySections = await sql.select().from(TABLES.SURVEY_SECTIONS)
         const surveys = await sql.select().from(TABLES.SURVEYS)
-        const companies = await sql.select().from(TABLES.COMPANIES)
-        expect(surveys[0]).to.have.property('company', companies[0].id)
+        expect(surveySections[0]).to.have.property('survey', surveys[0].id)
       })
     })
   })

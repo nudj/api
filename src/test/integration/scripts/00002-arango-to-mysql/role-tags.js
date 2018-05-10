@@ -102,7 +102,7 @@ describe('00002 Arango to MySQL', () => {
         ])
       })
 
-      genericExpectationsForTable(TABLES.TAGS)
+      genericExpectationsForTable(TABLES.ROLE_TAGS)
 
       it('should transfer all scalar properties', async () => {
         const roleTags = await sql.select().from(TABLES.ROLE_TAGS)

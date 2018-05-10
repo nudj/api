@@ -4,6 +4,7 @@ async function enrichCompanyByDomain (
   domain,
   options = { stream: true }
 ) {
+  if (process.env.CLEARBIT_ENABLED !== 'true') return null
   try {
     const { stream } = options
     return Company.find({ domain, stream })

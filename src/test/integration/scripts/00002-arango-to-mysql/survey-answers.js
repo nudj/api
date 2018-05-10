@@ -25,7 +25,7 @@ const script = require('../../../../scripts/00002-arango-to-mysql')
 
 chai.use(chaiAsPromised)
 
-describe.only('00002 Arango to MySQL', () => {
+describe('00002 Arango to MySQL', () => {
   async function seedRun (data) {
     await populateCollections(db, data)
     await script({ db, sql })
@@ -43,22 +43,25 @@ describe.only('00002 Arango to MySQL', () => {
     await teardownCollections(db)
   })
 
-  describe.only('for surveyAnswers table', () => {
+  describe('for surveyAnswers table', () => {
     const COLLECTIONS = {
       SURVEY_ANSWERS: tableToCollection(TABLES.SURVEY_ANSWERS),
       SURVEY_QUESTIONS: tableToCollection(TABLES.SURVEY_QUESTIONS),
       SURVEY_SECTIONS: tableToCollection(TABLES.SURVEY_SECTIONS),
       SURVEYS: tableToCollection(TABLES.SURVEYS),
       COMPANIES: tableToCollection(TABLES.COMPANIES),
+      CONNECTIONS: tableToCollection(TABLES.CONNECTIONS),
       PEOPLE: tableToCollection(TABLES.PEOPLE)
     }
 
     afterEach(async () => {
+      await sql(TABLES.SURVEY_ANSWER_CONNECTIONS).whereNot('id', '').del()
       await sql(TABLES.SURVEY_ANSWERS).whereNot('id', '').del()
       await sql(TABLES.SURVEY_QUESTIONS).whereNot('id', '').del()
       await sql(TABLES.SURVEY_SECTIONS).whereNot('id', '').del()
       await sql(TABLES.SURVEYS).whereNot('id', '').del()
       await sql(TABLES.COMPANIES).whereNot('id', '').del()
+      await sql(TABLES.CONNECTIONS).whereNot('id', '').del()
       await sql(TABLES.PEOPLE).whereNot('id', '').del()
     })
 
@@ -73,6 +76,12 @@ describe.only('00002 Arango to MySQL', () => {
                 created: '2018-02-01T01:02:03.456Z',
                 modified: '2018-03-02T02:03:04.567Z',
                 email: 'jim@bob.com'
+              },
+              {
+                _key: 'person2',
+                created: '2019-02-01T01:02:03.456Z',
+                modified: '2019-03-02T02:03:04.567Z',
+                email: 'jom@bib.com'
               }
             ]
           },
@@ -137,16 +146,32 @@ describe.only('00002 Arango to MySQL', () => {
             ]
           },
           {
+            name: COLLECTIONS.CONNECTIONS,
+            data: [
+              {
+                _key: 'connection1',
+                created: '2018-02-01T01:02:03.456Z',
+                modified: '2018-03-02T02:03:04.567Z',
+                firstName: 'Jom',
+                lastName: 'Bib',
+                source: ENUMS.DATA_SOURCES.LINKEDIN,
+                person: 'person2',
+                from: 'person1'
+              }
+            ]
+          },
+          {
             name: COLLECTIONS.SURVEY_ANSWERS,
             data: [
               {
-                _id: 'surveyAnswers/123',
+                _id: 'surveyAnswers/surveyAnswer1',
                 _rev: '_WpP1l3W---',
-                _key: '123',
+                _key: 'surveyAnswer1',
                 created: '2018-02-01T01:02:03.456Z',
                 modified: '2018-03-02T02:03:04.567Z',
                 person: 'person1',
                 surveyQuestion: 'surveyQuestion1',
+                connections: ['connection1'],
                 batchSize: 100,
                 skip: 0
               }
@@ -160,9 +185,18 @@ describe.only('00002 Arango to MySQL', () => {
       it('should remap the relations', async () => {
         const surveyAnswers = await sql.select().from(TABLES.SURVEY_ANSWERS)
         const surveyQuestions = await sql.select().from(TABLES.SURVEY_QUESTIONS)
-        const people = await sql.select().from(TABLES.PEOPLE)
+        const people = await sql.select().from(TABLES.PEOPLE).orderBy('created', 'asc')
         expect(surveyAnswers[0]).to.have.property('surveyQuestion', surveyQuestions[0].id)
         expect(surveyAnswers[0]).to.have.property('person', people[0].id)
+        expect(surveyAnswers[0]).to.not.have.property('connections')
+      })
+
+      it('should create an edge record for each connection answer', async () => {
+        const surveyAnswerConnections = await sql.select().from(TABLES.SURVEY_ANSWER_CONNECTIONS)
+        const surveyAnswers = await sql.select().from(TABLES.SURVEY_ANSWERS)
+        const connections = await sql.select().from(TABLES.CONNECTIONS)
+        expect(surveyAnswerConnections[0]).to.have.property('surveyAnswer', surveyAnswers[0].id)
+        expect(surveyAnswerConnections[0]).to.have.property('connection', connections[0].id)
       })
     })
   })

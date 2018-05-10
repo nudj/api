@@ -4,7 +4,7 @@ const hash = require('hash-generator')
 
 const handleErrors = require('../../lib/handle-errors')
 const makeSlug = require('../../lib/helpers/make-slug')
-const { enrichOrFetchCachedCompanyByName } = require('../../lib/clearbit')
+const { enrichOrFetchEnrichedCompanyByName } = require('../../lib/clearbit')
 
 module.exports = {
   typeDefs: `
@@ -100,7 +100,7 @@ module.exports = {
         ])
 
         if (company && company.name && !existingCompany) {
-          enrichOrFetchCachedCompanyByName(company.name, context)
+          enrichOrFetchEnrichedCompanyByName(company.name, context)
         }
 
         const connection = await context.store.create({

@@ -2,7 +2,7 @@ const hash = require('hash-generator')
 
 const handleErrors = require('../../lib/handle-errors')
 const makeSlug = require('../../lib/helpers/make-slug')
-const { enrichOrFetchCachedCompanyByName } = require('../../lib/clearbit')
+const { enrichOrFetchEnrichedCompanyByName } = require('../../lib/clearbit')
 
 module.exports = {
   typeDefs: `
@@ -66,7 +66,7 @@ module.exports = {
               client: false
             }
           })
-          enrichOrFetchCachedCompanyByName(company.name, context)
+          enrichOrFetchEnrichedCompanyByName(company.name, context)
         }
         const newEmployment = await context.store.create({
           type: 'employments',

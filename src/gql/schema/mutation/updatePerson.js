@@ -1,7 +1,7 @@
 const omit = require('lodash/omit')
 const { handleErrors } = require('../../lib')
 const { values: dataSources } = require('../enums/data-sources')
-const { enrichOrFetchCachedCompanyByName } = require('../../lib/clearbit')
+const { enrichOrFetchEnrichedCompanyByName } = require('../../lib/clearbit')
 const getMakeUniqueCompanySlug = require('../../lib/helpers/make-unique-company-slug')
 
 module.exports = {
@@ -38,7 +38,7 @@ module.exports = {
                 slug: makeSlug({ name: companyName })
               }
             })
-            enrichOrFetchCachedCompanyByName(company.name, context)
+            enrichOrFetchEnrichedCompanyByName(company.name, context)
           }
 
           // Fetch current employment for person

@@ -2,7 +2,7 @@ const omit = require('lodash/omit')
 const { logger } = require('@nudj/library')
 const enrichCompanyByName = require('./enrich-company-by-name')
 
-const enrichOrFetchCachedCompanyByName = async (companyName, context, options) => {
+const enrichOrFetchEnrichedCompanyByName = async (companyName, context, options) => {
   if (process.env.CLEARBIT_ENABLED !== 'true') return null
   try {
     const enrichedCompany = await context.noSQL.readOne({
@@ -26,4 +26,4 @@ const enrichOrFetchCachedCompanyByName = async (companyName, context, options) =
   }
 }
 
-module.exports = enrichOrFetchCachedCompanyByName
+module.exports = enrichOrFetchEnrichedCompanyByName

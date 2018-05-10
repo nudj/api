@@ -1,5 +1,5 @@
 const { handleErrors } = require('../../lib')
-const { enrichOrFetchCachedCompanyByName } = require('../../lib/clearbit')
+const { enrichOrFetchEnrichedCompanyByName } = require('../../lib/clearbit')
 
 module.exports = {
   typeDefs: `
@@ -29,7 +29,7 @@ module.exports = {
           type: 'companies',
           data: { ...args.company, onboarded, client }
         })
-        enrichOrFetchCachedCompanyByName(company.name, context)
+        enrichOrFetchEnrichedCompanyByName(company.name, context)
 
         return company
       })

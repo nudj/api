@@ -163,8 +163,8 @@ describe('00002 Arango to MySQL', () => {
       })
 
       it('should use defaults', async () => {
-        const employments = await sql.select().from(TABLES.PERSON_ROLES)
-        expect(employments[0]).to.have.property('current', 0)
+        const personRoles = await sql.select().from(TABLES.PERSON_ROLES)
+        expect(personRoles[0]).to.have.property('current', 0)
       })
     })
   })

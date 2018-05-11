@@ -103,6 +103,10 @@ module.exports = {
           enrichOrFetchEnrichedCompanyByName(company, context)
         }
 
+        if (existingCompany) {
+          enrichOrFetchEnrichedCompanyByName(existingCompany, context)
+        }
+
         const connection = await context.store.create({
           type: 'connections',
           data: {

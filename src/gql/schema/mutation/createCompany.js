@@ -22,6 +22,7 @@ module.exports = {
         })
 
         if (existingCompany) {
+          enrichOrFetchEnrichedCompanyByName(existingCompany, context)
           throw new Error(`Company with slug '${slug}' already exists`)
         }
 

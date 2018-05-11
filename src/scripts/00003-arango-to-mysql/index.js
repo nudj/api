@@ -41,19 +41,14 @@ async function action ({ db, sql, nosql }) {
       }, {})
       const relations = mapValues(RELATIONS[tableName] || {}, (foreignTable, field) => idMaps[foreignTable][item[fieldToProp(tableName, field)]])
 
-      try {
-        // create new record in MySQL table
-        await sql(tableName).insert({
-          id,
-          created: dateToTimestamp(item.created),
-          modified: dateToTimestamp(item.modified),
-          ...scalars,
-          ...relations
-        })
-      } catch (error) {
-        console.log(tableName, item, RELATIONS[tableName], scalars, relations)
-        throw error
-      }
+      // create new record in MySQL table
+      await sql(tableName).insert({
+        id,
+        created: dateToTimestamp(item.created),
+        modified: dateToTimestamp(item.modified),
+        ...scalars,
+        ...relations
+      })
 
       // cache map from Arango id to MySQL id for the given table
       idMaps[tableName][item._key] = id
@@ -85,7 +80,7 @@ async function action ({ db, sql, nosql }) {
           }))
         }))
       }
-    }))
+    })) // items.map
 
     // retroactively update records with relations that reference the same table (because we need to know the id of the record we are referencing)
     if (SELF_RELATIONS[tableName]) {
@@ -103,7 +98,7 @@ async function action ({ db, sql, nosql }) {
         }
       }))
     }
-  }))
+  })) // TABLE_ORDER.map
 
   // loop over referral key->id map and store in NoSQL store to help with old url remapping
   const referralIdMapsCursor = await nosql.collection('referralIdMaps')

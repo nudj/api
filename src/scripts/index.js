@@ -25,9 +25,14 @@ const [scriptName] = process.argv.slice(2)
 const script = require(`./${scriptName}`);
 
 (async () => {
+  let exitCode = 0
   try {
     await script({ db, sql, nosql })
   } catch (error) {
     console.log('\n\n', error)
+    exitCode = 1
+  } finally {
+    await sql.destroy()
+    process.exit(exitCode)
   }
 })()

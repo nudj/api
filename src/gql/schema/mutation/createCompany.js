@@ -29,7 +29,7 @@ module.exports = {
           type: 'companies',
           data: { ...args.company, onboarded, client }
         })
-        enrichOrFetchEnrichedCompanyByName(company.name, context)
+        enrichOrFetchEnrichedCompanyByName(company, context)
 
         return company
       })

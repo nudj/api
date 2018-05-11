@@ -38,7 +38,7 @@ module.exports = {
                 slug: makeSlug({ name: companyName })
               }
             })
-            enrichOrFetchEnrichedCompanyByName(company.name, context)
+            enrichOrFetchEnrichedCompanyByName(company, context)
           }
 
           // Fetch current employment for person

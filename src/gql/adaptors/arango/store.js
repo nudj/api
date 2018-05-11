@@ -44,7 +44,7 @@ module.exports = ({
       type,
       data
     }) => {
-      const _key = generateId(pluralize.singular(type), data)
+      const _key = data._key || generateId(pluralize.singular(type), data)
       const response = await db.collection(type).save(Object.assign(data, {
         _key,
         created: newISODate(),

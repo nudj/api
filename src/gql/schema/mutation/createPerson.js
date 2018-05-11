@@ -38,7 +38,7 @@ module.exports = {
                 slug: makeSlug({ name: companyName })
               }
             })
-            enrichOrFetchEnrichedCompanyByName(company.name, context)
+            enrichOrFetchEnrichedCompanyByName(company, context)
           }
 
           await context.store.create({

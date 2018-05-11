@@ -39,7 +39,7 @@ async function action ({ db, sql, nosql }) {
         scalars[field] = typeof value === 'object' ? JSON.stringify(value) : value
         return scalars
       }, {})
-      const relations = mapValues(RELATIONS[tableName] || {}, (foreignTable, field) => idMaps[foreignTable][item[field]])
+      const relations = mapValues(RELATIONS[tableName] || {}, (foreignTable, field) => idMaps[foreignTable][item[fieldToProp(tableName, field)]])
 
       try {
         // create new record in MySQL table

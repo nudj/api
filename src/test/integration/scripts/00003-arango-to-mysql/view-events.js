@@ -92,13 +92,15 @@ describe('00003 Arango to MySQL', () => {
             name: COLLECTIONS.VIEW_EVENTS,
             data: [
               {
-                _id: 'employments/123',
+                _id: 'events/123',
                 _rev: '_WpP1l3W---',
                 _key: '123',
                 created: '2018-02-01T01:02:03.456Z',
                 modified: '2018-03-02T02:03:04.567Z',
                 browserId: 'abc123',
-                job: 'job1',
+                entityId: 'job1',
+                entityType: 'jobs',
+                eventType: 'viewed',
                 batchSize: 100,
                 skip: 0
               }
@@ -110,14 +112,14 @@ describe('00003 Arango to MySQL', () => {
       genericExpectationsForTable(TABLES.VIEW_EVENTS)
 
       it('should transfer all scalar properties', async () => {
-        const personRoles = await sql.select().from(TABLES.VIEW_EVENTS)
-        expect(personRoles[0]).to.have.property('browserId', 'abc123')
+        const viewEvents = await sql.select().from(TABLES.VIEW_EVENTS)
+        expect(viewEvents[0]).to.have.property('browserId', 'abc123')
       })
 
-      it('should remap the relations', async () => {
-        const personRoles = await sql.select().from(TABLES.VIEW_EVENTS)
+      it('should remap the job field from the entityId prop', async () => {
+        const viewEvents = await sql.select().from(TABLES.VIEW_EVENTS)
         const jobs = await sql.select().from(TABLES.JOBS)
-        expect(personRoles[0]).to.have.property('job', jobs[0].id)
+        expect(viewEvents[0]).to.have.property('job', jobs[0].id)
       })
     })
   })

@@ -36,6 +36,9 @@ const TABLE_TO_COLLECTION = {
 const FIELD_TO_PROP = {
   [TABLES.ACCOUNTS]: {
     [FIELDS[TABLES.ACCOUNTS].EMAIL]: 'emailAddress'
+  },
+  [TABLES.VIEW_EVENTS]: {
+    [FIELDS[TABLES.VIEW_EVENTS].JOB]: 'entityId'
   }
 }
 const RELATIONS = {

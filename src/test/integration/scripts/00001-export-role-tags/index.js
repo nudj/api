@@ -18,12 +18,12 @@ const {
   teardownCollections,
   expect
 } = require('../../lib')
-const script = require('../../../../scripts/00000-export-role-tags')
+const script = require('../../../../scripts/00001-export-role-tags')
 const executeScript = () => script({ db })
 
 chai.use(chaiAsPromised)
 
-describe('00000 Export Role Tags', () => {
+describe('00001 Export Role Tags', () => {
   let result
 
   before(async () => {
@@ -79,7 +79,7 @@ describe('00000 Export Role Tags', () => {
       }
     ])
     await executeScript()
-    const csv = await readFile(path.join(__dirname, '../../../../scripts/00000-export-role-tags/role-tags.csv'))
+    const csv = await readFile(path.join(__dirname, '../../../../scripts/00001-export-role-tags/role-tags.csv'))
     result = await parseCsv(csv)
   })
 

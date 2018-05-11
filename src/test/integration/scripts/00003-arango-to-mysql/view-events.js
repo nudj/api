@@ -122,5 +122,70 @@ describe('00003 Arango to MySQL', () => {
         expect(viewEvents[0]).to.have.property('job', jobs[0].id)
       })
     })
+
+    describe('when multiple views are recorded for the same job/browser', () => {
+      beforeEach(async () => {
+        await seedRun([
+          {
+            name: COLLECTIONS.COMPANIES,
+            data: [
+              {
+                _key: 'company1',
+                created: '2018-02-01T01:02:03.456Z',
+                modified: '2018-03-02T02:03:04.567Z',
+                name: 'Company Ltd',
+                slug: 'company-ltd'
+              }
+            ]
+          },
+          {
+            name: COLLECTIONS.JOBS,
+            data: [
+              {
+                _key: 'job1',
+                created: '2018-02-01T01:02:03.456Z',
+                modified: '2018-03-02T02:03:04.567Z',
+                title: 'Job title',
+                slug: 'job-title',
+                bonus: 1000,
+                company: 'company1'
+              }
+            ]
+          },
+          {
+            name: COLLECTIONS.VIEW_EVENTS,
+            data: [
+              {
+                _key: 'viewEvent1',
+                created: '2018-02-01T01:02:03.456Z',
+                modified: '2018-03-02T02:03:04.567Z',
+                browserId: 'abc123',
+                entityId: 'job1'
+              },
+              {
+                _key: 'viewEvent2',
+                created: '2019-02-01T01:02:03.456Z',
+                modified: '2019-03-02T02:03:04.567Z',
+                browserId: 'abc123',
+                entityId: 'job1'
+              }
+            ]
+          }
+        ])
+      })
+
+      genericExpectationsForTable(TABLES.VIEW_EVENTS, 2)
+
+      it('should record both events', async () => {
+        const viewEvents = await sql.select().from(TABLES.VIEW_EVENTS)
+        expect(viewEvents).to.have.length(2)
+      })
+
+      it('should allow same browserId more than once', async () => {
+        const viewEvents = await sql.select().from(TABLES.VIEW_EVENTS)
+        expect(viewEvents[0]).to.have.property('browserId', 'abc123')
+        expect(viewEvents[1]).to.have.property('browserId', 'abc123')
+      })
+    })
   })
 })

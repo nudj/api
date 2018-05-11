@@ -244,7 +244,6 @@ exports.up = async knex => {
       t.comment('Reworked from the events collection in Arango')
       t.string(BROWSER_ID).notNullable()
       relationType(JOB, TABLES.JOBS, t, knex).notNullable()
-      t.unique(BROWSER_ID, 'byBrowserId')
     })
 
     .createTable(TABLES.SURVEYS, t => {

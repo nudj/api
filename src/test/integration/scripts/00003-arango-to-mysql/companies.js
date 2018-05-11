@@ -117,5 +117,30 @@ describe('00003 Arango to MySQL', () => {
         expect(records[0]).to.have.property('onboarded', 0)
       })
     })
+
+    describe('when created/modified are missing', () => {
+      beforeEach(async () => {
+        await seedRun([
+          {
+            name: COLLECTIONS.COMPANIES,
+            data: [
+              {
+                _id: 'companies/123',
+                _rev: '_WpP1l3W---',
+                _key: '123',
+                name: 'Company Ltd',
+                slug: 'company-ltd'
+              }
+            ]
+          }
+        ])
+      })
+
+      it('should use defaults', async () => {
+        const records = await sql.select().from(TABLES.COMPANIES)
+        expect(records[0]).to.have.property('client', 0)
+        expect(records[0]).to.have.property('onboarded', 0)
+      })
+    })
   })
 })

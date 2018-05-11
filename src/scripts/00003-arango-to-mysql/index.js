@@ -12,10 +12,11 @@ const {
   dateToTimestamp
 } = require('./helpers')
 const {
+  TABLES,
   FIELDS
 } = require('../../lib/sql')
 
-async function action ({ db, sql }) {
+async function action ({ db, sql, nosql }) {
   const idMaps = {}
 
   // loop over sql tables in specific order to comply with foreign key contraints
@@ -92,6 +93,10 @@ async function action ({ db, sql }) {
       }))
     }
   }))
+
+  // loop over referral key->id map and store in NoSQL store to help with old url remapping
+  const referralIdMapsCursor = await nosql.collection('referralIdMaps')
+  await promiseSerial(map(idMaps[TABLES.REFERRALS], (id, _key) => () => referralIdMapsCursor.save({ _key, id })))
 }
 
 module.exports = action

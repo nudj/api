@@ -5,6 +5,7 @@ const isEqual = require('date-fns/is_equal')
 
 const db = require('./db')
 const sql = require('./sql')
+const nosql = require('./nosql')
 const { setupCollections, populateCollections } = require('./setup')
 const { truncateCollections, teardownCollections } = require('./teardown')
 
@@ -38,6 +39,7 @@ module.exports = {
   expect,
   db,
   sql,
+  nosql,
   setupCollections,
   truncateCollections,
   teardownCollections,

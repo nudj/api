@@ -5,6 +5,7 @@ const chaiAsPromised = require('chai-as-promised')
 const {
   db,
   sql,
+  nosql,
   setupCollections,
   populateCollections,
   truncateCollections,
@@ -24,22 +25,25 @@ const script = require('../../../../scripts/00003-arango-to-mysql')
 
 chai.use(chaiAsPromised)
 
-describe('00003 Arango to MySQL', () => {
+describe.only('00003 Arango to MySQL', () => {
   async function seedRun (data) {
     await populateCollections(db, data)
-    await script({ db, sql })
+    await script({ db, sql, nosql })
   }
 
   before(async () => {
     await setupCollections(db, TABLE_ORDER.map(table => tableToCollection(table)))
+    await setupCollections(nosql, ['referralIdMaps'])
   })
 
   afterEach(async () => {
     await truncateCollections(db)
+    await truncateCollections(nosql)
   })
 
   after(async () => {
     await teardownCollections(db)
+    await teardownCollections(nosql)
   })
 
   describe('for referrals table', () => {
@@ -157,6 +161,18 @@ describe('00003 Arango to MySQL', () => {
       it('should use defaults', async () => {
         const referrals = await sql.select().from(TABLES.REFERRALS).orderBy('created', 'asc')
         expect(referrals[0]).to.have.property('parent', null)
+      })
+
+      it('should store a key->id map in the NoSQL store', async () => {
+        const referrals = await sql.select().from(TABLES.REFERRALS).orderBy('created', 'asc')
+
+        const referralIdMapsCursor = await nosql.collection('referralIdMaps')
+
+        const referral1IdMap = await referralIdMapsCursor.document('referral1')
+        expect(referral1IdMap).to.have.property('id', referrals[0].id)
+
+        const referral2IdMap = await referralIdMapsCursor.document('referral2')
+        expect(referral2IdMap).to.have.property('id', referrals[1].id)
       })
     })
   })

@@ -19,9 +19,9 @@ const {
 const {
   TABLE_ORDER,
   tableToCollection
-} = require('../../../../scripts/00002-arango-to-mysql/helpers')
+} = require('../../../../scripts/00003-arango-to-mysql/helpers')
 
-const script = require('../../../../scripts/00002-arango-to-mysql')
+const script = require('../../../../scripts/00003-arango-to-mysql')
 
 chai.use(chaiAsPromised)
 

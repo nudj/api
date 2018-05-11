@@ -75,7 +75,7 @@ async function action ({ db, sql }) {
       }
     }))
 
-    // retroacvtively update records with relations that reference the same table (because we need to know the id of the record we are referencing)
+    // retroactively update records with relations that reference the same table (because we need to know the id of the record we are referencing)
     if (SELF_RELATIONS[tableName]) {
       await promiseSerial(items.map(item => async () => {
         const selfRelations = SELF_RELATIONS[tableName].reduce((selfRelations, field) => {

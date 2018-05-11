@@ -86,7 +86,7 @@ describe('00003 Arango to MySQL', () => {
                 introDescription: 'Intro description',
                 outroTitle: 'Outro Title',
                 outroDescription: 'Outro description',
-                surveySections: JSON.stringify(['surveySection1', 'surveySection2']),
+                surveySections: ['surveySection1', 'surveySection2'],
                 company: 'company1',
                 batchSize: 100,
                 skip: 0

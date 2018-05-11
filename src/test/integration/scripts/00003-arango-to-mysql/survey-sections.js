@@ -86,7 +86,7 @@ describe('00003 Arango to MySQL', () => {
                 introDescription: 'Intro description',
                 outroTitle: 'Outro Title',
                 outroDescription: 'Outro description',
-                surveySections: JSON.stringify(['surveySection1', 'surveySection2']),
+                surveySections: ['surveySection1', 'surveySection2'],
                 company: 'company1'
               }
             ]
@@ -103,7 +103,7 @@ describe('00003 Arango to MySQL', () => {
                 slug: 'survey-section-slug',
                 title: 'Title',
                 description: 'Description',
-                surveyQuestions: JSON.stringify(['surveyQuestion1', 'surveyQuestion2']),
+                surveyQuestions: ['surveyQuestion1', 'surveyQuestion2'],
                 survey: 'survey1',
                 batchSize: 100,
                 skip: 0

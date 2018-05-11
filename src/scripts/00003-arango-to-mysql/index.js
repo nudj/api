@@ -1,5 +1,5 @@
 const uuid = require('uuid/v4')
-const pick = require('lodash/pick')
+const invert = require('lodash/invert')
 const map = require('lodash/map')
 const mapValues = require('lodash/mapValues')
 const promiseSerial = require('promise-serial')
@@ -29,20 +29,29 @@ async function action ({ db, sql, nosql }) {
     const collectionCursorAll = await collectionCursor.all()
     const items = await collectionCursorAll.all()
 
+    console.log(tableName, items.length)
     // loop over every item in the corresponding Arango collection
     await promiseSerial(items.map(item => async () => {
       const id = uuid()
-      const scalars = pick(item, Object.values(FIELDS[tableName]))
+      const scalars = mapValues(invert(FIELDS[tableName]), (ignore, field) => {
+        const value = item[field]
+        return typeof value === 'object' ? JSON.stringify(value) : value
+      })
       const relations = mapValues(RELATIONS[tableName] || {}, (foreignTable, field) => idMaps[foreignTable][item[field]])
 
-      // create new record in MySQL table
-      await sql(tableName).insert({
-        id,
-        created: dateToTimestamp(item.created),
-        modified: dateToTimestamp(item.modified),
-        ...scalars,
-        ...relations
-      })
+      try {
+        // create new record in MySQL table
+        await sql(tableName).insert({
+          id,
+          created: dateToTimestamp(item.created),
+          modified: dateToTimestamp(item.modified),
+          ...scalars,
+          ...relations
+        })
+      } catch (error) {
+        console.log(tableName, item, RELATIONS[tableName], scalars, relations)
+        throw error
+      }
 
       // cache map from Arango id to MySQL id for the given table
       idMaps[tableName][item._key] = id

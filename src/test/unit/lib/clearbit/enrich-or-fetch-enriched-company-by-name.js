@@ -94,14 +94,21 @@ describe('Clearbit.enrichOrFetchEnrichedCompanyByName', () => {
         enrichCompanyByNameStub.returns(null)
       })
 
-      it('does not create an enriched company', async () => {
+      it('creates a company to record an enrichment attempt', async () => {
         await enrichOrFetchEnrichedCompanyByName(baseCompanyData, fakeContext)
-        expect(createStub).to.not.have.been.called()
+        expect(createStub).to.have.been.calledWith({
+          type: 'enrichedCompanies',
+          data: {
+            _key: 'company1',
+            name: 'Comapny Inc'
+          }
+        })
       })
 
       it('returns the result of the attempted enrichment', async () => {
+        createStub.returns('ATTEMPTED_ENRICHMENT')
         const result = await enrichOrFetchEnrichedCompanyByName(baseCompanyData, fakeContext)
-        expect(result).to.be.null()
+        expect(result).to.equal('ATTEMPTED_ENRICHMENT')
       })
 
       describe('when the request errors', () => {

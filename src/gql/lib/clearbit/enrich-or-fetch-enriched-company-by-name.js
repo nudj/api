@@ -12,14 +12,26 @@ const enrichOrFetchEnrichedCompanyByName = async (company, context, options) => 
     if (enrichedCompany) return enrichedCompany
 
     const companyData = await enrichCompanyByName(company.name, options)
-    return companyData && context.noSQL.create({
-      type: 'enrichedCompanies',
-      data: {
+
+    let data
+    if (companyData) {
+      data = {
         ...omit(companyData, ['id']), // omit Clearbit ID
         _key: company.id,
         clearbitId: companyData.id,
         name: company.name
       }
+    } else {
+      // Store company to record attempted enrichment - nothing returned
+      data = {
+        _key: company.id,
+        name: company.name
+      }
+    }
+
+    return context.noSQL.create({
+      type: 'enrichedCompanies',
+      data
     })
   } catch (error) {
     logger('error', 'Enrichment error', error)

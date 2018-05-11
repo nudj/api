@@ -25,7 +25,7 @@ const script = require('../../../../scripts/00003-arango-to-mysql')
 
 chai.use(chaiAsPromised)
 
-describe.only('00003 Arango to MySQL', () => {
+describe('00003 Arango to MySQL', () => {
   async function seedRun (data) {
     await populateCollections(db, data)
     await script({ db, sql, nosql })

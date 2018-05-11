@@ -127,7 +127,7 @@ const MANY_RELATIONS = {
   }
 }
 const tableToCollection = table => TABLE_TO_COLLECTION[table] || table
-const dateToTimestamp = date => date.replace('T', ' ').replace('Z', '')
+const dateToTimestamp = date => date.split('.')[0].replace('T', ' ')
 
 module.exports = {
   TABLE_ORDER,

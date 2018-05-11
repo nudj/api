@@ -5,6 +5,7 @@ const chaiAsPromised = require('chai-as-promised')
 const {
   db,
   sql,
+  nosql,
   setupCollections,
   populateCollections,
   truncateCollections,
@@ -28,19 +29,22 @@ chai.use(chaiAsPromised)
 describe('00003 Arango to MySQL', () => {
   async function seedRun (data) {
     await populateCollections(db, data)
-    await script({ db, sql })
+    await script({ db, sql, nosql })
   }
 
   before(async () => {
     await setupCollections(db, TABLE_ORDER.map(table => tableToCollection(table)))
+    await setupCollections(nosql, ['referralIdMaps'])
   })
 
   afterEach(async () => {
     await truncateCollections(db)
+    await truncateCollections(nosql)
   })
 
   after(async () => {
     await teardownCollections(db)
+    await teardownCollections(nosql)
   })
 
   describe('for surveyAnswers table', () => {

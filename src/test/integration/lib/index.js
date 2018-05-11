@@ -24,8 +24,7 @@ function genericExpectationsForTable (TABLE, count = 1) {
     expect(records[0]).to.have.property('created')
     expect(isEqual(records[0].created, '2018-02-01 01:02:03'), 'created date was not inserted correctly').to.be.true()
     expect(records[0]).to.have.property('modified')
-    // milliseconds are rounded to the nearest second
-    expect(isEqual(records[0].modified, '2018-03-02 02:03:05'), 'modified date was not inserted correctly').to.be.true()
+    expect(isEqual(records[0].modified, '2018-03-02 02:03:04'), 'modified date was not inserted correctly').to.be.true()
   })
 
   it('should not transfer extraneous properties', async () => {

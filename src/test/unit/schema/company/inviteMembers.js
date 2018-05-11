@@ -8,7 +8,7 @@ const schema = require('../../../../gql/schema')
 const { values: hirerTypes } = require('../../../../gql/schema/enums/hirer-types')
 const { executeQueryOnDbUsingSchema, shouldRespondWithGqlError } = require('../../helpers')
 
-describe.only('Company.inviteMembers', () => {
+describe('Company.inviteMembers', () => {
   const mailerStub = sinon.stub()
   const operation = `
     query ($emailAddresses: [String!]!) {

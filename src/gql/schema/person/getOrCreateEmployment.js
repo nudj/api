@@ -66,7 +66,7 @@ module.exports = {
               client: false
             }
           })
-          enrichOrFetchEnrichedCompanyByName(company.name, context)
+          enrichOrFetchEnrichedCompanyByName(company, context)
         }
         const newEmployment = await context.store.create({
           type: 'employments',

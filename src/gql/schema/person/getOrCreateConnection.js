@@ -100,7 +100,7 @@ module.exports = {
         ])
 
         if (company && company.name && !existingCompany) {
-          enrichOrFetchEnrichedCompanyByName(company.name, context)
+          enrichOrFetchEnrichedCompanyByName(company, context)
         }
 
         const connection = await context.store.create({

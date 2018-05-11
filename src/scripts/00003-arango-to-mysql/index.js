@@ -1,5 +1,5 @@
 const uuid = require('uuid/v4')
-const invert = require('lodash/invert')
+const reduce = require('lodash/reduce')
 const map = require('lodash/map')
 const mapValues = require('lodash/mapValues')
 const promiseSerial = require('promise-serial')
@@ -9,6 +9,7 @@ const {
   SELF_RELATIONS,
   MANY_RELATIONS,
   tableToCollection,
+  fieldToProp,
   dateToTimestamp
 } = require('./helpers')
 const {
@@ -33,10 +34,11 @@ async function action ({ db, sql, nosql }) {
     // loop over every item in the corresponding Arango collection
     await promiseSerial(items.map(item => async () => {
       const id = uuid()
-      const scalars = mapValues(invert(FIELDS[tableName]), (ignore, field) => {
-        const value = item[field]
-        return typeof value === 'object' ? JSON.stringify(value) : value
-      })
+      const scalars = reduce(FIELDS[tableName], (scalars, field) => {
+        const value = item[fieldToProp(tableName, field)]
+        scalars[field] = typeof value === 'object' ? JSON.stringify(value) : value
+        return scalars
+      }, {})
       const relations = mapValues(RELATIONS[tableName] || {}, (foreignTable, field) => idMaps[foreignTable][item[field]])
 
       try {

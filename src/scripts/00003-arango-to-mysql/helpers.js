@@ -33,6 +33,11 @@ const TABLE_ORDER = [
 const TABLE_TO_COLLECTION = {
   [TABLES.VIEW_EVENTS]: 'events'
 }
+const FIELD_TO_PROP = {
+  [TABLES.ACCOUNTS]: {
+    [FIELDS[TABLES.ACCOUNTS].EMAIL]: 'emailAddress'
+  }
+}
 const RELATIONS = {
   [TABLES.JOBS]: {
     [FIELDS[TABLES.JOBS].COMPANY]: TABLES.COMPANIES
@@ -114,7 +119,7 @@ const SELF_RELATIONS = {
 }
 const MANY_RELATIONS = {
   [TABLES.SURVEY_ANSWERS]: {
-    'connections': {
+    connections: {
       tableName: TABLES.SURVEY_ANSWER_CONNECTIONS,
       relations: RELATIONS[TABLES.SURVEY_ANSWER_CONNECTIONS],
       parent: {
@@ -129,6 +134,7 @@ const MANY_RELATIONS = {
   }
 }
 const tableToCollection = table => TABLE_TO_COLLECTION[table] || table
+const fieldToProp = (table, prop) => (FIELD_TO_PROP[table] && FIELD_TO_PROP[table][prop]) || prop
 const dateToTimestamp = date => {
   date = date || format(new Date())
   return date.split('.')[0].replace('T', ' ')
@@ -140,5 +146,6 @@ module.exports = {
   SELF_RELATIONS,
   MANY_RELATIONS,
   tableToCollection,
+  fieldToProp,
   dateToTimestamp
 }

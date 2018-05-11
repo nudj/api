@@ -33,17 +33,16 @@ describe('00003 Arango to MySQL', () => {
 
   before(async () => {
     await setupCollections(db, TABLE_ORDER.map(table => tableToCollection(table)))
-    await setupCollections(nosql, ['referralIdMaps'])
   })
 
   afterEach(async () => {
     await truncateCollections(db)
     await truncateCollections(nosql)
+    await teardownCollections(nosql)
   })
 
   after(async () => {
     await teardownCollections(db)
-    await teardownCollections(nosql)
   })
 
   describe('for referrals table', () => {
@@ -161,6 +160,16 @@ describe('00003 Arango to MySQL', () => {
       it('should use defaults', async () => {
         const referrals = await sql.select().from(TABLES.REFERRALS).orderBy('created', 'asc')
         expect(referrals[0]).to.have.property('parent', null)
+      })
+
+      it('should create referralIdMaps collection in the NoSQL store', async () => {
+        const referralIdMapsCursor = await nosql.collection('referralIdMaps')
+        try {
+          await referralIdMapsCursor.all()
+          expect(true).to.be.true()
+        } catch (error) {
+          expect(true, 'referralIdMaps does not exist').to.be.false()
+        }
       })
 
       it('should store a key->id map in the NoSQL store', async () => {

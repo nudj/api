@@ -107,6 +107,7 @@ async function action ({ db, sql, nosql }) {
 
   // loop over referral key->id map and store in NoSQL store to help with old url remapping
   const referralIdMapsCursor = await nosql.collection('referralIdMaps')
+  await referralIdMapsCursor.create()
   await promiseSerial(map(idMaps[TABLES.REFERRALS], (id, _key) => () => referralIdMapsCursor.save({ _key, id })))
 }
 

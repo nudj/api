@@ -258,11 +258,11 @@ exports.up = async knex => {
       } = FIELDS[TABLES.SURVEYS]
 
       defaultConfig(t, knex)
-      t.string(SLUG).notNullable()
+      t.string(SLUG).nullable()
       t.string(INTRO_TITLE).notNullable()
       t.text(INTRO_DESCRIPTION).notNullable()
-      t.string(OUTRO_TITLE).notNullable()
-      t.text(OUTRO_DESCRIPTION).notNullable()
+      t.string(OUTRO_TITLE).nullable()
+      t.text(OUTRO_DESCRIPTION).nullable()
       t.json(SURVEY_SECTIONS).notNullable().comment('Array of surveySection ids denoting their order')
       relationType(COMPANY, TABLES.COMPANIES, t, knex).notNullable()
       t.unique([COMPANY, SLUG], 'byCompanySlug')
@@ -278,7 +278,7 @@ exports.up = async knex => {
       } = FIELDS[TABLES.SURVEY_SECTIONS]
 
       defaultConfig(t, knex)
-      t.string(SLUG).notNullable()
+      t.string(SLUG).nullable()
       t.string(TITLE).notNullable()
       t.text(DESCRIPTION).notNullable()
       t.json(SURVEY_QUESTIONS).notNullable().comment('Array of surveyQuestion ids denoting their order')
@@ -297,7 +297,7 @@ exports.up = async knex => {
       } = FIELDS[TABLES.SURVEY_QUESTIONS]
 
       defaultConfig(t, knex)
-      t.string(SLUG).notNullable()
+      t.string(SLUG).nullable()
       t.string(TITLE).notNullable()
       t.text(DESCRIPTION).notNullable()
       t.boolean(REQUIRED).defaultTo(false).notNullable()

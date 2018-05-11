@@ -5,6 +5,7 @@ const truncateCollections = async (db) => {
 
 const teardownCollections = async (db) => {
   const collections = await db.collections()
+  console.log('teardown')
   return Promise.all(collections.map(async collection => {
     try {
       await collection.drop()

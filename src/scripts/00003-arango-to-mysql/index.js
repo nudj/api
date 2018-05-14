@@ -1,4 +1,3 @@
-const uuid = require('uuid/v4')
 const reduce = require('lodash/reduce')
 const map = require('lodash/map')
 const mapValues = require('lodash/mapValues')
@@ -33,7 +32,6 @@ async function action ({ db, sql, nosql }) {
     console.log(tableName, items.length)
     // loop over every item in the corresponding Arango collection
     await promiseSerial(items.map(item => async () => {
-      const id = uuid()
       const scalars = reduce(FIELDS[tableName], (scalars, field) => {
         const value = item[fieldToProp(tableName, field)]
         scalars[field] = typeof value === 'object' ? JSON.stringify(value) : value
@@ -42,15 +40,14 @@ async function action ({ db, sql, nosql }) {
       const relations = mapValues(RELATIONS[tableName] || {}, (foreignTable, field) => idMaps[foreignTable][item[fieldToProp(tableName, field)]])
 
       // create new record in MySQL table
-      await sql(tableName).insert({
-        id,
+      const [ id ] = await sql(tableName).insert({
         created: dateToTimestamp(item.created),
         modified: dateToTimestamp(item.modified),
         ...scalars,
         ...relations
       })
 
-      // cache map from Arango id to MySQL id for the given table
+      // cache map from Arango key to MySQL id for the given table
       idMaps[tableName][item._key] = id
 
       // create edge records for one->many relationships (which are stored as Array<key>'s in Arango and are unsupported in MySQL)
@@ -72,7 +69,6 @@ async function action ({ db, sql, nosql }) {
 
             // create a new edge record in the edge table
             await sql(edgeTableName).insert({
-              id: uuid(),
               created: dateToTimestamp(item.modified),
               modified: dateToTimestamp(item.modified),
               ...edgeRelations

@@ -190,7 +190,9 @@ function createEnumDefinition (items) {
 function defaultConfig (t, knex) {
   t.charset('utf8mb4') // to support emoji
   t.collate('utf8mb4_bin') // to support emoji
-  t.uuid(FIELDS.GENERIC.ID).primary()
+  // Reason for choosing INT over BIGINT as the primary key
+  // http://ronaldbradford.com/blog/bigint-v-int-is-there-a-big-deal-2008-07-18/
+  t.increments(FIELDS.GENERIC.ID).primary()
   t.timestamp(FIELDS.GENERIC.CREATED).defaultTo(knex.fn.now()).notNullable()
   t.timestamp(FIELDS.GENERIC.MODIFIED).defaultTo(knex.fn.now()).notNullable()
 }
@@ -203,7 +205,7 @@ function urlType (fieldName, t, knex) {
   return t.string(fieldName, 2083)
 }
 function relationType (fieldName, table, t, knex) {
-  return t.uuid(fieldName).references(FIELDS.GENERIC.ID).inTable(table)
+  return t.integer(fieldName).unsigned().references(FIELDS.GENERIC.ID).inTable(table)
 }
 
 module.exports = {

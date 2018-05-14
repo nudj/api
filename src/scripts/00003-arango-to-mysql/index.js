@@ -3,11 +3,12 @@ const map = require('lodash/map')
 const mapValues = require('lodash/mapValues')
 const promiseSerial = require('promise-serial')
 const {
+  NEW_COLLECTIONS,
   TABLE_ORDER,
   RELATIONS,
   SELF_RELATIONS,
   MANY_RELATIONS,
-  tableToCollection,
+  newToOldCollection,
   fieldToProp,
   dateToTimestamp
 } = require('./helpers')
@@ -24,12 +25,11 @@ async function action ({ db, sql, nosql }) {
     idMaps[tableName] = {}
 
     // fetch all items from the corresponding Arango collection
-    const collectionName = tableToCollection(tableName)
+    const collectionName = tableName
     const collectionCursor = db.collection(collectionName)
     const collectionCursorAll = await collectionCursor.all()
     const items = await collectionCursorAll.all()
 
-    console.log(tableName, items.length)
     // loop over every item in the corresponding Arango collection
     await promiseSerial(items.map(item => async () => {
       const scalars = reduce(FIELDS[tableName], (scalars, field) => {
@@ -95,6 +95,35 @@ async function action ({ db, sql, nosql }) {
       }))
     }
   })) // TABLE_ORDER.map
+
+  // copy events into jobViewEvents collection in NoSQL
+  await promiseSerial(Object.values(NEW_COLLECTIONS).map(newCollectionName => async () => {
+    // create new collection
+    const newCollectionCursor = await nosql.collection(newCollectionName)
+    await newCollectionCursor.create()
+
+    // fetch all items from old collection
+    const oldCollectionName = newToOldCollection(newCollectionName)
+    const oldCollectionCursor = db.collection(oldCollectionName)
+    const oldCollectionCursorAll = await oldCollectionCursor.all()
+    const oldItems = await oldCollectionCursorAll.all()
+
+    // copy values from old items to new items
+    await promiseSerial(oldItems.map(oldItem => async () => {
+      let props
+      switch (newCollectionName) {
+        case NEW_COLLECTIONS.JOB_VIEW_EVENTS:
+          props = {
+            created: dateToTimestamp(oldItem.created),
+            modified: dateToTimestamp(oldItem.modified),
+            job: idMaps[TABLES.JOBS][oldItem.entityId],
+            browserId: oldItem.browserId
+          }
+          break
+      }
+      await newCollectionCursor.save(props)
+    }))
+  }))
 
   // loop over referral key->id map and store in NoSQL store to help with old url remapping
   const referralIdMapsCursor = await nosql.collection('referralIdMaps')

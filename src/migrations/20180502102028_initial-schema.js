@@ -234,18 +234,6 @@ exports.up = async knex => {
       t.unique(THREAD_ID, 'byThreadId')
     })
 
-    .createTable(TABLES.VIEW_EVENTS, t => {
-      const {
-        BROWSER_ID,
-        JOB
-      } = FIELDS[TABLES.VIEW_EVENTS]
-
-      defaultConfig(t, knex)
-      t.comment('Reworked from the events collection in Arango')
-      t.string(BROWSER_ID).notNullable()
-      relationType(JOB, TABLES.JOBS, t, knex).notNullable()
-    })
-
     .createTable(TABLES.SURVEYS, t => {
       const {
         SLUG,

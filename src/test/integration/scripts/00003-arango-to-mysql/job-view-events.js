@@ -10,15 +10,14 @@ const {
   populateCollections,
   truncateCollections,
   teardownCollections,
-  expect,
-  genericExpectationsForTable
+  expect
 } = require('../../lib')
 const {
   TABLES
 } = require('../../../../lib/sql')
 const {
-  TABLE_ORDER,
-  tableToCollection
+  OLD_COLLECTIONS,
+  NEW_COLLECTIONS
 } = require('../../../../scripts/00003-arango-to-mysql/helpers')
 
 const script = require('../../../../scripts/00003-arango-to-mysql')
@@ -32,7 +31,7 @@ describe('00003 Arango to MySQL', () => {
   }
 
   before(async () => {
-    await setupCollections(db, TABLE_ORDER.map(table => tableToCollection(table)))
+    await setupCollections(db, Object.values(OLD_COLLECTIONS))
   })
 
   afterEach(async () => {
@@ -45,15 +44,8 @@ describe('00003 Arango to MySQL', () => {
     await teardownCollections(db)
   })
 
-  describe('for viewEvents table', () => {
-    const COLLECTIONS = {
-      VIEW_EVENTS: tableToCollection(TABLES.VIEW_EVENTS),
-      COMPANIES: tableToCollection(TABLES.COMPANIES),
-      JOBS: tableToCollection(TABLES.JOBS)
-    }
-
+  describe('for jobViewEvents collection', () => {
     afterEach(async () => {
-      await sql(TABLES.VIEW_EVENTS).whereNot('id', '').del()
       await sql(TABLES.JOBS).whereNot('id', '').del()
       await sql(TABLES.COMPANIES).whereNot('id', '').del()
     })
@@ -62,7 +54,7 @@ describe('00003 Arango to MySQL', () => {
       beforeEach(async () => {
         await seedRun([
           {
-            name: COLLECTIONS.COMPANIES,
+            name: OLD_COLLECTIONS.COMPANIES,
             data: [
               {
                 _key: 'company1',
@@ -74,7 +66,7 @@ describe('00003 Arango to MySQL', () => {
             ]
           },
           {
-            name: COLLECTIONS.JOBS,
+            name: OLD_COLLECTIONS.JOBS,
             data: [
               {
                 _key: 'job1',
@@ -88,7 +80,7 @@ describe('00003 Arango to MySQL', () => {
             ]
           },
           {
-            name: COLLECTIONS.VIEW_EVENTS,
+            name: OLD_COLLECTIONS.EVENTS,
             data: [
               {
                 _id: 'events/123',
@@ -108,17 +100,17 @@ describe('00003 Arango to MySQL', () => {
         ])
       })
 
-      genericExpectationsForTable(TABLES.VIEW_EVENTS)
+      it('should copy item from old events collection to new jobViewEvents collection', async () => {
+        const jobViewEventsCollectionCursor = await nosql.collection(NEW_COLLECTIONS.JOB_VIEW_EVENTS)
+        const jobViewEventsAllCursor = await jobViewEventsCollectionCursor.all()
+        const jobViewEventsAll = await jobViewEventsAllCursor.all()
 
-      it('should transfer all scalar properties', async () => {
-        const viewEvents = await sql.select().from(TABLES.VIEW_EVENTS)
-        expect(viewEvents[0]).to.have.property('browserId', 'abc123')
-      })
-
-      it('should remap the job field from the entityId prop', async () => {
-        const viewEvents = await sql.select().from(TABLES.VIEW_EVENTS)
         const jobs = await sql.select().from(TABLES.JOBS)
-        expect(viewEvents[0]).to.have.property('job', jobs[0].id)
+
+        expect(jobViewEventsAll[0]).to.have.property('created', '2018-02-01 01:02:03')
+        expect(jobViewEventsAll[0]).to.have.property('modified', '2018-03-02 02:03:04')
+        expect(jobViewEventsAll[0]).to.have.property('job', jobs[0].id)
+        expect(jobViewEventsAll[0]).to.have.property('browserId', 'abc123')
       })
     })
 
@@ -126,7 +118,7 @@ describe('00003 Arango to MySQL', () => {
       beforeEach(async () => {
         await seedRun([
           {
-            name: COLLECTIONS.COMPANIES,
+            name: OLD_COLLECTIONS.COMPANIES,
             data: [
               {
                 _key: 'company1',
@@ -138,7 +130,7 @@ describe('00003 Arango to MySQL', () => {
             ]
           },
           {
-            name: COLLECTIONS.JOBS,
+            name: OLD_COLLECTIONS.JOBS,
             data: [
               {
                 _key: 'job1',
@@ -152,38 +144,37 @@ describe('00003 Arango to MySQL', () => {
             ]
           },
           {
-            name: COLLECTIONS.VIEW_EVENTS,
+            name: OLD_COLLECTIONS.EVENTS,
             data: [
               {
-                _key: 'viewEvent1',
+                _key: 'event1',
                 created: '2018-02-01T01:02:03.456Z',
                 modified: '2018-03-02T02:03:04.567Z',
                 browserId: 'abc123',
-                entityId: 'job1'
+                entityId: 'job1',
+                entityType: 'jobs',
+                eventType: 'viewed'
               },
               {
-                _key: 'viewEvent2',
+                _key: 'event2',
                 created: '2019-02-01T01:02:03.456Z',
                 modified: '2019-03-02T02:03:04.567Z',
                 browserId: 'abc123',
-                entityId: 'job1'
+                entityId: 'job1',
+                entityType: 'jobs',
+                eventType: 'viewed'
               }
             ]
           }
         ])
       })
 
-      genericExpectationsForTable(TABLES.VIEW_EVENTS, 2)
+      it('should create one entry per event', async () => {
+        const jobViewEventsCollectionCursor = await nosql.collection(NEW_COLLECTIONS.JOB_VIEW_EVENTS)
+        const jobViewEventsAllCursor = await jobViewEventsCollectionCursor.all()
+        const jobViewEventsAll = await jobViewEventsAllCursor.all()
 
-      it('should record both events', async () => {
-        const viewEvents = await sql.select().from(TABLES.VIEW_EVENTS)
-        expect(viewEvents).to.have.length(2)
-      })
-
-      it('should allow same browserId more than once', async () => {
-        const viewEvents = await sql.select().from(TABLES.VIEW_EVENTS)
-        expect(viewEvents[0]).to.have.property('browserId', 'abc123')
-        expect(viewEvents[1]).to.have.property('browserId', 'abc123')
+        expect(jobViewEventsAll).to.have.length(2)
       })
     })
   })

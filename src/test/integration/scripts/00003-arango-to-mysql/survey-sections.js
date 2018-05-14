@@ -17,8 +17,7 @@ const {
   TABLES
 } = require('../../../../lib/sql')
 const {
-  TABLE_ORDER,
-  tableToCollection
+  OLD_COLLECTIONS
 } = require('../../../../scripts/00003-arango-to-mysql/helpers')
 
 const script = require('../../../../scripts/00003-arango-to-mysql')
@@ -32,7 +31,7 @@ describe('00003 Arango to MySQL', () => {
   }
 
   before(async () => {
-    await setupCollections(db, TABLE_ORDER.map(table => tableToCollection(table)))
+    await setupCollections(db, Object.values(OLD_COLLECTIONS))
   })
 
   afterEach(async () => {
@@ -47,9 +46,9 @@ describe('00003 Arango to MySQL', () => {
 
   describe('for surveySections table', () => {
     const COLLECTIONS = {
-      SURVEY_SECTIONS: tableToCollection(TABLES.SURVEY_SECTIONS),
-      SURVEYS: tableToCollection(TABLES.SURVEYS),
-      COMPANIES: tableToCollection(TABLES.COMPANIES)
+      SURVEY_SECTIONS: TABLES.SURVEY_SECTIONS,
+      SURVEYS: TABLES.SURVEYS,
+      COMPANIES: TABLES.COMPANIES
     }
 
     afterEach(async () => {

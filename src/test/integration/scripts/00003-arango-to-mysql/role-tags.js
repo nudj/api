@@ -18,8 +18,7 @@ const {
   ENUMS
 } = require('../../../../lib/sql')
 const {
-  TABLE_ORDER,
-  tableToCollection
+  OLD_COLLECTIONS
 } = require('../../../../scripts/00003-arango-to-mysql/helpers')
 
 const script = require('../../../../scripts/00003-arango-to-mysql')
@@ -33,7 +32,7 @@ describe('00003 Arango to MySQL', () => {
   }
 
   before(async () => {
-    await setupCollections(db, TABLE_ORDER.map(table => tableToCollection(table)))
+    await setupCollections(db, Object.values(OLD_COLLECTIONS))
   })
 
   afterEach(async () => {
@@ -48,9 +47,9 @@ describe('00003 Arango to MySQL', () => {
 
   describe('for roleTags table', () => {
     const COLLECTIONS = {
-      ROLE_TAGS: tableToCollection(TABLES.ROLE_TAGS),
-      ROLES: tableToCollection(TABLES.ROLES),
-      TAGS: tableToCollection(TABLES.TAGS)
+      ROLE_TAGS: TABLES.ROLE_TAGS,
+      ROLES: TABLES.ROLES,
+      TAGS: TABLES.TAGS
     }
 
     afterEach(async () => {

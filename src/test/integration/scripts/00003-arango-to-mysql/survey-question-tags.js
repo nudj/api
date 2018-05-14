@@ -18,8 +18,7 @@ const {
   ENUMS
 } = require('../../../../lib/sql')
 const {
-  TABLE_ORDER,
-  tableToCollection
+  OLD_COLLECTIONS
 } = require('../../../../scripts/00003-arango-to-mysql/helpers')
 
 const script = require('../../../../scripts/00003-arango-to-mysql')
@@ -33,7 +32,7 @@ describe('00003 Arango to MySQL', () => {
   }
 
   before(async () => {
-    await setupCollections(db, TABLE_ORDER.map(table => tableToCollection(table)))
+    await setupCollections(db, Object.values(OLD_COLLECTIONS))
   })
 
   afterEach(async () => {
@@ -48,12 +47,12 @@ describe('00003 Arango to MySQL', () => {
 
   describe('for surveyQuestionTags table', () => {
     const COLLECTIONS = {
-      SURVEY_QUESTION_TAGS: tableToCollection(TABLES.SURVEY_QUESTION_TAGS),
-      TAGS: tableToCollection(TABLES.TAGS),
-      COMPANIES: tableToCollection(TABLES.COMPANIES),
-      SURVEYS: tableToCollection(TABLES.SURVEYS),
-      SURVEY_SECTIONS: tableToCollection(TABLES.SURVEY_SECTIONS),
-      SURVEY_QUESTIONS: tableToCollection(TABLES.SURVEY_QUESTIONS)
+      SURVEY_QUESTION_TAGS: TABLES.SURVEY_QUESTION_TAGS,
+      TAGS: TABLES.TAGS,
+      COMPANIES: TABLES.COMPANIES,
+      SURVEYS: TABLES.SURVEYS,
+      SURVEY_SECTIONS: TABLES.SURVEY_SECTIONS,
+      SURVEY_QUESTIONS: TABLES.SURVEY_QUESTIONS
     }
 
     afterEach(async () => {

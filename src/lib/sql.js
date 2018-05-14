@@ -20,8 +20,7 @@ const TABLES = {
   SURVEY_QUESTIONS: 'surveyQuestions',
   SURVEY_QUESTION_TAGS: 'surveyQuestionTags',
   SURVEY_SECTIONS: 'surveySections',
-  TAGS: 'tags',
-  VIEW_EVENTS: 'viewEvents'
+  TAGS: 'tags'
 }
 const FIELDS = {
   GENERIC: {
@@ -163,10 +162,6 @@ const FIELDS = {
   [TABLES.TAGS]: {
     NAME: 'name',
     TYPE: 'type'
-  },
-  [TABLES.VIEW_EVENTS]: {
-    BROWSER_ID: 'browserId',
-    JOB: 'job'
   }
 }
 const ENUMS = {

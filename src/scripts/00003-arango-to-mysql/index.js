@@ -24,7 +24,7 @@ async function action ({ db, sql, nosql }) {
 
   // loop over sql tables in specific order to comply with foreign key contraints
   await promiseSerial(TABLE_ORDER.map(tableName => async () => {
-    const slugGenerator = SLUG_GENERATORS[tableName]
+    const slugConfig = SLUG_GENERATORS[tableName]
     idMaps[tableName] = {}
     slugMaps[tableName] = {}
 
@@ -52,18 +52,38 @@ async function action ({ db, sql, nosql }) {
       }
 
       // if required generate slug
-      if (slugGenerator) {
-        data.slug = slugGenerator(data)
+      if (slugConfig) {
+        data.slug = slugConfig.generator(data)
       }
 
       // create new record in MySQL table
-      const [ id ] = await sql(tableName).insert(data)
+      let id
+      // loop to allow for slug clashes
+      while (!id) {
+        try {
+          [ id ] = await sql(tableName).insert(data)
+        } catch (error) {
+          if (error.code === 'ER_DUP_ENTRY') {
+            const index = error.sqlMessage.split("'").splice(-2, 1)[0]
+            if (index && slugConfig.index && index === slugConfig.index) {
+              // refresh slug when former slug clashes
+              data.slug = slugConfig.generator(data, true)
+            } else {
+              // not a slug clash so throw
+              throw error
+            }
+          } else {
+            // not a duplicate entry error so throw
+            throw error
+          }
+        }
+      }
 
       // cache map from Arango key to MySQL id for the given table
       idMaps[tableName][item._key] = id
 
-      // if required cache map from Arango key to slug
-      if (data.slug) {
+      // if required cache map from Arango key to slug for the given table
+      if (slugConfig) {
         slugMaps[tableName][item._key] = data.slug
       }
 

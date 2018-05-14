@@ -1,5 +1,6 @@
 const format = require('date-fns/format')
 const randomstring = require('randomstring')
+const kebabCase = require('lodash/kebabCase')
 
 const {
   TABLES,
@@ -161,8 +162,25 @@ const randomSlugGenerator = () => randomstring.generate({
   capitalization: 'lowercase',
   readable: true
 })
+const fieldSlugGenerator = field => (data, addRandom) => {
+  let random = ''
+  if (addRandom) {
+    random = `-${randomstring.generate({
+      length: 3,
+      capitalization: 'lowercase',
+      readable: true
+    })}`
+  }
+  return kebabCase(data[field]) + random
+}
 const SLUG_GENERATORS = {
-  [TABLES.REFERRALS]: randomSlugGenerator
+  [TABLES.REFERRALS]: {
+    generator: randomSlugGenerator
+  },
+  [TABLES.SURVEY_SECTIONS]: {
+    generator: fieldSlugGenerator(FIELDS[TABLES.SURVEY_SECTIONS].TITLE),
+    index: 'bySurveySlug'
+  }
 }
 const newToOldCollection = collection => NEW_TO_OLD_COLLECTION[collection] || collection
 const fieldToProp = (table, prop) => (FIELD_TO_PROP[table] && FIELD_TO_PROP[table][prop]) || prop

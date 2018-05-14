@@ -269,7 +269,7 @@ exports.up = async knex => {
       } = FIELDS[TABLES.SURVEY_SECTIONS]
 
       defaultConfig(t, knex)
-      t.string(SLUG).nullable()
+      t.string(SLUG).notNullable()
       t.string(TITLE).notNullable()
       t.text(DESCRIPTION).notNullable()
       t.json(SURVEY_QUESTIONS).notNullable().comment('Array of surveyQuestion ids denoting their order')

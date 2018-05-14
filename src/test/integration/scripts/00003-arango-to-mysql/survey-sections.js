@@ -98,8 +98,7 @@ describe('00003 Arango to MySQL', () => {
                 _key: '123',
                 created: '2018-02-01T01:02:03.456Z',
                 modified: '2018-03-02T02:03:04.567Z',
-                slug: 'survey-section-slug',
-                title: 'Title',
+                title: 'Some Survey Section',
                 description: 'Description',
                 surveyQuestions: ['surveyQuestion1', 'surveyQuestion2'],
                 survey: 'survey1',
@@ -115,16 +114,84 @@ describe('00003 Arango to MySQL', () => {
 
       it('should transfer all scalar properties', async () => {
         const surveySections = await sql.select().from(TABLES.SURVEY_SECTIONS)
-        expect(surveySections[0]).to.have.property('slug', 'survey-section-slug')
-        expect(surveySections[0]).to.have.property('title', 'Title')
+        expect(surveySections[0]).to.have.property('title', 'Some Survey Section')
         expect(surveySections[0]).to.have.property('description', 'Description')
         expect(surveySections[0]).to.have.property('surveyQuestions', JSON.stringify(['surveyQuestion1', 'surveyQuestion2']))
+      })
+
+      it('should generate a slug based on the title', async () => {
+        const surveySections = await sql.select().from(TABLES.SURVEY_SECTIONS)
+        expect(surveySections[0]).to.have.property('slug', 'some-survey-section')
       })
 
       it('should remap the relations', async () => {
         const surveySections = await sql.select().from(TABLES.SURVEY_SECTIONS)
         const surveys = await sql.select().from(TABLES.SURVEYS)
         expect(surveySections[0]).to.have.property('survey', surveys[0].id)
+      })
+    })
+
+    describe('when slugs clash', () => {
+      beforeEach(async () => {
+        await seedRun([
+          {
+            name: COLLECTIONS.COMPANIES,
+            data: [
+              {
+                _key: 'company1',
+                created: '2018-02-01T01:02:03.456Z',
+                modified: '2018-03-02T02:03:04.567Z',
+                name: 'Company Ltd',
+                slug: 'company-ltd'
+              }
+            ]
+          },
+          {
+            name: COLLECTIONS.SURVEYS,
+            data: [
+              {
+                _key: 'survey1',
+                created: '2018-02-01T01:02:03.456Z',
+                modified: '2018-03-02T02:03:04.567Z',
+                slug: 'survey-slug',
+                introTitle: 'Intro Title',
+                introDescription: 'Intro description',
+                outroTitle: 'Outro Title',
+                outroDescription: 'Outro description',
+                surveySections: ['surveySection1', 'surveySection2'],
+                company: 'company1'
+              }
+            ]
+          },
+          {
+            name: COLLECTIONS.SURVEY_SECTIONS,
+            data: [
+              {
+                _key: 'surveySection1',
+                created: '2018-02-01T01:02:03.456Z',
+                modified: '2018-03-02T02:03:04.567Z',
+                title: 'Some Survey Section',
+                description: 'Description',
+                surveyQuestions: ['surveyQuestion1', 'surveyQuestion2'],
+                survey: 'survey1'
+              },
+              {
+                _key: 'surveySection2',
+                created: '2019-02-01T01:02:03.456Z',
+                modified: '2019-03-02T02:03:04.567Z',
+                title: 'Some Survey Section',
+                description: 'Description',
+                surveyQuestions: ['surveyQuestion1', 'surveyQuestion2'],
+                survey: 'survey1'
+              }
+            ]
+          }
+        ])
+      })
+
+      it('should generate another non-clashing slug', async () => {
+        const surveySections = await sql.select().from(TABLES.SURVEY_SECTIONS)
+        expect(surveySections[0]).to.have.property('slug', 'some-survey-section')
       })
     })
   })

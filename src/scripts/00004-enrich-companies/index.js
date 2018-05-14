@@ -57,9 +57,18 @@ async function action ({ db, noSQL, arg: specifiedAmount }) {
 
   const companiesToEnrich = unenrichedCompanies.slice(0, amountToEnrich)
 
+  // Cache CLEARBIT_ENABLED value and set to true
+  const cachedClearbitEnabledEnv = process.env.CLEARBIT_ENABLED
+  console.log('Setting CLEARBIT_ENABLED: true')
+  process.env.CLEARBIT_ENABLED = 'true'
+
   await Promise.all(companiesToEnrich.map(company => {
     return enrichAndStoreCompany(company, noSQL)
   }))
+
+  // Restore CLEARBIT_ENABLED env to cached value
+  console.log('Restoring CLEARBIT_ENABLED value')
+  process.env.CLEARBIT_ENABLED = cachedClearbitEnabledEnv
 }
 
 module.exports = action

@@ -161,6 +161,11 @@ describe('00003 Arango to MySQL', () => {
         expect(referrals[0]).to.have.property('parent', null)
       })
 
+      it('should generate a random slug', async () => {
+        const referrals = await sql.select().from(TABLES.REFERRALS)
+        expect(referrals[0]).to.have.property('slug').to.match(/^[a-z0-9]{7}$/)
+      })
+
       it('should create referralKeyToSlugMaps collection in the NoSQL store', async () => {
         const referralKeyToSlugMapsCursor = await nosql.collection('referralKeyToSlugMaps')
         try {

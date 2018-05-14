@@ -180,6 +180,10 @@ const SLUG_GENERATORS = {
   [TABLES.SURVEY_SECTIONS]: {
     generator: fieldSlugGenerator(FIELDS[TABLES.SURVEY_SECTIONS].TITLE),
     index: 'bySurveySlug'
+  },
+  [TABLES.SURVEY_QUESTIONS]: {
+    generator: fieldSlugGenerator(FIELDS[TABLES.SURVEY_QUESTIONS].TITLE),
+    index: 'bySectionSlug'
   }
 }
 const newToOldCollection = collection => NEW_TO_OLD_COLLECTION[collection] || collection

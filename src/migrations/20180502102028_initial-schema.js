@@ -249,7 +249,7 @@ exports.up = async knex => {
       } = FIELDS[TABLES.SURVEYS]
 
       defaultConfig(t, knex)
-      t.string(SLUG).nullable()
+      t.string(SLUG).notNullable()
       t.string(INTRO_TITLE).notNullable()
       t.text(INTRO_DESCRIPTION).notNullable()
       t.string(OUTRO_TITLE).nullable()
@@ -288,7 +288,7 @@ exports.up = async knex => {
       } = FIELDS[TABLES.SURVEY_QUESTIONS]
 
       defaultConfig(t, knex)
-      t.string(SLUG).nullable()
+      t.string(SLUG).notNullable()
       t.string(TITLE).notNullable()
       t.text(DESCRIPTION).notNullable()
       t.boolean(REQUIRED).defaultTo(false).notNullable()

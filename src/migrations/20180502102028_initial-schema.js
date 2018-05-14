@@ -93,21 +93,23 @@ exports.up = async knex => {
       t.enum(TYPE, ENUMS.HIRER_TYPES.values).defaultTo(ENUMS.HIRER_TYPES.MEMBER).notNullable()
       relationType(PERSON, TABLES.PEOPLE, t, knex).notNullable()
       relationType(COMPANY, TABLES.COMPANIES, t, knex).notNullable()
-      t.unique([PERSON], 'byPerson')
+      t.unique(PERSON, 'byPerson')
     })
 
     .createTable(TABLES.REFERRALS, t => {
       const {
+        SLUG,
         PERSON,
         JOB,
         PARENT
       } = FIELDS[TABLES.REFERRALS]
 
       defaultConfig(t, knex)
-      t.string('slug', 8).notNullable()
+      t.string(SLUG, 8).notNullable()
       relationType(PERSON, TABLES.PEOPLE, t, knex).notNullable()
       relationType(JOB, TABLES.JOBS, t, knex).notNullable()
       relationType(PARENT, TABLES.REFERRALS, t, knex).nullable()
+      t.unique(SLUG, 'bySlug')
       t.unique([PERSON, JOB], 'byPersonJob')
     })
 

@@ -110,6 +110,7 @@ const FIELDS = {
     ROLE: 'role'
   },
   [TABLES.REFERRALS]: {
+    SLUG: 'slug',
     PERSON: 'person',
     JOB: 'job',
     PARENT: 'parent'

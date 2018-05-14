@@ -8,6 +8,7 @@ const {
   RELATIONS,
   SELF_RELATIONS,
   MANY_RELATIONS,
+  SLUG_GENERATORS,
   newToOldCollection,
   fieldToProp,
   dateToTimestamp
@@ -19,10 +20,13 @@ const {
 
 async function action ({ db, sql, nosql }) {
   const idMaps = {}
+  const slugMaps = {}
 
   // loop over sql tables in specific order to comply with foreign key contraints
   await promiseSerial(TABLE_ORDER.map(tableName => async () => {
+    const slugGenerator = SLUG_GENERATORS[tableName]
     idMaps[tableName] = {}
+    slugMaps[tableName] = {}
 
     // fetch all items from the corresponding Arango collection
     const collectionName = tableName
@@ -39,16 +43,29 @@ async function action ({ db, sql, nosql }) {
       }, {})
       const relations = mapValues(RELATIONS[tableName] || {}, (foreignTable, field) => idMaps[foreignTable][item[fieldToProp(tableName, field)]])
 
-      // create new record in MySQL table
-      const [ id ] = await sql(tableName).insert({
+      // prepare inset data
+      const data = {
         created: dateToTimestamp(item.created),
         modified: dateToTimestamp(item.modified),
         ...scalars,
         ...relations
-      })
+      }
+
+      // if required generate slug
+      if (slugGenerator) {
+        data.slug = slugGenerator(data)
+      }
+
+      // create new record in MySQL table
+      const [ id ] = await sql(tableName).insert(data)
 
       // cache map from Arango key to MySQL id for the given table
       idMaps[tableName][item._key] = id
+
+      // if required cache map from Arango key to slug
+      if (data.slug) {
+        slugMaps[tableName][item._key] = data.slug
+      }
 
       // create edge records for one->many relationships (which are stored as Array<key>'s in Arango and are unsupported in MySQL)
       if (MANY_RELATIONS[tableName]) {
@@ -82,9 +99,9 @@ async function action ({ db, sql, nosql }) {
     if (SELF_RELATIONS[tableName]) {
       await promiseSerial(items.map(item => async () => {
         const selfRelations = SELF_RELATIONS[tableName].reduce((selfRelations, field) => {
-          const value = idMaps[tableName][item[field]]
-          if (value) {
-            selfRelations[field] = value
+          const id = idMaps[tableName][item[field]]
+          if (id) {
+            selfRelations[field] = id
           }
           return selfRelations
         }, {})
@@ -125,10 +142,10 @@ async function action ({ db, sql, nosql }) {
     }))
   }))
 
-  // loop over referral key->id map and store in NoSQL store to help with old url remapping
-  const referralIdMapsCursor = await nosql.collection('referralIdMaps')
-  await referralIdMapsCursor.create()
-  await promiseSerial(map(idMaps[TABLES.REFERRALS], (id, _key) => () => referralIdMapsCursor.save({ _key, id })))
+  // loop over referral key->slug and store in NoSQL store to help with old url remapping
+  const referralKeyToSlugMapsCursor = await nosql.collection('referralKeyToSlugMaps')
+  await referralKeyToSlugMapsCursor.create()
+  await promiseSerial(map(slugMaps[TABLES.REFERRALS], (slug, _key) => () => referralKeyToSlugMapsCursor.save({ _key, slug })))
 }
 
 module.exports = action

@@ -1,4 +1,5 @@
 const format = require('date-fns/format')
+const randomstring = require('randomstring')
 
 const {
   TABLES,
@@ -155,6 +156,14 @@ const MANY_RELATIONS = {
     }
   }
 }
+const randomSlugGenerator = () => randomstring.generate({
+  length: 7,
+  capitalization: 'lowercase',
+  readable: true
+})
+const SLUG_GENERATORS = {
+  [TABLES.REFERRALS]: randomSlugGenerator
+}
 const newToOldCollection = collection => NEW_TO_OLD_COLLECTION[collection] || collection
 const fieldToProp = (table, prop) => (FIELD_TO_PROP[table] && FIELD_TO_PROP[table][prop]) || prop
 const dateToTimestamp = date => {
@@ -169,6 +178,7 @@ module.exports = {
   RELATIONS,
   SELF_RELATIONS,
   MANY_RELATIONS,
+  SLUG_GENERATORS,
   newToOldCollection,
   fieldToProp,
   dateToTimestamp

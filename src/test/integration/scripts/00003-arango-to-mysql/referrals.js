@@ -161,26 +161,26 @@ describe('00003 Arango to MySQL', () => {
         expect(referrals[0]).to.have.property('parent', null)
       })
 
-      it('should create referralIdMaps collection in the NoSQL store', async () => {
-        const referralIdMapsCursor = await nosql.collection('referralIdMaps')
+      it('should create referralKeyToSlugMaps collection in the NoSQL store', async () => {
+        const referralKeyToSlugMapsCursor = await nosql.collection('referralKeyToSlugMaps')
         try {
-          await referralIdMapsCursor.all()
+          await referralKeyToSlugMapsCursor.all()
           expect(true).to.be.true()
         } catch (error) {
-          expect(true, 'referralIdMaps does not exist').to.be.false()
+          expect(true, 'referralKeyToSlugMaps does not exist').to.be.false()
         }
       })
 
-      it('should store a key->id map in the NoSQL store', async () => {
+      it('should store a key->slug map in the NoSQL store', async () => {
         const referrals = await sql.select().from(TABLES.REFERRALS).orderBy('created', 'asc')
 
-        const referralIdMapsCursor = await nosql.collection('referralIdMaps')
+        const referralKeyToSlugMapsCursor = await nosql.collection('referralKeyToSlugMaps')
 
-        const referral1IdMap = await referralIdMapsCursor.document('referral1')
-        expect(referral1IdMap).to.have.property('id', referrals[0].id)
+        const referral1IdMap = await referralKeyToSlugMapsCursor.document('referral1')
+        expect(referral1IdMap).to.have.property('slug', referrals[0].slug)
 
-        const referral2IdMap = await referralIdMapsCursor.document('referral2')
-        expect(referral2IdMap).to.have.property('id', referrals[1].id)
+        const referral2IdMap = await referralKeyToSlugMapsCursor.document('referral2')
+        expect(referral2IdMap).to.have.property('slug', referrals[1].slug)
       })
     })
   })

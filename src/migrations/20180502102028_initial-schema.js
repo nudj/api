@@ -104,6 +104,7 @@ exports.up = async knex => {
       } = FIELDS[TABLES.REFERRALS]
 
       defaultConfig(t, knex)
+      t.string('slug', 8).notNullable()
       relationType(PERSON, TABLES.PEOPLE, t, knex).notNullable()
       relationType(JOB, TABLES.JOBS, t, knex).notNullable()
       relationType(PARENT, TABLES.REFERRALS, t, knex).nullable()
@@ -383,7 +384,6 @@ exports.down = async knex => {
     .dropTable(TABLES.SURVEY_QUESTIONS)
     .dropTable(TABLES.SURVEY_SECTIONS)
     .dropTable(TABLES.SURVEYS)
-    .dropTable(TABLES.VIEW_EVENTS)
     .dropTable(TABLES.CONVERSATIONS)
     .dropTable(TABLES.ACCOUNTS)
     .dropTable(TABLES.CONNECTIONS)

@@ -191,7 +191,7 @@ describe('00003 Arango to MySQL', () => {
 
       it('should generate another non-clashing slug', async () => {
         const surveySections = await sql.select().from(TABLES.SURVEY_SECTIONS).orderBy('created', 'asc')
-        expect(surveySections[1]).to.have.property('slug').to.match(/^some-survey-section-[a-z0-9]{3}$/)
+        expect(surveySections[1]).to.have.property('slug').to.match(/^some-survey-section-[a-z0-9]{8}$/)
       })
     })
   })

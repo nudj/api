@@ -1,5 +1,5 @@
 const format = require('date-fns/format')
-const randomstring = require('randomstring')
+const hash = require('hash-generator')
 const kebabCase = require('lodash/kebabCase')
 
 const {
@@ -157,19 +157,11 @@ const MANY_RELATIONS = {
     }
   }
 }
-const randomSlugGenerator = () => randomstring.generate({
-  length: 7,
-  capitalization: 'lowercase',
-  readable: true
-})
+const randomSlugGenerator = () => hash(10)
 const fieldSlugGenerator = field => (data, addRandom) => {
   let random = ''
   if (addRandom) {
-    random = `-${randomstring.generate({
-      length: 3,
-      capitalization: 'lowercase',
-      readable: true
-    })}`
+    random = `-${hash(8)}`
   }
   return kebabCase(data[field]) + random
 }

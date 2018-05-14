@@ -105,7 +105,7 @@ exports.up = async knex => {
       } = FIELDS[TABLES.REFERRALS]
 
       defaultConfig(t, knex)
-      t.string(SLUG, 8).notNullable()
+      t.string(SLUG, 10).notNullable()
       relationType(PERSON, TABLES.PEOPLE, t, knex).notNullable()
       relationType(JOB, TABLES.JOBS, t, knex).notNullable()
       relationType(PARENT, TABLES.REFERRALS, t, knex).nullable()

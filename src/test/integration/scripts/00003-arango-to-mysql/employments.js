@@ -53,6 +53,7 @@ describe('00003 Arango to MySQL', () => {
     }
 
     afterEach(async () => {
+      await sql(TABLES.CURRENT_EMPLOYMENTS).whereNot('id', '').del()
       await sql(TABLES.EMPLOYMENTS).whereNot('id', '').del()
       await sql(TABLES.PEOPLE).whereNot('id', '').del()
       await sql(TABLES.COMPANIES).whereNot('id', '').del()
@@ -95,7 +96,7 @@ describe('00003 Arango to MySQL', () => {
                 _key: '123',
                 created: '2018-02-01T01:02:03.456Z',
                 modified: '2018-03-02T02:03:04.567Z',
-                current: true,
+                current: false,
                 source: ENUMS.DATA_SOURCES.MANUAL,
                 person: 'person1',
                 company: 'company1',
@@ -111,7 +112,6 @@ describe('00003 Arango to MySQL', () => {
 
       it('should transfer all scalar properties', async () => {
         const employments = await sql.select().from(TABLES.EMPLOYMENTS)
-        expect(employments[0]).to.have.property('current', 1)
         expect(employments[0]).to.have.property('source', ENUMS.DATA_SOURCES.MANUAL)
       })
 
@@ -124,7 +124,7 @@ describe('00003 Arango to MySQL', () => {
       })
     })
 
-    describe('without optional properties', () => {
+    describe('when current = true', () => {
       beforeEach(async () => {
         await seedRun([
           {
@@ -156,21 +156,26 @@ describe('00003 Arango to MySQL', () => {
             name: COLLECTIONS.EMPLOYMENTS,
             data: [
               {
+                _id: 'employments/123',
+                _rev: '_WpP1l3W---',
                 _key: '123',
-                created: '2018-02-01T01:02:03.456Z',
-                modified: '2018-03-02T02:03:04.567Z',
+                current: true,
                 source: ENUMS.DATA_SOURCES.MANUAL,
                 person: 'person1',
-                company: 'company1'
+                company: 'company1',
+                batchSize: 100,
+                skip: 0
               }
             ]
           }
         ])
       })
 
-      it('should use defaults', async () => {
+      it('should create a currentEmployments record', async () => {
+        const currentEmployments = await sql.select().from(TABLES.CURRENT_EMPLOYMENTS)
         const employments = await sql.select().from(TABLES.EMPLOYMENTS)
-        expect(employments[0]).to.have.property('current', 0)
+        expect(currentEmployments[0]).to.have.property('employment', employments[0].id)
+        expect(currentEmployments[0]).to.have.property('person', employments[0].person)
       })
     })
   })

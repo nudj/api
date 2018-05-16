@@ -33,7 +33,10 @@ if (process.env.TARGET !== 'test') {
 
 module.exports = {
   client: 'mysql',
-  connection,
+  connection: {
+    ...connection,
+    charset: 'utf8mb4'
+  },
   migrations: {
     tableName: 'migrations'
   }

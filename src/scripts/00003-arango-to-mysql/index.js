@@ -3,6 +3,7 @@ const map = require('lodash/map')
 const mapValues = require('lodash/mapValues')
 const promiseSerial = require('promise-serial')
 const {
+  OLD_COLLECTIONS,
   NEW_COLLECTIONS,
   TABLE_ORDER,
   RELATIONS,
@@ -43,7 +44,7 @@ async function action ({ db, sql, nosql }) {
       }, {})
       const relations = mapValues(RELATIONS[tableName] || {}, (foreignTable, field) => idMaps[foreignTable][item[fieldToProp(tableName, field)]])
 
-      // prepare inset data
+      // prepare insert data
       const data = {
         created: dateToTimestamp(item.created),
         modified: dateToTimestamp(item.modified),
@@ -65,7 +66,7 @@ async function action ({ db, sql, nosql }) {
         } catch (error) {
           if (error.code === 'ER_DUP_ENTRY') {
             const index = error.sqlMessage.split("'").splice(-2, 1)[0]
-            if (index && slugConfig.index && index === slugConfig.index) {
+            if (slugConfig && slugConfig.index && index && index === slugConfig.index) {
               // refresh slug when former slug clashes
               data.slug = slugConfig.generator(data, true)
             } else {
@@ -106,7 +107,7 @@ async function action ({ db, sql, nosql }) {
 
             // create a new edge record in the edge table
             await sql(edgeTableName).insert({
-              created: dateToTimestamp(item.modified),
+              created: dateToTimestamp(item.created),
               modified: dateToTimestamp(item.modified),
               ...edgeRelations
             })
@@ -132,6 +133,21 @@ async function action ({ db, sql, nosql }) {
       }))
     }
   })) // TABLE_ORDER.map
+
+  // create currentEmployments
+  const employmentsCursor = db.collection(OLD_COLLECTIONS.EMPLOYMENTS)
+  const employmentsCurrentCursor = await employmentsCursor.byExample({
+    current: true
+  })
+  const employmentsCurrent = await employmentsCurrentCursor.all()
+  await promiseSerial(employmentsCurrent.map(employment => async () => {
+    await sql(TABLES.CURRENT_EMPLOYMENTS).insert({
+      created: dateToTimestamp(employment.created),
+      modified: dateToTimestamp(employment.modified),
+      employment: idMaps[TABLES.EMPLOYMENTS][employment._key],
+      person: idMaps[TABLES.PEOPLE][employment.person]
+    })
+  }))
 
   // copy events into jobViewEvents collection in NoSQL
   await promiseSerial(Object.values(NEW_COLLECTIONS).map(newCollectionName => async () => {

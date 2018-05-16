@@ -129,19 +129,28 @@ exports.up = async knex => {
 
     .createTable(TABLES.EMPLOYMENTS, t => {
       const {
-        CURRENT,
         SOURCE,
         PERSON,
         COMPANY
       } = FIELDS[TABLES.EMPLOYMENTS]
 
       defaultConfig(t, knex)
-      t.boolean(CURRENT).defaultTo(false).notNullable()
       t.enum(SOURCE, ENUMS.DATA_SOURCES.values).notNullable()
       relationType(PERSON, TABLES.PEOPLE, t, knex).notNullable()
       relationType(COMPANY, TABLES.COMPANIES, t, knex).notNullable()
       t.unique([PERSON, COMPANY], 'byPersonCompany')
-      t.unique([PERSON, CURRENT], 'byPersonCurrent')
+    })
+
+    .createTable(TABLES.CURRENT_EMPLOYMENTS, t => {
+      const {
+        EMPLOYMENT,
+        PERSON
+      } = FIELDS[TABLES.CURRENT_EMPLOYMENTS]
+
+      defaultConfig(t, knex)
+      relationType(EMPLOYMENT, TABLES.EMPLOYMENTS, t, knex).notNullable()
+      relationType(PERSON, TABLES.PEOPLE, t, knex).notNullable()
+      t.unique(PERSON, 'byPerson')
     })
 
     .createTable(TABLES.EMPLOYEES, t => {
@@ -392,6 +401,7 @@ exports.down = async knex => {
     .dropTable(TABLES.PERSON_ROLES)
     .dropTable(TABLES.ROLES)
     .dropTable(TABLES.EMPLOYEES)
+    .dropTable(TABLES.CURRENT_EMPLOYMENTS)
     .dropTable(TABLES.EMPLOYMENTS)
     .dropTable(TABLES.APPLICATIONS)
     .dropTable(TABLES.REFERRALS)

@@ -6,6 +6,7 @@ const TABLES = {
   CONVERSATIONS: 'conversations',
   EMPLOYEES: 'employees',
   EMPLOYMENTS: 'employments',
+  CURRENT_EMPLOYMENTS: 'currentEmployments',
   HIRERS: 'hirers',
   JOBS: 'jobs',
   JOB_TAGS: 'jobTags',
@@ -66,10 +67,13 @@ const FIELDS = {
     COMPANY: 'company'
   },
   [TABLES.EMPLOYMENTS]: {
-    CURRENT: 'current',
     SOURCE: 'source',
     PERSON: 'person',
     COMPANY: 'company'
+  },
+  [TABLES.CURRENT_EMPLOYMENTS]: {
+    EMPLOYMENT: 'employment',
+    PERSON: 'person'
   },
   [TABLES.HIRERS]: {
     ONBOARDED: 'onboarded',

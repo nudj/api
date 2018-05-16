@@ -177,17 +177,26 @@ exports.up = async knex => {
 
     .createTable(TABLES.PERSON_ROLES, t => {
       const {
-        CURRENT,
         PERSON,
         ROLE
       } = FIELDS[TABLES.PERSON_ROLES]
 
       defaultConfig(t, knex)
-      t.boolean(CURRENT).defaultTo(false).notNullable()
       relationType(PERSON, TABLES.PEOPLE, t, knex).notNullable()
       relationType(ROLE, TABLES.ROLES, t, knex).notNullable()
       t.unique([PERSON, ROLE], 'byPersonRole')
-      t.unique([PERSON, CURRENT], 'byPersonCurrent')
+    })
+
+    .createTable(TABLES.CURRENT_PERSON_ROLES, t => {
+      const {
+        PERSON,
+        PERSON_ROLE
+      } = FIELDS[TABLES.CURRENT_PERSON_ROLES]
+
+      defaultConfig(t, knex)
+      relationType(PERSON, TABLES.PEOPLE, t, knex).notNullable()
+      relationType(PERSON_ROLE, TABLES.PERSON_ROLES, t, knex).notNullable()
+      t.unique(PERSON, 'byPerson')
     })
 
     .createTable(TABLES.CONNECTIONS, t => {

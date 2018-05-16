@@ -150,6 +150,21 @@ async function action ({ db, sql, nosql }) {
     })
   }))
 
+  // create currentPersonRoles
+  const personRolesCursor = db.collection(OLD_COLLECTIONS.PERSON_ROLES)
+  const personRolesCurrentCursor = await personRolesCursor.byExample({
+    current: true
+  })
+  const personRolesCurrent = await personRolesCurrentCursor.all()
+  await promiseSerial(personRolesCurrent.map(personRole => async () => {
+    await sql(TABLES.CURRENT_PERSON_ROLES).insert({
+      created: dateToTimestamp(personRole.created),
+      modified: dateToTimestamp(personRole.modified),
+      personRole: idMaps[TABLES.PERSON_ROLES][personRole._key],
+      person: idMaps[TABLES.PEOPLE][personRole.person]
+    })
+  }))
+
   // copy events into jobViewEvents collection in NoSQL
   await promiseSerial(Object.values(NEW_COLLECTIONS).map(newCollectionName => async () => {
     // create new collection

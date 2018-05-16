@@ -12,6 +12,7 @@ const TABLES = {
   JOB_TAGS: 'jobTags',
   PEOPLE: 'people',
   PERSON_ROLES: 'personRoles',
+  CURRENT_PERSON_ROLES: 'currentPersonRoles',
   REFERRALS: 'referrals',
   ROLES: 'roles',
   ROLE_TAGS: 'roleTags',
@@ -109,9 +110,12 @@ const FIELDS = {
     URL: 'url'
   },
   [TABLES.PERSON_ROLES]: {
-    CURRENT: 'current',
     PERSON: 'person',
     ROLE: 'role'
+  },
+  [TABLES.CURRENT_PERSON_ROLES]: {
+    PERSON: 'person',
+    PERSON_ROLE: 'personRole'
   },
   [TABLES.REFERRALS]: {
     SLUG: 'slug',

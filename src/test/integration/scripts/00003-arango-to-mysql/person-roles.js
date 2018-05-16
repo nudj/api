@@ -52,6 +52,7 @@ describe('00003 Arango to MySQL', () => {
     }
 
     afterEach(async () => {
+      await sql(TABLES.CURRENT_PERSON_ROLES).whereNot('id', '').del()
       await sql(TABLES.PERSON_ROLES).whereNot('id', '').del()
       await sql(TABLES.PEOPLE).whereNot('id', '').del()
       await sql(TABLES.ROLES).whereNot('id', '').del()
@@ -93,7 +94,7 @@ describe('00003 Arango to MySQL', () => {
                 _key: '123',
                 created: '2018-02-01T01:02:03.456Z',
                 modified: '2018-03-02T02:03:04.567Z',
-                current: true,
+                current: false,
                 person: 'person1',
                 role: 'role1',
                 batchSize: 100,
@@ -106,11 +107,6 @@ describe('00003 Arango to MySQL', () => {
 
       genericExpectationsForTable(TABLES.PERSON_ROLES)
 
-      it('should transfer all scalar properties', async () => {
-        const personRoles = await sql.select().from(TABLES.PERSON_ROLES)
-        expect(personRoles[0]).to.have.property('current', 1)
-      })
-
       it('should remap the relations', async () => {
         const personRoles = await sql.select().from(TABLES.PERSON_ROLES)
         const people = await sql.select().from(TABLES.PEOPLE)
@@ -120,7 +116,7 @@ describe('00003 Arango to MySQL', () => {
       })
     })
 
-    describe('without optional properties', () => {
+    describe('when current = true', () => {
       beforeEach(async () => {
         await seedRun([
           {
@@ -151,22 +147,23 @@ describe('00003 Arango to MySQL', () => {
             name: COLLECTIONS.PERSON_ROLES,
             data: [
               {
-                _key: '123',
+                _key: 'personRole1',
                 created: '2018-02-01T01:02:03.456Z',
                 modified: '2018-03-02T02:03:04.567Z',
+                current: true,
                 person: 'person1',
-                role: 'role1',
-                batchSize: 100,
-                skip: 0
+                role: 'role1'
               }
             ]
           }
         ])
       })
 
-      it('should use defaults', async () => {
+      it('should create a currentPersonRoles record', async () => {
+        const currentPersonRoles = await sql.select().from(TABLES.CURRENT_PERSON_ROLES)
         const personRoles = await sql.select().from(TABLES.PERSON_ROLES)
-        expect(personRoles[0]).to.have.property('current', 0)
+        expect(currentPersonRoles[0]).to.have.property('personRole', personRoles[0].id)
+        expect(currentPersonRoles[0]).to.have.property('person', personRoles[0].person)
       })
     })
   })

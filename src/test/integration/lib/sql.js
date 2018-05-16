@@ -8,7 +8,8 @@ const sql = knex({
     port: process.env.TEST_SQL_PORT,
     user: process.env.TEST_SQL_USER,
     password: process.env.TEST_SQL_PASS,
-    database: process.env.TEST_SQL_NAME
+    database: process.env.TEST_SQL_NAME,
+    charset: 'utf8mb4'
   }
 })
 

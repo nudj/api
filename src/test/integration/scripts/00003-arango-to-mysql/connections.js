@@ -197,5 +197,51 @@ describe('00003 Arango to MySQL', () => {
         expect(connections[0]).to.have.property('company', null)
       })
     })
+
+    describe('with emojis in the name', () => {
+      beforeEach(async () => {
+        await seedRun([
+          {
+            name: COLLECTIONS.PEOPLE,
+            data: [
+              {
+                _key: 'person1',
+                created: '2018-02-01T01:02:03.456Z',
+                modified: '2018-03-02T02:03:04.567Z',
+                email: 'jim@bob.com',
+                firstName: 'Jim',
+                lastName: 'Bob'
+              },
+              {
+                _key: 'person2',
+                created: '2019-02-01T01:02:03.456Z',
+                modified: '2019-03-02T02:03:04.567Z',
+                email: 'jom@bib.com'
+              }
+            ]
+          },
+          {
+            name: COLLECTIONS.CONNECTIONS,
+            data: [
+              {
+                _key: 'application1',
+                created: '2018-02-01T01:02:03.456Z',
+                modified: '2018-03-02T02:03:04.567Z',
+                firstName: '👍',
+                lastName: 'Bib',
+                source: ENUMS.DATA_SOURCES.LINKEDIN,
+                person: 'person2',
+                from: 'person1'
+              }
+            ]
+          }
+        ])
+      })
+
+      it('should set firstName', async () => {
+        const connections = await sql.select().from(TABLES.CONNECTIONS)
+        expect(connections[0]).to.have.property('firstName', '👍')
+      })
+    })
   })
 })

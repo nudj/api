@@ -4,7 +4,7 @@ const dedent = require('dedent')
 
 const {
   db,
-  noSQL,
+  nosql,
   setupCollections,
   populateCollections,
   truncateCollections,
@@ -12,7 +12,7 @@ const {
   expect
 } = require('../../lib')
 const script = require('../../../../scripts/00003-enriched-company-count')
-const executeScript = () => script({ db, noSQL })
+const executeScript = () => script({ db, nosql })
 
 describe('00003 Enriched Company Count', () => {
   let consoleStub
@@ -20,7 +20,7 @@ describe('00003 Enriched Company Count', () => {
   before(async () => {
     await Promise.all([
       setupCollections(db, ['companies']),
-      setupCollections(noSQL, ['enrichedCompanies'])
+      setupCollections(nosql, ['enrichedCompanies'])
     ])
   })
 
@@ -52,7 +52,7 @@ describe('00003 Enriched Company Count', () => {
         ]
       }
     ])
-    await populateCollections(noSQL, [
+    await populateCollections(nosql, [
       {
         name: 'enrichedCompanies',
         data: [
@@ -78,11 +78,11 @@ describe('00003 Enriched Company Count', () => {
 
   afterEach(async () => {
     consoleStub.reset()
-    await Promise.all([truncateCollections(db), truncateCollections(noSQL)])
+    await Promise.all([truncateCollections(db), truncateCollections(nosql)])
   })
 
   after(async () => {
-    await Promise.all([teardownCollections(db), teardownCollections(noSQL)])
+    await Promise.all([teardownCollections(db), teardownCollections(nosql)])
   })
 
   it('should output the company counts to the console', async () => {

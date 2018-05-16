@@ -14,7 +14,7 @@ function executeQueryOnDbUsingSchema ({ schema, variables = {}, operation, db })
     userId: 'person1',
     transaction: transaction({ db }),
     store: store({ db }),
-    noSQL: store({ db })
+    nosql: store({ db })
   }
   return graphql(schema, operation, undefined, testContext, variables)
 }

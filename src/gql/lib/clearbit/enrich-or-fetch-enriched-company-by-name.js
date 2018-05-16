@@ -5,7 +5,7 @@ const enrichCompanyByName = require('./enrich-company-by-name')
 const enrichOrFetchEnrichedCompanyByName = async (company, context, options) => {
   if (process.env.CLEARBIT_ENABLED !== 'true') return null
   try {
-    const enrichedCompany = await context.noSQL.readOne({
+    const enrichedCompany = await context.nosql.readOne({
       type: 'enrichedCompanies',
       id: company.id
     })
@@ -29,7 +29,7 @@ const enrichOrFetchEnrichedCompanyByName = async (company, context, options) => 
       }
     }
 
-    return context.noSQL.create({
+    return context.nosql.create({
       type: 'enrichedCompanies',
       data
     })

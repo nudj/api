@@ -31,7 +31,7 @@ describe('Person.importLinkedinConnections', () => {
       import: importStub,
       query: queryStub
     },
-    noSQL: {
+    nosql: {
       readOne: () => ({}),
       create: () => ({})
     }

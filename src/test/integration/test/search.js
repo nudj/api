@@ -10,7 +10,6 @@ const {
 } = require('../lib')
 
 const Store = require('../../../gql/adaptors/arango/store')
-const setupDataLoaderCache = require('../../../gql/lib/setup-dataloader-cache')
 
 const tvSeriesCollection = 'tvSeries'
 const studiosCollection = 'studios'
@@ -195,10 +194,7 @@ describe('search', () => {
 
   beforeEach(async () => {
     await resetDataStore()
-    store = Store({
-      db,
-      getDataLoader: setupDataLoaderCache(db, {})
-    })
+    store = Store({ db })
   })
 
   after(async () => {

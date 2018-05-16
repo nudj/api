@@ -8,7 +8,6 @@ const {
 } = require('../lib')
 
 const Store = require('../../../gql/adaptors/arango/store')
-const setupDataLoaderCache = require('../../../gql/lib/setup-dataloader-cache')
 
 const collectionName = 'dogs'
 
@@ -31,10 +30,7 @@ describe('update', () => {
   })
 
   beforeEach(async () => {
-    store = Store({
-      db,
-      getDataLoader: setupDataLoaderCache(db, {})
-    })
+    store = Store({ db })
     testId = await createNewEntry()
   })
 

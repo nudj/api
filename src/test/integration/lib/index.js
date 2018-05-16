@@ -1,6 +1,7 @@
 /* eslint-env mocha */
 const chai = require('chai')
 const dirtyChai = require('dirty-chai')
+const sinonChai = require('sinon-chai')
 const chaiAsPromised = require('chai-as-promised')
 const isEqual = require('date-fns/is_equal')
 
@@ -12,6 +13,7 @@ const { truncateCollections, teardownCollections } = require('./teardown')
 
 const { expect } = chai
 
+chai.use(sinonChai)
 chai.use(dirtyChai)
 chai.use(chaiAsPromised)
 

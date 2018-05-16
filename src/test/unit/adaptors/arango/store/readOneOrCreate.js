@@ -15,7 +15,7 @@ const DOCUMENT_RESPONSE = { _key: 123, '_id': 'collectionNames/123', '_rev': 456
 const NEW_RESPONSE = { new: DOCUMENT_RESPONSE }
 const FILTER_NO_MATCH = null
 
-describe('ArangoAdaptor store.readOneOrCreate', () => {
+xdescribe('ArangoAdaptor store.readOneOrCreate', () => {
   let collectionStub
   let dbStub
   let store

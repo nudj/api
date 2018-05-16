@@ -5,7 +5,7 @@ const expect = chai.expect
 
 const Store = require('../../../../../gql/adaptors/arango/store')
 
-describe('ArangoAdaptor Store', () => {
+xdescribe('ArangoAdaptor Store', () => {
   it('to be an function', () => {
     expect(Store).to.be.a('function')
   })

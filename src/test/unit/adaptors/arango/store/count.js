@@ -17,7 +17,7 @@ const DOCUMENT_RESPONSE = {
   prop: 'value'
 }
 
-describe('ArangoAdaptor store.countByFilters', () => {
+xdescribe('ArangoAdaptor store.countByFilters', () => {
   let store
   let dbStub
 

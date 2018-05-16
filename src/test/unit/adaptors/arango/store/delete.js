@@ -11,7 +11,7 @@ chai.use(sinonChai)
 
 const OLD_RESPONSE = { old: { _key: 123, '_id': 'collectionNames/123', '_rev': 456, prop: 'value' } }
 
-describe('ArangoAdaptor store.delete', () => {
+xdescribe('ArangoAdaptor store.delete', () => {
   let collectionStub
   let dbStub
   let store

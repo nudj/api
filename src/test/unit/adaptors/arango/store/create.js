@@ -14,7 +14,7 @@ chai.use(sinonChai)
 const DOCUMENT_RESPONSE = { _key: 123, '_id': 'collectionNames/123', '_rev': 456, prop: 'value' }
 const NEW_RESPONSE = { new: DOCUMENT_RESPONSE }
 
-describe('ArangoAdaptor store.create', () => {
+xdescribe('ArangoAdaptor store.create', () => {
   let collectionStub
   let dbStub
   let store

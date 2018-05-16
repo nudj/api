@@ -407,6 +407,7 @@ exports.down = async knex => {
     .dropTable(TABLES.CONVERSATIONS)
     .dropTable(TABLES.ACCOUNTS)
     .dropTable(TABLES.CONNECTIONS)
+    .dropTable(TABLES.CURRENT_PERSON_ROLES)
     .dropTable(TABLES.PERSON_ROLES)
     .dropTable(TABLES.ROLES)
     .dropTable(TABLES.EMPLOYEES)

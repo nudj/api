@@ -1,6 +1,7 @@
 const reduce = require('lodash/reduce')
 const map = require('lodash/map')
 const mapValues = require('lodash/mapValues')
+const uniq = require('lodash/uniq')
 const promiseSerial = require('promise-serial')
 const {
   OLD_COLLECTIONS,
@@ -98,7 +99,7 @@ async function action ({ db, sql, nosql }) {
           } = edgeRelation
 
           // loop over every key in the one->many Array<key>
-          await promiseSerial(item[field].map(childKey => async () => {
+          await promiseSerial(uniq(item[field]).map(childKey => async () => {
             // fetch the id mapping for the edge record foreign keys
             const edgeRelations = mapValues(relations, foreignTableName => {
               const key = foreignTableName === tableName ? item._key : childKey

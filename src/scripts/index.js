@@ -2,11 +2,13 @@ require('envkey')
 const { Database } = require('arangojs')
 const knex = require('knex')
 
-const db = new Database({ url: `http://${process.env.DB_HOST}:${process.env.DB_PORT}` })
+const { DB_URL } = require('../gql/lib/constants')
+
+const db = new Database({ url: DB_URL })
 db.useDatabase(process.env.DB_NAME)
 db.useBasicAuth(process.env.DB_USER, process.env.DB_PASS)
 
-const nosql = new Database({ url: `http://${process.env.NO_SQL_HOST}:${process.env.NO_SQL_PORT}` })
+const nosql = new Database({ url: DB_URL })
 nosql.useDatabase(process.env.NO_SQL_NAME)
 nosql.useBasicAuth(process.env.NO_SQL_USER, process.env.NO_SQL_PASS)
 

@@ -5,16 +5,14 @@ const uniq = require('lodash/uniq')
 const isNil = require('lodash/isNil')
 const pluralize = require('pluralize')
 
-const { merge } = require('@nudj/library')
+const { merge, generateId } = require('@nudj/library')
 
 const { startOfDay, endOfDay } = require('../../lib/format-dates')
 const { parseFiltersToAql, createFiltersForFields } = require('../../lib/aql')
-const { generateId } = require('@nudj/library')
+const setupDataLoaderCache = require('./setup-dataloader-cache')
 
-module.exports = ({
-  db,
-  getDataLoader
-}) => {
+module.exports = ({ db }) => {
+  const getDataLoader = setupDataLoaderCache(db, {})
   const normaliseData = (data) => {
     if (isNil(data)) return null
     return reduce(data, (result, value, key) => {

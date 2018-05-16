@@ -1,3 +1,7 @@
+const { merge } = require('@nudj/library')
+const invert = require('lodash/invert')
+const reduce = require('lodash/reduce')
+
 const TABLES = {
   ACCOUNTS: 'accounts',
   APPLICATIONS: 'applications',
@@ -24,6 +28,7 @@ const TABLES = {
   SURVEY_SECTIONS: 'surveySections',
   TAGS: 'tags'
 }
+const TABLES_INVERTED = invert(TABLES)
 const FIELDS = {
   GENERIC: {
     ID: 'id',
@@ -173,6 +178,16 @@ const FIELDS = {
     TYPE: 'type'
   }
 }
+// F is only used in this file so shortened for simplicity
+const F = reduce(FIELDS, (fieldsMap, tableFields, tableName) => {
+  if (tableName !== 'GENERIC') {
+    fieldsMap[TABLES_INVERTED[tableName]] = {
+      ...FIELDS.GENERIC,
+      ...tableFields
+    }
+  }
+  return fieldsMap
+}, {})
 const ENUMS = {
   JOB_STATUSES: createEnumDefinition(['DRAFT', 'PUBLISHED', 'ARCHIVED']),
   HIRER_TYPES: createEnumDefinition(['MEMBER', 'ADMIN']),
@@ -181,6 +196,170 @@ const ENUMS = {
   QUESTION_TYPES: createEnumDefinition(['CONNECTIONS', 'COMPANIES']),
   TAG_TYPES: createEnumDefinition(['EXPERTISE', 'SENIORITY'])
 }
+const INDICES = merge(
+  reduce(TABLES, (indexes, tableName) => {
+    indexes[tableName] = indexes[tableName] || {}
+    indexes[tableName].id = {
+      name: `${tableName}ById`,
+      fields: ['id']
+    }
+    return indexes
+  }, {}),
+  {
+    [TABLES.PEOPLE]: {
+      [F.PEOPLE.EMAIL]: {
+        name: `${TABLES.PEOPLE}ByEmail`,
+        fields: [F.PEOPLE.EMAIL]
+      }
+    },
+    [TABLES.COMPANIES]: {
+      [F.COMPANIES.NAME]: {
+        name: `${TABLES.COMPANIES}ByName`,
+        fields: [F.COMPANIES.NAME]
+      },
+      [F.COMPANIES.SLUG]: {
+        name: `${TABLES.COMPANIES}BySlug`,
+        fields: [F.COMPANIES.SLUG]
+      }
+    },
+    [TABLES.JOBS]: {
+      [F.JOBS.COMPANY + F.JOBS.SLUG]: {
+        name: `${TABLES.JOBS}ByCompanySlug`,
+        fields: [F.JOBS.COMPANY, F.JOBS.SLUG]
+      }
+    },
+    [TABLES.HIRERS]: {
+      [F.HIRERS.PERSON]: {
+        name: `${TABLES.HIRERS}ByPerson`,
+        fields: [F.HIRERS.PERSON]
+      }
+    },
+    [TABLES.REFERRALS]: {
+      [F.REFERRALS.SLUG]: {
+        name: `${TABLES.REFERRALS}BySlug`,
+        fields: [F.REFERRALS.SLUG]
+      },
+      [F.REFERRALS.JOB + F.REFERRALS.PERSON]: {
+        name: `${TABLES.REFERRALS}ByJobPerson`,
+        fields: [F.REFERRALS.JOB, F.REFERRALS.PERSON]
+      }
+    },
+    [TABLES.APPLICATIONS]: {
+      [F.APPLICATIONS.JOB + F.APPLICATIONS.PERSON]: {
+        name: `${TABLES.APPLICATIONS}ByJobPerson`,
+        fields: [F.APPLICATIONS.JOB, F.APPLICATIONS.PERSON]
+      }
+    },
+    [TABLES.EMPLOYMENTS]: {
+      [F.EMPLOYMENTS.COMPANY + F.EMPLOYMENTS.PERSON]: {
+        name: `${TABLES.EMPLOYMENTS}ByCompanyPerson`,
+        fields: [F.EMPLOYMENTS.COMPANY, F.EMPLOYMENTS.PERSON]
+      }
+    },
+    [TABLES.CURRENT_EMPLOYMENTS]: {
+      [F.CURRENT_EMPLOYMENTS.PERSON]: {
+        name: `${TABLES.CURRENT_EMPLOYMENTS}ByPerson`,
+        fields: [F.CURRENT_EMPLOYMENTS.PERSON]
+      }
+    },
+    [TABLES.EMPLOYEES]: {
+      [F.EMPLOYEES.PERSON]: {
+        name: `${TABLES.EMPLOYEES}ByPerson`,
+        fields: [F.EMPLOYEES.PERSON]
+      }
+    },
+    [TABLES.ROLES]: {
+      [F.ROLES.NAME]: {
+        name: `${TABLES.ROLES}ByName`,
+        fields: [F.ROLES.NAME]
+      }
+    },
+    [TABLES.PERSON_ROLES]: {
+      [F.PERSON_ROLES.PERSON + F.PERSON_ROLES.ROLE]: {
+        name: `${TABLES.PERSON_ROLES}ByPersonRole`,
+        fields: [F.PERSON_ROLES.PERSON, F.PERSON_ROLES.ROLE]
+      }
+    },
+    [TABLES.CURRENT_PERSON_ROLES]: {
+      [F.CURRENT_PERSON_ROLES.PERSON]: {
+        name: `${TABLES.CURRENT_PERSON_ROLES}ByPerson`,
+        fields: [F.CURRENT_PERSON_ROLES.PERSON]
+      }
+    },
+    [TABLES.CONNECTIONS]: {
+      [F.CONNECTIONS.FROM + F.CONNECTIONS.PERSON]: {
+        name: `${TABLES.CONNECTIONS}ByFromPerson`,
+        fields: [F.CONNECTIONS.FROM, F.CONNECTIONS.PERSON]
+      }
+    },
+    [TABLES.ACCOUNTS]: {
+      [F.ACCOUNTS.EMAIL]: {
+        name: `${TABLES.ACCOUNTS}ByEmail`,
+        fields: [F.ACCOUNTS.EMAIL]
+      }
+    },
+    [TABLES.CONVERSATIONS]: {
+      [F.CONVERSATIONS.THREAD_ID]: {
+        name: `${TABLES.CONVERSATIONS}ByThreadId`,
+        fields: [F.CONVERSATIONS.THREAD_ID]
+      }
+    },
+    [TABLES.SURVEYS]: {
+      [F.SURVEYS.COMPANY + F.SURVEYS.SLUG]: {
+        name: `${TABLES.SURVEYS}ByCompanySlug`,
+        fields: [F.SURVEYS.COMPANY, F.SURVEYS.SLUG]
+      }
+    },
+    [TABLES.SURVEY_SECTIONS]: {
+      [F.SURVEY_SECTIONS.SLUG + F.SURVEY_SECTIONS.SURVEY]: {
+        name: `${TABLES.SURVEY_SECTIONS}BySlugSurvey`,
+        fields: [F.SURVEY_SECTIONS.SLUG, F.SURVEY_SECTIONS.SURVEY]
+      }
+    },
+    [TABLES.SURVEY_QUESTIONS]: {
+      [F.SURVEY_QUESTIONS.SLUG + F.SURVEY_QUESTIONS.SURVEY_SECTION]: {
+        name: `${TABLES.SURVEY_QUESTIONS}BySlugSurveySection`,
+        fields: [F.SURVEY_QUESTIONS.SURVEY_SECTION, F.SURVEY_QUESTIONS.SLUG]
+      }
+    },
+    [TABLES.SURVEY_ANSWERS]: {
+      [F.SURVEY_ANSWERS.PERSON + F.SURVEY_ANSWERS.SURVEY_QUESTION]: {
+        name: `${TABLES.SURVEY_ANSWERS}ByPersonSurveyQuestion`,
+        fields: [F.SURVEY_ANSWERS.PERSON, F.SURVEY_ANSWERS.SURVEY_QUESTION]
+      }
+    },
+    [TABLES.SURVEY_ANSWER_CONNECTIONS]: {
+      [F.SURVEY_ANSWER_CONNECTIONS.CONNECTION + F.SURVEY_ANSWER_CONNECTIONS.SURVEY_ANSWER]: {
+        name: `${TABLES.SURVEY_ANSWER_CONNECTIONS}ByConnectionSurveyAnswer`,
+        fields: [F.SURVEY_ANSWER_CONNECTIONS.CONNECTION, F.SURVEY_ANSWER_CONNECTIONS.SURVEY_ANSWER]
+      }
+    },
+    [TABLES.TAGS]: {
+      [F.TAGS.NAME + F.TAGS.TYPE]: {
+        name: `${TABLES.TAGS}ByNameType`,
+        fields: [F.TAGS.NAME, F.TAGS.TYPE]
+      }
+    },
+    [TABLES.JOB_TAGS]: {
+      [F.JOB_TAGS.JOB + F.JOB_TAGS.TAG]: {
+        name: `${TABLES.JOB_TAGS}ByJobTag`,
+        fields: [F.JOB_TAGS.JOB, F.JOB_TAGS.TAG]
+      }
+    },
+    [TABLES.ROLE_TAGS]: {
+      [F.ROLE_TAGS.ROLE + F.ROLE_TAGS.TAG]: {
+        name: `${TABLES.ROLE_TAGS}ByRoleTag`,
+        fields: [F.ROLE_TAGS.ROLE, F.ROLE_TAGS.TAG]
+      }
+    },
+    [TABLES.SURVEY_QUESTION_TAGS]: {
+      [F.SURVEY_QUESTION_TAGS.SURVEY_QUESTION + F.SURVEY_QUESTION_TAGS.TAG]: {
+        name: `${TABLES.SURVEY_QUESTION_TAGS}ByQuestionTag`,
+        fields: [F.SURVEY_QUESTION_TAGS.SURVEY_QUESTION, F.SURVEY_QUESTION_TAGS.TAG]
+      }
+    }
+  }
+)
 
 function createEnumDefinition (items) {
   const enumDefinition = items.reduce((enumDefinition, item) => {
@@ -196,9 +375,9 @@ function defaultConfig (t, knex) {
   t.collate('utf8mb4_bin') // to support emoji
   // Reason for choosing INT over BIGINT as the primary key
   // http://ronaldbradford.com/blog/bigint-v-int-is-there-a-big-deal-2008-07-18/
-  t.increments(FIELDS.GENERIC.ID).primary()
-  t.timestamp(FIELDS.GENERIC.CREATED).defaultTo(knex.fn.now()).notNullable()
-  t.timestamp(FIELDS.GENERIC.MODIFIED).defaultTo(knex.fn.now()).notNullable()
+  t.increments(FIELDS.GENERIC.ID).primary('byId')
+  t.timestamp(FIELDS.GENERIC.CREATED).defaultTo(knex.raw('CURRENT_TIMESTAMP')).notNullable()
+  t.timestamp(FIELDS.GENERIC.MODIFIED).defaultTo(knex.raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP')).notNullable()
 }
 function emailType (fieldName, t, knex) {
   // https://dba.stackexchange.com/questions/37014/in-what-data-type-should-i-store-an-email-address-in-database
@@ -217,6 +396,7 @@ module.exports = {
   TABLES,
   FIELDS,
   ENUMS,
+  INDICES,
 
   // functions
   defaultConfig,

@@ -23,7 +23,7 @@ const DOCUMENT_RESPONSE_2 = {
   prop: 'value2'
 }
 
-describe('ArangoAdaptor store.readAll', () => {
+xdescribe('ArangoAdaptor store.readAll', () => {
   let collectionStub
   let dbStub
   let store

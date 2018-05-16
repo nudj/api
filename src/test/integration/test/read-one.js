@@ -9,7 +9,6 @@ const {
 } = require('../lib')
 
 const Store = require('../../../gql/adaptors/arango/store')
-const setupDataLoaderCache = require('../../../gql/lib/setup-dataloader-cache')
 
 const collectionName = 'people'
 
@@ -55,10 +54,7 @@ describe('readOne', () => {
   beforeEach(async () => {
     await resetDataStore()
     testId = await createNewEntry()
-    store = Store({
-      db,
-      getDataLoader: setupDataLoaderCache(db, {})
-    })
+    store = Store({ db })
   })
 
   after(async () => {

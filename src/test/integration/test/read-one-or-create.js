@@ -10,7 +10,6 @@ const {
 } = require('../lib')
 
 const Store = require('../../../gql/adaptors/arango/store')
-const setupDataLoaderCache = require('../../../gql/lib/setup-dataloader-cache')
 
 const collectionName = 'sandwiches'
 
@@ -42,10 +41,7 @@ describe('readOneOrCreate', () => {
 
   beforeEach(async () => {
     await resetDataStore()
-    store = Store({
-      db,
-      getDataLoader: setupDataLoaderCache(db, {})
-    })
+    store = Store({ db })
   })
 
   after(async () => {

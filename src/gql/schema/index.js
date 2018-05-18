@@ -49,7 +49,7 @@ const modules = [
   require('./job/company'),
   require('./job/createApplication'),
   require('./job/createReferralByEmail'),
-  require('./job/createReferralForUser'),
+  require('./job/getOrCreateReferralForUser'),
   require('./job/createReferralWithParentForPerson'),
   require('./job/recordEvent'),
   require('./job/referralByFilters'),

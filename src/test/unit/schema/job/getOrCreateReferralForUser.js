@@ -9,7 +9,7 @@ const {
   shouldRespondWithGqlError
 } = require('../../helpers')
 
-describe('Job.createReferralForUserForUser', () => {
+describe('Job.getOrCreateReferralForUser', () => {
   let IntercomMock
   const operation = `
     query testQuery (
@@ -17,7 +17,7 @@ describe('Job.createReferralForUserForUser', () => {
       $parentId: ID
     ) {
       job (id: "job1") {
-        createReferralForUser(
+        getOrCreateReferralForUser(
           person: $personId,
           parent: $parentId
         ) {
@@ -83,7 +83,7 @@ describe('Job.createReferralForUserForUser', () => {
       expect(result).to.deep.equal({
         data: {
           job: {
-            createReferralForUser: {
+            getOrCreateReferralForUser: {
               id: 'referral1'
             }
           }
@@ -146,7 +146,7 @@ describe('Job.createReferralForUserForUser', () => {
       expect(result).to.deep.equal({
         data: {
           job: {
-            createReferralForUser: {
+            getOrCreateReferralForUser: {
               id: 'referral2'
             }
           }
@@ -203,7 +203,7 @@ describe('Job.createReferralForUserForUser', () => {
       expect(result).to.deep.equal({
         data: {
           job: {
-            createReferralForUser: {
+            getOrCreateReferralForUser: {
               id: 'referral1'
             }
           }
@@ -257,7 +257,7 @@ describe('Job.createReferralForUserForUser', () => {
       expect(result).to.deep.equal({
         data: {
           job: {
-            createReferralForUser: {
+            getOrCreateReferralForUser: {
               id: 'referral1'
             }
           }
@@ -301,7 +301,7 @@ describe('Job.createReferralForUserForUser', () => {
       shouldRespondWithGqlError({
         path: [
           'job',
-          'createReferralForUser'
+          'getOrCreateReferralForUser'
         ]
       })(result)
     })

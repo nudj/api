@@ -156,6 +156,7 @@ const modules = [
   require('./mutation/employments'),
   require('./mutation/employmentsByFilters'),
   require('./mutation/fetchTags'),
+  require('./mutation/fetchTemplate'),
   require('./mutation/hirer'),
   require('./mutation/hirerByFilters'),
   require('./mutation/hirers'),

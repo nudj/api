@@ -74,9 +74,18 @@ module.exports = {
           ? `${senderName} has invited you to join them on nudj`
           : `You've been invited to join nudj!`
 
+        const jobs = await context.store.readAll({
+          type: 'jobs',
+          filters: {
+            company: company.id
+          }
+        })
+
         const emailBody = teammateInvitationEmailBodyTemplate({
+          web: context.web,
           senderName,
-          companyName: company.name
+          company,
+          jobs
         })
 
         await Promise.all(emailAddresses.map(async email => {

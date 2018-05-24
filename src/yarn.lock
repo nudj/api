@@ -2,13 +2,16 @@
 # yarn lockfile v1
 
 
-"@nudj/library@6.0.0":
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/@nudj/library/-/library-6.0.0.tgz#2c992c169f3cce059b235105a35594112b4bc5e2"
+"@nudj/library@6.2.0":
+  version "6.2.0"
+  resolved "https://registry.yarnpkg.com/@nudj/library/-/library-6.2.0.tgz#b9d79a09533f6cc6c45f0af0b8107183354070c9"
   dependencies:
     axios "^0.16.2"
+    date-fns "^1.29.0"
     deepmerge "^1.5.0"
+    intercom-client "^2.9.4"
     mailbuild "^0.3.7"
+    proxyquire "^2.0.1"
     shortid "^2.2.8"
 
 "@sinonjs/formatio@^2.0.0":
@@ -651,6 +654,10 @@ dataloader@^1.4.0:
 date-fns@1.28.2:
   version "1.28.2"
   resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-1.28.2.tgz#19e4192d68875c0bf7c9537e3f296a8ec64853ef"
+
+date-fns@^1.29.0:
+  version "1.29.0"
+  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-1.29.0.tgz#12e609cdcb935127311d04d33334e2960a2a54e6"
 
 debug-log@^1.0.0:
   version "1.0.1"
@@ -2997,6 +3004,14 @@ proxyquire@1.7.11:
     module-not-found-error "^1.0.0"
     resolve "~1.1.7"
 
+proxyquire@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/proxyquire/-/proxyquire-2.0.1.tgz#958d732be13d21d374cc2256645a5ff97c76a669"
+  dependencies:
+    fill-keys "^1.0.2"
+    module-not-found-error "^1.0.0"
+    resolve "~1.5.0"
+
 ps-tree@^1.0.1:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/ps-tree/-/ps-tree-1.1.0.tgz#b421b24140d6203f1ed3c76996b4427b08e8c014"
@@ -3217,7 +3232,7 @@ resolve-from@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/resolve-from/-/resolve-from-1.0.1.tgz#26cbfe935d1aeeeabb29bc3fe5aeb01e93d44226"
 
-resolve@^1.1.6:
+resolve@^1.1.6, resolve@~1.5.0:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/resolve/-/resolve-1.5.0.tgz#1f09acce796c9a762579f31b2c1cc4c3cddf9f36"
   dependencies:

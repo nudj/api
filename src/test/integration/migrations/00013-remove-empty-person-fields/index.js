@@ -1,8 +1,6 @@
 /* eslint-env mocha */
 const chai = require('chai')
 const chaiAsPromised = require('chai-as-promised')
-const orderBy = require('lodash/orderBy')
-const uniq = require('lodash/uniq')
 const find = require('lodash/find')
 const {
   db,
@@ -33,42 +31,48 @@ describe.only('00013 Remove Empty `Person` fields', () => {
         data: [
           {
             _key: 'person1',
-            firstName: 'Dave',
+            firstName: 'EmptyTitle',
             title: ''
           },
           {
             _key: 'person2',
-            firstName: 'Fred',
-            status: '',
-            title: ''
+            firstName: 'HasATitle',
+            title: 'King of All Londinium'
           },
           {
             _key: 'person3',
-            firstName: 'Steve',
+            firstName: 'EmptyCompany',
             company: ''
           },
           {
             _key: 'person4',
-            company: '',
-            type: '',
-            firstName: 'Zach',
-            status: ''
+            firstName: 'HasACompany',
+            company: 'Serenity'
           },
           {
             _key: 'person5',
-            firstName: 'Jack',
-            lastName: ''
-          },
-          {
-            _key: 'person6',
-            firstName: 'Gavin',
+            firstName: 'EmptyType',
             type: ''
           },
           {
+            _key: 'person6',
+            firstName: 'HasAType',
+            type: 'Firefly'
+          },
+          {
             _key: 'person7',
-            firstName: 'Theodore',
+            firstName: 'HasAStatus',
+            status: 'MIA'
+          },
+          {
+            _key: 'person8',
+            firstName: 'EmptyStatus',
             status: ''
           },
+          {
+            _key: 'person9',
+            firstName: 'NoCruft'
+          }
         ]
       }
     ])
@@ -83,38 +87,76 @@ describe.only('00013 Remove Empty `Person` fields', () => {
     await teardownCollections(db)
   })
 
-  it('should remove empty `title`, `status`, `company` & `type` fields', async () => {
-    const people = orderBy(await fetchAll(db, 'people'), '_key')
+  describe('when field is empty string', () => {
+    it('removes `title` field', async () => {
+      const people = await fetchAll(db, 'people')
+      const person = find(people, { firstName: 'EmptyTitle' })
 
-    expect(people[0]).to.have.property('_key').to.equal('person1')
-    expect(people[0]).to.not.have.property('title')
+      expect(person).to.not.have.property('title')
+    })
 
-    expect(people[1]).to.have.property('_key').to.equal('person2')
-    expect(people[1]).to.not.have.property('title')
-    expect(people[1]).to.not.have.property('status')
+    it('removes `type` field', async () => {
+      const people = await fetchAll(db, 'people')
+      const person = find(people, { firstName: 'EmptyType' })
 
-    expect(people[2]).to.have.property('_key').to.equal('person3')
-    expect(people[2]).to.not.have.property('company')
+      expect(person).to.not.have.property('type')
+    })
 
-    expect(people[3]).to.have.property('_key').to.equal('person4')
-    expect(people[3]).to.not.have.property('company')
-    expect(people[3]).to.not.have.property('type')
-    expect(people[3]).to.not.have.property('status')
+    it('removes `status` field', async () => {
+      const people = await fetchAll(db, 'people')
+      const person = find(people, { firstName: 'EmptyStatus' })
 
-    expect(people[5]).to.have.property('_key').to.equal('person6')
-    expect(people[5]).to.not.have.property('type')
+      expect(person).to.not.have.property('status')
+    })
 
-    expect(people[6]).to.have.property('_key').to.equal('person7')
-    expect(people[6]).to.not.have.property('status')
+    it('removes `company` field', async () => {
+      const people = await fetchAll(db, 'people')
+      const person = find(people, { firstName: 'EmptyCompany' })
+
+      expect(person).to.not.have.property('status')
+    })
   })
 
-  it('should not update people without affected fields', async () => {
-    const people = orderBy(await fetchAll(db, 'people'), '_key')
+  describe('when field is not an empty string', () => {
+    it('does not affect `title` field', async () => {
+      const people = await fetchAll(db, 'people')
+      const person = find(people, { firstName: 'HasATitle' })
 
-    const normalisedPerson = people[4]
+      expect(person).to.have.property('title')
+    })
 
-    expect(normalisedPerson).to.have.property('_key').to.equal('person5')
-    expect(normalisedPerson).to.have.property('firstName').to.equal('Jack')
-    expect(normalisedPerson).to.have.property('lastName').to.equal('')
+    it('does not affect `type` field', async () => {
+      const people = await fetchAll(db, 'people')
+      const person = find(people, { firstName: 'HasAType' })
+
+      expect(person).to.have.property('type')
+    })
+
+    it('does not affect `status` field', async () => {
+      const people = await fetchAll(db, 'people')
+      const person = find(people, { firstName: 'HasAStatus' })
+
+      expect(person).to.have.property('status')
+    })
+
+    it('does not affect `company` field', async () => {
+      const people = await fetchAll(db, 'people')
+      const person = find(people, { firstName: 'HasACompany' })
+
+      expect(person).to.have.property('company')
+    })
+  })
+
+  describe('when field is undefined', () => {
+    it('does not update the entity', async () => {
+      const people = await fetchAll(db, 'people')
+      const person = find(people, { firstName: 'NoCruft' })
+
+      expect(person).to.have.property('_key').to.equal('person9')
+      expect(person).to.not.have.property('title')
+      expect(person).to.not.have.property('type')
+      expect(person).to.not.have.property('status')
+      expect(person).to.not.have.property('company')
+    })
   })
 })

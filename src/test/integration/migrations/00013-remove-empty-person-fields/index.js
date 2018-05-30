@@ -15,7 +15,7 @@ const { fetchAll } = require('../../../../lib')
 
 chai.use(chaiAsPromised)
 
-describe.only('00013 Remove Empty `Person` fields', () => {
+describe('00013 Remove Empty `Person` fields', () => {
   const executeMigration = ({ direction }) => {
     return migration[direction]({
       db,

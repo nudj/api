@@ -64,6 +64,7 @@ const modules = [
   require('./notification'),
   require('./person'),
   require('./person/accountByFilters'),
+  require('./person/addCompanyAndAssignUserAsHirer'),
   require('./person/asAConnectionByFilters'),
   require('./person/company'),
   require('./person/connectionByFilters'),

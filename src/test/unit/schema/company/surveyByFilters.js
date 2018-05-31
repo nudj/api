@@ -6,36 +6,33 @@ const schema = require('../../../../gql/schema')
 const { executeQueryOnDbUsingSchema } = require('../../helpers')
 
 describe('Company.surveyByFilters', () => {
+  const db = {
+    companies: [
+      {
+        id: 'company1'
+      }
+    ],
+    surveys: [
+      {
+        id: 'survey1',
+        slug: 'surveySlug1'
+      }
+    ],
+    companySurveys: [
+      {
+        id: 'companySurvey1',
+        company: 'company1',
+        survey: 'survey1'
+      }
+    ]
+  }
+
   it('should fetch filtered surveys', async () => {
-    const db = {
-      companies: [
-        {
-          id: 'company1'
-        }
-      ],
-      surveys: [
-        {
-          id: 'survey1',
-          slug: 'surveySlug1',
-          company: 'company1'
-        },
-        {
-          id: 'survey2',
-          slug: 'surveySlug2',
-          company: 'company1'
-        },
-        {
-          id: 'survey3',
-          slug: 'surveySlug2',
-          company: 'company2'
-        }
-      ]
-    }
     const operation = `
       query {
         company (id: "company1") {
           surveyByFilters(filters: {
-            slug: "surveySlug2"
+            slug: "surveySlug1"
           }) {
             id
             slug
@@ -47,8 +44,8 @@ describe('Company.surveyByFilters', () => {
       data: {
         company: {
           surveyByFilters: {
-            id: 'survey2',
-            slug: 'surveySlug2'
+            id: 'survey1',
+            slug: 'surveySlug1'
           }
         }
       }
@@ -56,30 +53,6 @@ describe('Company.surveyByFilters', () => {
   })
 
   it('should return null if no matches', async () => {
-    const db = {
-      companies: [
-        {
-          id: 'company1'
-        }
-      ],
-      surveys: [
-        {
-          id: 'survey1',
-          slug: 'surveySlug1',
-          company: 'company1'
-        },
-        {
-          id: 'survey2',
-          slug: 'surveySlug2',
-          company: 'company1'
-        },
-        {
-          id: 'survey3',
-          slug: 'surveySlug3',
-          company: 'company2'
-        }
-      ]
-    }
     const operation = `
       query {
         company (id: "company1") {

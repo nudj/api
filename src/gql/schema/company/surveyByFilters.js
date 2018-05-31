@@ -1,6 +1,12 @@
-const { nestedSingleByFilters } = require('../../lib')
+const { nestedSingleByFiltersViaEdge } = require('../../lib')
 
-module.exports = nestedSingleByFilters({
-  parentType: 'Company',
-  type: 'Survey'
+module.exports = nestedSingleByFiltersViaEdge({
+  fromType: 'Company',
+  toType: 'Survey',
+  name: 'surveyByFilters',
+  edgeCollection: 'companySurveys',
+  toCollection: 'surveys',
+  fromEdgePropertyName: 'company',
+  toEdgePropertyName: 'survey',
+  filterType: 'SurveyFilterInput'
 })

@@ -1,7 +1,11 @@
-const { nestedSingle } = require('../../lib')
+const { nestedSingleViaEdge } = require('../../lib')
 
-module.exports = nestedSingle({
-  parentType: 'Survey',
-  type: 'Company',
-  collection: 'companies'
+module.exports = nestedSingleViaEdge({
+  fromType: 'Survey',
+  toType: 'Company',
+  name: 'company',
+  edgeCollection: 'companySurveys',
+  toCollection: 'companies',
+  fromEdgePropertyName: 'survey',
+  toEdgePropertyName: 'company'
 })

@@ -74,7 +74,7 @@ describe('makeUniqueSlug', () => {
       })
 
       expect(result).to.be.a('string')
-      expect(result).to.match(/name-based-\w+/)
+      expect(result).to.match(/name-based-[a-z0-9]{8}/)
       expect(result.length).to.be.greaterThan(company.name.length)
       expect(readOneStub).to.have.been.calledThrice()
     })

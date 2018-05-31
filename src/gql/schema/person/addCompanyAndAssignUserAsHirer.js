@@ -1,5 +1,3 @@
-const find = require('lodash/find')
-
 const makeUniqueSlug = require('../../lib/helpers/make-unique-slug')
 const { handleErrors } = require('../../lib')
 const { values: hirerTypes } = require('../enums/hirer-types')
@@ -14,7 +12,7 @@ module.exports = {
     Person: {
       addCompanyAndAssignUserAsHirer: handleErrors(async (person, args, context) => {
         const {
-          name,
+          name: companyName,
           location,
           description,
           client
@@ -24,18 +22,20 @@ module.exports = {
         // slug and checking newly created companies for existing hirers.
         let company = await context.store.readOne({
           type: 'companies',
-          filters: { name }
+          filters: { name: companyName }
         })
 
         if (company) {
-          const hirers = await context.store.readAll({
+          const userHirer = await context.store.readOne({
             type: 'hirers',
-            filters: { company: company.id }
+            filters: {
+              company: company.id,
+              person: person.id
+            }
           })
-          const userHirer = find(hirers, { person: person.id })
 
           if (userHirer) return userHirer
-          throw new Error(`${name} is already a company on nudj`)
+          throw new Error(`${companyName} is already a company on nudj`)
         } else {
           const slug = await makeUniqueSlug({
             type: 'companies',
@@ -45,9 +45,9 @@ module.exports = {
 
           company = await context.store.create({
             type: 'companies',
-            filters: { name },
+            filters: { name: companyName },
             data: {
-              name,
+              name: companyName,
               slug,
               location,
               description,

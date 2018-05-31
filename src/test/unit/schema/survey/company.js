@@ -10,16 +10,19 @@ describe('Survey.company', () => {
     const db = {
       surveys: [
         {
-          id: 'survey1',
-          company: 'company2'
+          id: 'survey1'
         }
       ],
       companies: [
         {
           id: 'company1'
-        },
+        }
+      ],
+      companySurveys: [
         {
-          id: 'company2'
+          id: 'companySurvey1',
+          company: 'company1',
+          survey: 'survey1'
         }
       ]
     }
@@ -36,7 +39,7 @@ describe('Survey.company', () => {
       data: {
         survey: {
           company: {
-            id: 'company2'
+            id: 'company1'
           }
         }
       }
@@ -47,18 +50,15 @@ describe('Survey.company', () => {
     const db = {
       surveys: [
         {
-          id: 'survey1',
-          company: 'company3'
+          id: 'survey1'
         }
       ],
       companies: [
         {
           id: 'company1'
-        },
-        {
-          id: 'company2'
         }
-      ]
+      ],
+      companySurveys: []
     }
     const operation = `
       query {

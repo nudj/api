@@ -8,8 +8,9 @@ const { executeQueryOnDbUsingSchema } = require('../../helpers')
 const operation = `
   query {
     companies {
-      surveys {
+      surveyOrDefault {
         id
+        slug
       }
     }
   }
@@ -22,35 +23,24 @@ const baseData = {
   ],
   surveys: [
     {
-      id: 'survey1'
+      id: 'survey1',
+      slug: 'real-survey'
     },
     {
-      id: 'survey2'
-    },
-    {
-      id: 'survey3'
+      id: 'survey2',
+      slug: 'default'
     }
   ]
 }
 
-describe('Company.surveys', () => {
-  it('should fetch all surveys relating to the company', async () => {
+describe('Company.surveyOrDefault', () => {
+  it('should fetch the survey related to the company', async () => {
     const db = merge(baseData, {
       companySurveys: [
         {
           id: 'companySurvey1',
           company: 'company1',
           survey: 'survey1'
-        },
-        {
-          id: 'companySurvey2',
-          company: 'company1',
-          survey: 'survey2'
-        },
-        {
-          id: 'companySurvey3',
-          company: 'company2',
-          survey: 'survey3'
         }
       ]
     })
@@ -58,21 +48,17 @@ describe('Company.surveys', () => {
       data: {
         companies: [
           {
-            surveys: [
-              {
-                id: 'survey1'
-              },
-              {
-                id: 'survey2'
-              }
-            ]
+            surveyOrDefault: {
+              id: 'survey1',
+              slug: 'real-survey'
+            }
           }
         ]
       }
     })
   })
 
-  it('should return empty array if no matches', async () => {
+  it('should return default survey if no matches', async () => {
     const db = merge(baseData, {
       surveys: [
         {
@@ -85,7 +71,10 @@ describe('Company.surveys', () => {
       data: {
         companies: [
           {
-            surveys: []
+            surveyOrDefault: {
+              id: 'survey2',
+              slug: 'default'
+            }
           }
         ]
       }

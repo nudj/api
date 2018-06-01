@@ -24,6 +24,7 @@ describe('00015 Convert Job.bonus to String', () => {
 
   beforeEach(async () => {
     await setupCollections(db, [
+      'companies',
       'jobs'
     ])
   })
@@ -37,93 +38,233 @@ describe('00015 Convert Job.bonus to String', () => {
   })
 
   describe('up', () => {
-    describe('when migration has not been run', () => {
-      beforeEach(async () => {
-        await populateCollections(db, [
-          {
-            name: 'jobs',
-            data: [
-              {
-                _key: 'job1',
-                bonus: 500
-              }
-            ]
-          }
-        ])
+    describe('when has not been run', () => {
+      describe('for UK jobs', () => {
+        beforeEach(async () => {
+          await populateCollections(db, [
+            {
+              name: 'jobs',
+              data: [
+                {
+                  _key: 'job1',
+                  bonus: 500
+                }
+              ]
+            }
+          ])
+        })
+
+        it('should convert the integer into a string with a £', async () => {
+          await executeMigration({ direction: 'up' })
+          const jobs = await fetchAll(db, 'jobs')
+          expect(jobs[0]).to.have.property('bonus').to.equal('£500')
+        })
       })
 
-      it('should convert the integer into a string with a £', async () => {
-        await executeMigration({ direction: 'up' })
-        const jobs = await fetchAll(db, 'jobs')
-        expect(jobs[0]).to.have.property('bonus').to.equal('£500')
+      describe('for SalesI job', () => {
+        beforeEach(async () => {
+          await populateCollections(db, [
+            {
+              name: 'companies',
+              data: [
+                {
+                  _key: 'company1',
+                  slug: 'sales-i'
+                }
+              ]
+            },
+            {
+              name: 'jobs',
+              data: [
+                {
+                  _key: 'job1',
+                  slug: 'marketing-coordinator',
+                  company: 'company1',
+                  bonus: 500
+                }
+              ]
+            }
+          ])
+        })
+
+        it('should convert the integer into a string with a $', async () => {
+          await executeMigration({ direction: 'up' })
+          const jobs = await fetchAll(db, 'jobs')
+          expect(jobs[0]).to.have.property('bonus').to.equal('$500')
+        })
       })
     })
 
-    describe('when up has already been run', () => {
-      beforeEach(async () => {
-        await populateCollections(db, [
-          {
-            name: 'jobs',
-            data: [
-              {
-                _key: 'job1',
-                bonus: '£500'
-              }
-            ]
-          }
-        ])
+    describe('when has already been run', () => {
+      describe('for UK jobs', () => {
+        beforeEach(async () => {
+          await populateCollections(db, [
+            {
+              name: 'jobs',
+              data: [
+                {
+                  _key: 'job1',
+                  bonus: '£500'
+                }
+              ]
+            }
+          ])
+        })
+
+        it('should be a noop', async () => {
+          await executeMigration({ direction: 'up' })
+          const jobs = await fetchAll(db, 'jobs')
+          expect(jobs[0]).to.have.property('bonus').to.equal('£500')
+        })
       })
 
-      it('should not add multiple £s', async () => {
-        await executeMigration({ direction: 'up' })
-        const jobs = await fetchAll(db, 'jobs')
-        expect(jobs[0]).to.have.property('bonus').to.equal('£500')
+      describe('for SalesI job', () => {
+        beforeEach(async () => {
+          await populateCollections(db, [
+            {
+              name: 'companies',
+              data: [
+                {
+                  _key: 'company1',
+                  slug: 'sales-i'
+                }
+              ]
+            },
+            {
+              name: 'jobs',
+              data: [
+                {
+                  _key: 'job1',
+                  slug: 'marketing-coordinator',
+                  company: 'company1',
+                  bonus: '$500'
+                }
+              ]
+            }
+          ])
+        })
+
+        it('should be a noop', async () => {
+          await executeMigration({ direction: 'up' })
+          const jobs = await fetchAll(db, 'jobs')
+          expect(jobs[0]).to.have.property('bonus').to.equal('$500')
+        })
       })
     })
   })
 
   describe('down', () => {
-    describe('when migration has not been run', () => {
-      beforeEach(async () => {
-        await populateCollections(db, [
-          {
-            name: 'jobs',
-            data: [
-              {
-                _key: 'job1',
-                bonus: '£500'
-              }
-            ]
-          }
-        ])
+    describe('when has not been run', () => {
+      describe('for UK jobs', () => {
+        beforeEach(async () => {
+          await populateCollections(db, [
+            {
+              name: 'jobs',
+              data: [
+                {
+                  _key: 'job1',
+                  bonus: '£500'
+                }
+              ]
+            }
+          ])
+        })
+
+        it('should revert the string to an integer', async () => {
+          await executeMigration({ direction: 'down' })
+          const jobs = await fetchAll(db, 'jobs')
+          expect(jobs[0]).to.have.property('bonus').to.equal(500)
+        })
       })
 
-      it('should revert the string into an integer', async () => {
-        await executeMigration({ direction: 'down' })
-        const jobs = await fetchAll(db, 'jobs')
-        expect(jobs[0]).to.have.property('bonus').to.equal(500)
+      describe('for SalesI job', () => {
+        beforeEach(async () => {
+          await populateCollections(db, [
+            {
+              name: 'companies',
+              data: [
+                {
+                  _key: 'company1',
+                  slug: 'sales-i'
+                }
+              ]
+            },
+            {
+              name: 'jobs',
+              data: [
+                {
+                  _key: 'job1',
+                  slug: 'marketing-coordinator',
+                  company: 'company1',
+                  bonus: '$500'
+                }
+              ]
+            }
+          ])
+        })
+
+        it('should revert the string to an integer', async () => {
+          await executeMigration({ direction: 'down' })
+          const jobs = await fetchAll(db, 'jobs')
+          expect(jobs[0]).to.have.property('bonus').to.equal(500)
+        })
       })
     })
 
-    describe('when up has already been run', () => {
-      beforeEach(async () => {
-        await populateCollections(db, [
-          {
-            name: 'jobs',
-            data: [
-              {
-                _key: 'job1',
-                bonus: 500
-              }
-            ]
-          }
-        ])
+    describe('when has already been run', () => {
+      describe('for UK jobs', () => {
+        beforeEach(async () => {
+          await populateCollections(db, [
+            {
+              name: 'jobs',
+              data: [
+                {
+                  _key: 'job1',
+                  bonus: 500
+                }
+              ]
+            }
+          ])
+        })
+
+        it('should be a noop', async () => {
+          await executeMigration({ direction: 'down' })
+          const jobs = await fetchAll(db, 'jobs')
+          expect(jobs[0]).to.have.property('bonus').to.equal(500)
+        })
       })
 
-      it('should noop', async () => {
-        await executeMigration({ direction: 'down' })
-        const jobs = await fetchAll(db, 'jobs')
-        expect(jobs[0]).to.have.property('bonus').to.equal(500)
+      describe('for SalesI job', () => {
+        beforeEach(async () => {
+          await populateCollections(db, [
+            {
+              name: 'companies',
+              data: [
+                {
+                  _key: 'company1',
+                  slug: 'sales-i'
+                }
+              ]
+            },
+            {
+              name: 'jobs',
+              data: [
+                {
+                  _key: 'job1',
+                  slug: 'marketing-coordinator',
+                  company: 'company1',
+                  bonus: 500
+                }
+              ]
+            }
+          ])
+        })
+
+        it('should be a noop', async () => {
+          await executeMigration({ direction: 'down' })
+          const jobs = await fetchAll(db, 'jobs')
+          expect(jobs[0]).to.have.property('bonus').to.equal(500)
+        })
       })
     })
   })

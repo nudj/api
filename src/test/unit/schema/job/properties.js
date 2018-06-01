@@ -10,7 +10,6 @@ const { values: statusTypes } = require('../../../../gql/schema/enums/job-status
 const TYPE = 'Job'
 const TYPE_PLURAL = 'jobs'
 const DUMMY_ID = '123'
-const DUMMY_INT = 123
 const DUMMY_STRING = 'abc'
 const DUMMY_DATETIME = '2000-01-17T02:51:58.000+00:00'
 const DUMMY_ARRAY_STRINGS = ['abc']
@@ -27,7 +26,7 @@ describe('Job properties', () => {
     await expectPropertyReceivesValue('title', DUMMY_STRING)
     await expectPropertyReceivesValue('slug', DUMMY_STRING)
     await expectPropertyReceivesValue('description', DUMMY_STRING)
-    await expectPropertyReceivesValue('bonus', DUMMY_INT)
+    await expectPropertyReceivesValue('bonus', DUMMY_STRING)
     await expectPropertyReceivesValue('roleDescription', DUMMY_STRING)
     await expectPropertyReceivesValue('candidateDescription', DUMMY_STRING)
     await expectPropertyReceivesValue('location', DUMMY_STRING)
@@ -55,6 +54,5 @@ describe('Job properties', () => {
     await expectPropertyIsRequired('templateTags')
     await expectPropertyContentsIsRequired('templateTags')
     await expectPropertyIsRequired('type')
-    await expectPropertyIsRequired('url')
   })
 })

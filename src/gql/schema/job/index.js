@@ -7,7 +7,7 @@ module.exports = {
       title: String!
       slug: String!
       description: String!
-      bonus: Int!
+      bonus: String!
       roleDescription: String!
       candidateDescription: String!
       location: String!
@@ -15,7 +15,7 @@ module.exports = {
       status: JobStatus!
       templateTags: [String!]!
       type: String!
-      url: String!
+      url: String
       experience: String
       labels: [String!]
       requirements: String
@@ -25,7 +25,7 @@ module.exports = {
       title: String!
       slug: String!
       description: String!
-      bonus: Int!
+      bonus: String!
       roleDescription: String!
       candidateDescription: String!
       location: String!
@@ -33,7 +33,7 @@ module.exports = {
       status: JobStatus!
       templateTags: [String!]!
       type: String!
-      url: String!
+      url: String
       experience: String
       requirements: String
       labels: [String!]
@@ -45,7 +45,7 @@ module.exports = {
       title: String
       slug: String
       description: String
-      bonus: Int
+      bonus: String
       roleDescription: String
       candidateDescription: String
       location: String

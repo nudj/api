@@ -105,7 +105,7 @@ describe('Company.createJob', () => {
       title: 'CEO',
       slug: 'ceo',
       description: 'SpaceX was founded under the belief that a future where humanity is out exploring the stars is fundamentally more exciting than one where we are not.',
-      bonus: 10,
+      bonus: '10',
       roleDescription: 'Espresso machine proficiency',
       candidateDescription: 'A valid ServSafe or state issued food handler’s card',
       location: 'Mars',

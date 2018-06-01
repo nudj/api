@@ -7,9 +7,18 @@ async function up ({ db, step }) {
     const jobsCollection = db.collection('jobs')
     const jobs = await fetchAll(db, 'jobs')
     await promiseSerial(jobs.map(job => async () => {
-      if (job.bonus[0] !== '£') {
+      let currencySymbol = '£'
+      // handle single Sales I job as unique condition
+      if (job.slug === 'marketing-coordinator') {
+        const companiesCollection = db.collection('companies')
+        const company = await companiesCollection.document(job.company)
+        if (company.slug === 'sales-i') {
+          currencySymbol = '$'
+        }
+      }
+      if (job.bonus[0] !== currencySymbol) {
         await jobsCollection.update(job._key, {
-          bonus: `£${job.bonus}`
+          bonus: `${currencySymbol}${job.bonus}`
         })
       }
     }))
@@ -21,7 +30,16 @@ async function down ({ db, step }) {
     const jobsCollection = db.collection('jobs')
     const jobs = await fetchAll(db, 'jobs')
     await promiseSerial(jobs.map(job => async () => {
-      if (typeof job.bonus === 'string') {
+      let currencySymbol = '£'
+      // handle single Sales I job as unique condition
+      if (job.slug === 'marketing-coordinator') {
+        const companiesCollection = db.collection('companies')
+        const company = await companiesCollection.document(job.company)
+        if (company.slug === 'sales-i') {
+          currencySymbol = '$'
+        }
+      }
+      if (job.bonus[0] === currencySymbol) {
         await jobsCollection.update(job._key, {
           bonus: parseInt(job.bonus.slice(1), 10)
         })

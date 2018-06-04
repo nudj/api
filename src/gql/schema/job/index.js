@@ -6,7 +6,7 @@ module.exports = {
       modified: DateTime!
       title: String!
       slug: String!
-      description: String!
+      description: String
       bonus: String!
       roleDescription: String!
       candidateDescription: String!
@@ -23,8 +23,8 @@ module.exports = {
 
     input JobCreateInput {
       title: String!
-      slug: String!
-      description: String!
+      slug: String
+      description: String
       bonus: String!
       roleDescription: String!
       candidateDescription: String!

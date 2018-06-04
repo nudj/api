@@ -10,6 +10,7 @@ const modules = [
   require('./company'),
   require('./company/createHirerByEmail'),
   require('./company/createJob'),
+  require('./company/createJobAndOnboardHirer'),
   require('./company/hirers'),
   require('./company/inviteMembers'),
   require('./company/jobByFilters'),

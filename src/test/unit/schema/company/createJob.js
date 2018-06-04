@@ -1,4 +1,5 @@
 /* eslint-env mocha */
+const find = require('lodash/find')
 const chai = require('chai')
 const expect = chai.expect
 
@@ -7,7 +8,7 @@ const { merge } = require('@nudj/library')
 const { values: tagTypes } = require('../../../../gql/schema/enums/tag-types')
 const { values: tagSources } = require('../../../../gql/schema/enums/tag-sources')
 const schema = require('../../../../gql/schema')
-const { executeQueryOnDbUsingSchema, shouldRespondWithGqlError } = require('../../helpers')
+const { executeQueryOnDbUsingSchema } = require('../../helpers')
 
 const operation = `
   mutation CreateJob($companyId: ID!, $data: JobCreateInput!) {
@@ -117,6 +118,30 @@ describe('Company.createJob', () => {
     })
   })
 
+  it('should generate a unique job slug', async () => {
+    const db = {
+      ...baseDb,
+      tags: [],
+      jobTags: [],
+      jobs: [
+        {
+          id: 'job1',
+          title: 'Special Conflicting Job',
+          company: 'company1',
+          slug: 'ceo'
+        }
+      ]
+    }
+
+    await executeQueryOnDbUsingSchema({ operation, db, schema, variables })
+
+    const { slug } = find(db.jobs, { id: 'job2' })
+
+    expect(slug).to.not.equal('ceo')
+    expect(slug).to.be.a('string')
+    expect(slug).to.match(/ceo-[a-z0-9]{8}/)
+  })
+
   it('should error if given invalid tags', async () => {
     const db = {
       ...baseDb,
@@ -139,28 +164,5 @@ describe('Company.createJob', () => {
     expect(result.errors[0]).to.have.property('message').to.include(
       'Expected type "ExpertiseTagType", found "bad"'
     )
-  })
-
-  describe('when the company already has a job with provided `slug`', () => {
-    it('should not create the job and throw', async () => {
-      const db = {
-        ...baseDb,
-        tags: [],
-        jobTags: [],
-        jobs: [{
-          id: 'job1',
-          slug: 'ceo',
-          company: 'company1'
-        }]
-      }
-
-      const result = await executeQueryOnDbUsingSchema({ operation, db, schema, variables })
-
-      shouldRespondWithGqlError({
-        path: ['company', 'createJob']
-      })(result)
-
-      expect(db.jobs.length).to.equal(1)
-    })
   })
 })

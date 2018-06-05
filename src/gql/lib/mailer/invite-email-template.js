@@ -17,7 +17,7 @@ const renderJobsRows = (web, company, jobs) => jobs.map(job => {
   return dedent`
     <tr>
       <td style="width:75%"><a href="${jobUrl}">${job.title}</a></td>
-      <td style="width:25%; text-align: left;">£${job.bonus}</td>
+      <td style="width:25%; text-align: left;">${job.bonus}</td>
     </tr>
   `
 }).join('')

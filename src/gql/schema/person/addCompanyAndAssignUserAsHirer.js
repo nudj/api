@@ -26,6 +26,10 @@ module.exports = {
         })
 
         if (company) {
+          if (company.client) {
+            throw new Error(`${companyName} is already a company on nudj`)
+          }
+
           const userHirer = await context.store.readOne({
             type: 'hirers',
             filters: {
@@ -35,7 +39,14 @@ module.exports = {
           })
 
           if (userHirer) return userHirer
-          throw new Error(`${companyName} is already a company on nudj`)
+
+          company = await context.store.update({
+            type: 'companies',
+            id: company.id,
+            data: {
+              client: true
+            }
+          })
         } else {
           const slug = await makeUniqueSlug({
             type: 'companies',

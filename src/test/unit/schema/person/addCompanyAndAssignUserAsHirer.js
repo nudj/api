@@ -143,50 +143,112 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
     })
 
     describe('when user is not a hirer for the company', async () => {
-      it('does not create a hirer', async () => {
-        const db = {
-          ...baseDb,
-          companies: [
-            {
-              id: 'company1',
-              name: 'Fake Company'
-            }
-          ],
-          hirers: []
-        }
+      describe('when the company is a client', async () => {
+        it('does not create a hirer', async () => {
+          const db = {
+            ...baseDb,
+            companies: [
+              {
+                id: 'company1',
+                client: true,
+                name: 'Fake Company'
+              }
+            ],
+            hirers: []
+          }
 
-        await executeQueryOnDbUsingSchema({
-          operation,
-          db,
-          schema,
-          variables
+          await executeQueryOnDbUsingSchema({
+            operation,
+            db,
+            schema,
+            variables
+          })
+
+          expect(db.hirers.length).to.equal(0)
         })
 
-        expect(db.hirers.length).to.equal(0)
+        it('throws an error', async () => {
+          const db = {
+            ...baseDb,
+            companies: [
+              {
+                id: 'company1',
+                client: true,
+                name: 'Fake Company'
+              }
+            ],
+            hirers: []
+          }
+
+          const result = await executeQueryOnDbUsingSchema({
+            operation,
+            db,
+            schema,
+            variables
+          })
+
+          shouldRespondWithGqlError({
+            path: ['user', 'addCompanyAndAssignUserAsHirer']
+          })(result)
+        })
       })
 
-      it('throws an error', async () => {
-        const db = {
-          ...baseDb,
-          companies: [
-            {
-              id: 'company1',
-              name: 'Fake Company'
-            }
-          ],
-          hirers: []
-        }
+      describe('when the company is not a client', async () => {
+        it('creates a hirer', async () => {
+          const db = {
+            ...baseDb,
+            companies: [
+              {
+                id: 'company1',
+                client: false,
+                name: 'Fake Company'
+              }
+            ],
+            hirers: []
+          }
 
-        const result = await executeQueryOnDbUsingSchema({
-          operation,
-          db,
-          schema,
-          variables
+          await executeQueryOnDbUsingSchema({
+            operation,
+            db,
+            schema,
+            variables
+          })
+
+          expect(db.hirers.length).to.equal(1)
+          expect(db.hirers).to.deep.equal([
+            {
+              id: 'hirer1',
+              person: 'person1',
+              onboarded: false,
+              company: 'company1',
+              type: hirerTypes.ADMIN
+            }
+          ])
         })
 
-        shouldRespondWithGqlError({
-          path: ['user', 'addCompanyAndAssignUserAsHirer']
-        })(result)
+        it('updates the company as a client', async () => {
+          const db = {
+            ...baseDb,
+            companies: [
+              {
+                id: 'company1',
+                client: false,
+                name: 'Fake Company'
+              }
+            ],
+            hirers: []
+          }
+
+          await executeQueryOnDbUsingSchema({
+            operation,
+            db,
+            schema,
+            variables
+          })
+
+          expect(db.companies[0]).to.have.property('name').to.equal('Fake Company')
+          expect(db.companies[0]).to.have.property('client').to.be.true()
+        })
       })
     })
   })

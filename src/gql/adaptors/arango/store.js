@@ -267,10 +267,6 @@ module.exports = ({
       })
 
       return results
-    },
-    query: async (...args) => {
-      const results = await executeAqlQuery(...args)
-      return results.map(normaliseData)
     }
   }
 }

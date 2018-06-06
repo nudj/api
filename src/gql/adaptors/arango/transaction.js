@@ -1,5 +1,5 @@
 const axios = require('axios')
-const semi = require('semi')
+const { linter } = require('eslint')
 const logger = require('@nudj/library/lib/logger')
 const get = require('lodash/get')
 
@@ -24,8 +24,14 @@ module.exports = (action, params) => {
   try {
     // semi does not accept raw functions so wrapping in parentheses
     actionString = `(${actionToString(store, action)})`
+
     // add semi colons
-    actionString = semi.add(actionString)
+    actionString = linter.verifyAndFix(actionString, {
+      rules: {
+        semi: 2
+      }
+    }).output
+
     // remove newlines and multiple consecutive spaces
     actionString = actionString.replace(/\n/g, ' ').replace(/\s\s+/g, ' ')
     // strip parentheses and trailing semicolon

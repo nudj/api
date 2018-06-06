@@ -20,10 +20,9 @@ module.exports = {
         const formattedConnections = formatLinkedinConnections(connections)
         const from = person.id
 
-        const companies = await context.store.query(`
-          FOR company IN companies
-            RETURN { slug: company.slug, id: company._key }
-        `)
+        const companies = await context.store.readAll({
+          type: 'companies'
+        })
 
         const companyMap = companies.reduce((map, item) => {
           map[item.id] = item

@@ -24,12 +24,12 @@ describe('Person.importLinkedinConnections', () => {
   })
 
   const importStub = sinon.stub()
-  const queryStub = sinon.stub().returns([])
+  const readAllStub = sinon.stub().returns([])
   const person = { id: 'person1' }
   const context = {
     store: {
       import: importStub,
-      query: queryStub
+      readAll: readAllStub
     },
     noSQL: {
       readOne: () => ({}),
@@ -62,7 +62,7 @@ describe('Person.importLinkedinConnections', () => {
 
     afterEach(() => {
       importStub.reset()
-      queryStub.reset()
+      readAllStub.reset()
     })
 
     it('should call store.import', () => {
@@ -221,7 +221,7 @@ describe('Person.importLinkedinConnections', () => {
 
     afterEach(() => {
       importStub.reset()
-      queryStub.reset()
+      readAllStub.reset()
     })
 
     it('should not generate relational company ID', () => {
@@ -252,7 +252,7 @@ describe('Person.importLinkedinConnections', () => {
 
     afterEach(() => {
       importStub.reset()
-      queryStub.reset()
+      readAllStub.reset()
     })
 
     it('should not generate relational role ID', () => {
@@ -283,7 +283,7 @@ describe('Person.importLinkedinConnections', () => {
 
     afterEach(() => {
       importStub.reset()
-      queryStub.reset()
+      readAllStub.reset()
     })
 
     it('should not create a connection', () => {
@@ -294,7 +294,7 @@ describe('Person.importLinkedinConnections', () => {
 
   describe('when company slug already exists', () => {
     beforeEach(async () => {
-      queryStub.returns([
+      readAllStub.returns([
         {
           slug: 'conflicting-slug',
           id: 'company1'
@@ -315,7 +315,7 @@ describe('Person.importLinkedinConnections', () => {
 
     afterEach(() => {
       importStub.reset()
-      queryStub.reset()
+      readAllStub.reset()
     })
 
     it('should create a unique company slug', () => {

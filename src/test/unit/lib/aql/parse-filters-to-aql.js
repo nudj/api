@@ -10,7 +10,7 @@ describe('parseFiltersToAql', () => {
     const filters = { name: 'dave' }
     const aql = parseFiltersToAql(filters)
     expect(dedent(aql)).to.deep.equal(dedent`
-      FILTER item.name == "dave"
+      FILTER item.name == @name
     `)
   })
 
@@ -18,7 +18,7 @@ describe('parseFiltersToAql', () => {
     const filters = { name: 'dave', status: 'active' }
     const aql = parseFiltersToAql(filters)
     expect(dedent(aql)).to.deep.equal(dedent`
-      FILTER item.name == "dave" && item.status == "active"
+      FILTER item.name == @name && item.status == @status
     `)
   })
 

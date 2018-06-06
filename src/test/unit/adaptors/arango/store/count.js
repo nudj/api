@@ -68,7 +68,7 @@ describe('ArangoAdaptor store.countByFilters', () => {
       })
       .then(() => {
         const query = dbStub.db.query.firstCall.args[0]
-        expect(query).to.include('FILTER item.test == "value"')
+        expect(query).to.include('FILTER item.test == @test')
       })
     })
 

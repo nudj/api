@@ -54,7 +54,10 @@ describe('ArangoAdaptor store.search', () => {
       })
       .then(() => {
         const [ query, bindVars ] = dbStub.db.query.firstCall.args
-        expect(bindVars).to.deep.equal({ query0: 'Pacman' })
+        expect(bindVars).to.deep.equal({
+          creator: 'Namco',
+          query0: 'Pacman'
+        })
         expect(query).to.be.a('string')
       })
     })
@@ -120,7 +123,10 @@ describe('ArangoAdaptor store.search', () => {
       })
       .then(() => {
         const [ query, bindVars ] = dbStub.db.query.firstCall.args
-        expect(bindVars).to.deep.equal({ query0: 'Pacman' })
+        expect(bindVars).to.deep.equal({
+          creator: 'Namco',
+          query0: 'Pacman'
+        })
         expect(query).to.be.a('string')
       })
     })
@@ -161,6 +167,8 @@ describe('ArangoAdaptor store.search', () => {
       .then(() => {
         const [ query, bindVars ] = dbStub.db.query.firstCall.args
         expect(bindVars).to.deep.equal({
+          creator: 'Namco',
+          genre: 'Arcade',
           query0: 'Pacman Arcade',
           query1: 'Pacman',
           query2: 'Arcade'

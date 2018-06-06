@@ -198,7 +198,7 @@ describe('ArangoAdaptor store.readAll', () => {
         expect(bindVars.from).to.equal('2010-12-19T23:59:59.999Z')
         expect(dedent(query)).to.equal(dedent`
           FOR item in collectionName
-          FILTER item.email == "test@email.com" && item.address == "1 Test Drive"
+          FILTER item.email == @email && item.address == @address
           FILTER DATE_TIMESTAMP(item.created) >= DATE_TIMESTAMP(@from)
           RETURN item
         `)

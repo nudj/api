@@ -48,7 +48,7 @@ module.exports = () => {
     const keys = Object.keys(filters)
     if (!keys.length) return ''
     return `FILTER ${keys.map((key) => {
-      return `item.${key} == "${filters[key]}"`
+      return `item.${key} == @${key}`
     }).join(' && ')}`
   }
 
@@ -76,7 +76,7 @@ module.exports = () => {
       data
     }) => {
       const _key = generateId(fetchIdType(type), data)
-      const response = db[type].save(Object.assign(data, {
+      const response = db[type].save(Object.assign({}, data, {
         _key,
         created: newISODate(),
         modified: newISODate()
@@ -114,19 +114,19 @@ module.exports = () => {
       if (!filters) return Promise.resolve(db[type].all().toArray().map(normaliseData))
       if (filters.dateTo || filters.dateFrom) {
         const { dateTo, dateFrom } = filters
-        const generalFilters = parseFiltersToAql(omit(filters, ['dateTo', 'dateFrom']))
+        const mainFilters = omit(filters, ['dateTo', 'dateFrom'])
         const query = [
           `FOR item in ${type}`,
-          generalFilters,
+          parseFiltersToAql(mainFilters),
           dateTo && 'FILTER DATE_TIMESTAMP(item.created) <= DATE_TIMESTAMP(@to)',
           dateFrom && 'FILTER DATE_TIMESTAMP(item.created) >= DATE_TIMESTAMP(@from)',
           'RETURN item'
         ].filter(Boolean).join('\n')
 
-        return executeAqlQuery(query, {
+        return executeAqlQuery(query, Object.assign({}, mainFilters, {
           to: dateTo && endOfDay(dateTo),
           from: dateFrom && startOfDay(dateFrom)
-        })
+        }))
       } else {
         return Promise.resolve(db[type].byExample(filters).toArray().map(normaliseData))
       }
@@ -136,7 +136,7 @@ module.exports = () => {
       id,
       data
     }) => {
-      const response = db[type].update(id, Object.assign(data, {
+      const response = db[type].update(id, Object.assign({}, data, {
         modified: newISODate()
       }), { returnNew: true })
       return Promise.resolve(normaliseData(response.new))
@@ -158,7 +158,7 @@ module.exports = () => {
       let item = db[type].firstExample(filters)
       if (!item) {
         const _key = generateId(fetchIdType(type), data)
-        const response = db[type].save(Object.assign(data, {
+        const response = db[type].save(Object.assign({}, data, {
           _key,
           created: newISODate(),
           modified: newISODate()
@@ -183,22 +183,24 @@ module.exports = () => {
     }) => {
       filters = filter || filters || {}
       const { dateTo, dateFrom } = filters
-      const generalFilters = parseFiltersToAql(omit(filters, ['dateTo', 'dateFrom']))
+      const mainFilters = omit(filters, ['dateTo', 'dateFrom'])
       const query = [
         `RETURN COUNT(`,
         `FOR item IN ${type}`,
-        generalFilters,
+        parseFiltersToAql(mainFilters),
         dateTo && 'FILTER DATE_TIMESTAMP(item.created) <= DATE_TIMESTAMP(@to)',
         dateFrom && 'FILTER DATE_TIMESTAMP(item.created) >= DATE_TIMESTAMP(@from)',
         'RETURN item',
         ')'
       ].filter(Boolean).join('\n')
 
+      const combinedFilters = Object.assign({}, mainFilters, {
+        to: dateTo && endOfDay(dateTo),
+        from: dateFrom && startOfDay(dateFrom)
+      })
+
       return Promise.resolve(flatten(
-        db._query(query, {
-          to: dateTo && endOfDay(dateTo),
-          from: dateFrom && startOfDay(dateFrom)
-        }).toArray()
+        db._query(query, combinedFilters).toArray()
       )).then(response => response[0] || 0)
     }
   }

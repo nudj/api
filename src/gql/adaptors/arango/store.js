@@ -100,17 +100,17 @@ module.exports = ({
         results = await db.collection(type).all()
         results = await results.all()
       } else if (filters.dateTo || filters.dateFrom) {
-        const { dateTo, dateFrom } = filters
-        const generalFilters = parseFiltersToAql(omit(filters, ['dateTo', 'dateFrom']))
+        const { dateTo, dateFrom, ...mainFilters } = filters
         const query = [
           `FOR item in ${type}`,
-          generalFilters,
+          parseFiltersToAql(mainFilters),
           dateTo && 'FILTER DATE_TIMESTAMP(item.created) <= DATE_TIMESTAMP(@to)',
           dateFrom && 'FILTER DATE_TIMESTAMP(item.created) >= DATE_TIMESTAMP(@from)',
           'RETURN item'
         ].filter(Boolean).join('\n')
 
         results = await executeAqlQuery(query, {
+          ...mainFilters,
           to: dateTo && endOfDay(dateTo),
           from: dateFrom && endOfDay(dateFrom)
         })
@@ -200,7 +200,10 @@ module.exports = ({
             RETURN collected
       `
 
-      const results = await executeAqlQuery(aqlQuery, queries)
+      const results = await executeAqlQuery(aqlQuery, {
+        ...queries,
+        ...filters
+      })
       results.forEach(result => getDataLoader(type).prime(result._key, result))
       return results.map(normaliseData)
     },
@@ -211,12 +214,11 @@ module.exports = ({
     }) => {
       filters = filter || filters || {}
 
-      const { dateTo, dateFrom } = filters
-      const generalFilters = parseFiltersToAql(omit(filters, ['dateTo', 'dateFrom']))
+      const { dateTo, dateFrom, ...mainFilters } = filters
       const query = [
         `RETURN COUNT(`,
         `FOR item IN ${type}`,
-        generalFilters,
+        parseFiltersToAql(mainFilters),
         dateTo && 'FILTER DATE_TIMESTAMP(item.created) <= DATE_TIMESTAMP(@to)',
         dateFrom && 'FILTER DATE_TIMESTAMP(item.created) >= DATE_TIMESTAMP(@from)',
         'RETURN item',
@@ -224,6 +226,7 @@ module.exports = ({
       ].filter(Boolean).join('\n')
 
       const cursor = await db.query(query, {
+        ...mainFilters,
         to: endOfDay(dateTo),
         from: startOfDay(dateFrom)
       })

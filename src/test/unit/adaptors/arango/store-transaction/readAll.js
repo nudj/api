@@ -174,8 +174,10 @@ describe('ArangoAdaptor Store().readAll', () => {
         }
       })
       .then(() => {
-        const [ query, bindVars ] = dbStub.db._query.firstCall.args
-        expect(bindVars.from).to.equal('2010-12-19T00:00:00.000Z')
+        const [ query, params ] = dbStub.db._query.firstCall.args
+        expect(params).to.have.property('from').to.equal('2010-12-19T00:00:00.000Z')
+        expect(params).to.have.property('email').to.equal('test@email.com')
+        expect(params).to.have.property('address').to.equal('1 Test Drive')
         expect(dedent(query)).to.equal(dedent`
           FOR item in collectionName
           FILTER item.email == @email && item.address == @address

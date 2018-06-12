@@ -162,6 +162,7 @@ const modules = [
   require('./mutation/employmentsByFilters'),
   require('./mutation/fetchTags'),
   require('./mutation/fetchTemplate'),
+  require('./mutation/getCompanyEnrichmentDataByUserEmail'),
   require('./mutation/getOrCreatePerson'),
   require('./mutation/hirer'),
   require('./mutation/hirerByFilters'),

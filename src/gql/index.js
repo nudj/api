@@ -23,7 +23,6 @@ module.exports = ({ transaction, store }) => {
       limit: '5mb'
     }),
     graphqlExpress(req => {
-      const getDataLoader = setupDataLoaderCache(db, {})
       const context = {
         web: {
           protocol: req.protocol,
@@ -33,11 +32,11 @@ module.exports = ({ transaction, store }) => {
         transaction,
         nosql: store({
           db: nosql,
-          getDataLoader
+          getDataLoader: setupDataLoaderCache(nosql, {})
         }),
         store: store({
           db,
-          getDataLoader
+          getDataLoader: setupDataLoaderCache(db, {})
         })
       }
       return {

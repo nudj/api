@@ -1,21 +1,28 @@
 const nock = require('nock')
 
-const mockClearbitRequests = (responses = {}) => {
-  const {
-    getResponse = 'OK',
-    postResponse = 'OK'
-  } = responses
+const defaultGetResponse = [200, 'OK']
+const defaultPostResponse = [200, 'OK']
 
+const mockClearbitRequests = (
+  getResponse = defaultGetResponse,
+  postResponse = defaultPostResponse,
+) => {
   nock('https://company-stream.clearbit.com')
     .persist()
-    .filteringRequestBody(() => true)
-    .post(() => true)
-    .reply(200, getResponse)
-  nock('https://company-stream.clearbit.com')
-    .persist()
+    .defaultReplyHeaders({
+      'Content-Type': 'application/json'
+    })
     .filteringRequestBody(() => true)
     .get(() => true)
-    .reply(200, postResponse)
+    .reply(...getResponse)
+  nock('https://company-stream.clearbit.com')
+    .persist()
+    .defaultReplyHeaders({
+      'Content-Type': 'application/json'
+    })
+    .filteringRequestBody(() => true)
+    .post(() => true)
+    .reply(...postResponse)
 }
 
 module.exports = mockClearbitRequests

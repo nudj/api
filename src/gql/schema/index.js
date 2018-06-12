@@ -44,6 +44,7 @@ const modules = [
   require('./hirer/company'),
   require('./hirer/person'),
   require('./hirer/setOnboarded'),
+  require('./hirer/updateType'),
   require('./importLog'),
   require('./job'),
   require('./job/applicationByFilters'),

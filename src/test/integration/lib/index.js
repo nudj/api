@@ -2,7 +2,7 @@ const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const chaiAsPromised = require('chai-as-promised')
 
-const { db, noSQL } = require('./db')
+const { db, nosql } = require('./db')
 const { setupCollections, populateCollections } = require('./setup')
 const { truncateCollections, teardownCollections } = require('./teardown')
 
@@ -14,7 +14,7 @@ chai.use(chaiAsPromised)
 module.exports = {
   expect,
   db,
-  noSQL,
+  nosql,
   setupCollections,
   truncateCollections,
   teardownCollections,

@@ -9,9 +9,9 @@ const [migrationName, direction] = process.argv.slice(2)
 db.useDatabase(process.env.DB_NAME)
 db.useBasicAuth(process.env.DB_USER, process.env.DB_PASS)
 
-const noSQL = new Database({ url: NO_SQL_URL })
-noSQL.useDatabase(process.env.NO_SQL_NAME)
-noSQL.useBasicAuth(process.env.NO_SQL_USER, process.env.NO_SQL_PASS)
+const nosql = new Database({ url: NO_SQL_URL })
+nosql.useDatabase(process.env.NO_SQL_NAME)
+nosql.useBasicAuth(process.env.NO_SQL_USER, process.env.NO_SQL_PASS)
 
 const migration = require(`./${migrationName}`)
 
@@ -23,7 +23,7 @@ async function step (description, actions) {
 
 (async () => {
   try {
-    await migration[direction]({ db, noSQL, step })
+    await migration[direction]({ db, nosql, step })
   } catch (error) {
     console.log('\n\n', error)
   }

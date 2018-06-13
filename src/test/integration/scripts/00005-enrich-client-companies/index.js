@@ -9,7 +9,7 @@ const { fetchAll } = require('../../../../lib')
 
 const {
   db,
-  noSQL,
+  nosql,
   setupCollections,
   populateCollections,
   truncateCollections,
@@ -26,7 +26,7 @@ const script = proxyquire('../../../../scripts/00005-enrich-client-companies', {
     enrichCompanyByName: clearbitStub
   }
 })
-const executeScript = (arg) => script({ db, noSQL, arg })
+const executeScript = (arg) => script({ db, nosql, arg })
 
 const fetchStubCalls = (stub) => {
   const { args } = stub.getCalls()[0].proxy
@@ -37,7 +37,7 @@ describe('00005 Enrich Client Companies', () => {
   before(async () => {
     await Promise.all([
       setupCollections(db, ['companies']),
-      setupCollections(noSQL, ['enrichedCompanies'])
+      setupCollections(nosql, ['enrichedCompanies'])
     ])
   })
 
@@ -81,7 +81,7 @@ describe('00005 Enrich Client Companies', () => {
         ]
       }
     ])
-    await populateCollections(noSQL, [
+    await populateCollections(nosql, [
       {
         name: 'enrichedCompanies',
         data: [
@@ -103,11 +103,11 @@ describe('00005 Enrich Client Companies', () => {
   })
 
   afterEach(async () => {
-    await Promise.all([truncateCollections(db), truncateCollections(noSQL)])
+    await Promise.all([truncateCollections(db), truncateCollections(nosql)])
   })
 
   after(async () => {
-    await Promise.all([teardownCollections(db), teardownCollections(noSQL)])
+    await Promise.all([teardownCollections(db), teardownCollections(nosql)])
   })
 
   it('enriches unenriched companies with `client` value `true`', async () => {
@@ -126,7 +126,7 @@ describe('00005 Enrich Client Companies', () => {
     it('stores enriched data', async () => {
       await executeScript()
       const enrichedCompanies = orderBy(
-        await fetchAll(noSQL, 'enrichedCompanies'),
+        await fetchAll(nosql, 'enrichedCompanies'),
         '_key'
       )
 
@@ -181,7 +181,7 @@ describe('00005 Enrich Client Companies', () => {
       clearbitStub.returns()
       await executeScript()
       const enrichedCompanies = orderBy(
-        await fetchAll(noSQL, 'enrichedCompanies'),
+        await fetchAll(nosql, 'enrichedCompanies'),
         '_key'
       )
 
@@ -204,7 +204,7 @@ describe('00005 Enrich Client Companies', () => {
 
       const errorLogs = fetchStubCalls(consoleErrorStub)
       const enrichedCompanies = orderBy(
-        await fetchAll(noSQL, 'enrichedCompanies'),
+        await fetchAll(nosql, 'enrichedCompanies'),
         '_key'
       )
 

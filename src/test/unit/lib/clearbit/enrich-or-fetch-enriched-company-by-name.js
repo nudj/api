@@ -15,7 +15,7 @@ chai.use(sinonChai)
 describe('Clearbit.enrichOrFetchEnrichedCompanyByName', () => {
   const baseCompanyData = { id: 'company1', name: 'Comapny Inc' }
   const fakeContext = {
-    noSQL: {
+    nosql: {
       readOne: readOneStub,
       create: createStub
     }

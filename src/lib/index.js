@@ -1,7 +1,14 @@
-async function fetchAll (db, collection) {
+async function fetchAll (db, collection, filters) {
   const collectionCursor = db.collection(collection)
-  const allCursor = await collectionCursor.all()
-  return allCursor.all()
+
+  let dataCursor
+  if (filters) {
+    dataCursor = await collectionCursor.byExample(filters)
+  } else {
+    dataCursor = await collectionCursor.all()
+  }
+
+  return dataCursor.all()
 }
 
 module.exports = {

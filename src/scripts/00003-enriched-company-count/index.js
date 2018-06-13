@@ -3,13 +3,13 @@ const differenceBy = require('lodash/differenceBy')
 
 const { fetchAll } = require('../../lib')
 
-async function action ({ db, noSQL }) {
+async function action ({ db, nosql }) {
   const [
     companies,
     enrichedCompanies
   ] = await Promise.all([
     fetchAll(db, 'companies'),
-    fetchAll(noSQL, 'enrichedCompanies')
+    fetchAll(nosql, 'enrichedCompanies')
   ])
 
   const diff = differenceBy(companies, enrichedCompanies, '_key')

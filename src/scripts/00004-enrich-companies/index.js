@@ -7,7 +7,7 @@ const { enrichCompanyByName } = require('../../gql/lib/clearbit')
 // Setting the default relatively low to avoid accidental mass-enrichment
 const DEFAULT_ENRICHMENT_AMOUNT = 50
 
-async function enrichAndStoreCompany (company, noSQL) {
+async function enrichAndStoreCompany (company, nosql) {
   try {
     const companyData = await enrichCompanyByName(company.name)
 
@@ -27,7 +27,7 @@ async function enrichAndStoreCompany (company, noSQL) {
       }
     }
 
-    const collection = noSQL.collection('enrichedCompanies')
+    const collection = nosql.collection('enrichedCompanies')
     return collection.save(data)
   } catch (error) {
     console.error('Enrichment error', error)
@@ -35,13 +35,13 @@ async function enrichAndStoreCompany (company, noSQL) {
   }
 }
 
-async function action ({ db, noSQL, arg: specifiedAmount }) {
+async function action ({ db, nosql, arg: specifiedAmount }) {
   const [
     companies,
     enrichedCompanies
   ] = await Promise.all([
     fetchAll(db, 'companies'),
-    fetchAll(noSQL, 'enrichedCompanies')
+    fetchAll(nosql, 'enrichedCompanies')
   ])
 
   const unenrichedCompanies = differenceBy(companies, enrichedCompanies, '_key')
@@ -63,7 +63,7 @@ async function action ({ db, noSQL, arg: specifiedAmount }) {
   process.env.CLEARBIT_ENABLED = 'true'
 
   await Promise.all(companiesToEnrich.map(company => {
-    return enrichAndStoreCompany(company, noSQL)
+    return enrichAndStoreCompany(company, nosql)
   }))
 
   // Restore CLEARBIT_ENABLED env to cached value

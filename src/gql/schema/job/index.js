@@ -8,10 +8,10 @@ module.exports = {
       slug: String!
       description: String
       bonus: String!
-      roleDescription: String!
-      candidateDescription: String!
+      roleDescription: String
+      candidateDescription: String
       location: String!
-      remuneration: String!
+      remuneration: String
       status: JobStatus!
       templateTags: [String!]!
       type: String!
@@ -24,12 +24,10 @@ module.exports = {
     input JobCreateInput {
       title: String!
       slug: String
-      description: String
+      description: String!
       bonus: String!
-      roleDescription: String!
-      candidateDescription: String!
       location: String!
-      remuneration: String!
+      remuneration: String
       status: JobStatus!
       templateTags: [String!]!
       type: String!

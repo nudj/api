@@ -2,7 +2,6 @@ const { logger } = require('@nudj/library')
 const enrichCompanyByDomain = require('./enrich-company-by-domain')
 
 const enrichOrFetchEnrichedCompanyByDomain = async (domain, context, options) => {
-  if (process.env.CLEARBIT_ENABLED !== 'true') return null
   try {
     const enrichedCompany = await context.nosql.readOne({
       type: 'enrichedCompanies',

@@ -81,13 +81,6 @@ module.exports = {
           }
         })
 
-        const emailBody = teammateInvitationEmailBodyTemplate({
-          web: context.web,
-          senderName,
-          company,
-          jobs
-        })
-
         await Promise.all(emailAddresses.map(async email => {
           const person = await context.store.readOneOrCreate({
             type: 'people',
@@ -120,12 +113,20 @@ module.exports = {
           return hirer
         }))
 
-        const [ sendStatus ] = await Promise.all(emailAddresses.map(email => send({
-          from,
-          to: email,
-          subject,
-          html: emailBody
-        })))
+        const [ sendStatus ] = await Promise.all(
+          emailAddresses.map(email => send({
+            from,
+            to: email,
+            subject,
+            html: teammateInvitationEmailBodyTemplate({
+              web: context.web,
+              senderName,
+              company,
+              jobs,
+              email
+            })
+          }))
+        )
 
         try {
           triggerIntercomTracking({

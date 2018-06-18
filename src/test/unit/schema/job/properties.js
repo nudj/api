@@ -44,7 +44,6 @@ describe('Job properties', () => {
     await expectPropertyIsRequired('modified')
     await expectPropertyIsRequired('title')
     await expectPropertyIsRequired('slug')
-    await expectPropertyIsRequired('bonus')
     await expectPropertyIsRequired('location')
     await expectPropertyIsRequired('status')
     await expectPropertyIsRequired('templateTags')

@@ -7,7 +7,7 @@ module.exports = {
       title: String!
       slug: String!
       description: String
-      bonus: String!
+      bonus: String
       roleDescription: String
       candidateDescription: String
       location: String!
@@ -25,7 +25,7 @@ module.exports = {
       title: String!
       slug: String
       description: String!
-      bonus: String!
+      bonus: String
       location: String!
       remuneration: String
       status: JobStatus!

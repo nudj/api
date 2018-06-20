@@ -55,8 +55,8 @@ async function action ({ db, sql, nosql }) {
         ...relations
       }
 
-      // if required generate slug
-      if (slugConfig) {
+      // if slug required and slug does not already exist on the item, generate new slug
+      if (slugConfig && !item.slug) {
         data.slug = slugConfig.generator(data)
       }
 

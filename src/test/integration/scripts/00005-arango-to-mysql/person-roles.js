@@ -18,9 +18,9 @@ const {
 } = require('../../../../lib/sql')
 const {
   OLD_COLLECTIONS
-} = require('../../../../scripts/00005-arango-to-mysql/helpers')
+} = require('../../../../scripts/00006-arango-to-mysql/helpers')
 
-const script = require('../../../../scripts/00005-arango-to-mysql')
+const script = require('../../../../scripts/00006-arango-to-mysql')
 
 chai.use(chaiAsPromised)
 

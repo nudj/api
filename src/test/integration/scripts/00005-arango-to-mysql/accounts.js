@@ -19,9 +19,9 @@ const {
 } = require('../../../../lib/sql')
 const {
   OLD_COLLECTIONS
-} = require('../../../../scripts/00005-arango-to-mysql/helpers')
+} = require('../../../../scripts/00006-arango-to-mysql/helpers')
 
-const script = require('../../../../scripts/00005-arango-to-mysql')
+const script = require('../../../../scripts/00006-arango-to-mysql')
 
 chai.use(chaiAsPromised)
 
@@ -81,7 +81,7 @@ describe('00005 Arango to MySQL', () => {
                 _key: '123',
                 created: '2018-02-01T01:02:03.456Z',
                 modified: '2018-03-02T02:03:04.567Z',
-                email: 'email1@domain.com',
+                emailAddress: 'email1@domain.com',
                 emailAddresses: ['email1@domain.com', 'email2@domain.com'],
                 data: { key: true },
                 type: ENUMS.ACCOUNT_TYPES.GOOGLE,

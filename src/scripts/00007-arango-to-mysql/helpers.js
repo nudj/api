@@ -143,6 +143,12 @@ const RELATIONS = {
 const SELF_RELATIONS = {
   [TABLES.REFERRALS]: [FIELDS[TABLES.REFERRALS].PARENT]
 }
+const FROM_TO_RELATIONS = {
+  [TABLES.JOBS]: {
+    field: 'relatedJobs',
+    edgeTable: TABLES.RELATED_JOBS
+  }
+}
 const MANY_RELATIONS = {
   [TABLES.SURVEY_ANSWERS]: {
     connections: {
@@ -180,6 +186,7 @@ module.exports = {
   NEW_TO_OLD_COLLECTIONS,
   RELATIONS,
   SELF_RELATIONS,
+  FROM_TO_RELATIONS,
   MANY_RELATIONS,
   ORDER_CACHES,
   newToOldCollection,

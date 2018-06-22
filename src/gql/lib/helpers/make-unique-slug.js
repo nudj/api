@@ -4,14 +4,14 @@ const makeUniqueSlug = async ({ type, data, context }) => {
   const { generator } = SLUG_GENERATORS[type]
   let slug = generator(data)
 
-  let slugExists = await context.sql.readOne({
+  let existingRecord = await context.sql.readOne({
     type,
     filters: { slug }
   })
 
-  while (slugExists) {
+  while (existingRecord && `${existingRecord.id}` !== `${data.id}`) {
     slug = generator(data, true)
-    slugExists = await context.sql.readOne({
+    existingRecord = await context.sql.readOne({
       type,
       filters: { slug }
     })

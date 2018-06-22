@@ -19,13 +19,13 @@ const {
 } = require('../../../../lib/sql')
 const {
   OLD_COLLECTIONS
-} = require('../../../../scripts/00006-arango-to-mysql/helpers')
+} = require('../../../../scripts/00007-arango-to-mysql/helpers')
 
-const script = require('../../../../scripts/00006-arango-to-mysql')
+const script = require('../../../../scripts/00007-arango-to-mysql')
 
 chai.use(chaiAsPromised)
 
-describe('00005 Arango to MySQL', () => {
+describe('00007 Arango to MySQL', () => {
   async function seedRun (data) {
     await populateCollections(db, data)
     await script({ db, sql, nosql })
@@ -45,14 +45,14 @@ describe('00005 Arango to MySQL', () => {
     await teardownCollections(db)
   })
 
-  describe('for accounts table', () => {
+  describe('for conversations table', () => {
     const COLLECTIONS = {
-      ACCOUNTS: TABLES.ACCOUNTS,
+      CONVERSATIONS: TABLES.CONVERSATIONS,
       PEOPLE: TABLES.PEOPLE
     }
 
     afterEach(async () => {
-      await sql(TABLES.ACCOUNTS).whereNot('id', '').del()
+      await sql(TABLES.CONVERSATIONS).whereNot('id', '').del()
       await sql(TABLES.PEOPLE).whereNot('id', '').del()
     })
 
@@ -66,26 +66,29 @@ describe('00005 Arango to MySQL', () => {
                 _key: 'person1',
                 created: '2018-02-01T01:02:03.456Z',
                 modified: '2018-03-02T02:03:04.567Z',
-                email: 'jim@bob.com',
-                firstName: 'Jim',
-                lastName: 'Bob'
+                email: 'jim@bob.com'
+              },
+              {
+                _key: 'person2',
+                created: '2019-02-01T01:02:03.456Z',
+                modified: '2019-03-02T02:03:04.567Z',
+                email: 'jom@bib.com'
               }
             ]
           },
           {
-            name: COLLECTIONS.ACCOUNTS,
+            name: COLLECTIONS.CONVERSATIONS,
             data: [
               {
-                _id: 'employments/123',
+                _id: 'conversations/123',
                 _rev: '_WpP1l3W---',
                 _key: '123',
                 created: '2018-02-01T01:02:03.456Z',
                 modified: '2018-03-02T02:03:04.567Z',
-                emailAddress: 'email1@domain.com',
-                emailAddresses: ['email1@domain.com', 'email2@domain.com'],
-                data: { key: true },
+                threadId: 'abc123',
                 type: ENUMS.ACCOUNT_TYPES.GOOGLE,
                 person: 'person1',
+                recipient: 'person2',
                 batchSize: 100,
                 skip: 0
               }
@@ -94,24 +97,19 @@ describe('00005 Arango to MySQL', () => {
         ])
       })
 
-      genericExpectationsForTable(TABLES.ACCOUNTS)
+      genericExpectationsForTable(TABLES.CONVERSATIONS)
 
       it('should transfer all scalar properties', async () => {
-        const accounts = await sql.select().from(TABLES.ACCOUNTS)
-        expect(accounts[0]).to.have.property('emailAddresses', '["email1@domain.com","email2@domain.com"]')
-        expect(accounts[0]).to.have.property('data', '{"key":true}')
-        expect(accounts[0]).to.have.property('type', ENUMS.ACCOUNT_TYPES.GOOGLE)
-      })
-
-      it('should transfer emailAddress property to email field', async () => {
-        const accounts = await sql.select().from(TABLES.ACCOUNTS)
-        expect(accounts[0]).to.have.property('email', 'email1@domain.com')
+        const conversations = await sql.select().from(TABLES.CONVERSATIONS)
+        expect(conversations[0]).to.have.property('threadId', 'abc123')
+        expect(conversations[0]).to.have.property('type', ENUMS.ACCOUNT_TYPES.GOOGLE)
       })
 
       it('should remap the relations', async () => {
-        const accounts = await sql.select().from(TABLES.ACCOUNTS)
-        const people = await sql.select().from(TABLES.PEOPLE)
-        expect(accounts[0]).to.have.property('person', people[0].id)
+        const conversations = await sql.select().from(TABLES.CONVERSATIONS)
+        const people = await sql.select().from(TABLES.PEOPLE).orderBy('created', 'asc')
+        expect(conversations[0]).to.have.property('person', people[0].id)
+        expect(conversations[0]).to.have.property('recipient', people[1].id)
       })
     })
   })

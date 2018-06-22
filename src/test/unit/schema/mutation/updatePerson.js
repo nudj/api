@@ -498,7 +498,6 @@ describe('Mutation.updatePerson', () => {
           return expect(db.companies[0]).to.deep.equal({
             id: 'company1',
             client: false,
-            onboarded: false,
             slug: 'nudj',
             name: 'nudj'
           })

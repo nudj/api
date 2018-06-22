@@ -26,7 +26,6 @@ const operation = `
 let variables = {
   id: 'survey1',
   data: {
-    slug: 'new-slug',
     introTitle: 'New Intro Title',
     introDescription: 'New intro decription',
     outroTitle: 'New Outro Title',
@@ -43,12 +42,12 @@ describe('Mutation.updateSurvey', () => {
         {
           id: 'survey1',
           company: 'company1',
-          slug: 'old-slug',
+          slug: 'old-intro-title',
           introTitle: 'Old Intro Title',
           introDescription: 'Old intro decription',
           outroTitle: 'Old Outro Title',
           outroDescription: 'Old outro description',
-          surveySections: ['1', '2', '3']
+          surveySections: JSON.stringify(['1', '2', '3'])
         }
       ]
     }
@@ -64,12 +63,12 @@ describe('Mutation.updateSurvey', () => {
     expect(db.surveys[0]).to.deep.equal({
       id: 'survey1',
       company: 'company1',
-      slug: 'new-slug',
+      slug: 'new-intro-title',
       introTitle: 'New Intro Title',
       introDescription: 'New intro decription',
       outroTitle: 'New Outro Title',
       outroDescription: 'New outro description',
-      surveySections: ['1', '2', '3']
+      surveySections: JSON.stringify(['1', '2', '3'])
     })
   })
 
@@ -84,7 +83,7 @@ describe('Mutation.updateSurvey', () => {
       .to.have.deep.property('data.updateSurvey')
       .to.deep.equal({
         id: 'survey1',
-        slug: 'new-slug',
+        slug: 'new-intro-title',
         introTitle: 'New Intro Title',
         introDescription: 'New intro decription',
         outroTitle: 'New Outro Title',
@@ -108,7 +107,7 @@ describe('Mutation.updateSurvey', () => {
       })
       expect(db)
         .to.have.deep.property('surveys.0.surveySections')
-        .to.deep.equal(['3', '2', '1'])
+        .to.deep.equal(JSON.stringify(['3', '2', '1']))
     })
   })
 })

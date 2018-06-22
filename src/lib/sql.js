@@ -20,6 +20,7 @@ const TABLES = {
   PERSON_ROLES: 'personRoles',
   CURRENT_PERSON_ROLES: 'currentPersonRoles',
   REFERRALS: 'referrals',
+  RELATED_JOBS: 'relatedJobs',
   ROLES: 'roles',
   ROLE_TAGS: 'roleTags',
   SURVEYS: 'surveys',
@@ -53,8 +54,11 @@ const FIELDS = {
   [TABLES.COMPANIES]: {
     NAME: 'name',
     SLUG: 'slug',
-    CLIENT: 'client',
-    ONBOARDED: 'onboarded'
+    DESCRIPTION: 'description',
+    LOCATION: 'location',
+    LOGO: 'logo',
+    URL: 'url',
+    CLIENT: 'client'
   },
   [TABLES.CONNECTIONS]: {
     FIRST_NAME: 'firstName',
@@ -132,6 +136,10 @@ const FIELDS = {
     PERSON: 'person',
     JOB: 'job',
     PARENT: 'parent'
+  },
+  [TABLES.RELATED_JOBS]: {
+    FROM: 'from',
+    TO: 'to'
   },
   [TABLES.ROLES]: {
     NAME: 'name'
@@ -250,6 +258,12 @@ const INDICES = merge(
       [F.REFERRALS.JOB + F.REFERRALS.PERSON]: {
         name: `${TABLES.REFERRALS}ByJobPerson`,
         fields: [F.REFERRALS.JOB, F.REFERRALS.PERSON]
+      }
+    },
+    [TABLES.RELATED_JOBS]: {
+      [F.RELATED_JOBS.FROM + F.RELATED_JOBS.TO]: {
+        name: `${TABLES.RELATED_JOBS}ByFromTo`,
+        fields: [F.RELATED_JOBS.FROM, F.RELATED_JOBS.TO]
       }
     },
     [TABLES.APPLICATIONS]: {

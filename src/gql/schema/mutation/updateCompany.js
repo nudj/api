@@ -20,7 +20,7 @@ module.exports = {
             type: 'companies',
             filters: { slug }
           })
-          if (fetchedCompany.id !== id) {
+          if (fetchedCompany && `${fetchedCompany.id}` !== `${id}`) {
             throw new Error(`Company with slug '${slug}' already exists`)
           }
         }

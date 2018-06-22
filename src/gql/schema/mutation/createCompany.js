@@ -12,7 +12,6 @@ module.exports = {
       createCompany: handleErrors(async (root, args, context) => {
         const {
           slug,
-          onboarded = false,
           client = false
         } = args.company
 
@@ -28,7 +27,7 @@ module.exports = {
 
         const company = await context.sql.create({
           type: 'companies',
-          data: { ...args.company, onboarded, client }
+          data: { ...args.company, client }
         })
         enrichOrFetchEnrichedCompanyByName(company, context)
 

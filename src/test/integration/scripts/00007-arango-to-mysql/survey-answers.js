@@ -19,13 +19,13 @@ const {
 } = require('../../../../lib/sql')
 const {
   OLD_COLLECTIONS
-} = require('../../../../scripts/00006-arango-to-mysql/helpers')
+} = require('../../../../scripts/00007-arango-to-mysql/helpers')
 
-const script = require('../../../../scripts/00006-arango-to-mysql')
+const script = require('../../../../scripts/00007-arango-to-mysql')
 
 chai.use(chaiAsPromised)
 
-describe('00005 Arango to MySQL', () => {
+describe('00007 Arango to MySQL', () => {
   async function seedRun (data) {
     await populateCollections(db, data)
     await script({ db, sql, nosql })
@@ -45,28 +45,48 @@ describe('00005 Arango to MySQL', () => {
     await teardownCollections(db)
   })
 
-  describe('for surveyQuestionTags table', () => {
+  describe('for surveyAnswers table', () => {
     const COLLECTIONS = {
-      SURVEY_QUESTION_TAGS: TABLES.SURVEY_QUESTION_TAGS,
-      TAGS: TABLES.TAGS,
-      COMPANIES: TABLES.COMPANIES,
-      SURVEYS: TABLES.SURVEYS,
+      SURVEY_ANSWERS: TABLES.SURVEY_ANSWERS,
+      SURVEY_QUESTIONS: TABLES.SURVEY_QUESTIONS,
       SURVEY_SECTIONS: TABLES.SURVEY_SECTIONS,
-      SURVEY_QUESTIONS: TABLES.SURVEY_QUESTIONS
+      SURVEYS: TABLES.SURVEYS,
+      COMPANIES: TABLES.COMPANIES,
+      CONNECTIONS: TABLES.CONNECTIONS,
+      PEOPLE: TABLES.PEOPLE
     }
 
     afterEach(async () => {
-      await sql(TABLES.SURVEY_QUESTION_TAGS).whereNot('id', '').del()
-      await sql(TABLES.TAGS).whereNot('id', '').del()
+      await sql(TABLES.SURVEY_ANSWER_CONNECTIONS).whereNot('id', '').del()
+      await sql(TABLES.SURVEY_ANSWERS).whereNot('id', '').del()
       await sql(TABLES.SURVEY_QUESTIONS).whereNot('id', '').del()
       await sql(TABLES.SURVEY_SECTIONS).whereNot('id', '').del()
       await sql(TABLES.SURVEYS).whereNot('id', '').del()
       await sql(TABLES.COMPANIES).whereNot('id', '').del()
+      await sql(TABLES.CONNECTIONS).whereNot('id', '').del()
+      await sql(TABLES.PEOPLE).whereNot('id', '').del()
     })
 
     describe('with a full data set', () => {
       beforeEach(async () => {
         await seedRun([
+          {
+            name: COLLECTIONS.PEOPLE,
+            data: [
+              {
+                _key: 'person1',
+                created: '2018-02-01T01:02:03.456Z',
+                modified: '2018-03-02T02:03:04.567Z',
+                email: 'jim@bob.com'
+              },
+              {
+                _key: 'person2',
+                created: '2019-02-01T01:02:03.456Z',
+                modified: '2019-03-02T02:03:04.567Z',
+                email: 'jom@bib.com'
+              }
+            ]
+          },
           {
             name: COLLECTIONS.COMPANIES,
             data: [
@@ -128,29 +148,32 @@ describe('00005 Arango to MySQL', () => {
             ]
           },
           {
-            name: COLLECTIONS.TAGS,
+            name: COLLECTIONS.CONNECTIONS,
             data: [
               {
-                _key: 'tag1',
+                _key: 'connection1',
                 created: '2018-02-01T01:02:03.456Z',
                 modified: '2018-03-02T02:03:04.567Z',
-                name: 'Tag',
-                type: ENUMS.TAG_TYPES.EXPERTISE
+                firstName: 'Jom',
+                lastName: 'Bib',
+                source: ENUMS.DATA_SOURCES.LINKEDIN,
+                person: 'person2',
+                from: 'person1'
               }
             ]
           },
           {
-            name: COLLECTIONS.SURVEY_QUESTION_TAGS,
+            name: COLLECTIONS.SURVEY_ANSWERS,
             data: [
               {
-                _id: 'surveyQuestionTags/123',
+                _id: 'surveyAnswers/surveyAnswer1',
                 _rev: '_WpP1l3W---',
-                _key: '123',
+                _key: 'surveyAnswer1',
                 created: '2018-02-01T01:02:03.456Z',
                 modified: '2018-03-02T02:03:04.567Z',
-                source: ENUMS.DATA_SOURCES.MANUAL,
+                person: 'person1',
                 surveyQuestion: 'surveyQuestion1',
-                tag: 'tag1',
+                connections: ['connection1'],
                 batchSize: 100,
                 skip: 0
               }
@@ -159,19 +182,23 @@ describe('00005 Arango to MySQL', () => {
         ])
       })
 
-      genericExpectationsForTable(TABLES.SURVEY_QUESTION_TAGS)
-
-      it('should transfer all scalar properties', async () => {
-        const surveyQuestionTags = await sql.select().from(TABLES.SURVEY_QUESTION_TAGS)
-        expect(surveyQuestionTags[0]).to.have.property('source', ENUMS.DATA_SOURCES.MANUAL)
-      })
+      genericExpectationsForTable(TABLES.SURVEY_ANSWERS)
 
       it('should remap the relations', async () => {
-        const surveyQuestionTags = await sql.select().from(TABLES.SURVEY_QUESTION_TAGS)
+        const surveyAnswers = await sql.select().from(TABLES.SURVEY_ANSWERS)
         const surveyQuestions = await sql.select().from(TABLES.SURVEY_QUESTIONS)
-        const tags = await sql.select().from(TABLES.TAGS)
-        expect(surveyQuestionTags[0]).to.have.property('surveyQuestion', surveyQuestions[0].id)
-        expect(surveyQuestionTags[0]).to.have.property('tag', tags[0].id)
+        const people = await sql.select().from(TABLES.PEOPLE).orderBy('created', 'asc')
+        expect(surveyAnswers[0]).to.have.property('surveyQuestion', surveyQuestions[0].id)
+        expect(surveyAnswers[0]).to.have.property('person', people[0].id)
+        expect(surveyAnswers[0]).to.not.have.property('connections')
+      })
+
+      it('should create an edge record for each connection answer', async () => {
+        const surveyAnswerConnections = await sql.select().from(TABLES.SURVEY_ANSWER_CONNECTIONS)
+        const surveyAnswers = await sql.select().from(TABLES.SURVEY_ANSWERS)
+        const connections = await sql.select().from(TABLES.CONNECTIONS)
+        expect(surveyAnswerConnections[0]).to.have.property('surveyAnswer', surveyAnswers[0].id)
+        expect(surveyAnswerConnections[0]).to.have.property('connection', connections[0].id)
       })
     })
   })

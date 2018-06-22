@@ -20,7 +20,7 @@ const operation = `
       id
       title
       description
-      name
+      slug
       required
       type
     }
@@ -31,7 +31,6 @@ const variables = {
   data: {
     title: 'New title',
     description: 'New description',
-    name: 'New name',
     required: false,
     type: SurveyQuestionTypes.COMPANIES,
     tags: ['CEO']
@@ -49,7 +48,7 @@ describe('Mutation.updateSurveyQuestion', () => {
             id: 'surveyQuestion1',
             title: 'Old title',
             description: 'Old description',
-            name: 'Old name',
+            slug: 'old-title',
             required: true,
             type: SurveyQuestionTypes.CONNECTIONS
           }
@@ -83,7 +82,7 @@ describe('Mutation.updateSurveyQuestion', () => {
         id: 'surveyQuestion1',
         title: 'New title',
         description: 'New description',
-        name: 'New name',
+        slug: 'new-title',
         required: false,
         type: SurveyQuestionTypes.COMPANIES
       })
@@ -167,7 +166,7 @@ describe('Mutation.updateSurveyQuestion', () => {
           id: 'surveyQuestion1',
           title: 'New title',
           description: 'New description',
-          name: 'New name',
+          slug: 'new-title',
           required: false,
           type: SurveyQuestionTypes.COMPANIES
         })
@@ -201,7 +200,7 @@ describe('Mutation.updateSurveyQuestion', () => {
             id: 'surveyQuestion1',
             title: 'Old title',
             description: 'Old description',
-            name: 'Old name',
+            slug: 'old-title',
             required: true,
             type: SurveyQuestionTypes.CONNECTIONS
           }
@@ -246,7 +245,7 @@ describe('Mutation.updateSurveyQuestion', () => {
         id: 'surveyQuestion1',
         title: 'New title',
         description: 'New description',
-        name: 'New name',
+        slug: 'new-title',
         required: false,
         type: SurveyQuestionTypes.COMPANIES
       })

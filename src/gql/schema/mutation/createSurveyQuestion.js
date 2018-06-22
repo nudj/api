@@ -1,7 +1,7 @@
-const omit = require('lodash/omit')
 const { values: tagTypes } = require('../enums/tag-types')
 const { values: tagSources } = require('../enums/tag-sources')
 const { handleErrors } = require('../../lib')
+const makeUniqueSlug = require('../../lib/helpers/make-unique-slug')
 
 module.exports = {
   typeDefs: `
@@ -12,26 +12,37 @@ module.exports = {
   resolvers: {
     Mutation: {
       createSurveyQuestion: handleErrors(async (root, args, context) => {
-        const { tags = [] } = args.data
+        const { tags = [], ...surveyQuestionData } = args.data
 
+        const data = {
+          ...surveyQuestionData,
+          surveySection: args.surveySection
+        }
+        const slug = await makeUniqueSlug({
+          type: 'surveyQuestions',
+          data,
+          context
+        })
         const surveyQuestion = await context.sql.create({
           type: 'surveyQuestions',
           data: {
-            ...omit(args.data, ['tags']),
-            surveySection: args.surveySection
+            ...data,
+            slug
           }
         })
 
-        const { surveyQuestions = [] } = await context.sql.readOne({
+        const { surveyQuestions } = await context.sql.readOne({
           type: 'surveySections',
           id: surveyQuestion.surveySection
         })
+        let surveyQuestionsArray = JSON.parse(surveyQuestions)
+        surveyQuestionsArray = surveyQuestionsArray.concat(surveyQuestion.id)
 
         await context.sql.update({
           type: 'surveySections',
           id: surveyQuestion.surveySection,
           data: {
-            surveyQuestions: surveyQuestions.concat(surveyQuestion.id)
+            surveyQuestions: JSON.stringify(surveyQuestionsArray)
           }
         })
 

@@ -7,7 +7,7 @@ module.exports = {
   resolvers: {
     Hirer: {
       updateType: async (hirer, args, context) => {
-        return context.store.update({
+        return context.sql.update({
           type: 'hirers',
           id: hirer.id,
           data: {

@@ -18,13 +18,13 @@ const {
 } = require('../../../../lib/sql')
 const {
   OLD_COLLECTIONS
-} = require('../../../../scripts/00006-arango-to-mysql/helpers')
+} = require('../../../../scripts/00007-arango-to-mysql/helpers')
 
-const script = require('../../../../scripts/00006-arango-to-mysql')
+const script = require('../../../../scripts/00007-arango-to-mysql')
 
 chai.use(chaiAsPromised)
 
-describe('00005 Arango to MySQL', () => {
+describe('00007 Arango to MySQL', () => {
   async function seedRun (data) {
     await populateCollections(db, data)
     await script({ db, sql, nosql })
@@ -44,16 +44,14 @@ describe('00005 Arango to MySQL', () => {
     await teardownCollections(db)
   })
 
-  describe('for surveySections table', () => {
+  describe('for surveys table', () => {
     const COLLECTIONS = {
-      SURVEY_QUESTIONS: TABLES.SURVEY_QUESTIONS,
-      SURVEY_SECTIONS: TABLES.SURVEY_SECTIONS,
       SURVEYS: TABLES.SURVEYS,
+      SURVEY_SECTIONS: TABLES.SURVEY_SECTIONS,
       COMPANIES: TABLES.COMPANIES
     }
 
     afterEach(async () => {
-      await sql(TABLES.SURVEY_QUESTIONS).whereNot('id', '').del()
       await sql(TABLES.SURVEY_SECTIONS).whereNot('id', '').del()
       await sql(TABLES.SURVEYS).whereNot('id', '').del()
       await sql(TABLES.COMPANIES).whereNot('id', '').del()
@@ -78,7 +76,9 @@ describe('00005 Arango to MySQL', () => {
             name: COLLECTIONS.SURVEYS,
             data: [
               {
-                _key: 'survey1',
+                _id: 'surveys/123',
+                _rev: '_WpP1l3W---',
+                _key: '123',
                 created: '2018-02-01T01:02:03.456Z',
                 modified: '2018-03-02T02:03:04.567Z',
                 slug: 'survey-slug',
@@ -86,8 +86,9 @@ describe('00005 Arango to MySQL', () => {
                 introDescription: 'Intro description',
                 outroTitle: 'Outro Title',
                 outroDescription: 'Outro description',
-                surveySections: ['surveySection1', 'surveySection2'],
-                company: 'company1'
+                surveySections: ['surveySection1'],
+                batchSize: 100,
+                skip: 0
               }
             ]
           },
@@ -95,65 +96,41 @@ describe('00005 Arango to MySQL', () => {
             name: COLLECTIONS.SURVEY_SECTIONS,
             data: [
               {
-                _id: 'surveySections/123',
+                _id: 'surveySections/surveySection1',
                 _rev: '_WpP1l3W---',
-                _key: '123',
+                _key: 'surveySection1',
                 created: '2018-02-01T01:02:03.456Z',
                 modified: '2018-03-02T02:03:04.567Z',
-                title: 'Some Survey Section',
-                description: 'Description',
-                surveyQuestions: ['surveyQuestion1'],
-                survey: 'survey1',
-                batchSize: 100,
-                skip: 0
-              }
-            ]
-          },
-          {
-            name: COLLECTIONS.SURVEY_QUESTIONS,
-            data: [
-              {
-                _id: 'surveyQuestions/surveyQuestion1',
-                _rev: '_WpP1l3W---',
-                _key: 'surveyQuestion1',
-                created: '2018-02-01T01:02:03.456Z',
-                modified: '2018-03-02T02:03:04.567Z',
-                title: 'Some Survey Section',
-                description: 'Description',
-                surveySection: '123'
+                slug: 'survey-slug',
+                title: 'Intro Title',
+                description: 'Intro description',
+                survey: '123',
+                surveyQuestions: []
               }
             ]
           }
         ])
       })
 
-      genericExpectationsForTable(TABLES.SURVEY_SECTIONS)
+      genericExpectationsForTable(TABLES.SURVEYS)
 
       it('should transfer all scalar properties', async () => {
-        const surveySections = await sql.select().from(TABLES.SURVEY_SECTIONS)
-        expect(surveySections[0]).to.have.property('title', 'Some Survey Section')
-        expect(surveySections[0]).to.have.property('description', 'Description')
-      })
-
-      it('should generate a slug based on the title', async () => {
-        const surveySections = await sql.select().from(TABLES.SURVEY_SECTIONS)
-        expect(surveySections[0]).to.have.property('slug', 'some-survey-section')
-      })
-
-      it('should remap the relations', async () => {
-        const surveySections = await sql.select().from(TABLES.SURVEY_SECTIONS)
         const surveys = await sql.select().from(TABLES.SURVEYS)
-        expect(surveySections[0]).to.have.property('survey', surveys[0].id)
+        expect(surveys[0]).to.have.property('slug', 'survey-slug')
+        expect(surveys[0]).to.have.property('introTitle', 'Intro Title')
+        expect(surveys[0]).to.have.property('introDescription', 'Intro description')
+        expect(surveys[0]).to.have.property('outroTitle', 'Outro Title')
+        expect(surveys[0]).to.have.property('outroDescription', 'Outro description')
       })
 
       it('should remap the order caches', async () => {
+        const surveys = await sql.select().from(TABLES.SURVEYS)
         const surveySections = await sql.select().from(TABLES.SURVEY_SECTIONS)
-        const surveyQuestions = await sql.select().from(TABLES.SURVEY_QUESTIONS)
-        expect(surveySections[0]).to.have.property('surveyQuestions', JSON.stringify([surveyQuestions[0].id]))
+        expect(surveys[0]).to.have.property('surveySections', JSON.stringify([surveySections[0].id]))
       })
     })
 
-    describe('when slugs clash', () => {
+    describe('when slug does not exist', () => {
       beforeEach(async () => {
         await seedRun([
           {
@@ -172,16 +149,18 @@ describe('00005 Arango to MySQL', () => {
             name: COLLECTIONS.SURVEYS,
             data: [
               {
-                _key: 'survey1',
+                _id: 'surveys/123',
+                _rev: '_WpP1l3W---',
+                _key: '123',
                 created: '2018-02-01T01:02:03.456Z',
                 modified: '2018-03-02T02:03:04.567Z',
-                slug: 'survey-slug',
                 introTitle: 'Intro Title',
                 introDescription: 'Intro description',
                 outroTitle: 'Outro Title',
                 outroDescription: 'Outro description',
-                surveySections: ['surveySection1', 'surveySection2'],
-                company: 'company1'
+                surveySections: ['surveySection1'],
+                batchSize: 100,
+                skip: 0
               }
             ]
           },
@@ -189,31 +168,25 @@ describe('00005 Arango to MySQL', () => {
             name: COLLECTIONS.SURVEY_SECTIONS,
             data: [
               {
+                _id: 'surveySections/surveySection1',
+                _rev: '_WpP1l3W---',
                 _key: 'surveySection1',
                 created: '2018-02-01T01:02:03.456Z',
                 modified: '2018-03-02T02:03:04.567Z',
-                title: 'Some Survey Section',
-                description: 'Description',
-                surveyQuestions: ['surveyQuestion1', 'surveyQuestion2'],
-                survey: 'survey1'
-              },
-              {
-                _key: 'surveySection2',
-                created: '2019-02-01T01:02:03.456Z',
-                modified: '2019-03-02T02:03:04.567Z',
-                title: 'Some Survey Section',
-                description: 'Description',
-                surveyQuestions: ['surveyQuestion1', 'surveyQuestion2'],
-                survey: 'survey1'
+                slug: 'survey-slug',
+                title: 'Intro Title',
+                description: 'Intro description',
+                survey: '123',
+                surveyQuestions: []
               }
             ]
           }
         ])
       })
 
-      it('should generate another non-clashing slug', async () => {
-        const surveySections = await sql.select().from(TABLES.SURVEY_SECTIONS).orderBy('created', 'asc')
-        expect(surveySections[1]).to.have.property('slug').to.match(/^some-survey-section-[a-z0-9]{8}$/)
+      it('should generate a new slug from introTitle', async () => {
+        const surveys = await sql.select().from(TABLES.SURVEYS)
+        expect(surveys[0]).to.have.property('slug', 'intro-title')
       })
     })
   })

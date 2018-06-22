@@ -1,11 +1,9 @@
-const omit = require('lodash/omit')
-
 const makeUniqueSlug = require('./make-unique-slug')
 const { values: tagTypes } = require('../../schema/enums/tag-types')
 const { values: tagSources } = require('../../schema/enums/tag-sources')
 
 const createJob = async (context, company, data) => {
-  const { tags } = data
+  const { tags, relatedJobs, ...jobData } = data
   const slug = await makeUniqueSlug({
     type: 'jobs',
     data: data,
@@ -15,7 +13,7 @@ const createJob = async (context, company, data) => {
   const job = await context.sql.create({
     type: 'jobs',
     data: {
-      ...omit(data, ['tags']),
+      ...jobData,
       slug,
       company: company.id
     }
@@ -43,6 +41,17 @@ const createJob = async (context, company, data) => {
           job: job.id,
           tag: tag.id,
           source: tagSources.NUDJ
+        }
+      })
+    }))
+  }
+  if (relatedJobs) {
+    await Promise.all(relatedJobs.map(to => {
+      return context.sql.create({
+        type: 'relatedJobs',
+        data: {
+          from: job.id,
+          to
         }
       })
     }))

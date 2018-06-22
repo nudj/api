@@ -18,13 +18,13 @@ const {
 } = require('../../../../lib/sql')
 const {
   OLD_COLLECTIONS
-} = require('../../../../scripts/00006-arango-to-mysql/helpers')
+} = require('../../../../scripts/00007-arango-to-mysql/helpers')
 
-const script = require('../../../../scripts/00006-arango-to-mysql')
+const script = require('../../../../scripts/00007-arango-to-mysql')
 
 chai.use(chaiAsPromised)
 
-describe('00005 Arango to MySQL', () => {
+describe('00007 Arango to MySQL', () => {
   async function seedRun (data) {
     await populateCollections(db, data)
     await script({ db, sql, nosql })
@@ -44,31 +44,31 @@ describe('00005 Arango to MySQL', () => {
     await teardownCollections(db)
   })
 
-  describe('for companies table', () => {
+  describe('for people table', () => {
     const COLLECTIONS = {
-      COMPANIES: TABLES.COMPANIES
+      PEOPLE: TABLES.PEOPLE
     }
 
     afterEach(async () => {
-      await sql(TABLES.COMPANIES).whereNot('id', '').del()
+      await sql(TABLES.PEOPLE).whereNot('id', '').del()
     })
 
     describe('with a full data set', () => {
       beforeEach(async () => {
         await seedRun([
           {
-            name: COLLECTIONS.COMPANIES,
+            name: COLLECTIONS.PEOPLE,
             data: [
               {
-                _id: 'companies/123',
+                _id: 'people/123',
                 _rev: '_WpP1l3W---',
                 _key: '123',
                 created: '2018-02-01T01:02:03.456Z',
                 modified: '2018-03-02T02:03:04.567Z',
-                name: 'Company Ltd',
-                slug: 'company-ltd',
-                client: true,
-                onboarded: false,
+                email: 'jim@bob.com',
+                firstName: 'Jim',
+                lastName: 'Bob',
+                url: 'https://bob.com/',
                 batchSize: 100,
                 skip: 0
               }
@@ -77,15 +77,14 @@ describe('00005 Arango to MySQL', () => {
         ])
       })
 
-      genericExpectationsForTable(TABLES.COMPANIES)
+      genericExpectationsForTable(TABLES.PEOPLE)
 
       it('should transfer all scalar properties', async () => {
-        const records = await sql.select().from(TABLES.COMPANIES)
-        expect(records[0]).to.have.property('name', 'Company Ltd')
-        expect(records[0]).to.have.property('slug', 'company-ltd')
-        // booleans returns as 1 or 0
-        expect(records[0]).to.have.property('client', 1)
-        expect(records[0]).to.have.property('onboarded', 0)
+        const records = await sql.select().from(TABLES.PEOPLE)
+        expect(records[0]).to.have.property('firstName', 'Jim')
+        expect(records[0]).to.have.property('lastName', 'Bob')
+        expect(records[0]).to.have.property('email', 'jim@bob.com')
+        expect(records[0]).to.have.property('url', 'https://bob.com/')
       })
     })
 
@@ -93,51 +92,52 @@ describe('00005 Arango to MySQL', () => {
       beforeEach(async () => {
         await seedRun([
           {
-            name: COLLECTIONS.COMPANIES,
+            name: COLLECTIONS.PEOPLE,
             data: [
               {
-                _id: 'companies/123',
+                _id: 'people/123',
                 _rev: '_WpP1l3W---',
                 _key: '123',
                 created: '2018-02-01T01:02:03.456Z',
                 modified: '2018-03-02T02:03:04.567Z',
-                name: 'Company Ltd',
-                slug: 'company-ltd'
+                email: 'jim@bob.com'
               }
             ]
           }
         ])
       })
 
-      it('should use defaults', async () => {
-        const records = await sql.select().from(TABLES.COMPANIES)
-        expect(records[0]).to.have.property('client', 0)
-        expect(records[0]).to.have.property('onboarded', 0)
+      it('should set to null', async () => {
+        const records = await sql.select().from(TABLES.PEOPLE)
+        expect(records[0]).to.have.property('firstName', null)
+        expect(records[0]).to.have.property('lastName', null)
+        expect(records[0]).to.have.property('url', null)
       })
     })
 
-    describe('when created/modified are missing', () => {
+    describe('without null values for url', () => {
       beforeEach(async () => {
         await seedRun([
           {
-            name: COLLECTIONS.COMPANIES,
+            name: COLLECTIONS.PEOPLE,
             data: [
               {
-                _id: 'companies/123',
+                _id: 'people/123',
                 _rev: '_WpP1l3W---',
                 _key: '123',
-                name: 'Company Ltd',
-                slug: 'company-ltd'
+                created: '2018-02-01T01:02:03.456Z',
+                modified: '2018-03-02T02:03:04.567Z',
+                email: 'jim@bob.com',
+                url: null
               }
             ]
           }
         ])
       })
 
-      it('should use defaults', async () => {
-        const records = await sql.select().from(TABLES.COMPANIES)
-        expect(records[0]).to.have.property('client', 0)
-        expect(records[0]).to.have.property('onboarded', 0)
+      it('should set to sql NULL', async () => {
+        const records = await sql.select().from(TABLES.PEOPLE)
+        expect(records[0]).to.have.property('url', null)
       })
     })
   })

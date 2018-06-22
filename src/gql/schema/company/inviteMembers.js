@@ -1,5 +1,9 @@
 const uniq = require('lodash/uniq')
+const chunk = require('lodash/chunk')
+const promiseSerial = require('promise-serial')
+
 const { logger } = require('@nudj/library')
+
 const fetchPerson = require('../../lib/helpers/fetch-person')
 const { handleErrors } = require('../../lib')
 const { values: hirerTypes } = require('../enums/hirer-types')
@@ -10,6 +14,10 @@ const {
 } = require('../../lib/mailer')
 const intercom = require('../../lib/intercom')
 
+const INTERCOM_BATCH_AMOUNT = 10
+
+const stall = time => new Promise(resolve => setTimeout(resolve, time))
+
 const triggerIntercomTracking = async ({
   company,
   emailAddresses,
@@ -17,27 +25,35 @@ const triggerIntercomTracking = async ({
   senderEmail
 }) => {
   const intercomCompany = await intercom.fetchOrCreateCompanyByName(company.name)
+  const batchedEmails = chunk(emailAddresses, INTERCOM_BATCH_AMOUNT)
 
-  await emailAddresses.map(async email => {
-    await intercom.createUniqueUserAndTag({
-      email,
-      companies: [
-        {
-          name: intercomCompany.name,
-          company_id: intercomCompany.company_id
+  await promiseSerial(batchedEmails.map(emails => async () => {
+    const timer = emails.length === INTERCOM_BATCH_AMOUNT && stall(10000)
+
+    await Promise.all(emails.map(async email => {
+      await intercom.createUniqueUserAndTag({
+        email,
+        companies: [
+          {
+            name: intercomCompany.name,
+            company_id: intercomCompany.company_id
+          }
+        ]
+      }, 'team-member')
+      await intercom.logEvent({
+        event_name: 'invited',
+        email,
+        metadata: {
+          category: 'onboarding',
+          invited_by: senderName || senderEmail
         }
-      ]
-    }, 'team-member')
-    await intercom.logEvent({
-      event_name: 'invited',
-      email,
-      metadata: {
-        category: 'onboarding',
-        invited_by: senderName || senderEmail
-      }
-    })
-  })
-  await intercom.logEvent({
+      })
+    }))
+
+    return timer
+  }))
+
+  return intercom.logEvent({
     event_name: 'invites-sent',
     email: senderEmail,
     metadata: {

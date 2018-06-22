@@ -28,8 +28,6 @@ const triggerIntercomTracking = async ({
   const batchedEmails = chunk(emailAddresses, INTERCOM_BATCH_AMOUNT)
 
   await promiseSerial(batchedEmails.map(emails => async () => {
-    const timer = emails.length === INTERCOM_BATCH_AMOUNT && stall(10000)
-
     await Promise.all(emails.map(async email => {
       await intercom.createUniqueUserAndTag({
         email,
@@ -50,7 +48,7 @@ const triggerIntercomTracking = async ({
       })
     }))
 
-    return timer
+    return emails.length === INTERCOM_BATCH_AMOUNT && stall(10000)
   }))
 
   return intercom.logEvent({

@@ -4,9 +4,9 @@ module.exports = {
       id: ID!
       created: DateTime!
       modified: DateTime!
+      slug: String!
       title: String!
       description: String
-      name: String!
       required: Boolean!
       type: SurveyQuestionType!
     }
@@ -14,7 +14,6 @@ module.exports = {
     input SurveyQuestionCreateInput {
       title: String!
       description: String
-      name: String!
       required: Boolean!
       type: SurveyQuestionType!
       tags: [ExpertiseTagType!]
@@ -23,7 +22,6 @@ module.exports = {
     input SurveyQuestionUpdateInput {
       title: String
       description: String
-      name: String
       required: Boolean
       type: SurveyQuestionType
       tags: [ExpertiseTagType!]
@@ -31,6 +29,7 @@ module.exports = {
 
     input SurveyQuestionFilterInput {
       id: ID
+      slug: String
       dateTo: DateTime
       dateFrom: DateTime
     }

@@ -44,7 +44,9 @@ describe('Mutation.createPerson', () => {
         }
       ],
       employments: [],
-      personRoles: []
+      currentEmployments: [],
+      personRoles: [],
+      currentPersonRoles: []
     }
   })
 
@@ -86,9 +88,22 @@ describe('Mutation.createPerson', () => {
       expect(db.employments[0]).to.deep.equal({
         id: 'employment1',
         company: 'company1',
-        current: true,
         person: 'person1',
         source: 'NUDJ'
+      })
+    })
+
+    it('should create a currentEmployment', async () => {
+      await executeQueryOnDbUsingSchema({
+        operation,
+        variables,
+        db,
+        schema
+      })
+      expect(db.currentEmployments[0]).to.deep.equal({
+        id: 'currentEmployment1',
+        person: 'person1',
+        employment: 'employment1'
       })
     })
 
@@ -102,9 +117,22 @@ describe('Mutation.createPerson', () => {
       expect(db.personRoles[0]).to.deep.equal({
         id: 'personRole1',
         role: 'role1',
-        current: true,
         person: 'person1',
         source: 'NUDJ'
+      })
+    })
+
+    it('should create a currentPersonRole', async () => {
+      await executeQueryOnDbUsingSchema({
+        operation,
+        variables,
+        db,
+        schema
+      })
+      expect(db.currentPersonRoles[0]).to.deep.equal({
+        id: 'currentPersonRole1',
+        person: 'person1',
+        personRole: 'personRole1'
       })
     })
 
@@ -189,9 +217,22 @@ describe('Mutation.createPerson', () => {
       expect(db.employments[0]).to.deep.equal({
         id: 'employment1',
         company: 'company2',
-        current: true,
         person: 'person1',
         source: 'NUDJ'
+      })
+    })
+
+    it('should create a currentEmployment', async () => {
+      await executeQueryOnDbUsingSchema({
+        operation,
+        variables,
+        db,
+        schema
+      })
+      expect(db.currentEmployments[0]).to.deep.equal({
+        id: 'currentEmployment1',
+        person: 'person1',
+        employment: 'employment1'
       })
     })
 
@@ -205,9 +246,22 @@ describe('Mutation.createPerson', () => {
       expect(db.personRoles[0]).to.deep.equal({
         id: 'personRole1',
         role: 'role2',
-        current: true,
         person: 'person1',
         source: 'NUDJ'
+      })
+    })
+
+    it('should create a currentPersonRole', async () => {
+      await executeQueryOnDbUsingSchema({
+        operation,
+        variables,
+        db,
+        schema
+      })
+      expect(db.currentPersonRoles[0]).to.deep.equal({
+        id: 'currentPersonRole1',
+        person: 'person1',
+        personRole: 'personRole1'
       })
     })
 
@@ -221,6 +275,7 @@ describe('Mutation.createPerson', () => {
       expect(db.companies.length).to.equal(2)
       expect(db.companies[1]).to.deep.equal({
         id: 'company2',
+        client: false,
         name: 'El Nudjo Magnifico',
         slug: 'el-nudjo-magnifico'
       })

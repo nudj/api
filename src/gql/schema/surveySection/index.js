@@ -4,6 +4,7 @@ module.exports = {
       id: ID!
       created: DateTime!
       modified: DateTime!
+      slug: String!
       title: String!
       description: String
     }

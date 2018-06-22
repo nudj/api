@@ -12,7 +12,6 @@ module.exports = {
     }
 
     input SurveyCreateInput {
-      slug: String!
       introTitle: String
       introDescription: String
       outroTitle: String
@@ -20,7 +19,6 @@ module.exports = {
     }
 
     input SurveyUpdateInput {
-      slug: String
       introTitle: String
       introDescription: String
       outroTitle: String

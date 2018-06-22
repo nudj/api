@@ -1,4 +1,8 @@
 const handleErrors = require('../../lib/handle-errors')
+const {
+  TABLES,
+  SLUG_GENERATORS
+} = require('../../../lib/sql')
 
 module.exports = {
   typeDefs: `
@@ -27,6 +31,7 @@ module.exports = {
           id: parentId
         })
 
+        const slug = SLUG_GENERATORS[TABLES.REFERRALS].generator()
         return context.sql.readOneOrCreate({
           type: 'referrals',
           filters: {
@@ -34,6 +39,7 @@ module.exports = {
             person: person.id
           },
           data: {
+            slug,
             job: job.id,
             person: person.id,
             parent: parent && parent.id

@@ -15,7 +15,7 @@ const operation = `
   }
 `
 
-describe('Company.relatedJobs', () => {
+describe('Job.relatedJobs', () => {
   it('should fetch all relatedJobs for current the job', async () => {
     const db = {
       jobs: [
@@ -23,8 +23,14 @@ describe('Company.relatedJobs', () => {
           id: 'job1'
         },
         {
-          id: 'job2',
-          relatedJobs: ['job1']
+          id: 'job2'
+        }
+      ],
+      relatedJobs: [
+        {
+          id: 'relatedJob1',
+          from: 'job2',
+          to: 'job1'
         }
       ]
     }
@@ -49,10 +55,10 @@ describe('Company.relatedJobs', () => {
           id: 'job1'
         },
         {
-          id: 'job2',
-          relatedJobs: []
+          id: 'job2'
         }
-      ]
+      ],
+      relatedJobs: []
     }
     return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {

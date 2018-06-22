@@ -44,7 +44,6 @@ describe('Mutation.createSurvey', () => {
     let variables = {
       company: 'company1',
       data: {
-        slug: 'aided-recall-baby',
         introTitle: 'Some Intro Title',
         introDescription: 'Some intro decription',
         outroTitle: 'Some Outro Title',
@@ -67,12 +66,12 @@ describe('Mutation.createSurvey', () => {
     it('should create the survey', async () => {
       expect(db.surveys[0]).to.deep.equal({
         id: 'survey1',
-        slug: 'aided-recall-baby',
+        slug: 'some-intro-title',
         introTitle: 'Some Intro Title',
         introDescription: 'Some intro decription',
         outroTitle: 'Some Outro Title',
         outroDescription: 'Some outro description',
-        surveySections: []
+        surveySections: JSON.stringify([])
       })
     })
 
@@ -89,7 +88,7 @@ describe('Mutation.createSurvey', () => {
         .to.have.deep.property('data.createSurvey')
         .to.deep.equal({
           id: 'survey1',
-          slug: 'aided-recall-baby',
+          slug: 'some-intro-title',
           introTitle: 'Some Intro Title',
           introDescription: 'Some intro decription',
           outroTitle: 'Some Outro Title',
@@ -102,7 +101,6 @@ describe('Mutation.createSurvey', () => {
     let result
     let variables = {
       data: {
-        slug: 'aided-recall-baby',
         introTitle: 'Some Intro Title',
         introDescription: 'Some intro decription',
         outroTitle: 'Some Outro Title',
@@ -125,12 +123,12 @@ describe('Mutation.createSurvey', () => {
     it('should create the survey', async () => {
       expect(db.surveys[0]).to.deep.equal({
         id: 'survey1',
-        slug: 'aided-recall-baby',
+        slug: 'some-intro-title',
         introTitle: 'Some Intro Title',
         introDescription: 'Some intro decription',
         outroTitle: 'Some Outro Title',
         outroDescription: 'Some outro description',
-        surveySections: []
+        surveySections: JSON.stringify([])
       })
     })
 
@@ -143,7 +141,7 @@ describe('Mutation.createSurvey', () => {
         .to.have.deep.property('data.createSurvey')
         .to.deep.equal({
           id: 'survey1',
-          slug: 'aided-recall-baby',
+          slug: 'some-intro-title',
           introTitle: 'Some Intro Title',
           introDescription: 'Some intro decription',
           outroTitle: 'Some Outro Title',

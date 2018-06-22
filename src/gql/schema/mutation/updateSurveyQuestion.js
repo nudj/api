@@ -1,8 +1,7 @@
-const omit = require('lodash/omit')
-
 const { values: tagTypes } = require('../enums/tag-types')
 const { values: tagSources } = require('../enums/tag-sources')
 const { handleErrors } = require('../../lib')
+const makeUniqueSlug = require('../../lib/helpers/make-unique-slug')
 
 module.exports = {
   typeDefs: `
@@ -13,63 +12,75 @@ module.exports = {
   resolvers: {
     Mutation: {
       updateSurveyQuestion: handleErrors(async (root, args, context) => {
-        if (!args.data.tags) {
-          return context.sql.update({
+        const { tags, ...data } = args.data
+
+        if (tags) {
+          const oldSurveyQuestionTags = await context.sql.readAll({
+            type: 'surveyQuestionTags',
+            filters: { surveyQuestion: args.id }
+          })
+
+          await Promise.all(oldSurveyQuestionTags.map(tag => {
+            return context.sql.delete({
+              type: 'surveyQuestionTags',
+              id: tag.id
+            })
+          }))
+
+          const updatedTags = await Promise.all(tags.map(tag => {
+            return context.sql.readOneOrCreate({
+              type: 'tags',
+              filters: {
+                name: tag,
+                type: tagTypes.EXPERTISE
+              },
+              data: {
+                name: tag,
+                type: tagTypes.EXPERTISE
+              }
+            })
+          }))
+
+          await Promise.all(updatedTags.map(tag => {
+            return context.sql.readOneOrCreate({
+              type: 'surveyQuestionTags',
+              filters: {
+                surveyQuestion: args.id,
+                tag: tag.id,
+                source: tagSources.NUDJ
+              },
+              data: {
+                surveyQuestion: args.id,
+                tag: tag.id,
+                source: tagSources.NUDJ
+              }
+            })
+          }))
+        }
+
+        if (data.title) {
+          data.slug = await makeUniqueSlug({
             type: 'surveyQuestions',
-            id: args.id,
-            data: args.data
+            data: {
+              ...data,
+              id: args.id
+            },
+            context
           })
         }
 
-        const { tags = [] } = args.data
-
-        const oldSurveyQuestionTags = await context.sql.readAll({
-          type: 'surveyQuestionTags',
-          filters: { surveyQuestion: args.id }
-        })
-
-        await Promise.all(oldSurveyQuestionTags.map(tag => {
-          return context.sql.delete({
-            type: 'surveyQuestionTags',
-            id: tag.id
+        if (Object.keys(data).length) {
+          return context.sql.update({
+            type: 'surveyQuestions',
+            id: args.id,
+            data
           })
-        }))
-
-        const updatedTags = await Promise.all(tags.map(tag => {
-          return context.sql.readOneOrCreate({
-            type: 'tags',
-            filters: {
-              name: tag,
-              type: tagTypes.EXPERTISE
-            },
-            data: {
-              name: tag,
-              type: tagTypes.EXPERTISE
-            }
+        } else {
+          return context.sql.readOne({
+            type: 'surveyQuestions',
+            id: args.id
           })
-        }))
-
-        await Promise.all(updatedTags.map(tag => {
-          return context.sql.readOneOrCreate({
-            type: 'surveyQuestionTags',
-            filters: {
-              surveyQuestion: args.id,
-              tag: tag.id,
-              source: tagSources.NUDJ
-            },
-            data: {
-              surveyQuestion: args.id,
-              tag: tag.id,
-              source: tagSources.NUDJ
-            }
-          })
-        }))
-
-        return context.sql.update({
-          type: 'surveyQuestions',
-          id: args.id,
-          data: omit(args.data, ['tags'])
-        })
+        }
       })
     }
   }

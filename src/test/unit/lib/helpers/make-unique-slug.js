@@ -63,7 +63,7 @@ describe('makeUniqueSlug', () => {
 
   describe('when first slug is not unique', () => {
     it('generates and returns a new unique slug', async () => {
-      readOneStub.returns({ name: 'Namé Basëd', slug: 'name-based' })
+      readOneStub.returns({ id: 'nameBased1', name: 'Namé Basëd', slug: 'name-based' })
       readOneStub.onCall(2).returns(null) // On third attempt
 
       const company = { name: 'Name Based' }

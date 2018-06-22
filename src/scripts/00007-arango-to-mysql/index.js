@@ -3,6 +3,7 @@ const map = require('lodash/map')
 const mapValues = require('lodash/mapValues')
 const uniq = require('lodash/uniq')
 const get = require('lodash/get')
+const isNil = require('lodash/isNil')
 const promiseSerial = require('promise-serial')
 const {
   OLD_COLLECTIONS,
@@ -10,6 +11,7 @@ const {
   TABLE_ORDER,
   RELATIONS,
   SELF_RELATIONS,
+  FROM_TO_RELATIONS,
   MANY_RELATIONS,
   ORDER_CACHES,
   fieldToPath,
@@ -42,7 +44,9 @@ async function action ({ db, sql, nosql }) {
     await promiseSerial(items.map(item => async () => {
       const scalars = reduce(FIELDS[tableName], (scalars, field) => {
         const value = get(item, fieldToPath(tableName, field))
-        scalars[field] = typeof value === 'object' ? JSON.stringify(value) : value
+        if (!isNil(value)) {
+          scalars[field] = typeof value === 'object' ? JSON.stringify(value) : value
+        }
         return scalars
       }, {})
       const relations = mapValues(RELATIONS[tableName] || {}, (foreignTable, field) => idMaps[foreignTable][get(item, fieldToPath(tableName, field))])
@@ -133,6 +137,26 @@ async function action ({ db, sql, nosql }) {
           const recordId = idMaps[tableName][item._key]
           await sql(tableName).where('id', '=', recordId).update(selfRelations)
         }
+      }))
+    }
+
+    // retroactively update records with relations that reference the same table (because we need to know the id of the record we are referencing) and store in a new edge table
+    if (FROM_TO_RELATIONS[tableName]) {
+      const {
+        field,
+        edgeTable
+      } = FROM_TO_RELATIONS[tableName]
+      await promiseSerial(items.map(item => () => {
+        const oldToKeys = item[field] || []
+        return Promise.all(oldToKeys.map(toOldKey => {
+          const to = idMaps[tableName][toOldKey]
+          if (to) {
+            return sql(edgeTable).insert({
+              from: idMaps[tableName][item._key],
+              to
+            })
+          }
+        }))
       }))
     }
   })) // TABLE_ORDER.map

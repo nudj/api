@@ -57,12 +57,11 @@ describe('Job.createReferralByEmail', () => {
       schema
     })
 
-    expect(db.referrals[1]).to.deep.equal({
-      id: 'referral2',
-      job: 'job1',
-      parent: null,
-      person: 'person2'
-    })
+    expect(db.referrals[1]).to.have.property('id', 'referral2')
+    expect(db.referrals[1]).to.have.property('job', 'job1')
+    expect(db.referrals[1]).to.have.property('parent', null)
+    expect(db.referrals[1]).to.have.property('person', 'person2')
+    expect(db.referrals[1]).to.have.property('slug').to.match(/^[a-z0-9]{10}$/)
   })
 
   it('should create a person for a new email', async () => {
@@ -108,12 +107,11 @@ describe('Job.createReferralByEmail', () => {
       schema
     })
 
-    expect(db.referrals[1]).to.deep.equal({
-      id: 'referral2',
-      job: 'job1',
-      parent: 'superReferralID',
-      person: 'person2'
-    })
+    expect(db.referrals[1]).to.have.property('id', 'referral2')
+    expect(db.referrals[1]).to.have.property('job', 'job1')
+    expect(db.referrals[1]).to.have.property('parent', 'superReferralID')
+    expect(db.referrals[1]).to.have.property('person', 'person2')
+    expect(db.referrals[1]).to.have.property('slug').to.match(/^[a-z0-9]{10}$/)
   })
 
   it('return the new referral', async () => {
@@ -124,9 +122,9 @@ describe('Job.createReferralByEmail', () => {
       schema
     })
     expect(result)
-    .to.have.deep.property('data.jobs[0].createReferralByEmail')
-    .to.deep.equal({
-      id: 'referral2'
-    })
+      .to.have.deep.property('data.jobs[0].createReferralByEmail')
+      .to.deep.equal({
+        id: 'referral2'
+      })
   })
 })

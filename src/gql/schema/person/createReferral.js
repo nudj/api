@@ -1,3 +1,9 @@
+const handleErrors = require('../../lib/handle-errors')
+const {
+  TABLES,
+  SLUG_GENERATORS
+} = require('../../../lib/sql')
+
 module.exports = {
   typeDefs: `
     extend type Person {
@@ -6,7 +12,7 @@ module.exports = {
   `,
   resolvers: {
     Person: {
-      createReferral: async (person, args, context) => {
+      createReferral: handleErrors(async (person, args, context) => {
         const { job: jobId, parent: parentId } = args
         const existingReferral = await context.sql.readOne({
           type: 'referrals',
@@ -29,15 +35,17 @@ module.exports = {
         ])
         if (!job) throw new Error(`Job with id ${jobId} does not exist`)
 
+        const slug = SLUG_GENERATORS[TABLES.REFERRALS].generator()
         return context.sql.create({
           type: 'referrals',
           data: {
+            slug,
             person: person.id,
             job: job.id,
             parent: parent && parent.id
           }
         })
-      }
+      })
     }
   }
 }

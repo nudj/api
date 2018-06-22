@@ -19,13 +19,13 @@ const {
 } = require('../../../../lib/sql')
 const {
   OLD_COLLECTIONS
-} = require('../../../../scripts/00006-arango-to-mysql/helpers')
+} = require('../../../../scripts/00007-arango-to-mysql/helpers')
 
-const script = require('../../../../scripts/00006-arango-to-mysql')
+const script = require('../../../../scripts/00007-arango-to-mysql')
 
 chai.use(chaiAsPromised)
 
-describe('00005 Arango to MySQL', () => {
+describe('00007 Arango to MySQL', () => {
   async function seedRun (data) {
     await populateCollections(db, data)
     await script({ db, sql, nosql })
@@ -52,6 +52,7 @@ describe('00005 Arango to MySQL', () => {
     }
 
     afterEach(async () => {
+      await sql(TABLES.RELATED_JOBS).whereNot('id', '').del()
       await sql(TABLES.JOBS).whereNot('id', '').del()
       await sql(TABLES.COMPANIES).whereNot('id', '').del()
     })
@@ -94,18 +95,40 @@ describe('00005 Arango to MySQL', () => {
                 bonus: '1000',
                 status: ENUMS.JOB_STATUSES.DRAFT,
                 company: 'company1',
+                relatedJobs: ['456'],
                 batchSize: 100,
                 skip: 0
+              },
+              {
+                _id: 'jobs/456',
+                _rev: '_WpP1l3W---',
+                _key: '456',
+                created: '2019-02-01T01:02:03.456Z',
+                modified: '2019-03-02T02:03:04.567Z',
+                title: 'Job title two',
+                slug: 'job-title-two',
+                url: 'https://company.com/job',
+                location: 'London',
+                remuneration: '£5',
+                templateTags: ['some-template'],
+                description: 'A description',
+                candidateDescription: 'A candidate description',
+                roleDescription: 'A role description',
+                experience: 'Some experience',
+                requirements: 'Some requirements',
+                bonus: '1000',
+                status: ENUMS.JOB_STATUSES.DRAFT,
+                company: 'company1'
               }
             ]
           }
         ])
       })
 
-      genericExpectationsForTable(TABLES.JOBS)
+      genericExpectationsForTable(TABLES.JOBS, 2)
 
       it('should transfer scalar properties', async () => {
-        const records = await sql.select().from(TABLES.JOBS)
+        const records = await sql.select().from(TABLES.JOBS).orderBy('created', 'asc')
         expect(records[0]).to.have.property('title', 'Job title')
         expect(records[0]).to.have.property('slug', 'job-title')
         expect(records[0]).to.have.property('url', 'https://company.com/job')
@@ -127,8 +150,13 @@ describe('00005 Arango to MySQL', () => {
       })
 
       it('should map templateTags to template', async () => {
-        const records = await sql.select().from(TABLES.JOBS)
-        expect(records[0]).to.have.property('template', 'some-template')
+        const jobs = await sql.select().from(TABLES.JOBS)
+        expect(jobs[0]).to.have.property('template', 'some-template')
+      })
+
+      it('should add entries to relatedJobs', async () => {
+        const relatedJobs = await sql.select().from(TABLES.RELATED_JOBS)
+        expect(relatedJobs).to.have.length(1)
       })
     })
 

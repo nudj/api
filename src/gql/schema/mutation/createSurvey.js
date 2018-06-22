@@ -1,4 +1,5 @@
 const { handleErrors } = require('../../lib')
+const makeUniqueSlug = require('../../lib/helpers/make-unique-slug')
 
 module.exports = {
   typeDefs: `
@@ -9,12 +10,18 @@ module.exports = {
   resolvers: {
     Mutation: {
       createSurvey: handleErrors(async (root, args, context) => {
+        const data = {
+          ...args.data,
+          surveySections: JSON.stringify([])
+        }
+        data.slug = await makeUniqueSlug({
+          type: 'surveys',
+          data,
+          context
+        })
         const survey = await context.sql.create({
           type: 'surveys',
-          data: {
-            ...args.data,
-            surveySections: []
-          }
+          data
         })
         if (args.company) {
           await context.sql.create({

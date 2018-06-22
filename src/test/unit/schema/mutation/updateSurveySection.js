@@ -16,6 +16,7 @@ const operation = `
     ) {
       id
       title
+      slug
       description
     }
   }
@@ -24,7 +25,7 @@ let variables = {
   id: 'surveySection1',
   data: {
     title: 'New Title',
-    description: 'New decription'
+    description: 'New description'
   }
 }
 
@@ -37,8 +38,9 @@ describe('Mutation.updateSurveySection', () => {
         {
           id: 'surveySection1',
           title: 'Old Title',
-          description: 'Old decription',
-          surveyQuestions: ['1', '2', '3']
+          slug: 'old-title',
+          description: 'Old description',
+          surveyQuestions: JSON.stringify(['1', '2', '3'])
         }
       ]
     }
@@ -54,12 +56,13 @@ describe('Mutation.updateSurveySection', () => {
     expect(db.surveySections[0]).to.deep.equal({
       id: 'surveySection1',
       title: 'New Title',
-      description: 'New decription',
-      surveyQuestions: ['1', '2', '3']
+      slug: 'new-title',
+      description: 'New description',
+      surveyQuestions: JSON.stringify(['1', '2', '3'])
     })
   })
 
-  it('return the updated survey', async () => {
+  it('return the updated surveySection', async () => {
     const result = await executeQueryOnDbUsingSchema({
       operation,
       variables,
@@ -71,7 +74,8 @@ describe('Mutation.updateSurveySection', () => {
       .to.deep.equal({
         id: 'surveySection1',
         title: 'New Title',
-        description: 'New decription'
+        slug: 'new-title',
+        description: 'New description'
       })
   })
 
@@ -91,7 +95,48 @@ describe('Mutation.updateSurveySection', () => {
       })
       expect(db)
         .to.have.deep.property('surveySections.0.surveyQuestions')
-        .to.deep.equal(['3', '2', '1'])
+        .to.deep.equal(JSON.stringify(['3', '2', '1']))
+    })
+  })
+
+  describe('when no changes', () => {
+    it('should not change the record in the db', async () => {
+      variables = {
+        id: 'surveySection1',
+        data: {}
+      }
+      await executeQueryOnDbUsingSchema({
+        operation,
+        variables,
+        db,
+        schema
+      })
+      expect(db.surveySections[0]).to.deep.equal({
+        id: 'surveySection1',
+        title: 'Old Title',
+        slug: 'old-title',
+        description: 'Old description',
+        surveyQuestions: JSON.stringify(['1', '2', '3'])
+      })
+    })
+
+    it('should return the unchanged record', async () => {
+      variables = {
+        id: 'surveySection1',
+        data: {}
+      }
+      const result = await executeQueryOnDbUsingSchema({
+        operation,
+        variables,
+        db,
+        schema
+      })
+      expect(result.data.updateSurveySection).to.deep.equal({
+        id: 'surveySection1',
+        title: 'Old Title',
+        slug: 'old-title',
+        description: 'Old description'
+      })
     })
   })
 })

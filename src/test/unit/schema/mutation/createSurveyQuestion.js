@@ -28,7 +28,6 @@ const variables = {
   data: {
     title: 'Some title',
     description: 'Some description',
-    name: 'someName',
     required: true,
     type: SurveyQuestionTypes.COMPANIES,
     tags: ['CEO', 'FOUNDER']
@@ -43,7 +42,7 @@ describe('Mutation.createSurveyQuestion', () => {
       surveySections: [
         {
           id: 'surveySection1',
-          surveyQuestions: []
+          surveyQuestions: JSON.stringify([])
         }
       ],
       surveyQuestions: [],
@@ -62,8 +61,8 @@ describe('Mutation.createSurveyQuestion', () => {
     expect(db.surveyQuestions[0]).to.deep.equal({
       id: 'surveyQuestion1',
       title: 'Some title',
+      slug: 'some-title',
       description: 'Some description',
-      name: 'someName',
       required: true,
       type: SurveyQuestionTypes.COMPANIES,
       surveySection: 'surveySection1'
@@ -121,7 +120,7 @@ describe('Mutation.createSurveyQuestion', () => {
       db,
       schema
     })
-    expect(db.surveySections[0].surveyQuestions).to.deep.equal(['surveyQuestion1'])
+    expect(db.surveySections[0].surveyQuestions).to.deep.equal(JSON.stringify(['surveyQuestion1']))
   })
 
   it('should return the new surveyQuestion', async () => {

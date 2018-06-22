@@ -56,7 +56,6 @@ describe('Mutation.createCompany', () => {
         id: 'company1',
         name: 'NudjV2',
         slug: 'nudj-v2',
-        onboarded: false,
         client: false
       })
     })

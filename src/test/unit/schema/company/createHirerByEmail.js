@@ -7,9 +7,15 @@ const { executeQueryOnDbUsingSchema } = require('../../helpers')
 const { values: hirerTypes } = require('../../../../gql/schema/enums/hirer-types')
 
 const operation = `
-  mutation ($hirer: HirerCreateInput!) {
+  mutation (
+    $email: String!
+    $hirer: HirerCreateInput!
+  ) {
     companies {
-      createHirerByEmail(hirer: $hirer) {
+      createHirerByEmail(
+        email: $email
+        hirer: $hirer
+      ) {
         id
       }
     }
@@ -20,9 +26,9 @@ describe('Company.createHirerByEmail', () => {
   describe('when a `person` with provided email address does not exist', () => {
     let db
     const variables = {
+      email: 'rose@badwolf.tld',
       hirer: {
-        company: 'Bad Wolf Incorporated',
-        email: 'rose@badwolf.tld',
+        company: 'company1',
         type: hirerTypes.ADMIN
       }
     }
@@ -81,19 +87,19 @@ describe('Company.createHirerByEmail', () => {
         schema
       })
       expect(result)
-      .to.have.deep.property('data.companies[0].createHirerByEmail')
-      .to.deep.equal({
-        id: 'hirer1'
-      })
+        .to.have.deep.property('data.companies[0].createHirerByEmail')
+        .to.deep.equal({
+          id: 'hirer1'
+        })
     })
   })
 
   describe('when a `person` with provided email address exists', () => {
     let db
     const variables = {
+      email: 'hey@nudj.co',
       hirer: {
         company: 'Bad Wolf Incorporated',
-        email: 'hey@nudj.co',
         type: hirerTypes.MEMBER
       }
     }
@@ -153,10 +159,10 @@ describe('Company.createHirerByEmail', () => {
         schema
       })
       expect(result)
-      .to.have.deep.property('data.companies[0].createHirerByEmail')
-      .to.deep.equal({
-        id: 'hirer1'
-      })
+        .to.have.deep.property('data.companies[0].createHirerByEmail')
+        .to.deep.equal({
+          id: 'hirer1'
+        })
     })
   })
 })

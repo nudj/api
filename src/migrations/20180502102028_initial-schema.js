@@ -36,15 +36,21 @@ exports.up = async knex => {
       const {
         NAME,
         SLUG,
-        CLIENT,
-        ONBOARDED
+        DESCRIPTION,
+        LOCATION,
+        LOGO,
+        URL,
+        CLIENT
       } = FIELDS[TABLES.COMPANIES]
 
       defaultConfig(t, knex)
       t.string(NAME).notNullable()
       t.string(SLUG).notNullable()
+      t.text(DESCRIPTION).nullable()
+      t.string(LOCATION).nullable()
+      urlType(LOGO, t, knex).nullable()
+      urlType(URL, t, knex).nullable()
       t.boolean(CLIENT).defaultTo(false).notNullable()
-      t.boolean(ONBOARDED).defaultTo(false).notNullable()
       t.unique(NAME, INDICES[TABLES.COMPANIES][NAME].name)
       t.unique(SLUG, INDICES[TABLES.COMPANIES][SLUG].name)
     })
@@ -410,6 +416,18 @@ exports.up = async knex => {
       t.unique([SURVEY_QUESTION, TAG], INDICES[TABLES.SURVEY_QUESTION_TAGS][[SURVEY_QUESTION, TAG].join('')].name)
     })
 
+    .createTable(TABLES.RELATED_JOBS, t => {
+      const {
+        FROM,
+        TO
+      } = FIELDS[TABLES.RELATED_JOBS]
+
+      defaultConfig(t, knex)
+      relationType(FROM, TABLES.JOBS, t, knex).notNullable()
+      relationType(TO, TABLES.JOBS, t, knex).notNullable()
+      t.unique([FROM, TO], INDICES[TABLES.RELATED_JOBS][[FROM, TO].join('')].name)
+    })
+
   // create all required collections in the nosql store
   await Promise.all(Object.values(COLLECTIONS).map(async collectionName => {
     let collection
@@ -425,6 +443,7 @@ exports.up = async knex => {
 
 exports.down = async knex => {
   await knex.schema
+    .dropTable(TABLES.RELATED_JOBS)
     .dropTable(TABLES.SURVEY_QUESTION_TAGS)
     .dropTable(TABLES.ROLE_TAGS)
     .dropTable(TABLES.JOB_TAGS)

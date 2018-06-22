@@ -34,7 +34,7 @@ describe('Mutation.createSurveySection', () => {
       surveys: [
         {
           id: 'survey1',
-          surveySections: []
+          surveySections: JSON.stringify([])
         }
       ],
       surveySections: []
@@ -52,8 +52,9 @@ describe('Mutation.createSurveySection', () => {
       id: 'surveySection1',
       survey: 'survey1',
       title: 'Some Title',
+      slug: 'some-title',
       description: 'Some decription',
-      surveyQuestions: []
+      surveyQuestions: JSON.stringify([])
     })
   })
 
@@ -64,7 +65,7 @@ describe('Mutation.createSurveySection', () => {
       db,
       schema
     })
-    expect(db.surveys[0].surveySections).to.deep.equal(['surveySection1'])
+    expect(db.surveys[0].surveySections).to.deep.equal(JSON.stringify(['surveySection1']))
   })
 
   it('return the new survey', async () => {

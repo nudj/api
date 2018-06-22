@@ -69,9 +69,9 @@ module.exports = {
         const senderName = firstName && lastName && `${firstName} ${lastName}`
         const from = senderName
           ? `${senderName} via nudj <hello@nudj.co>`
-          : `Nudj <hello@nudj.co>`
+          : `nudj <hello@nudj.co>`
         const subject = senderName
-          ? `${senderName} has invited you to join them on nudj`
+          ? `Help ${senderName} and the rest of ${company.name} hire more great people using nudj`
           : `You've been invited to join nudj!`
 
         const jobs = await context.store.readAll({

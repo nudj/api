@@ -129,12 +129,21 @@ module.exports = {
         )
 
         try {
-          triggerIntercomTracking({
-            company,
-            emailAddresses,
-            senderName,
-            senderEmail
-          })
+          if (args.awaitIntercom) {
+            await triggerIntercomTracking({
+              company,
+              emailAddresses,
+              senderName,
+              senderEmail
+            })
+          } else {
+            triggerIntercomTracking({
+              company,
+              emailAddresses,
+              senderName,
+              senderEmail
+            })
+          }
         } catch (error) {
           logger('error', 'Intercom error', error)
         }

@@ -131,7 +131,7 @@ module.exports = ({ web, senderName, company, jobs, email }) => dedent`
                                   <tr>
                                     <td style="padding: 0 0 0 20px; text-align: right; color: #6F6F6F; font-family: sans-serif;">
                                       <p class="" style="margin: 20px 0; font-size: 14px; mso-line-height-rule: exactly; line-height: 24px; margin: 20px 0; margin: 0;">
-                                        <a href="#" style="color: #9A9A9A; text-decoration: none; " universal="true" target="_blank">Launch nudj</a>
+                                        <a href="${web.protocol}://${process.env.HIRE_HOSTNAME}?email=${encodeURIComponent(email)}" style="color: #9A9A9A; text-decoration: none; " universal="true" target="_blank">Launch nudj</a>
                                       </p>
                                     </td>
                                   </tr>

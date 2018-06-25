@@ -61,6 +61,7 @@
     "chai": "3.5.0",
     "chai-as-promised": "6.0.0",
     "dirty-chai": "1.2.2",
+    "heisennock": "0.3.1",
     "mocha": "3.2.0",
     "nock": "9.0.14",
     "nodemon": "1.11.0",

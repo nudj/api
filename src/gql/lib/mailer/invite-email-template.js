@@ -131,7 +131,7 @@ module.exports = ({ web, senderName, company, jobs, email }) => dedent`
                                   <tr>
                                     <td style="padding: 0 0 0 20px; text-align: right; color: #6F6F6F; font-family: sans-serif;">
                                       <p class="" style="margin: 20px 0; font-size: 14px; mso-line-height-rule: exactly; line-height: 24px; margin: 20px 0; margin: 0;">
-                                        <a href="${web.protocol}://${process.env.HIRE_HOSTNAME}?email=${encodeURIComponent(email)}" style="color: #9A9A9A; text-decoration: none; " universal="true" target="_blank">Launch nudj</a>
+                                        <a href="${web.protocol}://${process.env.HIRE_HOSTNAME}/welcome?email=${encodeURIComponent(email)}" style="color: #9A9A9A; text-decoration: none; " universal="true" target="_blank">Launch nudj</a>
                                       </p>
                                     </td>
                                   </tr>
@@ -168,7 +168,7 @@ module.exports = ({ web, senderName, company, jobs, email }) => dedent`
                 </tr>
                 <tr style="font-family: sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                   <td class="content-block" itemprop="handler" itemscope itemtype="http://schema.org/HttpActionHandler" style="font-family: sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;" valign="top">
-                    <a href='${web.protocol}://${process.env.HIRE_HOSTNAME}?email=${encodeURIComponent(email)}' class="btn-primary" itemprop="url" style="font-family: sans-serif; box-sizing: border-box; font-size: 14px; color: #FFF; text-decoration: none; line-height: 2em; width: 12rem; font-weight: bold; text-align: center; cursor: pointer; display: block; border-radius: 5px; background-color: #002d72; margin: 0 auto; border-color: #002d72; border-style: solid; border-width: 10px 20px;">Join your team</a>
+                    <a href='${web.protocol}://${process.env.HIRE_HOSTNAME}/welcome?email=${encodeURIComponent(email)}' class="btn-primary" itemprop="url" style="font-family: sans-serif; box-sizing: border-box; font-size: 14px; color: #FFF; text-decoration: none; line-height: 2em; width: 12rem; font-weight: bold; text-align: center; cursor: pointer; display: block; border-radius: 5px; background-color: #002d72; margin: 0 auto; border-color: #002d72; border-style: solid; border-width: 10px 20px;">Join your team</a>
                   </td>
                 </tr>
                 <tr style="font-family: sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">

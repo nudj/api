@@ -1,7 +1,9 @@
 /* eslint-env mocha */
 const chai = require('chai')
+const find = require('lodash/find')
 
 const { values: hirerTypes } = require('../../../../gql/schema/enums/hirer-types')
+const { values: dataSources } = require('../../../../gql/schema/enums/data-sources')
 const schema = require('../../../../gql/schema')
 const {
   executeQueryOnDbUsingSchema,
@@ -53,7 +55,8 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
               person: 'person1',
               company: 'company1'
             }
-          ]
+          ],
+          employments: []
         }
 
         const result = await executeQueryOnDbUsingSchema({
@@ -87,7 +90,8 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
               person: 'person1',
               company: 'company1'
             }
-          ]
+          ],
+          employments: []
         }
 
         await executeQueryOnDbUsingSchema({
@@ -122,7 +126,8 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
               person: 'person1',
               company: 'company1'
             }
-          ]
+          ],
+          employments: []
         }
 
         await executeQueryOnDbUsingSchema({
@@ -154,7 +159,8 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
                 name: 'Fake Company'
               }
             ],
-            hirers: []
+            hirers: [],
+            employments: []
           }
 
           await executeQueryOnDbUsingSchema({
@@ -177,7 +183,8 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
                 name: 'Fake Company'
               }
             ],
-            hirers: []
+            hirers: [],
+            employments: []
           }
 
           const result = await executeQueryOnDbUsingSchema({
@@ -204,7 +211,8 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
                 name: 'Fake Company'
               }
             ],
-            hirers: []
+            hirers: [],
+            employments: []
           }
 
           await executeQueryOnDbUsingSchema({
@@ -226,6 +234,39 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
           ])
         })
 
+        it('creates an employment', async () => {
+          const db = {
+            ...baseDb,
+            companies: [
+              {
+                id: 'company1',
+                client: false,
+                name: 'Fake Company'
+              }
+            ],
+            hirers: [],
+            employments: []
+          }
+
+          await executeQueryOnDbUsingSchema({
+            operation,
+            db,
+            schema,
+            variables
+          })
+
+          expect(db.employments.length).to.equal(1)
+          expect(db.employments).to.deep.equal([
+            {
+              id: 'employment1',
+              person: 'person1',
+              company: 'company1',
+              current: true,
+              source: dataSources.NUDJ
+            }
+          ])
+        })
+
         it('updates the company as a client', async () => {
           const db = {
             ...baseDb,
@@ -236,7 +277,8 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
                 name: 'Fake Company'
               }
             ],
-            hirers: []
+            hirers: [],
+            employments: []
           }
 
           await executeQueryOnDbUsingSchema({
@@ -254,11 +296,150 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
   })
 
   describe('when company does not exist', async () => {
+    describe('when a current employment exists', () => {
+      describe('when employed with a different company', () => {
+        it('updates the current employment to `current: false`', async () => {
+          const db = {
+            ...baseDb,
+            companies: [
+              {
+                id: 'company1',
+                client: false,
+                name: 'Fake Company'
+              }
+            ],
+            hirers: [],
+            employments: [
+              {
+                id: 'employment1',
+                person: 'person1',
+                company: 'company2',
+                current: true
+              }
+            ]
+          }
+
+          await executeQueryOnDbUsingSchema({
+            operation,
+            db,
+            schema,
+            variables
+          })
+
+          const oldEmployment = find(db.employments, { company: 'company2' })
+
+          expect(oldEmployment).to.have.property('current').to.be.false()
+        })
+
+        it('creates an employment', async () => {
+          const db = {
+            ...baseDb,
+            companies: [
+              {
+                id: 'company1',
+                client: false,
+                name: 'Fake Company'
+              }
+            ],
+            hirers: [],
+            employments: [
+              {
+                id: 'employment1',
+                person: 'person1',
+                company: 'company2',
+                current: true
+              }
+            ]
+          }
+
+          await executeQueryOnDbUsingSchema({
+            operation,
+            db,
+            schema,
+            variables
+          })
+
+          const newEmployment = find(db.employments, { id: 'employment2' })
+
+          expect(db.employments.length).to.equal(2)
+          expect(newEmployment).to.have.property('current').to.be.true()
+        })
+      })
+
+      describe('when employed with the same company', () => {
+        it('does not create an employment', async () => {
+          const db = {
+            ...baseDb,
+            companies: [
+              {
+                id: 'company1',
+                client: false,
+                name: 'Fake Company'
+              }
+            ],
+            hirers: [],
+            employments: [
+              {
+                id: 'employment1',
+                person: 'person1',
+                company: 'company1',
+                current: true
+              }
+            ]
+          }
+
+          await executeQueryOnDbUsingSchema({
+            operation,
+            db,
+            schema,
+            variables
+          })
+
+          expect(db.employments.length).to.equal(1)
+        })
+      })
+    })
+
+    describe('when a current employment does not exist', () => {
+      it('creates an employment', async () => {
+        const db = {
+          ...baseDb,
+          companies: [
+            {
+              id: 'company1',
+              client: false,
+              name: 'Fake Company'
+            }
+          ],
+          hirers: [],
+          employments: []
+        }
+
+        await executeQueryOnDbUsingSchema({
+          operation,
+          db,
+          schema,
+          variables
+        })
+
+        expect(db.employments.length).to.equal(1)
+        expect(db.employments).to.deep.equal([
+          {
+            id: 'employment1',
+            person: 'person1',
+            company: 'company1',
+            current: true,
+            source: dataSources.NUDJ
+          }
+        ])
+      })
+    })
     it('creates the company', async () => {
       const db = {
         ...baseDb,
         companies: [],
-        hirers: []
+        hirers: [],
+        employments: []
       }
 
       await executeQueryOnDbUsingSchema({
@@ -293,7 +474,8 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
             slug: troubleSlug
           }
         ],
-        hirers: []
+        hirers: [],
+        employments: []
       }
 
       await executeQueryOnDbUsingSchema({
@@ -314,7 +496,8 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
       const db = {
         ...baseDb,
         companies: [],
-        hirers: []
+        hirers: [],
+        employments: []
       }
 
       await executeQueryOnDbUsingSchema({
@@ -340,7 +523,8 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
       const db = {
         ...baseDb,
         companies: [],
-        hirers: []
+        hirers: [],
+        employments: []
       }
 
       const result = await executeQueryOnDbUsingSchema({

@@ -25,7 +25,7 @@ module.exports = ({ db }) => {
       const id = generateId({ db, type })
       const entity = merge(data, { id })
       db[type].push(entity)
-      return Promise.resolve(entity)
+      return Promise.resolve({ ...entity })
     },
     readOne: ({
       type,
@@ -44,7 +44,7 @@ module.exports = ({ db }) => {
         if (!item) {
           return resolve(null)
         }
-        return resolve(item)
+        return resolve({ ...item })
       })
     },
     readAll: ({
@@ -68,7 +68,7 @@ module.exports = ({ db }) => {
         }
         return Promise.resolve(filter(all, filters))
       }
-      return Promise.resolve(all)
+      return Promise.resolve(all.map(item => ({ ...item })))
     },
     readMany: ({
       type,
@@ -78,11 +78,11 @@ module.exports = ({ db }) => {
       return Promise.all(ids.map(id => {
         const item = find(all, { id })
         if (!item) return Promise.reject(new NotFound(`${type} with id ${id} not found`))
-        return item
+        return { ...item }
       }))
-      .catch(() => {
-        return []
-      })
+        .catch(() => {
+          return []
+        })
     },
     update: ({
       type,
@@ -94,7 +94,7 @@ module.exports = ({ db }) => {
         const entity = find(all, { id })
         if (!entity) return reject(new NotFound(`${type} with id ${id} not found`))
         Object.assign(entity, data)
-        resolve(entity)
+        resolve({ ...entity })
       })
     },
     delete: ({
@@ -116,12 +116,12 @@ module.exports = ({ db }) => {
       const all = get(db, type)
       let entity = find(all, filters)
       if (entity) {
-        return Promise.resolve(entity)
+        return Promise.resolve({ ...entity })
       }
       const id = generateId({ db, type })
       entity = merge(data, { id })
       db[type].push(entity)
-      return Promise.resolve(entity)
+      return Promise.resolve({ ...entity })
     },
     search: ({
       type,

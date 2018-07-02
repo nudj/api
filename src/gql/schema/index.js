@@ -16,6 +16,7 @@ const modules = [
   require('./company/jobByFilters'),
   require('./company/jobs'),
   require('./company/jobsByFilters'),
+  require('./company/sendJobEmails'),
   require('./company/surveyByFilters'),
   require('./company/surveyByFiltersOrDefault'),
   require('./company/surveyOrDefault'),

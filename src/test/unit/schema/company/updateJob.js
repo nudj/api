@@ -1,38 +1,113 @@
 /* eslint-env mocha */
 const chai = require('chai')
+const sinon = require('sinon')
+const nock = require('nock')
+const qs = require('qs')
 const expect = chai.expect
 
 const schema = require('../../../../gql/schema')
 const { values: tagTypes } = require('../../../../gql/schema/enums/tag-types')
 const { values: tagSources } = require('../../../../gql/schema/enums/tag-sources')
+const { values: jobStatusTypes } = require('../../../../gql/schema/enums/job-status-types')
 const { executeQueryOnDbUsingSchema, shouldRespondWithGqlError } = require('../../helpers')
 
 const operation = `
-  mutation UpdateJob($companyId: ID!, $id: ID!, $data: JobUpdateInput!) {
+  mutation UpdateJob(
+    $companyId: ID!
+    $id: ID!
+    $data: JobUpdateInput!
+    $notifyTeam: Boolean
+  ) {
     company(id: $companyId) {
       id
-      updateJob(id: $id, data: $data) {
+      updateJob(
+        id: $id
+        data: $data
+        notifyTeam: $notifyTeam
+      ) {
         id
         slug
       }
     }
   }
 `
+const mailerStub = sinon.stub()
 
 describe('Company.updateJob', () => {
+  let dbBase
+
+  beforeEach(() => {
+    dbBase = {
+      companies: [
+        {
+          id: 'company1',
+          name: 'Company One'
+        }
+      ],
+      jobs: [
+        {
+          id: 'job1',
+          company: 'company1',
+          slug: 'cheese',
+          status: jobStatusTypes.DRAFT,
+          bonus: '£500'
+        }
+      ],
+      tags: [],
+      jobTags: [],
+      hirers: [
+        {
+          id: 'hirer1',
+          person: 'person1',
+          company: 'company1'
+        },
+        {
+          id: 'hirer2',
+          person: 'person2',
+          company: 'company1'
+        },
+        {
+          id: 'hirer3',
+          person: 'person3',
+          company: 'company1'
+        }
+      ],
+      people: [
+        {
+          id: 'person1',
+          email: 'person1@nudj.co',
+          firstName: 'Person1'
+        },
+        {
+          id: 'person2',
+          email: 'person2@nudj.co',
+          firstName: 'Person2'
+        },
+        {
+          id: 'person3',
+          email: 'person3@nudj.co',
+          firstName: 'Person3'
+        }
+      ]
+    }
+    nock('https://api.mailgun.net')
+      .persist()
+      .filteringRequestBody(body => {
+        mailerStub(qs.parse(body))
+        return true
+      })
+      .post(() => true)
+      .reply(200, 'OK')
+  })
+  afterEach(() => {
+    mailerStub.reset()
+    nock.cleanAll()
+  })
+
   describe('when new tags are added', () => {
     it('should update the job', async () => {
       const db = {
-        companies: [{
-          id: 'company1'
-        }],
-        jobs: [{
-          id: 'job1',
-          company: 'company1',
-          slug: 'cheese'
-        }],
-        tags: [],
-        jobTags: []
+        ...dbBase
       }
 
       const variables = {
@@ -53,22 +128,15 @@ describe('Company.updateJob', () => {
         company: 'company1',
         title: 'CEO',
         slug: 'ceo',
-        description: 'SpaceX was founded under the belief that a future where humanity...'
+        description: 'SpaceX was founded under the belief that a future where humanity...',
+        status: jobStatusTypes.DRAFT,
+        bonus: '£500'
       }])
     })
 
     it('should create the relevant tags', async () => {
       const db = {
-        companies: [{
-          id: 'company1'
-        }],
-        jobs: [{
-          id: 'job1',
-          company: 'company1',
-          slug: 'cheese'
-        }],
-        tags: [],
-        jobTags: []
+        ...dbBase
       }
 
       const variables = {
@@ -114,14 +182,7 @@ describe('Company.updateJob', () => {
 
     it('should not create pre-existing tags', async () => {
       const db = {
-        companies: [{
-          id: 'company1'
-        }],
-        jobs: [{
-          id: 'job1',
-          company: 'company1',
-          slug: 'cheese'
-        }],
+        ...dbBase,
         tags: [
           {
             id: 'tag1',
@@ -182,16 +243,7 @@ describe('Company.updateJob', () => {
 
     it('should error if given invalid tags', async () => {
       const db = {
-        companies: [{
-          id: 'company1'
-        }],
-        jobs: [{
-          id: 'job1',
-          company: 'company1',
-          slug: 'cheese'
-        }],
-        tags: [],
-        jobTags: []
+        ...dbBase
       }
       const badVariables = {
         companyId: 'company1',
@@ -301,9 +353,7 @@ describe('Company.updateJob', () => {
   describe('when the company has another job with the same slug', () => {
     it('should not update the job and error', async () => {
       const db = {
-        companies: [{
-          id: 'company1'
-        }],
+        ...dbBase,
         jobs: [{
           id: 'job1',
           company: 'company1',
@@ -312,9 +362,7 @@ describe('Company.updateJob', () => {
           id: 'job2',
           company: 'company1',
           slug: 'ceo'
-        }],
-        tags: [],
-        jobTags: []
+        }]
       }
 
       const variables = {
@@ -342,6 +390,99 @@ describe('Company.updateJob', () => {
         company: 'company1',
         slug: 'ceo'
       }])
+    })
+  })
+
+  describe('when notifyTeam is true and old Job.status is not PUBLISHED and new Job.status is PUBLISHED', () => {
+    it('should notify team mates', async () => {
+      const db = {
+        ...dbBase
+      }
+
+      const variables = {
+        companyId: 'company1',
+        id: 'job1',
+        data: {
+          title: 'CEO',
+          slug: 'ceo',
+          description: 'SpaceX was founded under the belief that a future where humanity...',
+          status: jobStatusTypes.PUBLISHED
+        },
+        notifyTeam: true
+      }
+
+      await executeQueryOnDbUsingSchema({ operation, db, schema, variables })
+
+      expect(mailerStub).to.have.been.calledTwice()
+
+      const firstCallArgs = mailerStub.getCall(0).args[0]
+      expect(firstCallArgs).to.have.property('from', 'hello@nudj.co')
+      expect(firstCallArgs).to.have.property('to', 'person2@nudj.co')
+      expect(firstCallArgs).to.have.property('subject', 'New jobs on nudj!')
+      expect(firstCallArgs).to.have.property('html')
+
+      const secondCallArgs = mailerStub.getCall(1).args[0]
+      expect(secondCallArgs).to.have.property('from', 'hello@nudj.co')
+      expect(secondCallArgs).to.have.property('to', 'person3@nudj.co')
+      expect(secondCallArgs).to.have.property('subject', 'New jobs on nudj!')
+      expect(secondCallArgs).to.have.property('html')
+    })
+  })
+
+  describe('when notifyTeam is true but new Job.status is not PUBLISHED', () => {
+    it('should notify team mates', async () => {
+      const db = {
+        ...dbBase
+      }
+
+      const variables = {
+        companyId: 'company1',
+        id: 'job1',
+        data: {
+          title: 'CEO',
+          slug: 'ceo',
+          description: 'SpaceX was founded under the belief that a future where humanity...',
+          status: jobStatusTypes.DRAFT
+        },
+        notifyTeam: true
+      }
+
+      await executeQueryOnDbUsingSchema({ operation, db, schema, variables })
+
+      expect(mailerStub).to.not.have.been.called()
+    })
+  })
+
+  describe('when notifyTeam is true but old Job.status is PUBLISHED', () => {
+    it('should notify team mates', async () => {
+      const db = {
+        ...dbBase,
+        jobs: [
+          {
+            id: 'job1',
+            company: 'company1',
+            slug: 'cheese',
+            status: jobStatusTypes.PUBLISHED,
+            bonus: '£500'
+          }
+        ]
+      }
+
+      const variables = {
+        companyId: 'company1',
+        id: 'job1',
+        data: {
+          title: 'CEO',
+          slug: 'ceo',
+          description: 'SpaceX was founded under the belief that a future where humanity...',
+          status: jobStatusTypes.PUBLISHED
+        },
+        notifyTeam: true
+      }
+
+      await executeQueryOnDbUsingSchema({ operation, db, schema, variables })
+
+      expect(mailerStub).to.not.have.been.called()
     })
   })
 })

@@ -1,26 +1,6 @@
 const dedent = require('dedent')
-const { getJobUrl } = require('@nudj/library')
-
-const possessiveCase = (name) => {
-  if (name.endsWith('s')) return `${name}'`
-  return `${name}'s`
-}
-
-const renderJobsRows = (web, company, jobs) => jobs.map(job => {
-  const jobUrl = getJobUrl({
-    protocol: web.protocol,
-    hostname: web.hostname,
-    job: job.slug,
-    company: company.slug
-  })
-
-  return dedent`
-    <tr>
-      <td style="width:75%"><a href="${jobUrl}">${job.title}</a></td>
-      <td style="width:25%; text-align: left;">${job.bonus}</td>
-    </tr>
-  `
-}).join('')
+const possessiveCase = require('./possessive-case')
+const renderJobsRows = require('./render-job-rows')
 
 module.exports = ({ web, senderName, company, jobs, email }) => dedent`
   <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">

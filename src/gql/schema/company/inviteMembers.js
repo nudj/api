@@ -13,53 +13,6 @@ const {
   send,
   teammateInvitationEmailBodyTemplate
 } = require('../../lib/mailer')
-const intercom = require('../../lib/intercom')
-
-const INTERCOM_BATCH_AMOUNT = 10
-
-const stall = time => new Promise(resolve => setTimeout(resolve, time))
-
-const triggerIntercomTracking = async ({
-  company,
-  emailAddresses,
-  senderName,
-  senderEmail
-}) => {
-  const intercomCompany = await intercom.fetchOrCreateCompanyByName(company.name)
-  const batchedEmails = chunk(emailAddresses, INTERCOM_BATCH_AMOUNT)
-
-  await promiseSerial(batchedEmails.map(emails => async () => {
-    await Promise.all(emails.map(async email => {
-      await intercom.createUniqueUserAndTag({
-        email,
-        companies: [
-          {
-            name: intercomCompany.name,
-            company_id: intercomCompany.company_id
-          }
-        ]
-      }, 'team-member')
-      await intercom.logEvent({
-        event_name: 'invited',
-        email,
-        metadata: {
-          category: 'onboarding',
-          invited_by: senderName || senderEmail
-        }
-      })
-    }))
-
-    return emails.length === INTERCOM_BATCH_AMOUNT && stall(10000)
-  }))
-
-  return intercom.logEvent({
-    event_name: 'invites-sent',
-    email: senderEmail,
-    metadata: {
-      category: 'onboarding'
-    }
-  })
-}
 
 module.exports = {
   typeDefs: `
@@ -75,7 +28,6 @@ module.exports = {
           from,
           subject,
           senderName,
-          senderEmail,
           jobs,
           emailAddresses
         } = emailData
@@ -95,14 +47,10 @@ module.exports = {
           }))
         )
 
-        try {
-          if (args.awaitIntercom) {
-            await triggerIntercomTracking(emailData)
-          } else {
-            triggerIntercomTracking(emailData)
-          }
-        } catch (error) {
-          logger('error', 'Intercom error', error)
+        if (args.awaitIntercom) {
+          await logInvitationsToIntercom(emailData)
+        } else {
+          logInvitationsToIntercom(emailData)
         }
 
         return sendStatus

@@ -2,6 +2,7 @@
 const chai = require('chai')
 const nock = require('nock')
 const sinon = require('sinon')
+const qs = require('qs')
 const expect = chai.expect
 
 const schema = require('../../../../gql/schema')
@@ -10,19 +11,28 @@ const { executeQueryOnDbUsingSchema, shouldRespondWithGqlError } = require('../.
 describe('Company.inviteMembers', () => {
   const mailerStub = sinon.stub()
   const operation = `
-    query ($emailAddresses: [String!]!) {
+    query ($members: [InviteMemberPersonInput!]!) {
       company (id: "company1") {
-        inviteMembers(emailAddresses: $emailAddresses) {
+        inviteMembers(members: $members) {
           success
         }
       }
     }
   `
   const variables = {
-    emailAddresses: [
-      'tim@nudj.co',
-      'jim@nudj.co',
-      'jamie@nudj.co'
+    members: [
+      {
+        firstName: 'Tim',
+        email: 'tim@nudj.co'
+      },
+      {
+        firstName: 'Jim',
+        email: 'jim@nudj.co'
+      },
+      {
+        firstName: 'Jamie',
+        email: 'jamie@nudj.co'
+      }
     ]
   }
 
@@ -30,7 +40,7 @@ describe('Company.inviteMembers', () => {
     nock('https://api.mailgun.net')
       .persist()
       .filteringRequestBody(body => {
-        mailerStub(body)
+        mailerStub(qs.parse(body))
         return true
       })
       .post(() => true)
@@ -101,10 +111,19 @@ describe('Company.inviteMembers', () => {
       ]
     }
     const variables = {
-      emailAddresses: [
-        'jim@nudj.co',
-        'jim@nudj.co',
-        'rich@nudj.co'
+      members: [
+        {
+          firstName: 'Tim',
+          email: 'tim@nudj.co'
+        },
+        {
+          firstName: 'Jim',
+          email: 'jim@nudj.co'
+        },
+        {
+          firstName: 'Evil Tim',
+          email: 'tim@nudj.co'
+        }
       ]
     }
 
@@ -112,6 +131,8 @@ describe('Company.inviteMembers', () => {
 
     expect(mailerStub).to.have.been.called()
     expect(mailerStub.callCount).to.equal(2)
+    expect(mailerStub.args[0][0]).to.have.property('to', 'tim@nudj.co')
+    expect(mailerStub.args[1][0]).to.have.property('to', 'jim@nudj.co')
   })
 
   it('should return with success status', async () => {
@@ -173,10 +194,10 @@ describe('Company.inviteMembers', () => {
       }
 
       const result = await executeQueryOnDbUsingSchema({ operation, db, schema, variables })
-      const notifyEmailBody = decodeURI(mailerStub.getCall(0).args)
+      const notifyEmailBody = mailerStub.args[0][0]
 
-      expect(notifyEmailBody).to.include('subject=Teammate invitation failed')
-      expect(notifyEmailBody).to.include('html=A hirer for Umbrella Corporation attempted to add a teammate')
+      expect(notifyEmailBody).to.have.property('subject').to.equal('Teammate invitation failed')
+      expect(notifyEmailBody).to.have.property('html').to.include('A hirer for Umbrella Corporation attempted to add a teammate')
       expect(mailerStub.callCount).to.equal(1)
       shouldRespondWithGqlError({
         path: ['company', 'inviteMembers']
@@ -202,7 +223,7 @@ describe('Company.inviteMembers', () => {
       ]
     }
     const variables = {
-      emailAddresses: []
+      members: []
     }
 
     const result = await executeQueryOnDbUsingSchema({ operation, db, schema, variables })

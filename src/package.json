@@ -52,6 +52,7 @@
     "pluralize": "5.0.0",
     "prismic.io": "^3.5.6",
     "promise-serial": "^0.1.5",
+    "qs": "^6.5.2",
     "random-words": "^0.0.1",
     "restify": "^5.0.0",
     "slug": "^0.9.1",

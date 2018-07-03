@@ -1,6 +1,6 @@
 const { handleErrors } = require('../../lib')
 const {
-  setupMembersAndFetchEmailData,
+  validateInviteesAndFetchEmailData,
   logInvitationsToIntercom
 } = require('../../lib/helpers')
 const {
@@ -10,8 +10,13 @@ const {
 
 module.exports = {
   typeDefs: `
+    input InviteMemberPersonInput {
+      email: String!
+      firstName: String
+    }
+
     extend type Company {
-      inviteMembers(emailAddresses: [String!]!): Status
+      inviteMembers(members: [InviteMemberPersonInput!]!): Status
     }
   `,
   resolvers: {
@@ -23,11 +28,11 @@ module.exports = {
           subject,
           senderName,
           jobs,
-          emailAddresses
+          members
         } = emailData
 
         const [ sendStatus ] = await Promise.all(
-          emailAddresses.map(email => send({
+          members.map(({ email }) => send({
             from,
             to: email,
             subject,
@@ -36,7 +41,7 @@ module.exports = {
               senderName,
               company,
               jobs,
-              email
+              email: email
             })
           }))
         )

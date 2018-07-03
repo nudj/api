@@ -1,12 +1,6 @@
-const chunk = require('lodash/chunk')
-const promiseSerial = require('promise-serial')
-const hashGenerator = require('hash-generator')
-
-const { logger } = require('@nudj/library')
-
 const { handleErrors } = require('../../lib')
 const {
-  validateInviteesAndFetchEmailData,
+  setupMembersAndFetchEmailData,
   logInvitationsToIntercom
 } = require('../../lib/helpers')
 const {

@@ -6,6 +6,7 @@ const { logger } = require('@nudj/library')
 const { INTERNAL_EMAIL_ADDRESS } = require('../constants')
 
 const teammateInvitationEmailBodyTemplate = require('./invite-email-template')
+const sendJobsEmailBodyTemplate = require('./send-jobs-email-template')
 
 const mailgun = Mailgun({
   apiKey: process.env.MAILGUN_API_KEY,
@@ -35,5 +36,6 @@ module.exports = {
         html
       })
   },
+  sendJobsEmailBodyTemplate,
   teammateInvitationEmailBodyTemplate
 }

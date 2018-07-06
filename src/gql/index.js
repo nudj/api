@@ -1,6 +1,7 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const { graphqlExpress } = require('apollo-server-express')
+const { logger } = require('@nudj/library')
 
 const schema = require('./schema')
 const {
@@ -32,7 +33,11 @@ module.exports = ({ transaction, sqlStore, nosqlStore }) => {
       }
       return {
         schema,
-        context
+        context,
+        formatError: error => {
+          logger('error', error)
+          return error
+        }
       }
     })
   )

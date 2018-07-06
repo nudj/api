@@ -2,7 +2,6 @@ require('envkey')
 
 const target = process.env.TARGET
 let prefix = ''
-
 if (['test', 'staging', 'development'].includes(target)) {
   prefix = `${target.toUpperCase()}_`
 }

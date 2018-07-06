@@ -1,40 +1,20 @@
 require('envkey')
 
-const {
-  TEST_SQL_HOST,
-  TEST_SQL_PORT,
-  TEST_SQL_USER,
-  TEST_SQL_PASS,
-  TEST_SQL_NAME,
-  SQL_HOST,
-  SQL_PORT,
-  SQL_USER,
-  SQL_PASS,
-  SQL_NAME
-} = process.env
+const target = process.env.TARGET
+let prefix = ''
 
-let connection = {
-  host: TEST_SQL_HOST,
-  port: TEST_SQL_PORT,
-  user: TEST_SQL_USER,
-  password: TEST_SQL_PASS,
-  database: TEST_SQL_NAME
-}
-
-if (process.env.TARGET !== 'test') {
-  connection = {
-    host: SQL_HOST,
-    port: SQL_PORT,
-    user: SQL_USER,
-    password: SQL_PASS,
-    database: SQL_NAME
-  }
+if (['test', 'staging', 'development'].includes(target)) {
+  prefix = `${target.toUpperCase()}_`
 }
 
 module.exports = {
   client: 'mysql',
   connection: {
-    ...connection,
+    host: process.env[`${prefix}SQL_HOST`],
+    port: process.env[`${prefix}SQL_PORT`],
+    user: process.env[`${prefix}SQL_USER`],
+    password: process.env[`${prefix}SQL_PASS`],
+    database: process.env[`${prefix}SQL_NAME`],
     charset: 'utf8mb4'
   },
   migrations: {

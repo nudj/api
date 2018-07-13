@@ -2,8 +2,8 @@ version: '1.0'
 
 steps:
 
-  build_demo:
-    title: Build demo
+  build:
+    title: Build
     type: build
     image_name: nudj/api
     tag: demo
@@ -11,14 +11,25 @@ steps:
     build_arguments:
       - NPM_TOKEN=${{NPM_TOKEN}}
 
-  push_demo:
-    title: Push demo
+  push_dockerhub:
+    title: Push DockerHub
     type: push
-    candidate: '${{build_demo}}'
+    candidate: '${{build}}'
     tag: demo
     credentials:
       username: '${{dockerUsername}}'
       password: '${{dockerPassword}}'
+
+  push_ecr:
+    title: Push ECR
+    type: push
+    candidate: ${{build}}
+    tag: demo
+    provider: 'ecr'
+    registry: ecr
+    accessKeyId: ${{AWS_ACCESS_KEY}}
+    secretAccessKey: ${{AWS_SECRET_KEY}}
+    region: ${{AWS_REGION}}
 
   # deploy_demo:
   #   title: Deploy demo

@@ -12,8 +12,8 @@ steps:
     commands:
       - /bin/sh -c "node . ${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}"
 
-  build_production:
-    title: Build production
+  build:
+    title: Build
     type: build
     image_name: nudj/api
     tag: production
@@ -21,18 +21,29 @@ steps:
     build_arguments:
       - NPM_TOKEN=${{NPM_TOKEN}}
 
-  push_production:
-    title: Push production
+  push_dockerhub:
+    title: Push DockerHub
     type: push
-    candidate: '${{build_production}}'
+    candidate: '${{build}}'
     tag: ${{CF_BRANCH}}
     credentials:
       username: '${{dockerUsername}}'
       password: '${{dockerPassword}}'
 
+  push_ecr:
+    title: Push ECR
+    type: push
+    candidate: ${{build}}
+    tag: ${{CF_BRANCH}}
+    provider: 'ecr'
+    registry: ecr
+    accessKeyId: ${{AWS_ACCESS_KEY}}
+    secretAccessKey: ${{AWS_SECRET_KEY}}
+    region: ${{AWS_REGION}}
+
   publish:
     title: Publish package to npm
-    image: ${{build_production}}
+    image: ${{build}}
     working_directory: 'IMAGE_WORK_DIR'
     environment:
       - NPM_TOKEN=${{NPM_TOKEN}}

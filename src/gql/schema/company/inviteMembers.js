@@ -1,8 +1,9 @@
 const uniq = require('lodash/uniq')
 const { logger } = require('@nudj/library')
+const hashGenerator = require('hash-generator')
+
 const fetchPerson = require('../../lib/helpers/fetch-person')
 const { handleErrors } = require('../../lib')
-const { values: hirerTypes } = require('../enums/hirer-types')
 const {
   send,
   sendInternalEmail,
@@ -61,6 +62,41 @@ module.exports = {
           throw new Error('No email addresses provided')
         }
 
+        if (!company.hash) {
+          company = await context.sql.update({
+            type: 'companies',
+            id: company.id,
+            data: {
+              hash: hashGenerator(128)
+            }
+          })
+        }
+
+        // ensure the people being invited are not already hirers at another company
+        await Promise.all(emailAddresses.map(async email => {
+          const person = await context.sql.readOne({
+            type: 'people',
+            filters: { email }
+          })
+
+          if (!person) return
+
+          const hirer = await context.sql.readOne({
+            type: 'hirers',
+            filters: { person: person.id }
+          })
+
+          if (!hirer) return
+
+          if (hirer.company !== company.id) {
+            await sendInternalEmail({
+              subject: 'Teammate invitation failed',
+              html: `A hirer for ${company.name} attempted to add a teammate with the email address "${email}", but that email address is already related to a different company with id: "${hirer.company}"`
+            })
+            throw new Error(`User with email address "${email}" is already signed up with another company`)
+          }
+        }))
+
         const {
           firstName,
           lastName,
@@ -73,45 +109,12 @@ module.exports = {
         const subject = senderName
           ? `${senderName} has invited you to join them on nudj`
           : `You've been invited to join nudj!`
-
         const jobs = await context.sql.readAll({
           type: 'jobs',
           filters: {
             company: company.id
           }
         })
-
-        await Promise.all(emailAddresses.map(async email => {
-          const person = await context.sql.readOneOrCreate({
-            type: 'people',
-            filters: { email },
-            data: { email }
-          })
-          const hirer = await context.sql.readOne({
-            type: 'hirers',
-            filters: { person: person.id }
-          })
-
-          if (!hirer) {
-            return context.sql.create({
-              type: 'hirers',
-              data: {
-                person: person.id,
-                company: company.id,
-                onboarded: false,
-                type: hirerTypes.MEMBER
-              }
-            })
-          } else if (hirer.company !== company.id) {
-            await sendInternalEmail({
-              subject: 'Teammate invitation failed',
-              html: `A hirer for ${company.name} attempted to add a teammate with the email address "${email}", but that email address is already related to a different company with id: "${hirer.company}"`
-            })
-            throw new Error(`User with email address "${email}" is already signed up with another company`)
-          }
-
-          return hirer
-        }))
 
         const [ sendStatus ] = await Promise.all(
           emailAddresses.map(email => send({

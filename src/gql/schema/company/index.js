@@ -16,6 +16,7 @@ module.exports = {
       size: String
       twitter: String
       url: String
+      hash: String
       onboarded: Boolean!
       client: Boolean!
     }
@@ -57,6 +58,7 @@ module.exports = {
     input CompanyFilterInput {
       id: ID
       slug: String
+      hash: String
       client: Boolean
       dateTo: DateTime
       dateFrom: DateTime

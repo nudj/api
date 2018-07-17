@@ -8,9 +8,11 @@ const {
   sql,
   nosql
 } = require('../lib/stores')
+const healthcheck = require('./routers/health-check')
 
 module.exports = ({ transaction, sqlStore, nosqlStore }) => {
   const app = express()
+  app.use(healthcheck())
   app.use(
     '/',
     bodyParser.json({

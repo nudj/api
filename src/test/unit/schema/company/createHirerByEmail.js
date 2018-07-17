@@ -7,7 +7,7 @@ const { executeQueryOnDbUsingSchema } = require('../../helpers')
 const { values: hirerTypes } = require('../../../../gql/schema/enums/hirer-types')
 
 const operation = `
-  mutation ($hirer: HirerCreateInput!) {
+  mutation ($hirer: HirerCreateByEmailInput!) {
     companies {
       createHirerByEmail(hirer: $hirer) {
         id
@@ -21,7 +21,6 @@ describe('Company.createHirerByEmail', () => {
     let db
     const variables = {
       hirer: {
-        company: 'Bad Wolf Incorporated',
         email: 'rose@badwolf.tld',
         type: hirerTypes.ADMIN
       }
@@ -92,7 +91,6 @@ describe('Company.createHirerByEmail', () => {
     let db
     const variables = {
       hirer: {
-        company: 'Bad Wolf Incorporated',
         email: 'hey@nudj.co',
         type: hirerTypes.MEMBER
       }

@@ -1,4 +1,4 @@
-const { renderSimpleTemplate } = require('@nudj/library')
+const { renderSimpleTemplate, getInvitationUrl } = require('@nudj/library')
 const { handleErrors } = require('../../lib')
 const {
   validateInviteesAndFetchEmailData,
@@ -29,12 +29,17 @@ module.exports = {
 
         const job = jobs[0]
         const from = senderName ? `${senderName} via nudj <hello@nudj.co>` : `nudj <hello@nudj.co>`
+        const invitationUrl = getInvitationUrl({
+          protocol: context.web.protocol,
+          hostname: process.env.HIRE_HOSTNAME,
+          hash
+        })
 
         const [ sendStatus ] = await Promise.all(
           members.map(({ email, firstName }) => {
             const templateData = {
               firstName: firstName || 'there',
-              link: `${context.web.protocol}://${process.env.HIRE_HOSTNAME}/invitation-accept/${hash}`,
+              link: invitationUrl,
               job,
               company,
               senderName

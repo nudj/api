@@ -3,7 +3,13 @@ const { handleErrors } = require('../../lib')
 module.exports = {
   typeDefs: `
     extend type Company {
-      createHirerByEmail(hirer: HirerCreateInput!): Hirer
+      createHirerByEmail(hirer: HirerCreateByEmailInput!): Hirer
+    }
+
+    input HirerCreateByEmailInput {
+      email: String!
+      type: HirerType!
+      onboarded: Boolean
     }
   `,
   resolvers: {

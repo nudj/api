@@ -6,7 +6,7 @@ module.exports = {
     extend type Mutation {
       createPersonAndHirer(
         person: PersonCreateInput!
-        hirer: HirerCreateInput
+        hirer: HirerAdditionalInput
       ): Person
     }
   `,

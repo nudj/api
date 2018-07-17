@@ -4,18 +4,23 @@ module.exports = {
   typeDefs: `
     extend type Company {
       createHirerByEmail(
-        email: String!
-        hirer: HirerCreateInput!
+        hirer: HirerCreateByEmailInput!
       ): Hirer
+    }
+
+    input HirerCreateByEmailInput {
+      email: String!
+      type: HirerType!
+      onboarded: Boolean
     }
   `,
   resolvers: {
     Company: {
       createHirerByEmail: handleErrors(async (company, args, context) => {
-        const email = args.email
         const {
           onboarded = false,
-          type
+          type,
+          email
         } = args.hirer
 
         const person = await context.sql.readOneOrCreate({

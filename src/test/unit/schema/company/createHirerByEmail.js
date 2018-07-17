@@ -8,12 +8,10 @@ const { values: hirerTypes } = require('../../../../gql/schema/enums/hirer-types
 
 const operation = `
   mutation (
-    $email: String!
-    $hirer: HirerCreateInput!
+    $hirer: HirerCreateByEmailInput!
   ) {
     companies {
       createHirerByEmail(
-        email: $email
         hirer: $hirer
       ) {
         id
@@ -26,9 +24,8 @@ describe('Company.createHirerByEmail', () => {
   describe('when a `person` with provided email address does not exist', () => {
     let db
     const variables = {
-      email: 'rose@badwolf.tld',
       hirer: {
-        company: 'company1',
+        email: 'rose@badwolf.tld',
         type: hirerTypes.ADMIN
       }
     }
@@ -97,9 +94,8 @@ describe('Company.createHirerByEmail', () => {
   describe('when a `person` with provided email address exists', () => {
     let db
     const variables = {
-      email: 'hey@nudj.co',
       hirer: {
-        company: 'Bad Wolf Incorporated',
+        email: 'hey@nudj.co',
         type: hirerTypes.MEMBER
       }
     }

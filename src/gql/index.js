@@ -7,6 +7,7 @@ const { logger } = require('@nudj/library')
 const schema = require('./schema')
 const { DB_URL: url } = require('./lib/constants')
 const setupDataLoaderCache = require('./lib/setup-dataloader-cache')
+const healthcheck = require('./routers/health-check')
 
 const db = new Database({ url })
 db.useDatabase(process.env.DB_NAME)
@@ -18,6 +19,7 @@ nosql.useBasicAuth(process.env.NO_SQL_USER, process.env.NO_SQL_PASS)
 
 module.exports = ({ transaction, store }) => {
   const app = express()
+  app.use(healthcheck())
   app.use(
     '/',
     bodyParser.json({

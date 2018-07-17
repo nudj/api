@@ -7,7 +7,7 @@ module.exports = {
       updatePersonAndHirer(
         personId: ID!
         personData: PersonCreateInput!
-        hirerData: HirerCreateInput
+        hirerData: HirerAdditionalInput
       ): Person
     }
   `,

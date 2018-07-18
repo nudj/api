@@ -7,6 +7,7 @@ const { logger } = require('@nudj/library')
 const schema = require('./schema')
 const { DB_URL: url } = require('./lib/constants')
 const setupDataLoaderCache = require('./lib/setup-dataloader-cache')
+const formatError = require('./lib/format-error')
 const healthcheck = require('./routers/health-check')
 
 const db = new Database({ url })
@@ -45,10 +46,7 @@ module.exports = ({ transaction, store }) => {
       return {
         schema,
         context,
-        formatError: error => {
-          logger('error', error)
-          return error
-        }
+        formatError
       }
     })
   )

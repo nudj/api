@@ -78,7 +78,8 @@ describe('notifyTeamAboutJob', () => {
       expect(readAllStub).to.have.been.calledWith({
         type: 'hirers',
         filters: {
-          company: 'company1'
+          company: 'company1',
+          onboarded: true
         }
       })
     })
@@ -126,7 +127,8 @@ describe('notifyTeamAboutJob', () => {
       expect(readAllStub).to.have.been.calledWith({
         type: 'hirers',
         filters: {
-          company: 'company1'
+          company: 'company1',
+          onboarded: true
         }
       })
     })

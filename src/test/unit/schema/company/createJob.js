@@ -45,17 +45,20 @@ const baseDb = {
     {
       id: 'hirer1',
       person: 'person1',
-      company: 'company1'
+      company: 'company1',
+      onboarded: true
     },
     {
       id: 'hirer2',
       person: 'person2',
-      company: 'company1'
+      company: 'company1',
+      onboarded: false
     },
     {
       id: 'hirer3',
       person: 'person3',
-      company: 'company1'
+      company: 'company1',
+      onboarded: true
     }
   ],
   people: [
@@ -235,19 +238,13 @@ describe('Company.createJob', () => {
 
       await executeQueryOnDbUsingSchema({ operation, db, schema, variables })
 
-      expect(mailerStub).to.have.been.calledTwice()
+      expect(mailerStub).to.have.been.calledOnce()
 
-      const firstCallArgs = mailerStub.getCall(0).args[0]
-      expect(firstCallArgs).to.have.property('from', 'hello@nudj.co')
-      expect(firstCallArgs).to.have.property('to', 'person2@nudj.co')
-      expect(firstCallArgs).to.have.property('subject', 'New jobs on nudj!')
-      expect(firstCallArgs).to.have.property('html')
-
-      const secondCallArgs = mailerStub.getCall(1).args[0]
-      expect(secondCallArgs).to.have.property('from', 'hello@nudj.co')
-      expect(secondCallArgs).to.have.property('to', 'person3@nudj.co')
-      expect(secondCallArgs).to.have.property('subject', 'New jobs on nudj!')
-      expect(secondCallArgs).to.have.property('html')
+      const callArgs = mailerStub.getCall(0).args[0]
+      expect(callArgs).to.have.property('from', 'hello@nudj.co')
+      expect(callArgs).to.have.property('to', 'person3@nudj.co')
+      expect(callArgs).to.have.property('subject', 'New jobs on nudj!')
+      expect(callArgs).to.have.property('html')
     })
   })
 })

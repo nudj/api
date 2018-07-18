@@ -7,7 +7,8 @@ module.exports = async (context, company, job) => {
   const allCompanyHirers = await context.sql.readAll({
     type: 'hirers',
     filters: {
-      company: company.id
+      company: company.id,
+      onboarded: true
     }
   })
 

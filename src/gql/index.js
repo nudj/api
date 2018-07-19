@@ -9,6 +9,7 @@ const {
   nosql
 } = require('../lib/stores')
 const healthcheck = require('./routers/health-check')
+const formatError = require('./lib/format-error')
 
 module.exports = ({ transaction, sqlStore, nosqlStore }) => {
   const app = express()
@@ -36,10 +37,7 @@ module.exports = ({ transaction, sqlStore, nosqlStore }) => {
       return {
         schema,
         context,
-        formatError: error => {
-          logger('error', error)
-          return error
-        }
+        formatError
       }
     })
   )

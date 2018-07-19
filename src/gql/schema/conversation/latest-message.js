@@ -1,5 +1,4 @@
 const orderBy = require('lodash/orderBy')
-const { handleErrors } = require('../../lib')
 const { fetchGmailMessages } = require('../../lib/google')
 const fetchPerson = require('../../lib/helpers/fetch-person')
 const { values: emailPreferences } = require('../enums/email-preference-types')
@@ -12,7 +11,7 @@ module.exports = {
   `,
   resolvers: {
     Conversation: {
-      latestMessage: handleErrors(async (conversation, args, context) => {
+      latestMessage: async (conversation, args, context) => {
         const person = await fetchPerson(context, conversation.person)
         if (conversation.type === emailPreferences.GOOGLE && person.emailPreference === emailPreferences.GOOGLE) {
           const messages = await fetchGmailMessages({ context, conversation })
@@ -27,7 +26,7 @@ module.exports = {
             from: from.email
           }
         }
-      })
+      }
     }
   }
 }

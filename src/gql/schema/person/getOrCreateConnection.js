@@ -2,7 +2,6 @@ const omit = require('lodash/omit')
 const pick = require('lodash/pick')
 const hash = require('hash-generator')
 
-const handleErrors = require('../../lib/handle-errors')
 const makeSlug = require('../../lib/helpers/make-slug')
 const { enrichOrFetchEnrichedCompanyByName } = require('../../lib/clearbit')
 
@@ -14,7 +13,7 @@ module.exports = {
   `,
   resolvers: {
     Person: {
-      getOrCreateConnection: handleErrors(async (person, args, context) => {
+      getOrCreateConnection: async (person, args, context) => {
         const from = person.id
         const { to, source } = args
 
@@ -125,7 +124,7 @@ module.exports = {
           company,
           person: personFromConnection
         }
-      })
+      }
     }
   }
 }

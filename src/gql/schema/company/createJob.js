@@ -1,5 +1,4 @@
 const createJob = require('../../lib/helpers/create-job')
-const handleErrors = require('../../lib/handle-errors')
 const { values: jobStatusTypes } = require('../enums/job-status-types')
 const notifyTeamAboutJob = require('../../lib/helpers/notify-team-about-job')
 
@@ -14,7 +13,7 @@ module.exports = {
   `,
   resolvers: {
     Company: {
-      createJob: handleErrors(async (company, args, context) => {
+      createJob: async (company, args, context) => {
         const {
           data,
           notifyTeam
@@ -27,7 +26,7 @@ module.exports = {
         }
 
         return job
-      })
+      }
     }
   }
 }

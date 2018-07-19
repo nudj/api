@@ -1,6 +1,5 @@
 const { logger } = require('@nudj/library')
 
-const { handleErrors } = require('../../lib')
 const { enrichOrFetchEnrichedCompanyByDomain } = require('../../lib/clearbit')
 const fetchPerson = require('../../lib/helpers/fetch-person')
 
@@ -115,7 +114,7 @@ module.exports = {
   `,
   resolvers: {
     Mutation: {
-      getCompanyEnrichmentDataByUserEmail: handleErrors(async (root, args, context) => {
+      getCompanyEnrichmentDataByUserEmail: async (root, args, context) => {
         const { email } = await fetchPerson(context, context.userId)
         const domain = email.split('@')[1]
 
@@ -129,7 +128,7 @@ module.exports = {
         }
 
         return enrichOrFetchEnrichedCompanyByDomain(domain, context)
-      })
+      }
     }
   }
 }

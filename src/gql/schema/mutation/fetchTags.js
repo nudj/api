@@ -1,5 +1,4 @@
 const { fetchTags } = require('../../lib/prismic')
-const { handleErrors } = require('../../lib')
 
 module.exports = {
   typeDefs: `
@@ -9,10 +8,10 @@ module.exports = {
   `,
   resolvers: {
     Mutation: {
-      fetchTags: handleErrors(async (root, args) => {
+      fetchTags: async (root, args) => {
         const { repo, type } = args
         return fetchTags({ repo, type })
-      })
+      }
     }
   }
 }

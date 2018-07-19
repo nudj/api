@@ -1,7 +1,5 @@
 const difference = require('lodash/difference')
 
-const { handleErrors } = require('../../lib')
-
 module.exports = {
   typeDefs: `
     extend type Mutation {
@@ -10,7 +8,7 @@ module.exports = {
   `,
   resolvers: {
     Mutation: {
-      storeSurveyAnswer: handleErrors(async (root, args, context) => {
+      storeSurveyAnswer: async (root, args, context) => {
         const {
           surveyQuestion: surveyQuestionId,
           person: personId,
@@ -72,7 +70,7 @@ module.exports = {
         ])
 
         return surveyAnswer
-      })
+      }
     }
   }
 }

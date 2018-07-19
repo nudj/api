@@ -1,4 +1,3 @@
-const handleErrors = require('../../lib/handle-errors')
 const { TABLES, INDICES } = require('../../../lib/sql')
 
 module.exports = {
@@ -9,7 +8,7 @@ module.exports = {
   `,
   resolvers: {
     Query: {
-      referralByLegacyId: handleErrors(async (root, args, context) => {
+      referralByLegacyId: async (root, args, context) => {
         const id = args.id
         if (id === undefined) {
           return null
@@ -24,7 +23,7 @@ module.exports = {
           index: INDICES[TABLES.REFERRALS].slug,
           key: slugMap.slug
         })
-      })
+      }
     }
   }
 }

@@ -1,8 +1,6 @@
 const camelCase = require('lodash/camelCase')
 const { AppError } = require('@nudj/library/errors')
 
-const handleErrors = require('./handle-errors')
-
 module.exports = function nestedAllByFilters (props = {}) {
   let {
     parentType,
@@ -32,7 +30,7 @@ module.exports = function nestedAllByFilters (props = {}) {
     `,
     resolvers: {
       [parentType]: {
-        [name]: handleErrors((parent, args, context) => {
+        [name]: (parent, args, context) => {
           return context.sql.readAll({
             type: collection,
             filters: {
@@ -40,7 +38,7 @@ module.exports = function nestedAllByFilters (props = {}) {
               [parentName]: parent.id
             }
           })
-        })
+        }
       }
     }
   }

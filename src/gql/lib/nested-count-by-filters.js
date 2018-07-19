@@ -1,8 +1,6 @@
 const camelCase = require('lodash/camelCase')
 const { AppError } = require('@nudj/library/errors')
 
-const handleErrors = require('./handle-errors')
-
 module.exports = function nestedCountByFilters (props = {}) {
   let {
     parentType,
@@ -13,9 +11,7 @@ module.exports = function nestedCountByFilters (props = {}) {
     filterType
   } = props
   if (!parentType) {
-    throw new AppError(
-      'nestedCountByFilters requires a parentType'
-    )
+    throw new AppError('nestedCountByFilters requires a parentType')
   }
   if (!type) { throw new AppError('nestedCountByFilters requires a type') }
   parentName = parentName || camelCase(parentType)
@@ -31,13 +27,13 @@ module.exports = function nestedCountByFilters (props = {}) {
     `,
     resolvers: {
       [parentType]: {
-        [name]: handleErrors((parent, args, context) => {
+        [name]: (parent, args, context) => {
           args.filters[parentName] = parent.id
           return context.sql.count({
             type: collection,
             filters: args.filters
           })
-        })
+        }
       }
     }
   }

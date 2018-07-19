@@ -1,4 +1,3 @@
-const { handleErrors } = require('../../lib')
 const updatePerson = require('../../lib/helpers/update-person')
 
 module.exports = {
@@ -9,10 +8,10 @@ module.exports = {
   `,
   resolvers: {
     Mutation: {
-      updatePerson: handleErrors(async (root, args, context) => {
+      updatePerson: async (root, args, context) => {
         const { id, data } = args
         return updatePerson(context, id, data)
-      })
+      }
     }
   }
 }

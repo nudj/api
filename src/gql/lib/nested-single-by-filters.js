@@ -5,8 +5,6 @@ const first = require('lodash/first')
 const { AppError } = require('@nudj/library/errors')
 const { merge } = require('@nudj/library')
 
-const handleErrors = require('./handle-errors')
-
 module.exports = function nestedSingleByFilters (props = {}) {
   let {
     parentType,
@@ -35,7 +33,7 @@ module.exports = function nestedSingleByFilters (props = {}) {
     `,
     resolvers: {
       [parentType]: {
-        [name]: handleErrors((parent, args, context) => {
+        [name]: (parent, args, context) => {
           let filters = merge(args.filters, {
             [parentName]: parent.id
           })
@@ -54,7 +52,7 @@ module.exports = function nestedSingleByFilters (props = {}) {
               filters
             })
           }
-        })
+        }
       }
     }
   }

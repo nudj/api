@@ -1,4 +1,3 @@
-const { handleErrors } = require('../../lib')
 const makeUniqueSlug = require('../../lib/helpers/make-unique-slug')
 
 module.exports = {
@@ -9,7 +8,7 @@ module.exports = {
   `,
   resolvers: {
     Mutation: {
-      createSurvey: handleErrors(async (root, args, context) => {
+      createSurvey: async (root, args, context) => {
         const data = {
           ...args.data,
           surveySections: JSON.stringify([])
@@ -33,7 +32,7 @@ module.exports = {
           })
         }
         return survey
-      })
+      }
     }
   }
 }

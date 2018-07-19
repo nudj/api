@@ -1,6 +1,5 @@
 const { values: tagTypes } = require('../enums/tag-types')
 const { values: tagSources } = require('../enums/tag-sources')
-const { handleErrors } = require('../../lib')
 const makeUniqueSlug = require('../../lib/helpers/make-unique-slug')
 
 module.exports = {
@@ -11,7 +10,7 @@ module.exports = {
   `,
   resolvers: {
     Mutation: {
-      updateSurveyQuestion: handleErrors(async (root, args, context) => {
+      updateSurveyQuestion: async (root, args, context) => {
         const { tags, ...data } = args.data
 
         if (tags) {
@@ -81,7 +80,7 @@ module.exports = {
             id: args.id
           })
         }
-      })
+      }
     }
   }
 }

@@ -1,5 +1,3 @@
-const { handleErrors } = require('../../lib')
-
 module.exports = {
   typeDefs: `
     extend type Person {
@@ -8,7 +6,7 @@ module.exports = {
   `,
   resolvers: {
     Person: {
-      company: handleErrors(async (person, args, context) => {
+      company: async (person, args, context) => {
         const currentEmployment = await context.sql.readOne({
           type: 'currentEmployments',
           filters: {
@@ -29,7 +27,7 @@ module.exports = {
           type: 'companies',
           id: employment.company
         })
-      })
+      }
     }
   }
 }

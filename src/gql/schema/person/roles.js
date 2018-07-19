@@ -1,5 +1,3 @@
-const { handleErrors } = require('../../lib')
-
 module.exports = {
   typeDefs: `
     extend type Person {
@@ -8,7 +6,7 @@ module.exports = {
   `,
   resolvers: {
     Person: {
-      roles: handleErrors(async (person, args, context) => {
+      roles: async (person, args, context) => {
         const personRoles = await context.sql.readAll({
           type: 'personRoles',
           filters: { person: person.id }
@@ -18,7 +16,7 @@ module.exports = {
           type: 'roles',
           ids: personRoles.map(personRole => personRole.role)
         })
-      })
+      }
     }
   }
 }

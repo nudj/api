@@ -89,7 +89,7 @@ describe('nestedSingle', () => {
     describe('when parent.relation does not exist', () => {
       it('should return null', () => {
         const parent = {}
-        return expect(resolver(parent)).to.eventually.be.null()
+        return expect(resolver(parent)).to.be.null()
       })
     })
 
@@ -98,7 +98,7 @@ describe('nestedSingle', () => {
         const parent = {
           relation: null
         }
-        return expect(resolver(parent)).to.eventually.be.null()
+        return expect(resolver(parent)).to.be.null()
       })
     })
   })

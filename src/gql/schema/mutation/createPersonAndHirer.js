@@ -1,4 +1,3 @@
-const { handleErrors } = require('../../lib')
 const createPerson = require('../../lib/helpers/create-person')
 
 module.exports = {
@@ -12,7 +11,7 @@ module.exports = {
   `,
   resolvers: {
     Mutation: {
-      createPersonAndHirer: handleErrors(async (root, args, context) => {
+      createPersonAndHirer: async (root, args, context) => {
         const person = await createPerson(context, args.person)
 
         if (args.hirer) {
@@ -26,7 +25,7 @@ module.exports = {
         }
 
         return person
-      })
+      }
     }
   }
 }

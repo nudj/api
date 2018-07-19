@@ -1,4 +1,3 @@
-const handleErrors = require('../../lib/handle-errors')
 const {
   TABLES,
   SLUG_GENERATORS
@@ -12,7 +11,7 @@ module.exports = {
   `,
   resolvers: {
     Job: {
-      getOrCreateReferralForUser: handleErrors(async (job, args, context) => {
+      getOrCreateReferralForUser: async (job, args, context) => {
         const {
           person: personId,
           parent: parentId
@@ -50,7 +49,7 @@ module.exports = {
         })
 
         return referral
-      })
+      }
     }
   }
 }

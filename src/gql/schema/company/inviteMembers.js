@@ -1,4 +1,3 @@
-const { handleErrors } = require('../../lib')
 const {
   validateInviteesAndFetchEmailData,
   logInvitationsToIntercom
@@ -21,7 +20,7 @@ module.exports = {
   `,
   resolvers: {
     Company: {
-      inviteMembers: handleErrors(async (company, args, context) => {
+      inviteMembers: async (company, args, context) => {
         const emailData = await validateInviteesAndFetchEmailData(company, args, context)
         const {
           from,
@@ -53,7 +52,7 @@ module.exports = {
         }
 
         return sendStatus
-      })
+      }
     }
   }
 }

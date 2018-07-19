@@ -1,4 +1,3 @@
-const handleErrors = require('../../lib/handle-errors')
 const {
   TABLES,
   SLUG_GENERATORS
@@ -12,7 +11,7 @@ module.exports = {
   `,
   resolvers: {
     Job: {
-      createReferralByEmail: handleErrors(async (job, args, context) => {
+      createReferralByEmail: async (job, args, context) => {
         const {
           email,
           parent: parentId
@@ -45,7 +44,7 @@ module.exports = {
             parent: parent && parent.id
           }
         })
-      })
+      }
     }
   }
 }

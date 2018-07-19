@@ -1,7 +1,6 @@
 const camelCase = require('lodash/camelCase')
 const { AppError } = require('@nudj/library/errors')
 
-const handleErrors = require('./handle-errors')
 const { INDICES } = require('../../lib/sql')
 
 module.exports = function rootSingleBySlug (props = {}) {
@@ -24,7 +23,7 @@ module.exports = function rootSingleBySlug (props = {}) {
     `,
     resolvers: {
       [parentType]: {
-        [name]: handleErrors((root, args, context) => {
+        [name]: (root, args, context) => {
           const slug = args.slug
           if (slug === undefined) {
             return null
@@ -34,7 +33,7 @@ module.exports = function rootSingleBySlug (props = {}) {
             index: INDICES[collection].slug,
             key: slug
           })
-        })
+        }
       }
     }
   }

@@ -1,8 +1,6 @@
 const { AppError } = require('@nudj/library/errors')
 const some = require('lodash/some')
 
-const handleErrors = require('./handle-errors')
-
 module.exports = function nestedSingleByFiltersViaEdge (props = {}) {
   let {
     fromType,
@@ -31,7 +29,7 @@ module.exports = function nestedSingleByFiltersViaEdge (props = {}) {
     `,
     resolvers: {
       [fromType]: {
-        [name]: handleErrors(async (from, args, context) => {
+        [name]: async (from, args, context) => {
           const [
             edges,
             filteredItem
@@ -53,7 +51,7 @@ module.exports = function nestedSingleByFiltersViaEdge (props = {}) {
           } else {
             return null
           }
-        })
+        }
       }
     }
   }

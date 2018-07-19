@@ -61,7 +61,7 @@ describe('rootAllByFilters', () => {
       const fakeContext = generateFakeContextWithStore({
         readAll: () => 'all_the_relations'
       })
-      return expect(resolver(null, { filters }, fakeContext)).to.eventually.equal('all_the_relations')
+      return expect(resolver(null, { filters }, fakeContext)).to.equal('all_the_relations')
     })
 
     it('should call store.readAll with the collection type', () => {
@@ -72,7 +72,7 @@ describe('rootAllByFilters', () => {
         readAll: args => args
       })
       return expect(resolver(null, { filters }, fakeContext))
-        .to.eventually.have.property('type')
+        .to.have.property('type')
         .to.equal('relations')
     })
 
@@ -84,7 +84,7 @@ describe('rootAllByFilters', () => {
         readAll: args => args
       })
       return expect(resolver(null, { filters }, fakeContext))
-        .to.eventually.have.property('filters')
+        .to.have.property('filters')
         .to.deep.equal({
           slug: 'someSlug'
         })
@@ -122,7 +122,7 @@ describe('rootAllByFilters', () => {
           readAll: args => args
         })
         return expect(resolver(null, { filters }, fakeContext))
-          .to.eventually.have.property('type')
+          .to.have.property('type')
           .to.deep.equal('aDifferentCollection')
       })
     })

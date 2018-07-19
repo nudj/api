@@ -1,4 +1,3 @@
-const handleErrors = require('../../lib/handle-errors')
 const {
   TABLES,
   SLUG_GENERATORS
@@ -12,7 +11,7 @@ module.exports = {
   `,
   resolvers: {
     Person: {
-      createReferral: handleErrors(async (person, args, context) => {
+      createReferral: async (person, args, context) => {
         const { job: jobId, parent: parentId } = args
         const existingReferral = await context.sql.readOne({
           type: 'referrals',
@@ -45,7 +44,7 @@ module.exports = {
             parent: parent && parent.id
           }
         })
-      })
+      }
     }
   }
 }

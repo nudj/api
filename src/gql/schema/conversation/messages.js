@@ -1,4 +1,3 @@
-const { handleErrors } = require('../../lib')
 const { fetchGmailMessages } = require('../../lib/google')
 const { values: emailPreferences } = require('../enums/email-preference-types')
 const fetchPerson = require('../../lib/helpers/fetch-person')
@@ -11,7 +10,7 @@ module.exports = {
   `,
   resolvers: {
     Conversation: {
-      messages: handleErrors(async (conversation, args, context) => {
+      messages: async (conversation, args, context) => {
         switch (conversation.type) {
           case emailPreferences.GOOGLE:
             return fetchGmailMessages({ context, conversation })
@@ -27,7 +26,7 @@ module.exports = {
               }
             ]
         }
-      })
+      }
     }
   }
 }

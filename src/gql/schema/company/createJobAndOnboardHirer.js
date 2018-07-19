@@ -1,5 +1,4 @@
 const createJob = require('../../lib/helpers/create-job')
-const handleErrors = require('../../lib/handle-errors')
 
 module.exports = {
   typeDefs: `
@@ -9,7 +8,7 @@ module.exports = {
   `,
   resolvers: {
     Company: {
-      createJobAndOnboardHirer: handleErrors(async (company, args, context) => {
+      createJobAndOnboardHirer: async (company, args, context) => {
         const job = await createJob(context, company, args.data)
 
         // Set hirer as onboarded
@@ -26,7 +25,7 @@ module.exports = {
         })
 
         return job
-      })
+      }
     }
   }
 }

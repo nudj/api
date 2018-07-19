@@ -1,4 +1,3 @@
-const handleErrors = require('../../lib/handle-errors')
 const makeUniqueSlug = require('../../lib/helpers/make-unique-slug')
 
 module.exports = {
@@ -9,7 +8,7 @@ module.exports = {
   `,
   resolvers: {
     Job: {
-      createReferralWithParentForPerson: handleErrors(async (job, args, context) => {
+      createReferralWithParentForPerson: async (job, args, context) => {
         const {
           person: personId,
           parentPerson: parentPersonId
@@ -74,7 +73,7 @@ module.exports = {
             slug
           }
         })
-      })
+      }
     }
   }
 }

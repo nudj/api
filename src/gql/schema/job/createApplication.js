@@ -2,7 +2,6 @@ const omitBy = require('lodash/omitBy')
 const isNil = require('lodash/isNil')
 const { logger } = require('@nudj/library')
 const intercom = require('../../lib/intercom')
-const handleErrors = require('../../lib/handle-errors')
 
 module.exports = {
   typeDefs: `
@@ -12,7 +11,7 @@ module.exports = {
   `,
   resolvers: {
     Job: {
-      createApplication: handleErrors(async (job, args, context) => {
+      createApplication: async (job, args, context) => {
         const {
           person: personId,
           referral: referralId
@@ -84,7 +83,7 @@ module.exports = {
         }
 
         return application
-      })
+      }
     }
   }
 }

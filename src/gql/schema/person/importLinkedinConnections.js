@@ -1,6 +1,5 @@
 const formatLinkedinConnections = require('../../lib/helpers/format-linkedin-connections')
 const makeSlug = require('../../lib/helpers/make-slug')
-const { handleErrors } = require('../../lib')
 const DataSources = require('../enums/data-sources')
 const {
   TABLES,
@@ -15,7 +14,7 @@ module.exports = {
   `,
   resolvers: {
     Person: {
-      importLinkedinConnections: handleErrors(async (person, args, context) => {
+      importLinkedinConnections: async (person, args, context) => {
         const { connections } = args
         const source = DataSources.values.LINKEDIN
         const from = person.id
@@ -85,7 +84,7 @@ module.exports = {
         })
 
         return connectionIds.map(id => ({ id }))
-      })
+      }
     }
   }
 }

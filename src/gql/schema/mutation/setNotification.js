@@ -1,5 +1,3 @@
-const { handleErrors } = require('../../lib')
-
 module.exports = {
   typeDefs: `
     extend type Mutation {
@@ -8,12 +6,12 @@ module.exports = {
   `,
   resolvers: {
     Mutation: {
-      setNotification: handleErrors((root, args) => {
+      setNotification: (root, args) => {
         return {
           type: args.type,
           message: args.message
         }
-      })
+      }
     }
   }
 }

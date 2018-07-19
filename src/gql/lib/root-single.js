@@ -1,8 +1,6 @@
 const camelCase = require('lodash/camelCase')
 const { AppError } = require('@nudj/library/errors')
 
-const handleErrors = require('./handle-errors')
-
 module.exports = function rootSingle (props = {}) {
   let {
     parentType,
@@ -23,7 +21,7 @@ module.exports = function rootSingle (props = {}) {
     `,
     resolvers: {
       [parentType]: {
-        [name]: handleErrors((root, args, context) => {
+        [name]: (root, args, context) => {
           const id = args.id
           if (id === undefined) {
             return null
@@ -32,7 +30,7 @@ module.exports = function rootSingle (props = {}) {
             type: collection,
             id: args.id
           })
-        })
+        }
       }
     }
   }

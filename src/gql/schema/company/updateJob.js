@@ -1,6 +1,5 @@
 const { values: tagTypes } = require('../enums/tag-types')
 const { values: tagSources } = require('../enums/tag-sources')
-const handleErrors = require('../../lib/handle-errors')
 const { values: jobStatusTypes } = require('../enums/job-status-types')
 const notifyTeamAboutJob = require('../../lib/helpers/notify-team-about-job')
 
@@ -16,7 +15,7 @@ module.exports = {
   `,
   resolvers: {
     Company: {
-      updateJob: handleErrors(async (company, args, context) => {
+      updateJob: async (company, args, context) => {
         const { id, data, notifyTeam } = args
         const { tags, relatedJobs, ...jobData } = data
         const { slug } = data
@@ -126,7 +125,7 @@ module.exports = {
         }
 
         return updatedJob
-      })
+      }
     }
   }
 }

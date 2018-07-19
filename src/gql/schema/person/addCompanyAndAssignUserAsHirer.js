@@ -1,5 +1,4 @@
 const makeUniqueSlug = require('../../lib/helpers/make-unique-slug')
-const { handleErrors } = require('../../lib')
 const { values: hirerTypes } = require('../enums/hirer-types')
 
 module.exports = {
@@ -10,7 +9,7 @@ module.exports = {
   `,
   resolvers: {
     Person: {
-      addCompanyAndAssignUserAsHirer: handleErrors(async (person, args, context) => {
+      addCompanyAndAssignUserAsHirer: async (person, args, context) => {
         const {
           name: companyName,
           location,
@@ -77,7 +76,7 @@ module.exports = {
             type: hirerTypes.ADMIN
           }
         })
-      })
+      }
     }
   }
 }

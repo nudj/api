@@ -3,7 +3,6 @@ const { idTypes } = require('@nudj/library/constants')
 
 const formatLinkedinConnections = require('../../lib/helpers/format-linkedin-connections')
 const getMakeUnqiueCompanySlug = require('../../lib/helpers/make-unique-company-slug')
-const { handleErrors } = require('../../lib')
 const DataSources = require('../enums/data-sources')
 
 module.exports = {
@@ -14,7 +13,7 @@ module.exports = {
   `,
   resolvers: {
     Person: {
-      importLinkedinConnections: handleErrors(async (person, args, context) => {
+      importLinkedinConnections: async (person, args, context) => {
         const { connections } = args
         const source = DataSources.values.LINKEDIN
         const formattedConnections = formatLinkedinConnections(connections)
@@ -106,7 +105,7 @@ module.exports = {
         ]
 
         return context.store.import({ data })
-      })
+      }
     }
   }
 }

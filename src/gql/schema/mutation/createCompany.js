@@ -1,4 +1,3 @@
-const { handleErrors } = require('../../lib')
 const { enrichOrFetchEnrichedCompanyByName } = require('../../lib/clearbit')
 
 module.exports = {
@@ -9,7 +8,7 @@ module.exports = {
   `,
   resolvers: {
     Mutation: {
-      createCompany: handleErrors(async (root, args, context) => {
+      createCompany: async (root, args, context) => {
         const {
           slug,
           onboarded = false,
@@ -33,7 +32,7 @@ module.exports = {
         enrichOrFetchEnrichedCompanyByName(company, context)
 
         return company
-      })
+      }
     }
   }
 }

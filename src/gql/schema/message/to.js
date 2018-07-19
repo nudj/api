@@ -1,5 +1,3 @@
-const { handleErrors } = require('../../lib')
-
 module.exports = {
   typeDefs: `
     extend type Message {
@@ -8,7 +6,7 @@ module.exports = {
   `,
   resolvers: {
     Message: {
-      to: handleErrors((message, args, context) => {
+      to: (message, args, context) => {
         const { to } = message
         return context.store.readOne({
           type: 'accounts',
@@ -19,7 +17,7 @@ module.exports = {
           filters: account ? undefined : { email: to },
           id: account && account.person
         }))
-      })
+      }
     }
   }
 }

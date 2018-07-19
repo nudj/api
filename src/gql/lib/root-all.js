@@ -1,8 +1,6 @@
 const camelCase = require('lodash/camelCase')
 const { AppError, logThenThrow } = require('@nudj/library/errors')
 
-const handleErrors = require('./handle-errors')
-
 module.exports = function rootAll (props = {}) {
   let {
     parentType,
@@ -23,7 +21,7 @@ module.exports = function rootAll (props = {}) {
     `,
     resolvers: {
       [parentType]: {
-        [name]: handleErrors(async (root, args, context) => {
+        [name]: async (root, args, context) => {
           try {
             return await context.store.readAll({
               type: collection
@@ -34,7 +32,7 @@ module.exports = function rootAll (props = {}) {
               `Resolver rootAll ${parentType}.${name} [${type}!]!`
             )
           }
-        })
+        }
       }
     }
   }

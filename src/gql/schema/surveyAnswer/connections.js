@@ -1,7 +1,6 @@
 const uniq = require('lodash/uniq')
 const union = require('lodash/union')
 
-const handleErrors = require('../../lib/handle-errors')
 const fetchRoleToTagsMap = require('../../lib/helpers/fetch-role-tag-maps')
 
 module.exports = {
@@ -12,7 +11,7 @@ module.exports = {
   `,
   resolvers: {
     SurveyAnswer: {
-      connections: handleErrors(async (answer, args, context) => {
+      connections: async (answer, args, context) => {
         const connections = await context.store.readMany({
           type: 'connections',
           ids: answer.connections
@@ -35,7 +34,7 @@ module.exports = {
           ...connection,
           tags: union(tags, rolesToTagsMap[connection.role])
         }))
-      })
+      }
     }
   }
 }

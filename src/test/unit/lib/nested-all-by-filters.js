@@ -65,7 +65,7 @@ describe('nestedAllByFilters', () => {
       const fakeContext = generateFakeContextWithStore({
         readAll: () => 'all_the_relations'
       })
-      return expect(resolver(parent, { filters }, fakeContext)).to.eventually.equal('all_the_relations')
+      return expect(resolver(parent, { filters }, fakeContext)).to.equal('all_the_relations')
     })
 
     it('should call store.readAll with the collection type', () => {
@@ -79,7 +79,7 @@ describe('nestedAllByFilters', () => {
         readAll: args => args
       })
       return expect(resolver(parent, { filters }, fakeContext))
-        .to.eventually.have.deep.property('type')
+        .to.have.deep.property('type')
         .to.deep.equal('relations')
     })
 
@@ -94,7 +94,7 @@ describe('nestedAllByFilters', () => {
         readAll: args => args
       })
       return expect(resolver(parent, { filters }, fakeContext))
-        .to.eventually.have.deep.property('filters')
+        .to.have.deep.property('filters')
         .to.deep.equal({
           parent: 'parent1',
           slug: 'someSlug'
@@ -137,7 +137,7 @@ describe('nestedAllByFilters', () => {
           readAll: args => args
         })
         return expect(resolver(parent, { filters }, fakeContext))
-          .to.eventually.have.deep.property('type')
+          .to.have.deep.property('type')
           .to.deep.equal('aDifferentCollection')
       })
     })
@@ -176,7 +176,7 @@ describe('nestedAllByFilters', () => {
           readAll: args => args
         })
         return expect(resolver(parent, { filters }, fakeContext))
-          .to.eventually.have.deep.property('filters')
+          .to.have.deep.property('filters')
           .to.deep.equal({
             aDifferentName: 'parent1',
             slug: 'someSlug'

@@ -1,5 +1,3 @@
-const { handleErrors } = require('../../lib')
-
 module.exports = {
   typeDefs: `
     extend type Company {
@@ -8,7 +6,7 @@ module.exports = {
   `,
   resolvers: {
     Company: {
-      surveyOrDefault: handleErrors(async (company, args, context) => {
+      surveyOrDefault: async (company, args, context) => {
         const edge = await context.store.readOne({
           type: 'companySurveys',
           filters: {
@@ -28,7 +26,7 @@ module.exports = {
             }
           })
         }
-      })
+      }
     }
   }
 }

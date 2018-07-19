@@ -1,5 +1,3 @@
-const handleErrors = require('../../lib/handle-errors')
-
 module.exports = {
   typeDefs: `
     extend type Job {
@@ -8,7 +6,7 @@ module.exports = {
   `,
   resolvers: {
     Job: {
-      createReferralWithParentForPerson: handleErrors(async (job, args, context) => {
+      createReferralWithParentForPerson: async (job, args, context) => {
         const {
           person: personId,
           parentPerson: parentPersonId
@@ -61,7 +59,7 @@ module.exports = {
             parent: parent && parent.id
           }
         })
-      })
+      }
     }
   }
 }

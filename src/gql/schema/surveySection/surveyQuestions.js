@@ -1,5 +1,3 @@
-const { handleErrors } = require('../../lib')
-
 module.exports = {
   typeDefs: `
     extend type SurveySection {
@@ -8,7 +6,7 @@ module.exports = {
   `,
   resolvers: {
     SurveySection: {
-      surveyQuestions: handleErrors(async (surveySection, args, context) => {
+      surveyQuestions: async (surveySection, args, context) => {
         const { surveyQuestions: questionIds } = surveySection
         const questions = await context.store.readMany({
           type: 'surveyQuestions',
@@ -20,7 +18,7 @@ module.exports = {
         }, {})
 
         return questionIds.map(id => questionMap[id]).filter(Boolean)
-      })
+      }
     }
   }
 }

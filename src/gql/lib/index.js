@@ -1,5 +1,4 @@
 const mergeDefinitions = require('./merge-definitions')
-const handleErrors = require('./handle-errors')
 const formatError = require('./format-error')
 
 const rootEnum = require('./root-enum')
@@ -21,7 +20,6 @@ const nestedCountByFilters = require('./nested-count-by-filters')
 
 module.exports = {
   mergeDefinitions,
-  handleErrors,
   formatError,
 
   rootEnum,

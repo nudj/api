@@ -1,5 +1,3 @@
-const { handleErrors } = require('../../lib')
-
 module.exports = {
   typeDefs: `
     extend type Mutation {
@@ -8,13 +6,13 @@ module.exports = {
   `,
   resolvers: {
     Mutation: {
-      updateSurvey: handleErrors((root, args, context) => {
+      updateSurvey: (root, args, context) => {
         return context.store.update({
           type: 'surveys',
           id: args.id,
           data: args.data
         })
-      })
+      }
     }
   }
 }

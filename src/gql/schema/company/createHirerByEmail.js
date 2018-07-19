@@ -1,5 +1,3 @@
-const { handleErrors } = require('../../lib')
-
 module.exports = {
   typeDefs: `
     extend type Company {
@@ -14,7 +12,7 @@ module.exports = {
   `,
   resolvers: {
     Company: {
-      createHirerByEmail: handleErrors(async (company, args, context) => {
+      createHirerByEmail: async (company, args, context) => {
         const {
           email,
           onboarded = false,
@@ -36,7 +34,7 @@ module.exports = {
             company: company.id
           }
         })
-      })
+      }
     }
   }
 }

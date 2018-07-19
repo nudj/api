@@ -1,7 +1,7 @@
 const get = require('lodash/get')
 const { logger } = require('@nudj/library')
+
 const { sendGmail } = require('../../lib/google')
-const { handleErrors } = require('../../lib')
 const intercom = require('../../lib/intercom')
 const { values: emailPreferences } = require('../enums/email-preference-types')
 
@@ -53,7 +53,7 @@ module.exports = {
   `,
   resolvers: {
     Person: {
-      sendEmail: handleErrors(async (person, args, context) => {
+      sendEmail: async (person, args, context) => {
         const { body, subject, to: recipient } = args
         if (!body) throw new Error('No message body')
 
@@ -74,7 +74,7 @@ module.exports = {
             trackEmailEvent(person.email)
             return createConversation({ context, type, to, person })
         }
-      })
+      }
     }
   }
 }

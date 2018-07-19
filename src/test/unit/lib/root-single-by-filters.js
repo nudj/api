@@ -150,8 +150,7 @@ describe('rootSingleByFilters', () => {
           type: 'Relation'
         }).resolvers.Parent.relationByFilters
         const filters = {}
-        return expect(resolver(null, { filters }))
-          .to.eventually.be.null()
+        return expect(resolver(null, { filters })).to.be.null()
       })
     })
   })

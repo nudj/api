@@ -1,5 +1,5 @@
 const omit = require('lodash/omit')
-const { handleErrors } = require('../../lib')
+
 const { values: dataSources } = require('../enums/data-sources')
 const { enrichOrFetchEnrichedCompanyByName } = require('../../lib/clearbit')
 const getMakeUniqueCompanySlug = require('../../lib/helpers/make-unique-company-slug')
@@ -12,7 +12,7 @@ module.exports = {
   `,
   resolvers: {
     Mutation: {
-      createPerson: handleErrors(async (root, args, context) => {
+      createPerson: async (root, args, context) => {
         const { company: companyName, role: roleName } = args.input
 
         const person = await context.store.create({
@@ -71,7 +71,7 @@ module.exports = {
         }
 
         return person
-      })
+      }
     }
   }
 }

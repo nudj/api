@@ -1,5 +1,4 @@
 const { renderSimpleTemplate, getInvitationUrl } = require('@nudj/library')
-const { handleErrors } = require('../../lib')
 const {
   validateInviteesAndFetchEmailData,
   logInvitationsToIntercom
@@ -18,7 +17,7 @@ module.exports = {
   `,
   resolvers: {
     Company: {
-      inviteMembersOnboarding: handleErrors(async (company, args, context) => {
+      inviteMembersOnboarding: async (company, args, context) => {
         const emailData = await validateInviteesAndFetchEmailData(company, args, context)
         const {
           senderName,
@@ -68,7 +67,7 @@ module.exports = {
         }
 
         return sendStatus
-      })
+      }
     }
   }
 }

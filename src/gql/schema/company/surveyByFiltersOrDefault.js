@@ -1,5 +1,3 @@
-const { handleErrors } = require('../../lib')
-
 module.exports = {
   typeDefs: `
     extend type Company {
@@ -10,7 +8,7 @@ module.exports = {
   `,
   resolvers: {
     Company: {
-      surveyByFiltersOrDefault: handleErrors(async (company, args, context) => {
+      surveyByFiltersOrDefault: async (company, args, context) => {
         if (args.filters.slug !== 'default') {
           const [
             edge,
@@ -37,7 +35,7 @@ module.exports = {
             slug: 'default'
           }
         })
-      })
+      }
     }
   }
 }

@@ -1,7 +1,5 @@
 const uniq = require('lodash/uniq')
-
 const fetchPerson = require('../../lib/helpers/fetch-person')
-const { handleErrors } = require('../../lib')
 const {
   send,
   sendJobsEmailBodyTemplate
@@ -15,7 +13,7 @@ module.exports = {
   `,
   resolvers: {
     Company: {
-      sendJobEmails: handleErrors(async (company, args, context) => {
+      sendJobEmails: async (company, args, context) => {
         if (!args.recipients.length) throw new Error('No recipients specified')
         if (!args.jobs.length) throw new Error('No jobs specified')
 
@@ -56,7 +54,7 @@ module.exports = {
         )
 
         return sendStatus
-      })
+      }
     }
   }
 }

@@ -65,7 +65,7 @@ describe('nestedCountByFilters', () => {
         countByFilters: () => 'calling store.countByFilters'
       })
       return expect(resolver(parent, { filters }, fakeContext))
-        .to.eventually.equal('calling store.countByFilters')
+        .to.equal('calling store.countByFilters')
     })
   })
 

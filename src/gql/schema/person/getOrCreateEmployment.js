@@ -1,6 +1,5 @@
 const hash = require('hash-generator')
 
-const handleErrors = require('../../lib/handle-errors')
 const makeSlug = require('../../lib/helpers/make-slug')
 const { enrichOrFetchEnrichedCompanyByName } = require('../../lib/clearbit')
 
@@ -12,7 +11,7 @@ module.exports = {
   `,
   resolvers: {
     Person: {
-      getOrCreateEmployment: handleErrors(async (person, args, context) => {
+      getOrCreateEmployment: async (person, args, context) => {
         const {
           company: newCompany,
           source,
@@ -79,7 +78,7 @@ module.exports = {
         })
 
         return { ...newEmployment, company }
-      })
+      }
     }
   }
 }

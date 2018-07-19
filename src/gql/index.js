@@ -3,7 +3,6 @@ const bodyParser = require('body-parser')
 const { graphqlExpress } = require('apollo-server-express')
 const { Database } = require('arangojs')
 
-const { logger } = require('@nudj/library')
 const schema = require('./schema')
 const { DB_URL: url } = require('./lib/constants')
 const setupDataLoaderCache = require('./lib/setup-dataloader-cache')

@@ -1,5 +1,3 @@
-const { handleErrors } = require('../../lib')
-
 module.exports = {
   typeDefs: `
     extend type Mutation {
@@ -8,7 +6,7 @@ module.exports = {
   `,
   resolvers: {
     Mutation: {
-      createSurveySection: handleErrors(async (root, args, context) => {
+      createSurveySection: async (root, args, context) => {
         const section = await context.store.create({
           type: 'surveySections',
           data: {
@@ -31,7 +29,7 @@ module.exports = {
         })
 
         return Promise.resolve(section)
-      })
+      }
     }
   }
 }

@@ -1,8 +1,6 @@
 const camelCase = require('lodash/camelCase')
 const { AppError } = require('@nudj/library/errors')
 
-const handleErrors = require('./handle-errors')
-
 module.exports = function rootAllByFilters (props = {}) {
   let {
     parentType,
@@ -25,12 +23,12 @@ module.exports = function rootAllByFilters (props = {}) {
     `,
     resolvers: {
       [parentType]: {
-        [name]: handleErrors((root, args, context) => {
+        [name]: (root, args, context) => {
           return context.store.readAll({
             type: collection,
             filters: args.filters
           })
-        })
+        }
       }
     }
   }

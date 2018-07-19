@@ -1,6 +1,4 @@
 const { renderSimpleTemplate } = require('@nudj/library')
-
-const { handleErrors } = require('../../lib')
 const mailer = require('../../lib/mailer')
 
 module.exports = {
@@ -14,7 +12,7 @@ module.exports = {
   `,
   resolvers: {
     Person: {
-      notifyByEmail: handleErrors(async (person, args) => {
+      notifyByEmail: async (person, args) => {
         return mailer.send({
           from: 'hello@nudj.co',
           to: person.email,
@@ -31,7 +29,7 @@ module.exports = {
             splitter: 'somerandomstring'
           })[0].join('')
         })
-      })
+      }
     }
   }
 }

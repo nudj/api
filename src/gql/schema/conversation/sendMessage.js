@@ -1,5 +1,4 @@
 const { sendGmailByThread } = require('../../lib/google')
-const { handleErrors } = require('../../lib')
 const { values: emailPreferences } = require('../enums/email-preference-types')
 const fetchPerson = require('../../lib/helpers/fetch-person')
 
@@ -11,7 +10,7 @@ module.exports = {
   `,
   resolvers: {
     Conversation: {
-      sendMessage: handleErrors(async (conversation, args, context) => {
+      sendMessage: async (conversation, args, context) => {
         const { body } = args
         const { type } = conversation
 
@@ -33,7 +32,7 @@ module.exports = {
           default:
             throw new Error('Cannot send message of this type')
         }
-      })
+      }
     }
   }
 }

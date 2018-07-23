@@ -1,6 +1,7 @@
 module.exports = {
   connectionsIndexFormatter: require('./connections-index-formatter'),
   createJob: require('./create-job'),
+  createCompany: require('./create-company'),
   logInvitationsToIntercom: require('./log-invitations-to-intercom'),
   fetchConnectionPropertyMap: require('./fetch-connection-property-map'),
   makeSlug: require('./make-slug'),

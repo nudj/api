@@ -2,7 +2,7 @@ const dedent = require('dedent')
 const possessiveCase = require('./possessive-case')
 const renderJobsRows = require('./render-job-rows')
 
-module.exports = ({ web, senderName, company, jobs, email }) => dedent`
+module.exports = ({ hire, web, senderName, company, jobs, email }) => dedent`
   <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
   <html xmlns="http://www.w3.org/1999/xhtml" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
 
@@ -111,7 +111,7 @@ module.exports = ({ web, senderName, company, jobs, email }) => dedent`
                                   <tr>
                                     <td style="padding: 0 0 0 20px; text-align: right; color: #6F6F6F; font-family: sans-serif;">
                                       <p class="" style="margin: 20px 0; font-size: 14px; mso-line-height-rule: exactly; line-height: 24px; margin: 20px 0; margin: 0;">
-                                        <a href="${web.protocol}://${process.env.HIRE_HOSTNAME}/invitation-accept/${company.hash}" style="color: #9A9A9A; text-decoration: none; " universal="true" target="_blank">Launch nudj</a>
+                                        <a href="${hire.protocol}://${hire.hostname}/invitation-accept/${company.hash}" style="color: #9A9A9A; text-decoration: none; " universal="true" target="_blank">Launch nudj</a>
                                       </p>
                                     </td>
                                   </tr>
@@ -148,7 +148,7 @@ module.exports = ({ web, senderName, company, jobs, email }) => dedent`
                 </tr>
                 <tr style="font-family: sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                   <td class="content-block" itemprop="handler" itemscope itemtype="http://schema.org/HttpActionHandler" style="font-family: sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;" valign="top">
-                    <a href='${web.protocol}://${process.env.HIRE_HOSTNAME}/invitation-accept/${company.hash}' class="btn-primary" itemprop="url" style="font-family: sans-serif; box-sizing: border-box; font-size: 14px; color: #FFF; text-decoration: none; line-height: 2em; width: 12rem; font-weight: bold; text-align: center; cursor: pointer; display: block; border-radius: 5px; background-color: #002d72; margin: 0 auto; border-color: #002d72; border-style: solid; border-width: 10px 20px;">Join your team</a>
+                    <a href='${hire.protocol}://${hire.hostname}/invitation-accept/${company.hash}' class="btn-primary" itemprop="url" style="font-family: sans-serif; box-sizing: border-box; font-size: 14px; color: #FFF; text-decoration: none; line-height: 2em; width: 12rem; font-weight: bold; text-align: center; cursor: pointer; display: block; border-radius: 5px; background-color: #002d72; margin: 0 auto; border-color: #002d72; border-style: solid; border-width: 10px 20px;">Join your team</a>
                   </td>
                 </tr>
                 <tr style="font-family: sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">

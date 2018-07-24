@@ -36,6 +36,7 @@ module.exports = {
             to: email,
             subject,
             html: teammateInvitationEmailBodyTemplate({
+              hire: context.hire,
               web: context.web,
               senderName,
               company,

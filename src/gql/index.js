@@ -28,7 +28,7 @@ module.exports = ({ transaction, store }) => {
     graphqlExpress(req => {
       const context = {
         web: {
-          protocol: req.protocol,
+          protocol: process.env.PROTOCOL,
           hostname: process.env.WEB_HOSTNAME
         },
         userId: req.body.userId,

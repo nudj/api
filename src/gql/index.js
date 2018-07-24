@@ -31,6 +31,10 @@ module.exports = ({ transaction, store }) => {
           protocol: process.env.PROTOCOL,
           hostname: process.env.WEB_HOSTNAME
         },
+        hire: {
+          protocol: process.env.PROTOCOL,
+          hostname: process.env.HIRE_HOSTNAME
+        },
         userId: req.body.userId,
         transaction,
         nosql: store({

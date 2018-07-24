@@ -45,6 +45,7 @@ module.exports = {
             to: recipient.email,
             subject: 'We\'re hiring! Can you help?',
             html: sendJobsEmailBodyTemplate({
+              hire: context.hire,
               web: context.web,
               company,
               jobs,

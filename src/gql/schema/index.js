@@ -65,6 +65,7 @@ const modules = [
   require('./job/tags'),
   require('./job/viewCountByFilters'),
   require('./message'),
+  require('./messageEvent'),
   require('./message/from'),
   require('./message/to'),
   require('./notification'),

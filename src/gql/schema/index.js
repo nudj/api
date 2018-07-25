@@ -67,6 +67,7 @@ const modules = [
   require('./message'),
   require('./message/from'),
   require('./message/to'),
+  require('./messageEvent'),
   require('./notification'),
   require('./person'),
   require('./person/accountByFilters'),

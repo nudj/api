@@ -151,6 +151,7 @@ const modules = [
   require('./mutation/connections'),
   require('./mutation/connectionsByFilters'),
   require('./mutation/createCompany'),
+  require('./mutation/createMessageEvent'),
   require('./mutation/createPerson'),
   require('./mutation/createSurvey'),
   require('./mutation/createSurveyQuestion'),

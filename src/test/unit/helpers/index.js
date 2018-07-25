@@ -11,6 +11,10 @@ function executeQueryOnDbUsingSchema ({ schema, variables = {}, operation, db })
       protocol: 'https',
       hostname: process.env.WEB_HOSTNAME
     },
+    hire: {
+      protocol: 'https',
+      hostname: process.env.HIRE_HOSTNAME
+    },
     userId: 'person1',
     transaction: transaction({ db }),
     store: store({ db }),

@@ -455,7 +455,8 @@ const SLUG_GENERATORS = {
 }
 const COLLECTIONS = {
   JOB_VIEW_EVENTS: 'jobViewEvents',
-  REFERRAL_KEY_TO_SLUG_MAP: 'referralKeyToSlugMaps'
+  REFERRAL_KEY_TO_SLUG_MAP: 'referralKeyToSlugMaps',
+  MESSAGE_EVENTS: 'messageEvents'
 }
 
 module.exports = {

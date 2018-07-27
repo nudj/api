@@ -6,6 +6,7 @@ const { logger } = require('@nudj/library')
 const { INTERNAL_EMAIL_ADDRESS } = require('../constants')
 
 const teammateInvitationEmailBodyTemplate = require('./invite-email-template')
+const requestAccessEmailTemplate = require('./request-access-email-template')
 const sendJobsEmailBodyTemplate = require('./send-jobs-email-template')
 const jobNotificationEmailBodyTemplate = require('./job-notification-email-template')
 
@@ -35,6 +36,27 @@ module.exports = {
         to: INTERNAL_EMAIL_ADDRESS,
         subject,
         html
+      })
+  },
+  sendAccessRequestEmail: ({
+    to,
+    requestee,
+    requestId,
+    company,
+    hire
+  }) => {
+    return mailgun
+      .messages()
+      .send({
+        from: `Nudj <${INTERNAL_EMAIL_ADDRESS}>`,
+        to,
+        subject: 'A user has requested access on nudj',
+        html: requestAccessEmailTemplate({
+          requestee,
+          requestId,
+          company,
+          hire
+        })
       })
   },
   sendJobsEmailBodyTemplate,

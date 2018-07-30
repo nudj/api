@@ -9,6 +9,7 @@ const teammateInvitationEmailBodyTemplate = require('./invite-email-template')
 const requestAccessEmailTemplate = require('./request-access-email-template')
 const sendJobsEmailBodyTemplate = require('./send-jobs-email-template')
 const jobNotificationEmailBodyTemplate = require('./job-notification-email-template')
+const requestAcceptedEmailBodyTemplate = require('./request-accepted-email-template')
 
 const mailgun = Mailgun({
   apiKey: process.env.MAILGUN_API_KEY,
@@ -61,5 +62,6 @@ module.exports = {
   },
   sendJobsEmailBodyTemplate,
   teammateInvitationEmailBodyTemplate,
-  jobNotificationEmailBodyTemplate
+  jobNotificationEmailBodyTemplate,
+  requestAcceptedEmailBodyTemplate
 }

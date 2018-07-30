@@ -10,6 +10,7 @@ const modules = [
   require('./application/referral'),
   require('./company'),
   require('./company/createHirerByEmail'),
+  require('./company/createAccessRequest'),
   require('./company/createJob'),
   require('./company/createJobAndOnboardHirer'),
   require('./company/hirers'),

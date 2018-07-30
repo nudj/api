@@ -26,11 +26,16 @@ module.exports = (action, params) => {
     actionString = `(${actionToString(store, action)})`
 
     // add semi colons
-    actionString = linter.verifyAndFix(actionString, {
+    const result = linter.verifyAndFix(actionString, {
       rules: {
         semi: 2
+      },
+      parserOptions: {
+        ecmaVersion: 6
       }
-    }).output
+    })
+    if (!result.fixed) throw new Error(result.messages[0].message)
+    actionString = result.output
 
     // remove newlines and multiple consecutive spaces
     actionString = actionString.replace(/\n/g, ' ').replace(/\s\s+/g, ' ')

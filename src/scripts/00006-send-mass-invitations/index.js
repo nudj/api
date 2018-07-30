@@ -42,6 +42,10 @@ async function action ({ db, arg: userId }) {
       protocol: 'https',
       hostname: process.env.WEB_HOSTNAME
     },
+    hire: {
+      protocol: 'https',
+      hostname: process.env.HIRE_HOSTNAME
+    },
     userId,
     store: store({
       db,
@@ -55,7 +59,7 @@ async function action ({ db, arg: userId }) {
 
   const company = await fetchCompanyForPerson(context, userId)
   const args = {
-    emailAddresses,
+    members: emailAddresses.map(email => ({ email })),
     awaitIntercom: true
   }
 

@@ -135,16 +135,6 @@ describe('00006 Send Mass Invitations', () => {
       await executeScript('person1')
     })
 
-    it('creates a person for each email address', async () => {
-      const people = await fetchAll(db, 'people')
-      expect(people).to.have.length(5)
-    })
-
-    it('creates a new hirer', async () => {
-      const hirers = await fetchAll(db, 'hirers')
-      expect(hirers).to.have.length(4)
-    })
-
     it('sends an email to the invited members', async () => {
       expect(nocked.mailgun.post.messages.callCount).to.equal(1)
     })
@@ -164,16 +154,6 @@ describe('00006 Send Mass Invitations', () => {
       await executeScript('person1')
     })
 
-    it('does not create a new person', async () => {
-      const people = await fetchAll(db, 'people')
-      expect(people).to.have.length(4)
-    })
-
-    it('creates a new hirer', async () => {
-      const hirers = await fetchAll(db, 'hirers')
-      expect(hirers).to.have.length(4)
-    })
-
     it('sends an email to the invited members', async () => {
       expect(nocked.mailgun.post.messages.callCount).to.equal(1)
     })
@@ -188,24 +168,9 @@ describe('00006 Send Mass Invitations', () => {
   })
 
   describe('when person and hirer exist', () => {
-    let result
-
     beforeEach(async () => {
       fs.copyFileSync(getFullPathFor('003-existing-hirer.csv'), importCsvPath)
-      try {
-        result = await executeScript('person1')
-      } catch (error) {
-        result = error
-      }
-    })
-
-    it('throws error if hirer belongs to another company', async () => {
-      expect(result).to.be.an('error')
-    })
-
-    it('does not create a new hirer', async () => {
-      const hirers = await fetchAll(db, 'hirers')
-      expect(hirers).to.have.length(3)
+      await executeScript('person1')
     })
 
     it('sends an email to the invited members', async () => {

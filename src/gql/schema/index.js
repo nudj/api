@@ -2,6 +2,7 @@ const { makeExecutableSchema } = require('graphql-tools')
 const mergeDefinitions = require('../lib/merge-definitions')
 
 const modules = [
+  require('./accessRequest'),
   require('./account'),
   require('./account/person'),
   require('./application'),

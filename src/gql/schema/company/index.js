@@ -22,7 +22,7 @@ module.exports = {
     }
 
     input CompanyCreateInput {
-      name: String
+      name: String!
       slug: String
       description: String
       mission: String

@@ -31,9 +31,7 @@ module.exports = {
             role
           }
         }, 'nudjee')
-        return mailer.send({
-          from: 'hello@nudj.co',
-          to: 'hello@nudj.co',
+        return mailer.sendInternalEmail({
           subject: 'Sign-up for Updates',
           html: `
             <html>

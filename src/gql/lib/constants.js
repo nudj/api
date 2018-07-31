@@ -5,6 +5,7 @@ const NUDJ = 'NUDJ'
 const DB_URL = `http://${process.env.DB_HOST}:${process.env.DB_PORT}`
 const NO_SQL_URL = `http://${process.env.NO_SQL_HOST}:${process.env.NO_SQL_PORT}`
 const INTERNAL_EMAIL_ADDRESS = 'hello@nudj.co'
+const INTERNAL_EMAIL_FROM = `nudj <${INTERNAL_EMAIL_ADDRESS}>`
 
 const fieldSlugGenerator = field => (data, addRandom) => {
   let random = ''
@@ -25,5 +26,6 @@ module.exports = {
   DB_URL,
   NO_SQL_URL,
   INTERNAL_EMAIL_ADDRESS,
+  INTERNAL_EMAIL_FROM,
   SLUG_GENERATORS
 }

@@ -35,11 +35,7 @@ describe('Person.notifyByEmail', () => {
     expect(mailerSendStub).to.have.been.called()
   })
 
-  it('should send email from hello@nudj.co', () => {
-    expect(mailerSendStub.args[0][0]).to.have.property('from', 'hello@nudj.co')
-  })
-
-  it('should send email to hello@nudj.co', () => {
+  it('should send email to correct address', () => {
     expect(mailerSendStub.args[0][0]).to.have.property('to', 'test@test.tld')
   })
 

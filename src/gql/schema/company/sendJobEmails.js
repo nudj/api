@@ -2,7 +2,8 @@ const uniq = require('lodash/uniq')
 const fetchPerson = require('../../lib/helpers/fetch-person')
 const {
   send,
-  sendJobsEmailBodyTemplate
+  sendJobsEmailBodyTemplate,
+  fromViaNudj
 } = require('../../lib/mailer')
 
 module.exports = {
@@ -35,9 +36,7 @@ module.exports = {
 
         const { firstName, lastName } = person
         const senderName = firstName && lastName && `${firstName} ${lastName}`
-        const from = senderName
-          ? `${senderName} via nudj <hello@nudj.co>`
-          : `nudj <hello@nudj.co>`
+        const from = senderName && fromViaNudj(senderName)
 
         const [ sendStatus ] = await Promise.all(
           recipients.map(recipient => send({

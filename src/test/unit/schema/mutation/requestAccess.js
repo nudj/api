@@ -18,7 +18,7 @@ describe('Mutation.requestAccess', () => {
     }))
     definition = proxyquire('../../../../gql/schema/mutation/requestAccess', {
       '../../lib/mailer': {
-        send: mailerSendStub
+        sendInternalEmail: mailerSendStub
       },
       '../../lib/intercom': {
         createUniqueLeadAndTag: () => {}
@@ -37,14 +37,6 @@ describe('Mutation.requestAccess', () => {
 
   it('should send email via mailer lib', () => {
     expect(mailerSendStub).to.have.been.called()
-  })
-
-  it('should send email from hello@nudj.co', () => {
-    expect(mailerSendStub.args[0][0]).to.have.property('from', 'hello@nudj.co')
-  })
-
-  it('should send email to hello@nudj.co', () => {
-    expect(mailerSendStub.args[0][0]).to.have.property('to', 'hello@nudj.co')
   })
 
   it('should set email subject', () => {

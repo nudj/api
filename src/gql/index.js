@@ -21,8 +21,12 @@ module.exports = ({ transaction, sqlStore, nosqlStore }) => {
     graphqlExpress(req => {
       const context = {
         web: {
-          protocol: req.protocol,
+          protocol: process.env.PROTOCOL,
           hostname: process.env.WEB_HOSTNAME
+        },
+        hire: {
+          protocol: process.env.PROTOCOL,
+          hostname: process.env.HIRE_HOSTNAME
         },
         userId: req.body.userId,
         transaction,

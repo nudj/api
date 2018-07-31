@@ -60,7 +60,8 @@ module.exports = {
           type: 'hirers',
           data: {
             company: accessRequest.company,
-            person: accessRequest.person
+            person: accessRequest.person,
+            type: hirerTypes.MEMBER
           }
         })
 

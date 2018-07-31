@@ -1,8 +1,8 @@
 async function up ({ db, step }) {
-  await step('Add acceptAccessRequests collection', async () => {
-    const acceptAccessRequestsCollection = db.collection('acceptAccessRequests')
+  await step('Add acceptedAccessRequests collection', async () => {
+    const acceptedAccessRequestsCollection = db.collection('acceptedAccessRequests')
     try {
-      await acceptAccessRequestsCollection.create()
+      await acceptedAccessRequestsCollection.create()
     } catch (error) {
       if (error.message !== 'duplicate name: duplicate name') {
         throw error
@@ -13,13 +13,13 @@ async function up ({ db, step }) {
 
 async function down ({ db, step }) {
   const errorMessages = [
-    'unknown collection \'acceptAccessRequests\'',
-    'collection not found (acceptAccessRequests)'
+    'unknown collection \'acceptedAccessRequests\'',
+    'collection not found (acceptedAccessRequests)'
   ]
 
   try {
-    const acceptAccessRequestsCollection = db.collection('acceptAccessRequests')
-    await acceptAccessRequestsCollection.drop()
+    const acceptedAccessRequestsCollection = db.collection('acceptedAccessRequests')
+    await acceptedAccessRequestsCollection.drop()
   } catch (error) {
     if (!errorMessages.includes(error.message)) {
       throw error

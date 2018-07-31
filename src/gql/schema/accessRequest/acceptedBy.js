@@ -1,9 +1,11 @@
-const { nestedSingle } = require('../../lib')
+const { nestedSingleViaEdge } = require('../../lib')
 
-module.exports = nestedSingle({
-  parentType: 'AccessRequest',
-  type: 'Hirer',
-  collection: 'hirers',
+module.exports = nestedSingleViaEdge({
+  fromType: 'AccessRequest',
+  toType: 'Hirer',
   name: 'acceptedBy',
-  propertyName: 'acceptedBy'
+  edgeCollection: 'acceptedAccessRequests',
+  toCollection: 'hirers',
+  fromEdgePropertyName: 'accessRequest',
+  toEdgePropertyName: 'hirer'
 })

@@ -3,6 +3,10 @@ const mergeDefinitions = require('../lib/merge-definitions')
 
 const modules = [
   require('./accessRequest'),
+  require('./accessRequest/accept'),
+  require('./accessRequest/acceptedBy'),
+  require('./accessRequest/company'),
+  require('./accessRequest/person'),
   require('./account'),
   require('./account/person'),
   require('./application'),
@@ -139,6 +143,7 @@ const modules = [
 
   // Mutations
   require('./mutation'),
+  require('./mutation/accessRequest'),
   require('./mutation/application'),
   require('./mutation/applicationByFilters'),
   require('./mutation/applications'),
@@ -220,6 +225,7 @@ const modules = [
 
   // Queries
   require('./query'),
+  require('./query/accessRequest'),
   require('./query/application'),
   require('./query/applicationByFilters'),
   require('./query/applications'),

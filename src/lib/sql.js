@@ -5,26 +5,27 @@ const hash = require('hash-generator')
 const kebabCase = require('lodash/kebabCase')
 
 const TABLES = {
+  ACCESS_REQUESTS: 'accessRequests',
   ACCOUNTS: 'accounts',
   APPLICATIONS: 'applications',
   COMPANIES: 'companies',
+  COMPANY_SURVEYS: 'companySurveys',
   CONNECTIONS: 'connections',
   CONVERSATIONS: 'conversations',
+  CURRENT_EMPLOYMENTS: 'currentEmployments',
+  CURRENT_PERSON_ROLES: 'currentPersonRoles',
   EMPLOYEES: 'employees',
   EMPLOYMENTS: 'employments',
-  CURRENT_EMPLOYMENTS: 'currentEmployments',
   HIRERS: 'hirers',
   JOBS: 'jobs',
   JOB_TAGS: 'jobTags',
   PEOPLE: 'people',
   PERSON_ROLES: 'personRoles',
-  CURRENT_PERSON_ROLES: 'currentPersonRoles',
   REFERRALS: 'referrals',
   RELATED_JOBS: 'relatedJobs',
   ROLES: 'roles',
   ROLE_TAGS: 'roleTags',
   SURVEYS: 'surveys',
-  COMPANY_SURVEYS: 'companySurveys',
   SURVEY_ANSWERS: 'surveyAnswers',
   SURVEY_ANSWER_CONNECTIONS: 'surveyAnswerConnections',
   SURVEY_QUESTIONS: 'surveyQuestions',
@@ -192,6 +193,10 @@ const FIELDS = {
   [TABLES.TAGS]: {
     NAME: 'name',
     TYPE: 'type'
+  },
+  [TABLES.ACCESS_REQUESTS]: {
+    COMPANY: 'company',
+    PERSON: 'person'
   }
 }
 // F is only used in this file so shortened for simplicity
@@ -384,6 +389,12 @@ const INDICES = merge(
       [F.SURVEY_QUESTION_TAGS.SURVEY_QUESTION + F.SURVEY_QUESTION_TAGS.TAG]: {
         name: `${TABLES.SURVEY_QUESTION_TAGS}ByQuestionTag`,
         fields: [F.SURVEY_QUESTION_TAGS.SURVEY_QUESTION, F.SURVEY_QUESTION_TAGS.TAG]
+      }
+    },
+    [TABLES.ACCESS_REQUESTS]: {
+      [F.ACCESS_REQUESTS.COMPANY + F.ACCESS_REQUESTS.PERSON]: {
+        name: `${TABLES.ACCESS_REQUESTS}ByCompanyPerson`,
+        fields: [F.ACCESS_REQUESTS.COMPANY, F.ACCESS_REQUESTS.PERSON]
       }
     }
   }

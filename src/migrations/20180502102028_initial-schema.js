@@ -428,6 +428,18 @@ exports.up = async knex => {
       t.unique([FROM, TO], INDICES[TABLES.RELATED_JOBS][[FROM, TO].join('')].name)
     })
 
+    .createTable(TABLES.ACCESS_REQUESTS, t => {
+      const {
+        PERSON,
+        COMPANY
+      } = FIELDS[TABLES.ACCESS_REQUESTS]
+
+      defaultConfig(t, knex)
+      relationType(PERSON, TABLES.PEOPLE, t, knex).notNullable()
+      relationType(COMPANY, TABLES.COMPANIES, t, knex).notNullable()
+      t.unique([COMPANY, PERSON], INDICES[TABLES.ACCESS_REQUESTS][[COMPANY, PERSON].join('')].name)
+    })
+
   // create all required collections in the nosql store
   await Promise.all(Object.values(COLLECTIONS).map(async collectionName => {
     let collection
@@ -443,6 +455,7 @@ exports.up = async knex => {
 
 exports.down = async knex => {
   await knex.schema
+    .dropTable(TABLES.ACCESS_REQUESTS)
     .dropTable(TABLES.RELATED_JOBS)
     .dropTable(TABLES.SURVEY_QUESTION_TAGS)
     .dropTable(TABLES.ROLE_TAGS)

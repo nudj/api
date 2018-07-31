@@ -1,5 +1,6 @@
 module.exports = {
   connectionsIndexFormatter: require('./connections-index-formatter'),
+  createCompany: require('./create-company'),
   createJob: require('./create-job'),
   createPerson: require('./create-person'),
   fetchConnectionPropertyMap: require('./fetch-connection-property-map'),

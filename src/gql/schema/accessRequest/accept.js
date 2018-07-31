@@ -73,10 +73,19 @@ module.exports = {
           }
         })
 
+        let subject = 'Your request has been accepted'
+        if (user.firstName) {
+          if (user.lastName) {
+            subject = `${user.firstName} ${user.lastName} has accepted your request`
+          } else {
+            subject = `${user.firstName} has accepted your request`
+          }
+        }
+
         // send email to new hirer
         await send({
           to: person.email,
-          subject: `${user.firstName} ${user.lastName} has accepted your request`,
+          subject,
           html: requestAcceptedEmailBodyTemplate({
             hire: context.hire,
             web: context.web,

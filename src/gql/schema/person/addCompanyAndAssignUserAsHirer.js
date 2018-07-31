@@ -1,5 +1,8 @@
-const makeUniqueSlug = require('../../lib/helpers/make-unique-slug')
+
 const { values: hirerTypes } = require('../enums/hirer-types')
+const { values: dataSources } = require('../enums/data-sources')
+const { validateCompanyCreation } = require('../../lib/helpers/validation/company')
+const { createCompany } = require('../../lib/helpers')
 
 module.exports = {
   typeDefs: `
@@ -10,12 +13,8 @@ module.exports = {
   resolvers: {
     Person: {
       addCompanyAndAssignUserAsHirer: async (person, args, context) => {
-        const {
-          name: companyName,
-          location,
-          description,
-          client
-        } = args.company
+        await validateCompanyCreation(args.company, context)
+        const companyName = args.company.name
 
         // Avoid using `readOneOrCreate` to prevent unnecessarily generating a
         // slug and checking newly created companies for existing hirers.
@@ -25,10 +24,6 @@ module.exports = {
         })
 
         if (company) {
-          if (company.client) {
-            throw new Error(`${companyName} is already a company on nudj`)
-          }
-
           const userHirer = await context.sql.readOne({
             type: 'hirers',
             filters: {
@@ -42,27 +37,40 @@ module.exports = {
           company = await context.sql.update({
             type: 'companies',
             id: company.id,
-            data: {
-              client: true
-            }
+            data: { client: true }
           })
         } else {
-          const slug = await makeUniqueSlug({
-            type: 'companies',
-            data: args.company,
-            context
-          })
+          company = await createCompany(context, args.company)
+        }
 
-          company = await context.sql.create({
-            type: 'companies',
-            filters: { name: companyName },
+        const currentEmployment = await context.sql.readOne({
+          type: 'employments',
+          filters: {
+            person: person.id,
+            current: true
+          }
+        })
+
+        const employedWithOtherCompany = currentEmployment && currentEmployment.company !== company.id
+
+        if (employedWithOtherCompany) {
+          await context.sql.update({
+            type: 'employments',
+            id: currentEmployment.id,
             data: {
-              name: companyName,
-              slug,
-              location,
-              description,
-              client,
-              onboarded: false
+              current: false
+            }
+          })
+        }
+
+        if (!currentEmployment || employedWithOtherCompany) {
+          await context.sql.create({
+            type: 'employments',
+            data: {
+              person: person.id,
+              company: company.id,
+              current: true,
+              source: dataSources.NUDJ
             }
           })
         }

@@ -85,11 +85,12 @@ describe('AccessRequest.accept', () => {
   })
 
   describe('on green path', () => {
-    it('should create new hirer', async () => {
+    it('should create new member hirer', async () => {
       await executeQueryOnDbUsingSchema({ operation, db, schema })
       expect(db.hirers).to.have.length(2)
       expect(db.hirers[1]).to.have.property('company', 'company1')
       expect(db.hirers[1]).to.have.property('person', 'person2')
+      expect(db.hirers[1]).to.have.property('type', hirerTypes.MEMBER)
     })
 
     it('should create new acceptedAccessRequest', async () => {

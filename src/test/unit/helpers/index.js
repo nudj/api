@@ -8,8 +8,12 @@ const { transaction, store } = require('../../../gql/adaptors/lodash')
 function executeQueryOnDbUsingSchema ({ schema, variables = {}, operation, db, nosql }) {
   const testContext = {
     web: {
-      protocol: 'https',
+      protocol: process.env.PROTOCOL,
       hostname: process.env.WEB_HOSTNAME
+    },
+    hire: {
+      protocol: process.env.PROTOCOL,
+      hostname: process.env.HIRE_HOSTNAME
     },
     userId: 'person1',
     transaction: transaction({ db }),

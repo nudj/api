@@ -1,4 +1,5 @@
 /* eslint-env mocha */
+const orderBy = require('lodash/orderBy')
 const chai = require('chai')
 const nock = require('nock')
 const expect = chai.expect
@@ -55,7 +56,8 @@ describe('Mutation.createCompany', () => {
       expect(db.companies[0]).to.deep.equal({
         id: 'company1',
         name: 'NudjV2',
-        slug: 'nudj-v2',
+        slug: 'nudj-v-2',
+        onboarded: false,
         client: false
       })
     })
@@ -83,7 +85,56 @@ describe('Mutation.createCompany', () => {
             id: 'company1',
             name: 'Nudj V2',
             onboarded: false,
-            slug: 'nudj-v2'
+            slug: 'nudj-v-2'
+          }
+        ]
+      }
+    })
+
+    it('should generate a new unique slug', async () => {
+      await executeQueryOnDbUsingSchema({
+        operation,
+        variables,
+        db,
+        schema
+      })
+      const companies = orderBy(db.companies, 'id')
+      expect(companies[0]).to.have.property('slug', 'nudj-v-2')
+      expect(companies[1]).to.have.property('slug').to.not.equal('nudj-v-2')
+      expect(companies[1]).to.have.property('slug').to.match(/nudj-v-2-[a-zA-Z0-9]{8}/)
+    })
+
+    it('should create the company', async () => {
+      await executeQueryOnDbUsingSchema({
+        operation,
+        variables,
+        db,
+        schema
+      })
+      const companies = orderBy(db.companies, 'id')
+      expect(companies.length).to.equal(2)
+      expect(companies[1]).to.have.property('id').to.equal('company2')
+    })
+  })
+
+  describe('when the name is not unique', () => {
+    const existingCompanyVariables = {
+      company: {
+        name: 'gavin corp',
+        slug: 'gavin-corp',
+        client: true
+      }
+    }
+
+    beforeEach(() => {
+      db = {
+        companies: [
+          {
+            id: 'company1',
+            name: 'Gavin Corp',
+            onboarded: false,
+            client: true,
+            slug: 'gavin-corp'
           }
         ]
       }
@@ -92,7 +143,7 @@ describe('Mutation.createCompany', () => {
     it('should throw an error', async () => {
       const result = await executeQueryOnDbUsingSchema({
         operation,
-        variables,
+        variables: existingCompanyVariables,
         db,
         schema
       })
@@ -106,7 +157,7 @@ describe('Mutation.createCompany', () => {
     it('should not create the company', async () => {
       await executeQueryOnDbUsingSchema({
         operation,
-        variables,
+        variables: existingCompanyVariables,
         db,
         schema
       })

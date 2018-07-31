@@ -197,6 +197,7 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
         it('creates a hirer', async () => {
           const db = {
             ...baseDb,
+            employments: [],
             companies: [
               {
                 id: 'company1',
@@ -313,6 +314,7 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
     it('creates the hirer', async () => {
       const db = {
         ...baseDb,
+        employments: [],
         companies: [],
         hirers: []
       }
@@ -339,6 +341,7 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
     it('returns the hirer', async () => {
       const db = {
         ...baseDb,
+        employments: [],
         companies: [],
         hirers: []
       }

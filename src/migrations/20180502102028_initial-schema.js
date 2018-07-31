@@ -440,16 +440,16 @@ exports.up = async knex => {
       t.unique([COMPANY, PERSON], INDICES[TABLES.ACCESS_REQUESTS][[COMPANY, PERSON].join('')].name)
     })
 
-    .createTable(TABLES.ACCEPT_ACCESS_REQUESTS, t => {
+    .createTable(TABLES.ACCEPTED_ACCESS_REQUESTS, t => {
       const {
         ACCESS_REQUEST,
         HIRER
-      } = FIELDS[TABLES.ACCEPT_ACCESS_REQUESTS]
+      } = FIELDS[TABLES.ACCEPTED_ACCESS_REQUESTS]
 
       defaultConfig(t, knex)
       relationType(ACCESS_REQUEST, TABLES.COMPANIES, t, knex).notNullable()
       relationType(HIRER, TABLES.PEOPLE, t, knex).notNullable()
-      t.unique([ACCESS_REQUEST, HIRER], INDICES[TABLES.ACCEPT_ACCESS_REQUESTS][[ACCESS_REQUEST, HIRER].join('')].name)
+      t.unique([ACCESS_REQUEST, HIRER], INDICES[TABLES.ACCEPTED_ACCESS_REQUESTS][[ACCESS_REQUEST, HIRER].join('')].name)
     })
 
   // create all required collections in the nosql store
@@ -467,7 +467,7 @@ exports.up = async knex => {
 
 exports.down = async knex => {
   await knex.schema
-    .dropTable(TABLES.ACCEPT_ACCESS_REQUESTS)
+    .dropTable(TABLES.ACCEPTED_ACCESS_REQUESTS)
     .dropTable(TABLES.ACCESS_REQUESTS)
     .dropTable(TABLES.RELATED_JOBS)
     .dropTable(TABLES.SURVEY_QUESTION_TAGS)

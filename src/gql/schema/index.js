@@ -4,6 +4,9 @@ const mergeDefinitions = require('../lib/merge-definitions')
 const modules = [
   require('./accessRequest'),
   require('./accessRequest/accept'),
+  require('./accessRequest/acceptedBy'),
+  require('./accessRequest/company'),
+  require('./accessRequest/person'),
   require('./account'),
   require('./account/person'),
   require('./application'),

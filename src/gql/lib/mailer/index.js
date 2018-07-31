@@ -3,7 +3,10 @@ const randomWords = require('random-words')
 const camelCase = require('lodash/camelCase')
 const { logger } = require('@nudj/library')
 
-const { INTERNAL_EMAIL_ADDRESS } = require('../constants')
+const {
+  INTERNAL_EMAIL_ADDRESS,
+  INTERNAL_EMAIL_FROM
+} = require('../constants')
 
 const teammateInvitationEmailBodyTemplate = require('./invite-email-template')
 const requestAccessEmailTemplate = require('./request-access-email-template')
@@ -11,12 +14,17 @@ const sendJobsEmailBodyTemplate = require('./send-jobs-email-template')
 const jobNotificationEmailBodyTemplate = require('./job-notification-email-template')
 const requestAcceptedEmailBodyTemplate = require('./request-accepted-email-template')
 
+const fromViaNudj = name => `${name} via ${INTERNAL_EMAIL_FROM}`
+
 const mailgun = Mailgun({
   apiKey: process.env.MAILGUN_API_KEY,
   domain: process.env.MAILGUN_DOMAIN
 })
 module.exports = {
-  send: ({ from, to, subject, html }) => {
+  send: ({
+    from = INTERNAL_EMAIL_FROM,
+    to, subject, html
+  }) => {
     const id = camelCase(randomWords(2).join('-'))
     logger('info', 'Sending email', id, from, '>', to, subject)
     return mailgun
@@ -33,7 +41,7 @@ module.exports = {
     return mailgun
       .messages()
       .send({
-        from: INTERNAL_EMAIL_ADDRESS,
+        from: INTERNAL_EMAIL_FROM,
         to: INTERNAL_EMAIL_ADDRESS,
         subject,
         html
@@ -49,7 +57,7 @@ module.exports = {
     return mailgun
       .messages()
       .send({
-        from: `Nudj <${INTERNAL_EMAIL_ADDRESS}>`,
+        from: INTERNAL_EMAIL_FROM,
         to,
         subject: 'A user has requested access on nudj',
         html: requestAccessEmailTemplate({
@@ -63,5 +71,6 @@ module.exports = {
   sendJobsEmailBodyTemplate,
   teammateInvitationEmailBodyTemplate,
   jobNotificationEmailBodyTemplate,
-  requestAcceptedEmailBodyTemplate
+  requestAcceptedEmailBodyTemplate,
+  fromViaNudj
 }

@@ -33,9 +33,7 @@ module.exports = {
             }
           ]
         }, 'hirer')
-        return mailer.send({
-          from: 'hello@nudj.co',
-          to: 'hello@nudj.co',
+        return mailer.sendInternalEmail({
           subject: 'Request Access',
           html: `
             <html>

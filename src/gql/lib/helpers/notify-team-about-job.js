@@ -22,7 +22,6 @@ module.exports = async (context, company, job) => {
   })
 
   await Promise.all(teamMatePeople.map(person => send({
-    from: 'hello@nudj.co',
     to: person.email,
     subject: 'New jobs on nudj!',
     html: jobNotificationEmailBodyTemplate({

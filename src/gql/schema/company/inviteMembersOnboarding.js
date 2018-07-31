@@ -3,7 +3,10 @@ const {
   validateInviteesAndFetchEmailData,
   logInvitationsToIntercom
 } = require('../../lib/helpers')
-const { send } = require('../../lib/mailer')
+const {
+  send,
+  fromViaNudj
+} = require('../../lib/mailer')
 
 module.exports = {
   typeDefs: `
@@ -27,7 +30,7 @@ module.exports = {
         } = emailData
 
         const job = jobs[0]
-        const from = senderName ? `${senderName} via nudj <hello@nudj.co>` : `nudj <hello@nudj.co>`
+        const from = senderName && fromViaNudj(senderName)
         const invitationUrl = getInvitationUrl({
           protocol: context.web.protocol,
           hostname: process.env.HIRE_HOSTNAME,

@@ -5,5 +5,10 @@ module.exports = {
       created: DateTime!
       modified: DateTime!
     }
+
+    input AccessRequestFilterInput {
+      person: ID
+      company: ID
+    }
   `
 }

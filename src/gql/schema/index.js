@@ -13,6 +13,7 @@ const modules = [
   require('./application/person'),
   require('./application/referral'),
   require('./company'),
+  require('./company/accessRequestByFilters'),
   require('./company/createHirerByEmail'),
   require('./company/createAccessRequest'),
   require('./company/createJob'),
@@ -144,6 +145,7 @@ const modules = [
   // Mutations
   require('./mutation'),
   require('./mutation/accessRequest'),
+  require('./mutation/accessRequestByFilters'),
   require('./mutation/application'),
   require('./mutation/applicationByFilters'),
   require('./mutation/applications'),
@@ -226,6 +228,7 @@ const modules = [
   // Queries
   require('./query'),
   require('./query/accessRequest'),
+  require('./query/accessRequestByFilters'),
   require('./query/application'),
   require('./query/applicationByFilters'),
   require('./query/applications'),

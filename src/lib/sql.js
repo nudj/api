@@ -5,7 +5,7 @@ const hash = require('hash-generator')
 const kebabCase = require('lodash/kebabCase')
 
 const TABLES = {
-  ACCEPT_ACCESS_REQUESTS: 'acceptAccessRequests',
+  ACCEPTED_ACCESS_REQUESTS: 'acceptAccessRequests',
   ACCESS_REQUESTS: 'accessRequests',
   ACCOUNTS: 'accounts',
   APPLICATIONS: 'applications',
@@ -199,7 +199,7 @@ const FIELDS = {
     COMPANY: 'company',
     PERSON: 'person'
   },
-  [TABLES.ACCEPT_ACCESS_REQUESTS]: {
+  [TABLES.ACCEPTED_ACCESS_REQUESTS]: {
     ACCESS_REQUEST: 'accessRequest',
     HIRER: 'hirer'
   }
@@ -402,10 +402,10 @@ const INDICES = merge(
         fields: [F.ACCESS_REQUESTS.COMPANY, F.ACCESS_REQUESTS.PERSON]
       }
     },
-    [TABLES.ACCEPT_ACCESS_REQUESTS]: {
-      [F.ACCEPT_ACCESS_REQUESTS.ACCESS_REQUEST + F.ACCEPT_ACCESS_REQUESTS.HIRER]: {
-        name: `${TABLES.ACCEPT_ACCESS_REQUESTS}ByAccessRequestHirer`,
-        fields: [F.ACCEPT_ACCESS_REQUESTS.ACCESS_REQUEST, F.ACCEPT_ACCESS_REQUESTS.HIRER]
+    [TABLES.ACCEPTED_ACCESS_REQUESTS]: {
+      [F.ACCEPTED_ACCESS_REQUESTS.ACCESS_REQUEST + F.ACCEPTED_ACCESS_REQUESTS.HIRER]: {
+        name: `${TABLES.ACCEPTED_ACCESS_REQUESTS}ByAccessRequestHirer`,
+        fields: [F.ACCEPTED_ACCESS_REQUESTS.ACCESS_REQUEST, F.ACCEPTED_ACCESS_REQUESTS.HIRER]
       }
     }
   }

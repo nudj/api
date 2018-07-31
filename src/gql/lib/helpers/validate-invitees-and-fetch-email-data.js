@@ -2,7 +2,10 @@ const uniqBy = require('lodash/uniqBy')
 const hashGenerator = require('hash-generator')
 
 const fetchPerson = require('./fetch-person')
-const { sendInternalEmail } = require('../mailer')
+const {
+  sendInternalEmail,
+  fromViaNudj
+} = require('../mailer')
 
 const validateInviteesAndFetchEmailData = async (company, args, context) => {
   const members = uniqBy(args.members, 'email')
@@ -19,9 +22,7 @@ const validateInviteesAndFetchEmailData = async (company, args, context) => {
   } = await fetchPerson(context, context.userId)
 
   const senderName = firstName && lastName && `${firstName} ${lastName}`
-  const from = senderName
-    ? `${senderName} via nudj <hello@nudj.co>`
-    : `nudj <hello@nudj.co>`
+  const from = senderName && fromViaNudj(senderName)
   const subject = senderName
     ? `Help ${senderName} and the rest of ${company.name} hire more great people using nudj`
     : `You've been invited to join nudj!`

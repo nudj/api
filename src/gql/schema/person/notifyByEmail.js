@@ -14,7 +14,6 @@ module.exports = {
     Person: {
       notifyByEmail: async (person, args) => {
         return mailer.send({
-          from: 'hello@nudj.co',
           to: person.email,
           subject: renderSimpleTemplate({
             template: args.subject,

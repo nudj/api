@@ -5,7 +5,6 @@ const sinon = require('sinon')
 const qs = require('qs')
 const expect = chai.expect
 
-const { INTERNAL_EMAIL_ADDRESS } = require('../../../../gql/lib/constants')
 const schema = require('../../../../gql/schema')
 const { executeQueryOnDbUsingSchema } = require('../../helpers')
 const { values: hirerTypes } = require('../../../../gql/schema/enums/hirer-types')
@@ -104,7 +103,6 @@ describe('AccessRequest.accept', () => {
       await executeQueryOnDbUsingSchema({ operation, db, schema })
       expect(mailerStub).to.have.been.calledOnce()
       const mailgunArgs = mailerStub.args[0][0]
-      expect(mailgunArgs).to.have.property('from', INTERNAL_EMAIL_ADDRESS)
       expect(mailgunArgs).to.have.property('to', 'madelyn@email.tld')
       expect(mailgunArgs).to.have.property('subject', `Andrew Admin has accepted your request`)
       expect(mailgunArgs).to.have.property('html')

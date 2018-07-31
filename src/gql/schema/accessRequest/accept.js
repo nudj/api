@@ -4,7 +4,6 @@ const {
   send,
   requestAcceptedEmailBodyTemplate
 } = require('../../lib/mailer')
-const { INTERNAL_EMAIL_ADDRESS } = require('../../lib/constants')
 
 module.exports = {
   typeDefs: `
@@ -76,7 +75,6 @@ module.exports = {
 
         // send email to new hirer
         await send({
-          from: INTERNAL_EMAIL_ADDRESS,
           to: person.email,
           subject: `${user.firstName} ${user.lastName} has accepted your request`,
           html: requestAcceptedEmailBodyTemplate({

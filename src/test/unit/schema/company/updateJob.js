@@ -419,7 +419,6 @@ describe('Company.updateJob', () => {
       expect(mailerStub).to.have.been.calledOnce()
 
       const callArgs = mailerStub.getCall(0).args[0]
-      expect(callArgs).to.have.property('from', 'hello@nudj.co')
       expect(callArgs).to.have.property('to', 'person3@nudj.co')
       expect(callArgs).to.have.property('subject', 'New jobs on nudj!')
       expect(callArgs).to.have.property('html')

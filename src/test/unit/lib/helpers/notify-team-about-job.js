@@ -105,7 +105,6 @@ describe('notifyTeamAboutJob', () => {
       await notifyTeamAboutJob(context, company, job)
 
       const firstCallArgs = mailerSendStub.getCall(0).args[0]
-      expect(firstCallArgs).to.have.property('from', 'hello@nudj.co')
       expect(firstCallArgs).to.have.property('to', 'nick@nudj.co')
       expect(firstCallArgs).to.have.property('subject', 'New jobs on nudj!')
       expect(firstCallArgs).to.have.property('html', JOB_NOTIFICATION_TEMPLATE)

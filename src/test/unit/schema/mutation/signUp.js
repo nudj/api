@@ -17,7 +17,7 @@ describe('Mutation.signUp', () => {
     }))
     definition = proxyquire('../../../../gql/schema/mutation/signUp', {
       '../../lib/mailer': {
-        send: mailerSendStub
+        sendInternalEmail: mailerSendStub
       },
       '../../lib/intercom': {
         createUniqueLeadAndTag: () => {}
@@ -40,14 +40,6 @@ describe('Mutation.signUp', () => {
 
     it('should send email via mailgun', () => {
       expect(mailerSendStub).to.have.been.called()
-    })
-
-    it('should send email from hello@nudj.co', () => {
-      expect(mailerSendStub.args[0][0]).to.have.property('from', 'hello@nudj.co')
-    })
-
-    it('should send email to hello@nudj.co', () => {
-      expect(mailerSendStub.args[0][0]).to.have.property('to', 'hello@nudj.co')
     })
 
     it('should set email subject', () => {

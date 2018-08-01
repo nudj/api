@@ -1,6 +1,7 @@
 const { values: hirerTypes } = require('../enums/hirer-types')
 const mailer = require('../../lib/mailer')
 const fetchPerson = require('../../lib/helpers/fetch-person')
+const makeUniqueSlug = require('../../lib/helpers/make-unique-slug')
 
 module.exports = {
   typeDefs: `
@@ -11,9 +12,15 @@ module.exports = {
   resolvers: {
     Company: {
       createAccessRequest: async (company, args, context) => {
+        const slug = await makeUniqueSlug({
+          type: 'accessRequests',
+          context
+        })
+
         const accessRequest = await context.sql.create({
           type: 'accessRequests',
           data: {
+            slug,
             company: company.id,
             person: args.person
           }
@@ -38,7 +45,7 @@ module.exports = {
             to: admin.email,
             hire: context.hire,
             requestee,
-            requestId: accessRequest.id,
+            requestSlug: accessRequest.slug,
             company
           }))
         )

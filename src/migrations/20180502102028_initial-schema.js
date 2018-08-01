@@ -430,13 +430,16 @@ exports.up = async knex => {
 
     .createTable(TABLES.ACCESS_REQUESTS, t => {
       const {
+        SLUG,
         PERSON,
         COMPANY
       } = FIELDS[TABLES.ACCESS_REQUESTS]
 
       defaultConfig(t, knex)
+      t.string(SLUG).notNullable()
       relationType(PERSON, TABLES.PEOPLE, t, knex).notNullable()
       relationType(COMPANY, TABLES.COMPANIES, t, knex).notNullable()
+      t.unique(SLUG, INDICES[TABLES.ACCESS_REQUESTS][SLUG].name)
       t.unique([COMPANY, PERSON], INDICES[TABLES.ACCESS_REQUESTS][[COMPANY, PERSON].join('')].name)
     })
 

@@ -7,6 +7,7 @@ const NO_SQL_URL = `http://${process.env.NO_SQL_HOST}:${process.env.NO_SQL_PORT}
 const INTERNAL_EMAIL_ADDRESS = 'hello@nudj.co'
 const INTERNAL_EMAIL_FROM = `nudj <${INTERNAL_EMAIL_ADDRESS}>`
 
+const randomSlugGenerator = () => hash(10)
 const fieldSlugGenerator = field => (data, addRandom) => {
   let random = ''
   if (addRandom) {
@@ -18,7 +19,8 @@ const fieldSlugGenerator = field => (data, addRandom) => {
 const SLUG_GENERATORS = {
   companies: fieldSlugGenerator('name'),
   jobs: fieldSlugGenerator('title'),
-  surveys: fieldSlugGenerator('introTitle')
+  surveys: fieldSlugGenerator('introTitle'),
+  accessRequests: randomSlugGenerator
 }
 
 module.exports = {

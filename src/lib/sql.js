@@ -5,7 +5,7 @@ const hash = require('hash-generator')
 const kebabCase = require('lodash/kebabCase')
 
 const TABLES = {
-  ACCEPTED_ACCESS_REQUESTS: 'acceptAccessRequests',
+  ACCEPTED_ACCESS_REQUESTS: 'acceptedAccessRequests',
   ACCESS_REQUESTS: 'accessRequests',
   ACCOUNTS: 'accounts',
   APPLICATIONS: 'applications',
@@ -196,6 +196,7 @@ const FIELDS = {
     TYPE: 'type'
   },
   [TABLES.ACCESS_REQUESTS]: {
+    SLUG: 'slug',
     COMPANY: 'company',
     PERSON: 'person'
   },
@@ -397,6 +398,10 @@ const INDICES = merge(
       }
     },
     [TABLES.ACCESS_REQUESTS]: {
+      [F.ACCESS_REQUESTS.SLUG]: {
+        name: `${TABLES.ACCESS_REQUESTS}BySlug`,
+        fields: [F.ACCESS_REQUESTS.SLUG]
+      },
       [F.ACCESS_REQUESTS.COMPANY + F.ACCESS_REQUESTS.PERSON]: {
         name: `${TABLES.ACCESS_REQUESTS}ByCompanyPerson`,
         fields: [F.ACCESS_REQUESTS.COMPANY, F.ACCESS_REQUESTS.PERSON]
@@ -473,6 +478,9 @@ const SLUG_GENERATORS = {
   [TABLES.SURVEYS]: {
     generator: fieldSlugGenerator(FIELDS[TABLES.SURVEYS].INTRO_TITLE),
     index: 'surveysBySlug'
+  },
+  [TABLES.ACCESS_REQUESTS]: {
+    generator: randomSlugGenerator
   }
 }
 const COLLECTIONS = {

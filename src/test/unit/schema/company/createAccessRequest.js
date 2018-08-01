@@ -103,6 +103,7 @@ describe('Company.createAccessRequest', () => {
     expect(db.accessRequests.length).to.equal(1)
     expect(db.accessRequests[0]).to.have.property('company', 'company1')
     expect(db.accessRequests[0]).to.have.property('person', 'person4')
+    expect(db.accessRequests[0]).to.have.property('slug').to.match(/[a-z0-9]{10}/)
   })
 
   it('returns the `accessRequest`', async () => {

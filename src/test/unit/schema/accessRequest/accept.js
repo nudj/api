@@ -90,6 +90,7 @@ describe('AccessRequest.accept', () => {
       expect(db.hirers[1]).to.have.property('company', 'company1')
       expect(db.hirers[1]).to.have.property('person', 'person2')
       expect(db.hirers[1]).to.have.property('type', hirerTypes.MEMBER)
+      expect(db.hirers[1]).to.have.property('onboarded', false)
     })
 
     it('should create new acceptedAccessRequest', async () => {

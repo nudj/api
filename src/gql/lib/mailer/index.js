@@ -51,7 +51,7 @@ module.exports = {
   sendAccessRequestEmail: ({
     to,
     requestee,
-    requestId,
+    requestSlug,
     company,
     hire
   }) => {
@@ -63,7 +63,7 @@ module.exports = {
         subject: 'A user has requested access on nudj',
         html: requestAccessEmailTemplate({
           requestee,
-          requestId,
+          requestSlug,
           company,
           hire
         })

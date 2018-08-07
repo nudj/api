@@ -39,7 +39,9 @@ module.exports = {
             data: { client: true }
           })
         } else {
-          company = await createCompany(context, args.company)
+          company = await createCompany(context, args.company, {
+            createDummyData: true
+          })
         }
 
         const currentEmployment = await context.store.readOne({

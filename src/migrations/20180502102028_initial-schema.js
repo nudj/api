@@ -9,7 +9,8 @@ const {
   urlType,
   relationType
 } = require('../lib/sql')
-const { nosql } = require('../lib/stores')
+const { nosql, sql } = require('../lib/stores')
+const { DUMMY_APPLICANT_EMAIL_ADDRESS } = require('../gql/lib/constants')
 
 exports.up = async knex => {
   await knex.schema
@@ -454,6 +455,14 @@ exports.up = async knex => {
       relationType(HIRER, TABLES.PEOPLE, t, knex).notNullable()
       t.unique([ACCESS_REQUEST, HIRER], INDICES[TABLES.ACCEPTED_ACCESS_REQUESTS][[ACCESS_REQUEST, HIRER].join('')].name)
     })
+
+  // create mock person in sql store for mock job applications
+  await sql(TABLES.PEOPLE).insert({
+    [FIELDS[TABLES.PEOPLE].FIRST_NAME]: 'Buzz',
+    [FIELDS[TABLES.PEOPLE].LAST_NAME]: 'Lightyear',
+    [FIELDS[TABLES.PEOPLE].EMAIL]: DUMMY_APPLICANT_EMAIL_ADDRESS,
+    [FIELDS[TABLES.PEOPLE].URL]: 'https://pixar.wikia.com/wiki/Buzz_Lightyear'
+  })
 
   // create all required collections in the nosql store
   await Promise.all(Object.values(COLLECTIONS).map(async collectionName => {

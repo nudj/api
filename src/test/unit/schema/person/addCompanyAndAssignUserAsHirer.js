@@ -1,16 +1,27 @@
 /* eslint-env mocha */
 const chai = require('chai')
+const sinon = require('sinon')
+const find = require('lodash/find')
 
 const { values: hirerTypes } = require('../../../../gql/schema/enums/hirer-types')
 const schema = require('../../../../gql/schema')
+const { values: jobStatusTypes } = require('../../../../gql/schema/enums/job-status-types')
+const mockPrismicRequests = require('../../helpers/prismic/mock-requests')
+const { DUMMY_APPLICANT_EMAIL_ADDRESS } = require('../../../../gql/lib/constants')
 const {
   executeQueryOnDbUsingSchema,
   shouldRespondWithGqlError
 } = require('../../helpers')
 
 const expect = chai.expect
+const prismicStub = sinon.stub()
 
 describe('Person.addCompanyAndAssignUserAsHirer', async () => {
+  beforeEach(() => {
+    prismicStub.reset()
+    mockPrismicRequests(prismicStub)
+  })
+
   const operation = `
     query testQuery ($companyData: CompanyCreateInput!) {
       user {
@@ -21,11 +32,12 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
     }
   `
   const baseDb = {
-    people: [
-      {
-        id: 'person1'
-      }
-    ]
+    applications: [],
+    jobs: [],
+    people: [{
+      id: 'person1',
+      email: DUMMY_APPLICANT_EMAIL_ADDRESS
+    }]
   }
   const variables = {
     companyData: {
@@ -360,6 +372,56 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
           }
         }
       })
+    })
+
+    it('creates a dummy data job for the company', async () => {
+      const db = {
+        ...baseDb,
+        applications: [],
+        jobs: [],
+        companies: [],
+        hirers: [],
+        employments: []
+      }
+      await executeQueryOnDbUsingSchema({
+        operation,
+        db,
+        schema,
+        variables
+      })
+      const company = db.companies[0]
+
+      expect(db.jobs.length).to.equal(1)
+      expect(db.jobs[0]).to.have.property('description')
+      expect(db.jobs[0]).to.have.property('title')
+      expect(db.jobs[0]).to.have.property('bonus')
+      expect(db.jobs[0]).to.have.property('location')
+      expect(db.jobs[0]).to.have.property('slug')
+      expect(db.jobs[0]).to.have.property('company', company.id)
+      expect(db.jobs[0]).to.have.property('status', jobStatusTypes.DRAFT)
+    })
+
+    it('creates a dummy data application for the company', async () => {
+      const db = {
+        ...baseDb,
+        applications: [],
+        jobs: [],
+        companies: [],
+        hirers: [],
+        employments: []
+      }
+      await executeQueryOnDbUsingSchema({
+        operation,
+        db,
+        schema,
+        variables
+      })
+      const job = db.jobs[0]
+      const dummyPerson = find(db.people, { email: DUMMY_APPLICANT_EMAIL_ADDRESS })
+
+      expect(db.applications.length).to.equal(1)
+      expect(db.applications[0]).to.have.property('person', dummyPerson.id)
+      expect(db.applications[0]).to.have.property('job', job.id)
     })
   })
 })

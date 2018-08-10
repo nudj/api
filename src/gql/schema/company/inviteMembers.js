@@ -39,7 +39,7 @@ module.exports = {
               hire: context.hire,
               web: context.web,
               senderName,
-              company,
+              company: emailData.company,
               jobs,
               email: email
             })

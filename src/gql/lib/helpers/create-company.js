@@ -56,6 +56,7 @@ const createCompany = async (context, companyData, options = {}) => {
     const job = await createJob(context, company, {
       ...omit(jobData, ['tags']), // Omit prismic tags
       title: `${possessiveCase(company.name)} First Job`,
+      templateTags: [],
       status: jobStatusTypes.DRAFT
     })
 

@@ -61,6 +61,7 @@ const modules = [
   require('./job/applicationsCountByFilters'),
   require('./job/company'),
   require('./job/createApplication'),
+  require('./job/getOrCreatePersonAndApplication'),
   require('./job/createReferralByEmail'),
   require('./job/getOrCreateReferralForUser'),
   require('./job/createReferralWithParentForPerson'),

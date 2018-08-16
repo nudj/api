@@ -38,7 +38,7 @@ module.exports = {
             html: teammateInvitationEmailBodyTemplate({
               web: context.web,
               senderName,
-              company,
+              company: emailData.company,
               jobs,
               email
             })

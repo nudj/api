@@ -84,13 +84,12 @@ describe('Person.getOrCreateConnection', () => {
     })
 
     it('should create the company', () => {
-      return expect(db).to.have.deep.property('companies.0').to.deep.equal({
-        id: 'company1',
-        client: false,
-        onboarded: false,
-        name: 'CONNECTION_COMPANY',
-        slug: 'connection_company'
-      })
+      expect(db.companies[0]).to.have.property('id', 'company1')
+      expect(db.companies[0]).to.have.property('client', false)
+      expect(db.companies[0]).to.have.property('onboarded', false)
+      expect(db.companies[0]).to.have.property('name', 'CONNECTION_COMPANY')
+      expect(db.companies[0]).to.have.property('slug', 'connection_company')
+      expect(db.companies[0]).to.have.property('hash').to.match(/[a-z0-9]{128}/)
     })
 
     it('should create the person', () => {

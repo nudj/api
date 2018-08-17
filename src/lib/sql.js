@@ -60,7 +60,8 @@ const FIELDS = {
     LOCATION: 'location',
     LOGO: 'logo',
     URL: 'url',
-    CLIENT: 'client'
+    CLIENT: 'client',
+    HASH: 'hash'
   },
   [TABLES.CONNECTIONS]: {
     FIRST_NAME: 'firstName',

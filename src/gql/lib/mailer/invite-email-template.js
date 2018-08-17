@@ -142,8 +142,7 @@ module.exports = ({ web, senderName, company, jobs, email }) => dedent`
                 </tr>
                 <tr style="font-family: sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                   <td class="content-block" style="font-family: sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;" valign="top">
-                    <strong>${senderName || 'We\'ve'}</strong> invited you to join the rest of <strong>${company.name}</strong> on nudj; a simple tool that makes it incredibly easy for you to share ${possessiveCase(company.name)} open roles with your
-                    network.
+                    <strong>${senderName || 'We\'ve'}</strong> invited you to join the rest of <strong>${company.name}</strong> on nudj; an employee referral platform that makes it incredibly easy for you to share ${possessiveCase(company.name)} open roles with your network and ensures you get rewarded when they get hired.
                   </td>
                 </tr>
                 <tr style="font-family: sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
@@ -153,13 +152,12 @@ module.exports = ({ web, senderName, company, jobs, email }) => dedent`
                 </tr>
                 <tr style="font-family: sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                   <td class="content-block" style="font-family: sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;" valign="top">
-                    <strong>Why should you care?</strong> Referrals are the best way for businesses to hire more great people for less, meaning you get rewarded if someone you refer gets a job.
+                    <strong>Work with people you like and respect</strong><br />You know who the best people are, so have a say in who gets hired.
                   </td>
                 </tr>
                 <tr style="font-family: sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                   <td class="content-block" style="font-family: sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;" valign="top">
-                    <strong>What you need to do?</strong> Sign-up to claim your unique link to each of ${possessiveCase(company.name)} jobs and start sharing. If someone is hired, after applying using your link, you'll get the
-                    referral bonus on offer.
+                    <strong>Get rewarded when they are hired</strong><br />Sign-up to claim your unique link to each of ${possessiveCase(company.name)} jobs and start sharing. If someone applies using your link and they get the job, you'll get the referral bonus on offer.
                   </td>
                 </tr>
                 <hr />

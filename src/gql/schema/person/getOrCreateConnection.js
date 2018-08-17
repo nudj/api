@@ -93,7 +93,8 @@ module.exports = {
               name: to.company,
               slug: companySlug,
               onboarded: false,
-              client: false
+              client: false,
+              hash: hash(128)
             }
           }))
         ])

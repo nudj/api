@@ -491,13 +491,12 @@ describe('Mutation.updatePerson', () => {
           schema
         }).then(() => {
           expect(db.companies.length).to.equal(1)
-          return expect(db.companies[0]).to.deep.equal({
-            id: 'company1',
-            client: false,
-            onboarded: false,
-            slug: 'nudj',
-            name: 'nudj'
-          })
+          expect(db.companies[0]).to.have.property('id', 'company1')
+          expect(db.companies[0]).to.have.property('client', false)
+          expect(db.companies[0]).to.have.property('onboarded', false)
+          expect(db.companies[0]).to.have.property('slug', 'nudj')
+          expect(db.companies[0]).to.have.property('name', 'nudj')
+          expect(db.companies[0]).to.have.property('hash').to.match(/[a-z0-9]{128}/)
         })
       })
     })

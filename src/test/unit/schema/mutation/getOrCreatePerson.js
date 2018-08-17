@@ -295,11 +295,10 @@ describe('Mutation.getOrCreatePerson', () => {
           schema
         })
         expect(db.companies.length).to.equal(2)
-        expect(db.companies[1]).to.deep.equal({
-          id: 'company2',
-          name: 'El Nudjo Magnifico',
-          slug: 'el-nudjo-magnifico'
-        })
+        expect(db.companies[1]).to.have.property('id', 'company2')
+        expect(db.companies[1]).to.have.property('name', 'El Nudjo Magnifico')
+        expect(db.companies[1]).to.have.property('slug', 'el-nudjo-magnifico')
+        expect(db.companies[1]).to.have.property('hash').to.match(/[a-z0-9]{128}/)
       })
 
       it('should create a new role', async () => {

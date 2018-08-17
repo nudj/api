@@ -62,7 +62,8 @@ module.exports = {
               name: newCompany,
               slug: companySlug,
               onboarded: false,
-              client: false
+              client: false,
+              hash: hash(128)
             }
           })
           enrichOrFetchEnrichedCompanyByName(company, context)

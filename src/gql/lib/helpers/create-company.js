@@ -1,6 +1,7 @@
 const omitBy = require('lodash/omitBy')
 const omit = require('lodash/omit')
 const isUndefined = require('lodash/isUndefined')
+const generateHash = require('hash-generator')
 
 const { possessiveCase } = require('@nudj/library')
 
@@ -35,7 +36,8 @@ const createCompany = async (context, companyData, options = {}) => {
       location,
       description,
       client,
-      onboarded
+      onboarded,
+      hash: generateHash(128)
     }, isUndefined)
   })
   enrichOrFetchEnrichedCompanyByName(company, context)

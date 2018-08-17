@@ -53,13 +53,12 @@ describe('Mutation.createCompany', () => {
         db,
         schema
       })
-      expect(db.companies[0]).to.deep.equal({
-        id: 'company1',
-        name: 'NudjV2',
-        slug: 'nudj-v-2',
-        onboarded: false,
-        client: false
-      })
+      expect(db.companies[0]).to.have.property('id', 'company1')
+      expect(db.companies[0]).to.have.property('name', 'NudjV2')
+      expect(db.companies[0]).to.have.property('slug', 'nudj-v-2')
+      expect(db.companies[0]).to.have.property('onboarded', false)
+      expect(db.companies[0]).to.have.property('client', false)
+      expect(db.companies[0]).to.have.property('hash').to.match(/[a-z0-9]{128}/)
     })
 
     it('return the new company', async () => {

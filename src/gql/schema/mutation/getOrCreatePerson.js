@@ -1,4 +1,6 @@
 const omit = require('lodash/omit')
+const generateHash = require('hash-generator')
+
 const { values: dataSources } = require('../enums/data-sources')
 const { enrichOrFetchEnrichedCompanyByName } = require('../../lib/clearbit')
 const getMakeUniqueCompanySlug = require('../../lib/helpers/make-unique-company-slug')
@@ -45,7 +47,8 @@ module.exports = {
               type: 'companies',
               data: {
                 name: companyName,
-                slug: makeSlug({ name: companyName })
+                slug: makeSlug({ name: companyName }),
+                hash: generateHash(128)
               }
             })
             enrichOrFetchEnrichedCompanyByName(company, context)

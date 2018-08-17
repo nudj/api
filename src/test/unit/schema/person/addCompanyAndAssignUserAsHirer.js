@@ -282,17 +282,14 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
       })
 
       expect(db.companies.length).to.equal(1)
-      expect(db.companies).to.deep.equal([
-        {
-          id: 'company1',
-          name: 'Fake Company',
-          location: 'Fakeland',
-          description: 'Fake it til you make it',
-          slug: 'fake-company',
-          client: true,
-          onboarded: false
-        }
-      ])
+      expect(db.companies[0]).to.have.property('id', 'company1')
+      expect(db.companies[0]).to.have.property('name', 'Fake Company')
+      expect(db.companies[0]).to.have.property('location', 'Fakeland')
+      expect(db.companies[0]).to.have.property('description', 'Fake it til you make it')
+      expect(db.companies[0]).to.have.property('slug', 'fake-company')
+      expect(db.companies[0]).to.have.property('client', true)
+      expect(db.companies[0]).to.have.property('onboarded', false)
+      expect(db.companies[0]).to.have.property('hash').to.match(/[a-z0-9]{128}/)
     })
 
     it('creates a unique company slug', async () => {

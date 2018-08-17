@@ -41,12 +41,14 @@ exports.up = async knex => {
         LOCATION,
         LOGO,
         URL,
-        CLIENT
+        CLIENT,
+        HASH
       } = FIELDS[TABLES.COMPANIES]
 
       defaultConfig(t, knex)
       t.string(NAME).notNullable()
       t.string(SLUG).notNullable()
+      t.string(HASH).notNullable()
       t.text(DESCRIPTION).nullable()
       t.string(LOCATION).nullable()
       urlType(LOGO, t, knex).nullable()

@@ -61,7 +61,7 @@ module.exports = {
             company: accessRequest.company,
             person: accessRequest.person,
             type: hirerTypes.MEMBER,
-            onboarded: true
+            onboarded: false
           }
         })
 

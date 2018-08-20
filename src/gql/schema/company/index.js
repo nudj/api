@@ -16,7 +16,7 @@ module.exports = {
       size: String
       twitter: String
       url: String
-      hash: String
+      hash: String!
       onboarded: Boolean!
       client: Boolean!
     }

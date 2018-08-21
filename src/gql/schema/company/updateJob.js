@@ -1,4 +1,5 @@
 const omit = require('lodash/omit')
+const { intercom } = require('@nudj/library/analytics')
 
 const { makeUniqueSlug } = require('../../lib/helpers')
 const { values: tagTypes } = require('../enums/tag-types')
@@ -101,11 +102,23 @@ module.exports = {
           data: omit(data, ['tags'])
         })
 
-        if (
-          notifyTeam &&
+        const isNewlyPublished = (
           existingJob.status !== jobStatusTypes.PUBLISHED &&
           updatedJob.status === jobStatusTypes.PUBLISHED
-        ) {
+        )
+
+        if (isNewlyPublished) {
+          await intercom.companies.update({
+            company: { name: company.name },
+            data: {
+              custom_attributes: {
+                'has had published job': true
+              }
+            }
+          })
+        }
+
+        if (notifyTeam && isNewlyPublished) {
           await notifyTeamAboutJob(context, company, updatedJob)
         }
 

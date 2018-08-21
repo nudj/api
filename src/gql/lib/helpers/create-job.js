@@ -1,5 +1,7 @@
 const omit = require('lodash/omit')
 
+const { intercom } = require('@nudj/library/analytics')
+
 const makeUniqueSlug = require('./make-unique-slug')
 const { random: randomSlugGenerator } = require('./slug-generators')
 const { values: jobStatusTypes } = require('../../schema/enums/job-status-types')
@@ -28,6 +30,17 @@ const createJob = async (context, company, data) => {
       company: company.id
     }
   })
+
+  if (job.status === jobStatusTypes.PUBLISHED) {
+    await intercom.companies.update({
+      company: { name: company.name },
+      data: {
+        custom_attributes: {
+          'has had published job': true
+        }
+      }
+    })
+  }
 
   if (tags) {
     const jobTags = await Promise.all(tags.map(tag => {

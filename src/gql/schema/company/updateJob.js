@@ -1,5 +1,6 @@
 const omit = require('lodash/omit')
 
+const { makeUniqueSlug } = require('../../lib/helpers')
 const { values: tagTypes } = require('../enums/tag-types')
 const { values: tagSources } = require('../enums/tag-sources')
 const { values: jobStatusTypes } = require('../enums/job-status-types')
@@ -81,13 +82,23 @@ module.exports = {
 
         const existingJob = await context.store.readOne({
           type: 'jobs',
-          id: args.id
+          id
         })
+
+        // when moving from draft to published/archived status
+        // make sure to generate a final public ready slug
+        if (existingJob.status === jobStatusTypes.DRAFT && data.status && data.status !== jobStatusTypes.DRAFT) {
+          data.slug = await makeUniqueSlug({
+            type: 'jobs',
+            data: { title: existingJob.title },
+            context
+          })
+        }
 
         const updatedJob = await context.store.update({
           type: 'jobs',
-          id: args.id,
-          data: omit(args.data, ['tags'])
+          id,
+          data: omit(data, ['tags'])
         })
 
         if (

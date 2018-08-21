@@ -48,6 +48,7 @@ describe('Company.updateJob', () => {
         {
           id: 'job1',
           company: 'company1',
+          title: 'cheese',
           slug: 'cheese',
           status: jobStatusTypes.DRAFT,
           bonus: '£500'
@@ -117,9 +118,7 @@ describe('Company.updateJob', () => {
         companyId: 'company1',
         id: 'job1',
         data: {
-          title: 'CEO',
           tags: ['CEO'],
-          slug: 'ceo',
           description: 'SpaceX was founded under the belief that a future where humanity...'
         }
       }
@@ -129,8 +128,8 @@ describe('Company.updateJob', () => {
       expect(db.jobs).to.deep.equal([{
         id: 'job1',
         company: 'company1',
-        title: 'CEO',
-        slug: 'ceo',
+        title: 'cheese',
+        slug: 'cheese',
         description: 'SpaceX was founded under the belief that a future where humanity...',
         status: jobStatusTypes.DRAFT,
         bonus: '£500'
@@ -393,6 +392,44 @@ describe('Company.updateJob', () => {
         company: 'company1',
         slug: 'ceo'
       }])
+    })
+  })
+
+  describe('when old Job.status is DRAFT and new Job.status is PUBLISHED', () => {
+    let db
+
+    beforeEach(async () => {
+      db = {
+        ...dbBase,
+        jobs: [
+          {
+            id: 'job1',
+            company: 'company1',
+            title: 'cheese',
+            slug: 'draft-12345678',
+            status: jobStatusTypes.DRAFT,
+            bonus: '£500'
+          }
+        ]
+      }
+
+      const variables = {
+        companyId: 'company1',
+        id: 'job1',
+        data: {
+          status: jobStatusTypes.PUBLISHED
+        }
+      }
+
+      await executeQueryOnDbUsingSchema({ operation, db, schema, variables })
+    })
+
+    it('should set the status to PUBLISHED', async () => {
+      expect(db.jobs[0].status).to.equal(jobStatusTypes.PUBLISHED)
+    })
+
+    it('should set the sharable slug', async () => {
+      expect(db.jobs[0].slug).to.equal('cheese')
     })
   })
 

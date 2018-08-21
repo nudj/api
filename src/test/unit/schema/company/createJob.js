@@ -10,6 +10,7 @@ const { merge } = require('@nudj/library')
 
 const { values: tagTypes } = require('../../../../gql/schema/enums/tag-types')
 const { values: tagSources } = require('../../../../gql/schema/enums/tag-sources')
+const { values: jobStatusTypes } = require('../../../../gql/schema/enums/job-status-types')
 const schema = require('../../../../gql/schema')
 const { executeQueryOnDbUsingSchema } = require('../../helpers')
 
@@ -103,7 +104,7 @@ describe('Company.createJob', () => {
         bonus: '10',
         location: 'Mars',
         remuneration: '100000',
-        status: 'PUBLISHED',
+        status: jobStatusTypes.PUBLISHED,
         templateTags: ['film'],
         tags: ['CEO', 'FOUNDER'],
         type: 'Permanent',
@@ -173,14 +174,48 @@ describe('Company.createJob', () => {
       bonus: '10',
       location: 'Mars',
       remuneration: '100000',
-      status: 'PUBLISHED',
+      status: jobStatusTypes.PUBLISHED,
       templateTags: ['film'],
       type: 'Permanent',
       url: 'http://www.spacex.com/careers/position/215244'
     })
   })
 
-  it('should generate a unique job slug', async () => {
+  it('when setting draft should generate a draft slug', async () => {
+    const db = {
+      ...baseDb,
+      tags: [],
+      jobTags: [],
+      jobs: []
+    }
+
+    variables.data.status = jobStatusTypes.DRAFT
+
+    await executeQueryOnDbUsingSchema({ operation, db, schema, variables })
+
+    const { slug } = find(db.jobs, { id: 'job1' })
+
+    expect(slug).to.not.equal('ceo')
+    expect(slug).to.be.a('string')
+    expect(slug).to.match(/draft-[a-z0-9]{10}/)
+  })
+
+  it('when not setting to draft should generate a slug based on title', async () => {
+    const db = {
+      ...baseDb,
+      tags: [],
+      jobTags: [],
+      jobs: []
+    }
+
+    await executeQueryOnDbUsingSchema({ operation, db, schema, variables })
+
+    const { slug } = find(db.jobs, { id: 'job1' })
+
+    expect(slug).to.equal('ceo')
+  })
+
+  it('when not setting to draft should generate a unique slug based on title', async () => {
     const db = {
       ...baseDb,
       tags: [],

@@ -1,8 +1,8 @@
 const { merge } = require('@nudj/library')
 const invert = require('lodash/invert')
 const reduce = require('lodash/reduce')
-const hash = require('hash-generator')
-const kebabCase = require('lodash/kebabCase')
+
+const slugGenerators = require('./slug-generators')
 
 const TABLES = {
   ACCEPTED_ACCESS_REQUESTS: 'acceptedAccessRequests',
@@ -448,40 +448,32 @@ function relationType (fieldName, table, t, knex) {
   return t.integer(fieldName).unsigned().references(FIELDS.GENERIC.ID).inTable(table)
 }
 
-const randomSlugGenerator = () => hash(10)
-const fieldSlugGenerator = field => (data, addRandom) => {
-  let random = ''
-  if (addRandom) {
-    random = `-${hash(8)}`
-  }
-  return kebabCase(data[field]) + random
-}
 const SLUG_GENERATORS = {
   [TABLES.REFERRALS]: {
-    generator: randomSlugGenerator
+    generator: slugGenerators.random
   },
   [TABLES.SURVEY_SECTIONS]: {
-    generator: fieldSlugGenerator(FIELDS[TABLES.SURVEY_SECTIONS].TITLE),
+    generator: slugGenerators.field(FIELDS[TABLES.SURVEY_SECTIONS].TITLE),
     index: 'surveySectionsBySlugSurvey'
   },
   [TABLES.SURVEY_QUESTIONS]: {
-    generator: fieldSlugGenerator(FIELDS[TABLES.SURVEY_QUESTIONS].TITLE),
+    generator: slugGenerators.field(FIELDS[TABLES.SURVEY_QUESTIONS].TITLE),
     index: 'surveyQuestionsBySlugSurveySection'
   },
   [TABLES.COMPANIES]: {
-    generator: fieldSlugGenerator(FIELDS[TABLES.COMPANIES].NAME),
+    generator: slugGenerators.field(FIELDS[TABLES.COMPANIES].NAME),
     index: 'companiesBySlug'
   },
   [TABLES.JOBS]: {
-    generator: fieldSlugGenerator(FIELDS[TABLES.JOBS].TITLE),
+    generator: slugGenerators.field(FIELDS[TABLES.JOBS].TITLE),
     index: 'jobsBySlug'
   },
   [TABLES.SURVEYS]: {
-    generator: fieldSlugGenerator(FIELDS[TABLES.SURVEYS].INTRO_TITLE),
+    generator: slugGenerators.field(FIELDS[TABLES.SURVEYS].INTRO_TITLE),
     index: 'surveysBySlug'
   },
   [TABLES.ACCESS_REQUESTS]: {
-    generator: randomSlugGenerator
+    generator: slugGenerators.random
   }
 }
 const COLLECTIONS = {

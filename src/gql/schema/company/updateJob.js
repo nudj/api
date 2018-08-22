@@ -2,6 +2,7 @@ const { values: tagTypes } = require('../enums/tag-types')
 const { values: tagSources } = require('../enums/tag-sources')
 const { values: jobStatusTypes } = require('../enums/job-status-types')
 const notifyTeamAboutJob = require('../../lib/helpers/notify-team-about-job')
+const { makeUniqueSlug } = require('../../lib/helpers')
 
 module.exports = {
   typeDefs: `
@@ -82,6 +83,16 @@ module.exports = {
           type: 'jobs',
           id
         })
+
+        // when moving from draft to published/archived status
+        // make sure to generate a final public ready slug
+        if (existingJob.status === jobStatusTypes.DRAFT && data.status && data.status !== jobStatusTypes.DRAFT) {
+          jobData.slug = await makeUniqueSlug({
+            type: 'jobs',
+            data: { title: existingJob.title },
+            context
+          })
+        }
 
         const updatedJob = await context.sql.update({
           type: 'jobs',

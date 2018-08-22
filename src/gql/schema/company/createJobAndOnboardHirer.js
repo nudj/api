@@ -1,4 +1,5 @@
 const createJob = require('../../lib/helpers/create-job')
+const updateIntercomTagsForHirer = require('../../lib/intercom/update-tags-for-hirer')
 
 module.exports = {
   typeDefs: `
@@ -23,6 +24,7 @@ module.exports = {
             onboarded: true
           }
         })
+        await updateIntercomTagsForHirer(context, hirer)
 
         return job
       }

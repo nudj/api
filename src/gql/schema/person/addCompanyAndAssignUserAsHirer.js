@@ -3,6 +3,7 @@ const { values: hirerTypes } = require('../enums/hirer-types')
 const { values: dataSources } = require('../enums/data-sources')
 const { validateCompanyCreation } = require('../../lib/helpers/validation/company')
 const { createCompany } = require('../../lib/helpers')
+const updateIntercomTagsForHirer = require('../../lib/intercom/update-tags-for-hirer')
 
 module.exports = {
   typeDefs: `
@@ -80,7 +81,7 @@ module.exports = {
           })
         }
 
-        return context.sql.create({
+        const hirer = await context.sql.create({
           type: 'hirers',
           data: {
             person: person.id,
@@ -89,6 +90,9 @@ module.exports = {
             type: hirerTypes.ADMIN
           }
         })
+        await updateIntercomTagsForHirer(context, hirer)
+
+        return hirer
       }
     }
   }

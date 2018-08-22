@@ -1,5 +1,6 @@
 const { AppError } = require('@nudj/library/errors')
 const { values: hirerTypes } = require('../enums/hirer-types')
+const updateIntercomTagsForHirer = require('../../lib/intercom/update-tags-for-hirer')
 const {
   send,
   requestAcceptedEmailBodyTemplate
@@ -55,7 +56,7 @@ module.exports = {
         if (!company) throw new AppError(`Company (${accessRequest.company}) not found`)
 
         // create new hirer for accepted person
-        await context.sql.create({
+        const hirer = await context.sql.create({
           type: 'hirers',
           data: {
             company: accessRequest.company,
@@ -64,6 +65,7 @@ module.exports = {
             onboarded: false
           }
         })
+        await updateIntercomTagsForHirer(context, hirer)
 
         // sql acceptedAccessRequest against the user's hirer
         await context.sql.create({

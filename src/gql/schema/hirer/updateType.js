@@ -1,3 +1,5 @@
+const updateIntercomTagsForHirer = require('../../lib/intercom/update-tags-for-hirer')
+
 module.exports = {
   typeDefs: `
     extend type Hirer {
@@ -7,13 +9,15 @@ module.exports = {
   resolvers: {
     Hirer: {
       updateType: async (hirer, args, context) => {
-        return context.sql.update({
+        const updatedHirer = await context.sql.update({
           type: 'hirers',
           id: hirer.id,
           data: {
             type: args.type
           }
         })
+        await updateIntercomTagsForHirer(context, updatedHirer)
+        return updatedHirer
       }
     }
   }

@@ -1,3 +1,5 @@
+const updateIntercomTagsForHirer = require('../../lib/intercom/update-tags-for-hirer')
+
 module.exports = {
   typeDefs: `
     extend type Company {
@@ -27,7 +29,7 @@ module.exports = {
           data: { email }
         })
 
-        return context.sql.create({
+        const hirer = await context.sql.create({
           type: 'hirers',
           data: {
             onboarded,
@@ -36,6 +38,9 @@ module.exports = {
             company: company.id
           }
         })
+        updateIntercomTagsForHirer(context, hirer)
+
+        return hirer
       }
     }
   }

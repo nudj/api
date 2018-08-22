@@ -1,3 +1,5 @@
+const generateHash = require('hash-generator')
+
 const { values: hirerTypes } = require('../enums/hirer-types')
 const { values: dataSources } = require('../enums/data-sources')
 const { validateCompanyCreation } = require('../../lib/helpers/validation/company')
@@ -36,7 +38,10 @@ module.exports = {
           company = await context.store.update({
             type: 'companies',
             id: company.id,
-            data: { client: true }
+            data: {
+              client: true,
+              hash: generateHash(128)
+            }
           })
         } else {
           company = await createCompany(context, args.company, {

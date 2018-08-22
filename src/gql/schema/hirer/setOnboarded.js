@@ -1,4 +1,5 @@
 const isNil = require('lodash/isNil')
+const updateIntercomTagsForHirer = require('../../lib/intercom/update-tags-for-hirer')
 
 module.exports = {
   typeDefs: `
@@ -18,6 +19,7 @@ module.exports = {
             onboarded: onboard
           }
         })
+        await updateIntercomTagsForHirer(context, updatedHirer)
 
         return updatedHirer.onboarded
       }

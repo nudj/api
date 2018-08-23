@@ -1,8 +1,11 @@
 const { renderSimpleTemplate, getInvitationUrl } = require('@nudj/library')
+const { intercom } = require('@nudj/library/analytics')
+
 const {
   validateInviteesAndFetchEmailData,
   logInvitationsToIntercom
 } = require('../../lib/helpers')
+const { INTERCOM: { PROPS: { COMPANY: { HAS_HAD_TEAM_INVITED } } } } = require('../../lib/constants')
 const {
   send,
   fromViaNudj
@@ -68,6 +71,15 @@ module.exports = {
         } else {
           logInvitationsToIntercom(emailData)
         }
+
+        await intercom.companies.update({
+          company: { name: company.name },
+          data: {
+            custom_attributes: {
+              [HAS_HAD_TEAM_INVITED]: true
+            }
+          }
+        })
 
         return sendStatus
       }

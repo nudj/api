@@ -14,6 +14,15 @@ const SLUG_GENERATORS = {
   accessRequests: slugGenerators.random
 }
 
+const INTERCOM = {
+  PROPS: {
+    COMPANY: {
+      HAS_HAD_JOB_PUBLISHED: 'has had job published',
+      HAS_HAD_TEAM_INVITED: 'has had team invited'
+    }
+  }
+}
+
 module.exports = {
   NUDJ,
   DB_URL,
@@ -21,5 +30,6 @@ module.exports = {
   INTERNAL_EMAIL_ADDRESS,
   INTERNAL_EMAIL_FROM,
   SLUG_GENERATORS,
-  DUMMY_APPLICANT_EMAIL_ADDRESS
+  DUMMY_APPLICANT_EMAIL_ADDRESS,
+  INTERCOM
 }

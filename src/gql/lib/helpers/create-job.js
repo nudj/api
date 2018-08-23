@@ -7,6 +7,7 @@ const { random: randomSlugGenerator } = require('./slug-generators')
 const { values: jobStatusTypes } = require('../../schema/enums/job-status-types')
 const { values: tagTypes } = require('../../schema/enums/tag-types')
 const { values: tagSources } = require('../../schema/enums/tag-sources')
+const { INTERCOM: { PROPS: { COMPANY: { HAS_HAD_JOB_PUBLISHED } } } } = require('../../lib/constants')
 
 const createJob = async (context, company, data) => {
   const { tags } = data
@@ -36,7 +37,7 @@ const createJob = async (context, company, data) => {
       company: { name: company.name },
       data: {
         custom_attributes: {
-          'has had published job': true
+          [HAS_HAD_JOB_PUBLISHED]: true
         }
       }
     })

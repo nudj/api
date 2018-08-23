@@ -6,6 +6,7 @@ const { values: tagTypes } = require('../enums/tag-types')
 const { values: tagSources } = require('../enums/tag-sources')
 const { values: jobStatusTypes } = require('../enums/job-status-types')
 const notifyTeamAboutJob = require('../../lib/helpers/notify-team-about-job')
+const { INTERCOM: { PROPS: { COMPANY: { HAS_HAD_JOB_PUBLISHED } } } } = require('../../lib/constants')
 
 module.exports = {
   typeDefs: `
@@ -112,7 +113,7 @@ module.exports = {
             company: { name: company.name },
             data: {
               custom_attributes: {
-                'has had published job': true
+                [HAS_HAD_JOB_PUBLISHED]: true
               }
             }
           })

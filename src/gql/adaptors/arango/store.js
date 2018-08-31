@@ -112,7 +112,7 @@ module.exports = ({
         results = await executeAqlQuery(query, {
           ...mainFilters,
           to: dateTo && endOfDay(dateTo),
-          from: dateFrom && endOfDay(dateFrom)
+          from: dateFrom && startOfDay(dateFrom)
         })
       } else {
         results = await db.collection(type).byExample(filters)

@@ -134,7 +134,7 @@ describe('ArangoAdaptor store.readAll', () => {
       .then(() => {
         const [ query, bindVars ] = dbStub.db.query.firstCall.args
         expect(bindVars).to.deep.equal({
-          from: '2016-12-15T23:59:59.999Z',
+          from: '2016-12-15T00:00:00.000Z',
           to: '2017-12-15T23:59:59.999Z'
         })
         expect(dedent(query)).to.equal(dedent`
@@ -174,7 +174,7 @@ describe('ArangoAdaptor store.readAll', () => {
       })
       .then(() => {
         const [ query, bindVars ] = dbStub.db.query.firstCall.args
-        expect(bindVars.from).to.equal('2017-12-19T23:59:59.999Z')
+        expect(bindVars.from).to.equal('2017-12-19T00:00:00.000Z')
         expect(bindVars.to).to.be.undefined()
         expect(dedent(query)).to.equal(dedent`
           FOR item in collectionName
@@ -195,7 +195,7 @@ describe('ArangoAdaptor store.readAll', () => {
       })
       .then(() => {
         const [ query, params ] = dbStub.db.query.firstCall.args
-        expect(params).to.have.property('from').to.equal('2010-12-19T23:59:59.999Z')
+        expect(params).to.have.property('from').to.equal('2010-12-19T00:00:00.000Z')
         expect(params).to.have.property('email').to.equal('test@email.com')
         expect(params).to.have.property('address').to.equal('1 Test Drive')
         expect(dedent(query)).to.equal(dedent`

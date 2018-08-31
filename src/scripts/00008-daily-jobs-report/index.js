@@ -4,6 +4,7 @@ const groupBy = require('lodash/groupBy')
 const subDays = require('date-fns/sub_days')
 const { parse: parseToCSV } = require('json2csv')
 
+const { fetchAll } = require('../../lib')
 const { store: setupStore } = require('../../gql/adaptors/arango')
 const setupDataLoaderCache = require('../../gql/lib/setup-dataloader-cache')
 const { startOfDay, endOfDay } = require('../../gql/lib/format-dates')
@@ -76,11 +77,24 @@ async function action ({ db, arg: specifiedDate }) {
   // Group jobs by company
   const jobsByCompany = groupBy(jobs, 'company')
 
+  const clientCompanies = await fetchAll(db, 'companies', { client: true })
+  const companiesWithoutPublishedJobs = clientCompanies.filter(company => {
+    // List of published jobs by company does not include this company
+    return !(Object.keys(jobsByCompany).includes(company.name))
+  })
+  const noPublishedJobsData = companiesWithoutPublishedJobs.map(company => ({
+    date,
+    company: company.name,
+    title: 'Total',
+    'view count': 0,
+    'referral count': 0
+  }))
+
   // For each company, count their totals
-  const jobData = Object.keys(jobsByCompany).map(companyName => {
-    const jobs = jobsByCompany[companyName]
+  const jobData = Object.keys(jobsByCompany).map(company => {
+    const jobs = jobsByCompany[company]
     if (!jobs.length) return [] // will be removed by flatten()
-    const { company, date } = jobs[0]
+    const { date } = jobs[0]
 
     return [
       ...jobs,
@@ -97,6 +111,7 @@ async function action ({ db, arg: specifiedDate }) {
   // Count the totals of every job
   const data = [
     ...flatten(jobData),
+    ...noPublishedJobsData,
     {
       date,
       company: 'Overall',

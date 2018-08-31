@@ -59,6 +59,12 @@ describe('00008 Daily Jobs Report', () => {
             title: 'non-participant',
             status: jobStatusTypes.DRAFT,
             company: 'company1'
+          },
+          {
+            _key: 'job5',
+            title: 'spectator',
+            status: jobStatusTypes.DRAFT,
+            company: 'company3'
           }
         ]
       },
@@ -127,6 +133,12 @@ describe('00008 Daily Jobs Report', () => {
             _key: 'company2',
             name: 'Dogs Incorporated',
             created: '2012-01-01T19:33:54.927Z'
+          },
+          {
+            _key: 'company3',
+            client: true,
+            name: 'Goldfish Incorporated',
+            created: '2012-01-01T19:33:54.927Z'
           }
         ]
       }
@@ -165,18 +177,25 @@ describe('00008 Daily Jobs Report', () => {
       expect(csvLines[5]).to.equal('"2000-01-01","Cats Incorporated","Total",2,1')
     })
 
+    it('logs out for companies that have no published jobs', () => {
+      const csvLines = consoleStub.args[0][0].split('\n')
+
+      expect(consoleStub).to.have.been.called()
+      expect(csvLines[6]).to.equal('"2000-01-01","Goldfish Incorporated","Total",0,0')
+    })
+
     it('logs out a total for all jobs', () => {
       const csvLines = consoleStub.args[0][0].split('\n')
 
       expect(consoleStub).to.have.been.called()
-      expect(csvLines[6]).to.equal('"2000-01-01","Overall","Total",6,4')
+      expect(csvLines[7]).to.equal('"2000-01-01","Overall","Total",6,4')
     })
   })
 
   describe('when date is specified', () => {
     beforeEach(async () => {
       consoleStub = sinon.stub(console, 'log')
-      await executeScript('01/01/2012')
+      await executeScript('2012-01-01')
       consoleStub.restore()
     })
 
@@ -194,6 +213,13 @@ describe('00008 Daily Jobs Report', () => {
       expect(consoleStub).to.have.been.called()
       expect(csvLines[2]).to.equal('"2012-01-01","Dogs Incorporated","Total",0,0')
       expect(csvLines[5]).to.equal('"2012-01-01","Cats Incorporated","Total",1,1')
+    })
+
+    it('logs out for companies that have no published jobs', () => {
+      const csvLines = consoleStub.args[0][0].split('\n')
+
+      expect(consoleStub).to.have.been.called()
+      expect(csvLines[6]).to.equal('"2012-01-01","Goldfish Incorporated","Total",0,0')
     })
 
     it('logs out a total for all jobs', () => {

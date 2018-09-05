@@ -2,9 +2,9 @@
 # yarn lockfile v1
 
 
-"@nudj/library@6.5.0":
-  version "6.5.0"
-  resolved "https://registry.yarnpkg.com/@nudj/library/-/library-6.5.0.tgz#9cc7c2438bf32afb0223a6d9a4f67042687321a5"
+"@nudj/library@6.7.0":
+  version "6.7.0"
+  resolved "https://registry.yarnpkg.com/@nudj/library/-/library-6.7.0.tgz#fdc44d2313d27fd6e760a18d2dc0bd7b4bdc5ca4"
   dependencies:
     axios "^0.16.2"
     date-fns "^1.29.0"

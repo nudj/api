@@ -49,7 +49,13 @@ async function action ({ db, sql, nosql }) {
         }
         return scalars
       }, {})
-      const relations = mapValues(RELATIONS[tableName] || {}, (foreignTable, field) => idMaps[foreignTable][get(item, fieldToPath(tableName, field))])
+      const relations = mapValues(RELATIONS[tableName] || {}, (foreignTable, field) => {
+        const value = idMaps[foreignTable][get(item, fieldToPath(tableName, field))]
+        if (!value) {
+          console.log('Relation not found for', tableName, item._key, field, get(item, fieldToPath(tableName, field)))
+        }
+        return value
+      })
 
       // prepare insert data
       const data = {

@@ -20,9 +20,12 @@ const TABLES = {
   HIRERS: 'hirers',
   JOBS: 'jobs',
   JOB_TAGS: 'jobTags',
+  JOB_VIEW_EVENTS: 'jobViewEvents',
+  MESSAGE_EVENTS: 'messageEvents',
   PEOPLE: 'people',
   PERSON_ROLES: 'personRoles',
   REFERRALS: 'referrals',
+  REFERRAL_KEY_TO_SLUG_MAP: 'referralKeyToSlugMaps',
   RELATED_JOBS: 'relatedJobs',
   ROLES: 'roles',
   ROLE_TAGS: 'roleTags',
@@ -118,6 +121,13 @@ const FIELDS = {
     JOB: 'job',
     TAG: 'tag'
   },
+  [TABLES.JOB_VIEW_EVENTS]: {
+    BROWSER_ID: 'browserId',
+    JOB: 'job'
+  },
+  [TABLES.MESSAGE_EVENTS]: {
+    HASH: 'hash'
+  },
   [TABLES.PEOPLE]: {
     EMAIL: 'email',
     FIRST_NAME: 'firstName',
@@ -139,6 +149,10 @@ const FIELDS = {
     PERSON: 'person',
     JOB: 'job',
     PARENT: 'parent'
+  },
+  [TABLES.REFERRAL_KEY_TO_SLUG_MAP]: {
+    REFERRAL_KEY: 'referralKey',
+    JOB_SLUG: 'jobSlug'
   },
   [TABLES.RELATED_JOBS]: {
     FROM: 'from',
@@ -412,6 +426,22 @@ const INDICES = merge(
       [F.ACCEPTED_ACCESS_REQUESTS.ACCESS_REQUEST + F.ACCEPTED_ACCESS_REQUESTS.HIRER]: {
         name: `${TABLES.ACCEPTED_ACCESS_REQUESTS}ByAccessRequestHirer`,
         fields: [F.ACCEPTED_ACCESS_REQUESTS.ACCESS_REQUEST, F.ACCEPTED_ACCESS_REQUESTS.HIRER]
+      }
+    },
+    [TABLES.MESSAGE_EVENTS]: {
+      [F.MESSAGE_EVENTS.HASH]: {
+        name: `${TABLES.MESSAGE_EVENTS}ByHash`,
+        fields: [F.MESSAGE_EVENTS.HASH]
+      }
+    },
+    [TABLES.REFERRAL_KEY_TO_SLUG_MAP]: {
+      [F.REFERRAL_KEY_TO_SLUG_MAP.REFERRAL_KEY]: {
+        name: `${TABLES.REFERRAL_KEY_TO_SLUG_MAP}ByReferralKey`,
+        fields: [F.REFERRAL_KEY_TO_SLUG_MAP.REFERRAL_KEY]
+      },
+      [F.REFERRAL_KEY_TO_SLUG_MAP.JOB_SLUG]: {
+        name: `${TABLES.REFERRAL_KEY_TO_SLUG_MAP}ByJobSlug`,
+        fields: [F.MESSAGE_EVENTS.JOB_SLUG]
       }
     }
   }

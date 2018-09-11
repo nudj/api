@@ -4,6 +4,7 @@ const {
   ENUMS,
   INDICES,
   defaultConfig,
+  defaultFields,
   emailType,
   urlType,
   relationType
@@ -22,6 +23,7 @@ exports.up = async knex => {
       } = FIELDS[TABLES.PEOPLE]
 
       defaultConfig(table, knex)
+      defaultFields(table, knex)
       emailType(EMAIL, table, knex).notNullable()
       table.string(FIRST_NAME).nullable()
       table.string(LAST_NAME).nullable()
@@ -43,6 +45,7 @@ exports.up = async knex => {
       } = FIELDS[TABLES.COMPANIES]
 
       defaultConfig(table, knex)
+      defaultFields(table, knex)
       table.string(NAME).notNullable()
       table.string(SLUG).notNullable()
       table.string(HASH).notNullable()
@@ -74,6 +77,7 @@ exports.up = async knex => {
       } = FIELDS[TABLES.JOBS]
 
       defaultConfig(table, knex)
+      defaultFields(table, knex)
       table.string(TITLE).notNullable()
       table.string(SLUG).notNullable()
       urlType(URL, table, knex).nullable()
@@ -100,6 +104,7 @@ exports.up = async knex => {
       } = FIELDS[TABLES.HIRERS]
 
       defaultConfig(table, knex)
+      defaultFields(table, knex)
       table.boolean(ONBOARDED).defaultTo(false).notNullable()
       table.enum(TYPE, ENUMS.HIRER_TYPES.values).defaultTo(ENUMS.HIRER_TYPES.MEMBER).notNullable()
       relationType(PERSON, TABLES.PEOPLE, table, knex).notNullable()
@@ -116,6 +121,7 @@ exports.up = async knex => {
       } = FIELDS[TABLES.REFERRALS]
 
       defaultConfig(table, knex)
+      defaultFields(table, knex)
       table.string(SLUG, 10).notNullable()
       relationType(PERSON, TABLES.PEOPLE, table, knex).notNullable()
       relationType(JOB, TABLES.JOBS, table, knex).notNullable()
@@ -132,6 +138,7 @@ exports.up = async knex => {
       } = FIELDS[TABLES.APPLICATIONS]
 
       defaultConfig(table, knex)
+      defaultFields(table, knex)
       relationType(PERSON, TABLES.PEOPLE, table, knex).notNullable()
       relationType(JOB, TABLES.JOBS, table, knex).notNullable()
       relationType(REFERRAL, TABLES.REFERRALS, table, knex).nullable()
@@ -146,6 +153,7 @@ exports.up = async knex => {
       } = FIELDS[TABLES.EMPLOYMENTS]
 
       defaultConfig(table, knex)
+      defaultFields(table, knex)
       table.enum(SOURCE, ENUMS.DATA_SOURCES.values).notNullable()
       relationType(PERSON, TABLES.PEOPLE, table, knex).notNullable()
       relationType(COMPANY, TABLES.COMPANIES, table, knex).notNullable()
@@ -159,6 +167,7 @@ exports.up = async knex => {
       } = FIELDS[TABLES.CURRENT_EMPLOYMENTS]
 
       defaultConfig(table, knex)
+      defaultFields(table, knex)
       relationType(EMPLOYMENT, TABLES.EMPLOYMENTS, table, knex).notNullable()
       relationType(PERSON, TABLES.PEOPLE, table, knex).notNullable()
       table.unique(PERSON, INDICES[TABLES.CURRENT_EMPLOYMENTS][PERSON].name)
@@ -171,6 +180,7 @@ exports.up = async knex => {
       } = FIELDS[TABLES.EMPLOYEES]
 
       defaultConfig(table, knex)
+      defaultFields(table, knex)
       relationType(PERSON, TABLES.PEOPLE, table, knex).notNullable()
       relationType(COMPANY, TABLES.COMPANIES, table, knex).notNullable()
       table.unique(PERSON, INDICES[TABLES.EMPLOYEES][PERSON].name)
@@ -182,6 +192,7 @@ exports.up = async knex => {
       } = FIELDS[TABLES.ROLES]
 
       defaultConfig(table, knex)
+      defaultFields(table, knex)
       table.string(NAME).notNullable()
       table.unique(NAME, INDICES[TABLES.ROLES][NAME].name)
     })
@@ -194,6 +205,7 @@ exports.up = async knex => {
       } = FIELDS[TABLES.PERSON_ROLES]
 
       defaultConfig(table, knex)
+      defaultFields(table, knex)
       relationType(PERSON, TABLES.PEOPLE, table, knex).notNullable()
       relationType(ROLE, TABLES.ROLES, table, knex).notNullable()
       table.enum(SOURCE, ENUMS.DATA_SOURCES.values).notNullable()
@@ -207,6 +219,7 @@ exports.up = async knex => {
       } = FIELDS[TABLES.CURRENT_PERSON_ROLES]
 
       defaultConfig(table, knex)
+      defaultFields(table, knex)
       relationType(PERSON, TABLES.PEOPLE, table, knex).notNullable()
       relationType(PERSON_ROLE, TABLES.PERSON_ROLES, table, knex).notNullable()
       table.unique(PERSON, INDICES[TABLES.CURRENT_PERSON_ROLES][PERSON].name)
@@ -224,6 +237,7 @@ exports.up = async knex => {
       } = FIELDS[TABLES.CONNECTIONS]
 
       defaultConfig(table, knex)
+      defaultFields(table, knex)
       table.string(FIRST_NAME).notNullable()
       table.string(LAST_NAME).notNullable()
       table.enum(SOURCE, ENUMS.DATA_SOURCES.values).defaultTo(ENUMS.DATA_SOURCES.LINKEDIN).notNullable()
@@ -244,6 +258,7 @@ exports.up = async knex => {
       } = FIELDS[TABLES.ACCOUNTS]
 
       defaultConfig(table, knex)
+      defaultFields(table, knex)
       emailType(EMAIL, table, knex).notNullable()
       table.json(EMAIL_ADDRESSES).notNullable().comment('Array of all emails associated with account')
       table.json(DATA).notNullable().comment('Object of account authorisation secrets')
@@ -261,6 +276,7 @@ exports.up = async knex => {
       } = FIELDS[TABLES.CONVERSATIONS]
 
       defaultConfig(table, knex)
+      defaultFields(table, knex)
       table.string(THREAD_ID).notNullable()
       table.enum(TYPE, ENUMS.ACCOUNT_TYPES.values).defaultTo(ENUMS.ACCOUNT_TYPES.GOOGLE).notNullable()
       relationType(PERSON, TABLES.PEOPLE, table, knex).notNullable()
@@ -279,6 +295,7 @@ exports.up = async knex => {
       } = FIELDS[TABLES.SURVEYS]
 
       defaultConfig(table, knex)
+      defaultFields(table, knex)
       table.string(SLUG).notNullable()
       table.string(INTRO_TITLE).notNullable()
       table.text(INTRO_DESCRIPTION).notNullable()
@@ -298,6 +315,7 @@ exports.up = async knex => {
       } = FIELDS[TABLES.SURVEY_SECTIONS]
 
       defaultConfig(table, knex)
+      defaultFields(table, knex)
       table.string(SLUG).notNullable()
       table.string(TITLE).notNullable()
       table.text(DESCRIPTION).notNullable()
@@ -317,6 +335,7 @@ exports.up = async knex => {
       } = FIELDS[TABLES.SURVEY_QUESTIONS]
 
       defaultConfig(table, knex)
+      defaultFields(table, knex)
       table.string(SLUG).notNullable()
       table.string(TITLE).notNullable()
       table.text(DESCRIPTION).notNullable()
@@ -333,6 +352,7 @@ exports.up = async knex => {
       } = FIELDS[TABLES.SURVEY_ANSWERS]
 
       defaultConfig(table, knex)
+      defaultFields(table, knex)
       relationType(PERSON, TABLES.PEOPLE, table, knex).notNullable()
       relationType(SURVEY_QUESTION, TABLES.SURVEY_QUESTIONS, table, knex).notNullable()
       table.unique([PERSON, SURVEY_QUESTION], INDICES[TABLES.SURVEY_ANSWERS][[PERSON, SURVEY_QUESTION].join('')].name)
@@ -345,6 +365,7 @@ exports.up = async knex => {
       } = FIELDS[TABLES.SURVEY_ANSWER_CONNECTIONS]
 
       defaultConfig(table, knex)
+      defaultFields(table, knex)
       relationType(SURVEY_ANSWER, TABLES.SURVEY_ANSWERS, table, knex).notNullable()
       relationType(CONNECTION, TABLES.CONNECTIONS, table, knex).notNullable()
       table.unique([CONNECTION, SURVEY_ANSWER], INDICES[TABLES.SURVEY_ANSWER_CONNECTIONS][[CONNECTION, SURVEY_ANSWER].join('')].name)
@@ -357,6 +378,7 @@ exports.up = async knex => {
       } = FIELDS[TABLES.COMPANY_SURVEYS]
 
       defaultConfig(table, knex)
+      defaultFields(table, knex)
       relationType(COMPANY, TABLES.COMPANIES, table, knex).notNullable()
       relationType(SURVEY, TABLES.SURVEYS, table, knex).notNullable()
       table.unique([COMPANY, SURVEY], INDICES[TABLES.COMPANY_SURVEYS][[COMPANY, SURVEY].join('')].name)
@@ -369,6 +391,7 @@ exports.up = async knex => {
       } = FIELDS[TABLES.TAGS]
 
       defaultConfig(table, knex)
+      defaultFields(table, knex)
       table.string(NAME).notNullable()
       table.enum(TYPE, ENUMS.TAG_TYPES.values).notNullable()
       table.unique([NAME, TYPE], INDICES[TABLES.TAGS][[NAME, TYPE].join('')].name)
@@ -382,6 +405,7 @@ exports.up = async knex => {
       } = FIELDS[TABLES.JOB_TAGS]
 
       defaultConfig(table, knex)
+      defaultFields(table, knex)
       table.enum(SOURCE, ENUMS.DATA_SOURCES.values).notNullable()
       relationType(JOB, TABLES.JOBS, table, knex).notNullable()
       relationType(TAG, TABLES.TAGS, table, knex).notNullable()
@@ -396,6 +420,7 @@ exports.up = async knex => {
       } = FIELDS[TABLES.ROLE_TAGS]
 
       defaultConfig(table, knex)
+      defaultFields(table, knex)
       table.enum(SOURCE, ENUMS.DATA_SOURCES.values).notNullable()
       relationType(ROLE, TABLES.ROLES, table, knex).notNullable()
       relationType(TAG, TABLES.TAGS, table, knex).notNullable()
@@ -410,6 +435,7 @@ exports.up = async knex => {
       } = FIELDS[TABLES.SURVEY_QUESTION_TAGS]
 
       defaultConfig(table, knex)
+      defaultFields(table, knex)
       table.enum(SOURCE, ENUMS.DATA_SOURCES.values).notNullable()
       relationType(SURVEY_QUESTION, TABLES.SURVEY_QUESTIONS, table, knex).notNullable()
       relationType(TAG, TABLES.TAGS, table, knex).notNullable()
@@ -423,6 +449,7 @@ exports.up = async knex => {
       } = FIELDS[TABLES.RELATED_JOBS]
 
       defaultConfig(table, knex)
+      defaultFields(table, knex)
       relationType(FROM, TABLES.JOBS, table, knex).notNullable()
       relationType(TO, TABLES.JOBS, table, knex).notNullable()
       table.unique([FROM, TO], INDICES[TABLES.RELATED_JOBS][[FROM, TO].join('')].name)
@@ -436,6 +463,7 @@ exports.up = async knex => {
       } = FIELDS[TABLES.ACCESS_REQUESTS]
 
       defaultConfig(table, knex)
+      defaultFields(table, knex)
       table.string(SLUG).notNullable()
       relationType(PERSON, TABLES.PEOPLE, table, knex).notNullable()
       relationType(COMPANY, TABLES.COMPANIES, table, knex).notNullable()
@@ -450,8 +478,9 @@ exports.up = async knex => {
       } = FIELDS[TABLES.ACCEPTED_ACCESS_REQUESTS]
 
       defaultConfig(table, knex)
-      relationType(ACCESS_REQUEST, TABLES.COMPANIES, table, knex).notNullable()
-      relationType(HIRER, TABLES.PEOPLE, table, knex).notNullable()
+      defaultFields(table, knex)
+      relationType(ACCESS_REQUEST, TABLES.ACCESS_REQUESTS, table, knex).notNullable()
+      relationType(HIRER, TABLES.HIRERS, table, knex).notNullable()
       table.unique([ACCESS_REQUEST, HIRER], INDICES[TABLES.ACCEPTED_ACCESS_REQUESTS][[ACCESS_REQUEST, HIRER].join('')].name)
     })
 
@@ -462,6 +491,7 @@ exports.up = async knex => {
       } = FIELDS[TABLES.JOB_VIEW_EVENTS]
 
       defaultConfig(table, knex)
+      defaultFields(table, knex)
       table.string(BROWSER_ID).notNullable()
       relationType(JOB, TABLES.JOBS, table, knex).notNullable()
     })
@@ -472,8 +502,8 @@ exports.up = async knex => {
       } = FIELDS[TABLES.MESSAGE_EVENTS]
 
       defaultConfig(table, knex)
+      defaultFields(table, knex)
       table.string(HASH).notNullable()
-      table.unique(HASH, INDICES[TABLES.MESSAGE_EVENTS][HASH].name)
     })
 
     .createTable(TABLES.REFERRAL_KEY_TO_SLUG_MAP, table => {
@@ -483,9 +513,8 @@ exports.up = async knex => {
       } = FIELDS[TABLES.REFERRAL_KEY_TO_SLUG_MAP]
 
       defaultConfig(table, knex)
-      table.string(REFERRAL_KEY).notNullable()
+      table.string(REFERRAL_KEY).primary('byReferralKey')
       table.string(JOB_SLUG).notNullable()
-      table.unique(REFERRAL_KEY, INDICES[TABLES.REFERRAL_KEY_TO_SLUG_MAP][REFERRAL_KEY].name)
       table.unique(JOB_SLUG, INDICES[TABLES.REFERRAL_KEY_TO_SLUG_MAP][JOB_SLUG].name)
     })
 }

@@ -428,12 +428,6 @@ const INDICES = merge(
         fields: [F.ACCEPTED_ACCESS_REQUESTS.ACCESS_REQUEST, F.ACCEPTED_ACCESS_REQUESTS.HIRER]
       }
     },
-    [TABLES.MESSAGE_EVENTS]: {
-      [F.MESSAGE_EVENTS.HASH]: {
-        name: `${TABLES.MESSAGE_EVENTS}ByHash`,
-        fields: [F.MESSAGE_EVENTS.HASH]
-      }
-    },
     [TABLES.REFERRAL_KEY_TO_SLUG_MAP]: {
       [F.REFERRAL_KEY_TO_SLUG_MAP.REFERRAL_KEY]: {
         name: `${TABLES.REFERRAL_KEY_TO_SLUG_MAP}ByReferralKey`,
@@ -460,6 +454,8 @@ function createEnumDefinition (items) {
 function defaultConfig (t, knex) {
   t.charset('utf8mb4') // to support emoji
   t.collate('utf8mb4_bin') // to support emoji
+}
+function defaultFields (t, knex) {
   // Reason for choosing INT over BIGINT as the primary key
   // http://ronaldbradford.com/blog/bigint-v-int-is-there-a-big-deal-2008-07-18/
   t.increments(FIELDS.GENERIC.ID).primary('byId')
@@ -523,6 +519,7 @@ module.exports = {
 
   // functions
   defaultConfig,
+  defaultFields,
   emailType,
   urlType,
   relationType,

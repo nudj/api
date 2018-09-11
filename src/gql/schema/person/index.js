@@ -9,11 +9,13 @@ module.exports = {
       lastName: String
       url: String
       emailPreference: EmailPreference
+      signedUp: Boolean
     }
 
     input PersonFilterInput {
       id: ID
       email: String
+      signedUp: Boolean
       dateTo: DateTime
       dateFrom: DateTime
     }
@@ -25,6 +27,7 @@ module.exports = {
       url: String
       company: String
       role: String
+      signedUp: Boolean
     }
 
     input PersonUpdateInput {
@@ -35,6 +38,7 @@ module.exports = {
       emailPreference: EmailPreference
       company: String
       role: String
+      signedUp: Boolean
     }
   `
 }

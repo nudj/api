@@ -133,7 +133,8 @@ const FIELDS = {
     FIRST_NAME: 'firstName',
     LAST_NAME: 'lastName',
     URL: 'url',
-    EMAIL_PREFERENCE: 'emailPreference'
+    EMAIL_PREFERENCE: 'emailPreference',
+    SIGNED_UP: 'signedUp'
   },
   [TABLES.PERSON_ROLES]: {
     PERSON: 'person',

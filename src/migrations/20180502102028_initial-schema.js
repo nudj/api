@@ -3,13 +3,11 @@ const {
   FIELDS,
   ENUMS,
   INDICES,
-  COLLECTIONS,
   defaultConfig,
   emailType,
   urlType,
   relationType
 } = require('../lib/sql')
-const { nosql } = require('../lib/stores')
 
 exports.up = async knex => {
   await knex.schema
@@ -457,21 +455,46 @@ exports.up = async knex => {
       table.unique([ACCESS_REQUEST, HIRER], INDICES[TABLES.ACCEPTED_ACCESS_REQUESTS][[ACCESS_REQUEST, HIRER].join('')].name)
     })
 
-  // create all required collections in the nosql store
-  await Promise.all(Object.values(COLLECTIONS).map(async collectionName => {
-    let collection
-    try {
-      collection = nosql.collection(collectionName)
-      await collection.create()
-    } catch (error) {
-      if (error.message !== 'duplicate name: duplicate name') throw error
-    }
-    return collection.truncate()
-  }))
+    .createTable(TABLES.JOB_VIEW_EVENTS, table => {
+      const {
+        BROWSER_ID,
+        JOB
+      } = FIELDS[TABLES.JOB_VIEW_EVENTS]
+
+      defaultConfig(table, knex)
+      table.string(BROWSER_ID).notNullable()
+      relationType(JOB, TABLES.JOBS, table, knex).notNullable()
+    })
+
+    .createTable(TABLES.MESSAGE_EVENTS, table => {
+      const {
+        HASH
+      } = FIELDS[TABLES.MESSAGE_EVENTS]
+
+      defaultConfig(table, knex)
+      table.string(HASH).notNullable()
+      table.unique(HASH, INDICES[TABLES.MESSAGE_EVENTS][HASH].name)
+    })
+
+    .createTable(TABLES.REFERRAL_KEY_TO_SLUG_MAP, table => {
+      const {
+        REFERRAL_KEY,
+        JOB_SLUG
+      } = FIELDS[TABLES.REFERRAL_KEY_TO_SLUG_MAP]
+
+      defaultConfig(table, knex)
+      table.string(REFERRAL_KEY).notNullable()
+      table.string(JOB_SLUG).notNullable()
+      table.unique(REFERRAL_KEY, INDICES[TABLES.REFERRAL_KEY_TO_SLUG_MAP][REFERRAL_KEY].name)
+      table.unique(JOB_SLUG, INDICES[TABLES.REFERRAL_KEY_TO_SLUG_MAP][JOB_SLUG].name)
+    })
 }
 
 exports.down = async knex => {
   await knex.schema
+    .dropTable(TABLES.REFERRAL_KEY_TO_SLUG_MAP)
+    .dropTable(TABLES.MESSAGE_EVENTS)
+    .dropTable(TABLES.JOB_VIEW_EVENTS)
     .dropTable(TABLES.ACCEPTED_ACCESS_REQUESTS)
     .dropTable(TABLES.ACCESS_REQUESTS)
     .dropTable(TABLES.RELATED_JOBS)
@@ -500,16 +523,4 @@ exports.down = async knex => {
     .dropTable(TABLES.JOBS)
     .dropTable(TABLES.COMPANIES)
     .dropTable(TABLES.PEOPLE)
-
-  // drop all collections in the nosql store
-  const collections = await nosql.collections()
-  return Promise.all(collections.map(async collection => {
-    try {
-      await collection.drop()
-    } catch (error) {
-      if (!error.message.startsWith('unknown collection')) {
-        throw error
-      }
-    }
-  }))
 }

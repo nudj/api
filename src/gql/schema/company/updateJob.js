@@ -1,5 +1,5 @@
 const omit = require('lodash/omit')
-const { intercom } = require('@nudj/library/analytics')
+const intercom = require('@nudj/library/lib/analytics/intercom')
 
 const { makeUniqueSlug } = require('../../lib/helpers')
 const { values: tagTypes } = require('../enums/tag-types')

@@ -1,4 +1,4 @@
-const { intercom } = require('@nudj/library/analytics')
+const intercom = require('@nudj/library/lib/analytics/intercom')
 const { renderSimpleTemplate, getInvitationUrl } = require('@nudj/library')
 
 const {

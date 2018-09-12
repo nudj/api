@@ -15,7 +15,7 @@ module.exports = {
     Job: {
       recordViewEvent: (job, args, context) => {
         const browserId = args.browserId || createNewBrowserId()
-        return context.nosql.create({
+        return context.sql.create({
           type: 'jobViewEvents',
           data: {
             browserId,

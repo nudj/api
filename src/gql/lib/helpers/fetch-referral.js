@@ -11,9 +11,10 @@ const fetchReferral = async (context, id) => {
   let slugMap
 
   if (isMD5(id) || mightBeArangoId(id)) {
-    slugMap = await context.nosql.readOne({
+    slugMap = await context.sql.readOne({
       type: 'referralKeyToSlugMaps',
-      id
+      index: INDICES[TABLES.REFERRAL_KEY_TO_SLUG_MAP].referralKey,
+      key: id
     })
   }
 

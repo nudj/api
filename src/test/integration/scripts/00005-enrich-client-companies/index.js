@@ -33,7 +33,7 @@ const fetchStubCalls = (stub) => {
   return flatten(args)
 }
 
-describe('00005 Enrich Client Companies', () => {
+xdescribe('00005 Enrich Client Companies', () => {
   before(async () => {
     await Promise.all([
       setupCollections(db, ['companies']),

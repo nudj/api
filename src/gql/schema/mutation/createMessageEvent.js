@@ -9,7 +9,7 @@ module.exports = {
   resolvers: {
     Mutation: {
       createMessageEvent: async (root, args, context) => {
-        return context.nosql.create({
+        return context.sql.create({
           type: 'messageEvents',
           data: {
             hash: args.hash

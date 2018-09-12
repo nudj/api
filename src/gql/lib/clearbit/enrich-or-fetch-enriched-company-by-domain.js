@@ -1,6 +1,7 @@
 const { logger } = require('@nudj/library')
 const enrichCompanyByDomain = require('./enrich-company-by-domain')
 
+// this is being put on indefinite hiatus after the move to sql as we do not have an immediate need for it
 const enrichOrFetchEnrichedCompanyByDomain = async (domain, context, options) => {
   try {
     const enrichedCompany = await context.nosql.readOne({

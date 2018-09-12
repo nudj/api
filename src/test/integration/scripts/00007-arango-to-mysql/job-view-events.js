@@ -5,7 +5,6 @@ const chaiAsPromised = require('chai-as-promised')
 const {
   db,
   sql,
-  nosql,
   setupCollections,
   populateCollections,
   truncateCollections,
@@ -13,8 +12,7 @@ const {
   expect
 } = require('../../lib')
 const {
-  TABLES,
-  COLLECTIONS
+  TABLES
 } = require('../../../../lib/sql')
 const {
   OLD_COLLECTIONS
@@ -27,26 +25,24 @@ chai.use(chaiAsPromised)
 describe('00007 Arango to MySQL', () => {
   async function seedRun (data) {
     await populateCollections(db, data)
-    await script({ db, sql, nosql })
+    await script({ db, sql })
   }
 
   before(async () => {
     await setupCollections(db, Object.values(OLD_COLLECTIONS))
-    await setupCollections(nosql, Object.values(COLLECTIONS))
   })
 
   afterEach(async () => {
     await truncateCollections(db)
-    await truncateCollections(nosql)
   })
 
   after(async () => {
-    await teardownCollections(nosql)
     await teardownCollections(db)
   })
 
-  describe('for jobViewEvents collection', () => {
+  describe('for jobViewEvents table', () => {
     afterEach(async () => {
+      await sql(TABLES.JOB_VIEW_EVENTS).whereNot('id', '').del()
       await sql(TABLES.JOBS).whereNot('id', '').del()
       await sql(TABLES.COMPANIES).whereNot('id', '').del()
     })
@@ -62,7 +58,8 @@ describe('00007 Arango to MySQL', () => {
                 created: '2018-02-01T01:02:03.456Z',
                 modified: '2018-03-02T02:03:04.567Z',
                 name: 'Company Ltd',
-                slug: 'company-ltd'
+                slug: 'company-ltd',
+                hash: '123'
               }
             ]
           },
@@ -101,17 +98,11 @@ describe('00007 Arango to MySQL', () => {
         ])
       })
 
-      it('should copy item from old events collection to new jobViewEvents collection', async () => {
-        const jobViewEventsCollectionCursor = await nosql.collection(COLLECTIONS.JOB_VIEW_EVENTS)
-        const jobViewEventsAllCursor = await jobViewEventsCollectionCursor.all()
-        const jobViewEventsAll = await jobViewEventsAllCursor.all()
-
+      it('should copy item from old events collection to new jobViewEvents table', async () => {
         const jobs = await sql.select().from(TABLES.JOBS)
-
-        expect(jobViewEventsAll[0]).to.have.property('created', '2018-02-01 01:02:03')
-        expect(jobViewEventsAll[0]).to.have.property('modified', '2018-03-02 02:03:04')
-        expect(jobViewEventsAll[0]).to.have.property('job', jobs[0].id)
-        expect(jobViewEventsAll[0]).to.have.property('browserId', 'abc123')
+        const jobViewEvents = await sql.select().from(TABLES.JOB_VIEW_EVENTS)
+        expect(jobViewEvents[0]).to.have.property('job', jobs[0].id)
+        expect(jobViewEvents[0]).to.have.property('browserId', 'abc123')
       })
     })
 
@@ -126,7 +117,8 @@ describe('00007 Arango to MySQL', () => {
                 created: '2018-02-01T01:02:03.456Z',
                 modified: '2018-03-02T02:03:04.567Z',
                 name: 'Company Ltd',
-                slug: 'company-ltd'
+                slug: 'company-ltd',
+                hash: '123'
               }
             ]
           },
@@ -171,11 +163,8 @@ describe('00007 Arango to MySQL', () => {
       })
 
       it('should create one entry per event', async () => {
-        const jobViewEventsCollectionCursor = await nosql.collection(COLLECTIONS.JOB_VIEW_EVENTS)
-        const jobViewEventsAllCursor = await jobViewEventsCollectionCursor.all()
-        const jobViewEventsAll = await jobViewEventsAllCursor.all()
-
-        expect(jobViewEventsAll).to.have.length(2)
+        const jobViewEvents = await sql.select().from(TABLES.JOB_VIEW_EVENTS)
+        expect(jobViewEvents).to.have.length(2)
       })
     })
   })

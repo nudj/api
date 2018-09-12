@@ -7,10 +7,6 @@ const times = require('lodash/times')
 
 const {
   sql,
-  nosql,
-  setupCollections,
-  truncateCollections,
-  teardownCollections,
   expect
 } = require('../../lib')
 const {
@@ -19,7 +15,6 @@ const {
 
 const schema = require('../../../../gql/schema')
 const { store: mysqlAdaptor } = require('../../../../gql/adaptors/mysql')
-const { store: arangoAdaptor } = require('../../../../gql/adaptors/arango')
 
 chai.use(chaiAsPromised)
 
@@ -35,29 +30,18 @@ describe('Person.importLinkedinConnections', () => {
   }
   async function runQuery (query, variables = {}) {
     const sqlStore = mysqlAdaptor({ db: sql })
-    const nosqlStore = arangoAdaptor({ db: nosql })
     const context = {
-      sql: sqlStore,
-      nosql: nosqlStore
+      sql: sqlStore
     }
     const result = await graphql(schema, query, undefined, context, variables)
     return result
   }
-
-  before(async () => {
-    await setupCollections(nosql, ['jobViewEvents', 'referralKeyToSlugsMap'])
-  })
 
   afterEach(async () => {
     await sql(TABLES.CONNECTIONS).whereNot('id', '').del()
     await sql(TABLES.COMPANIES).whereNot('id', '').del()
     await sql(TABLES.ROLES).whereNot('id', '').del()
     await sql(TABLES.PEOPLE).whereNot('id', '').del()
-    await truncateCollections(nosql)
-  })
-
-  after(async () => {
-    await teardownCollections(nosql)
   })
 
   describe('for single valid connection', () => {

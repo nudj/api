@@ -13,15 +13,16 @@ module.exports = {
         if (id === undefined) {
           return null
         }
-        const slugMap = await context.nosql.readOne({
+        const slugMap = await context.sql.readOne({
           type: 'referralKeyToSlugMaps',
-          id
+          index: INDICES[TABLES.REFERRAL_KEY_TO_SLUG_MAP].referralKey,
+          key: id
         })
         if (!slugMap) return null
         return context.sql.readOne({
           type: 'referrals',
           index: INDICES[TABLES.REFERRALS].slug,
-          key: slugMap.slug
+          key: slugMap.jobSlug
         })
       }
     }

@@ -5,7 +5,6 @@ const chaiAsPromised = require('chai-as-promised')
 const {
   db,
   sql,
-  nosql,
   setupCollections,
   populateCollections,
   truncateCollections,
@@ -27,7 +26,7 @@ chai.use(chaiAsPromised)
 describe('00007 Arango to MySQL', () => {
   async function seedRun (data) {
     await populateCollections(db, data)
-    await script({ db, sql, nosql })
+    await script({ db, sql })
   }
 
   before(async () => {
@@ -36,8 +35,6 @@ describe('00007 Arango to MySQL', () => {
 
   afterEach(async () => {
     await truncateCollections(db)
-    await truncateCollections(nosql)
-    await teardownCollections(nosql)
   })
 
   after(async () => {
@@ -67,6 +64,7 @@ describe('00007 Arango to MySQL', () => {
                 modified: '2018-03-02T02:03:04.567Z',
                 name: 'Company Ltd',
                 slug: 'company-ltd',
+                hash: '123',
                 client: true,
                 batchSize: 100,
                 skip: 0
@@ -100,7 +98,8 @@ describe('00007 Arango to MySQL', () => {
                 created: '2018-02-01T01:02:03.456Z',
                 modified: '2018-03-02T02:03:04.567Z',
                 name: 'Company Ltd',
-                slug: 'company-ltd'
+                slug: 'company-ltd',
+                hash: '123'
               }
             ]
           }
@@ -124,7 +123,8 @@ describe('00007 Arango to MySQL', () => {
                 _rev: '_WpP1l3W---',
                 _key: '123',
                 name: 'Company Ltd',
-                slug: 'company-ltd'
+                slug: 'company-ltd',
+                hash: '123'
               }
             ]
           }

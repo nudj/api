@@ -12,9 +12,7 @@ describe('Job.viewCountByFilters', () => {
         {
           id: 'job1'
         }
-      ]
-    }
-    const nosql = {
+      ],
       jobViewEvents: [
         {
           job: 'job1',
@@ -30,7 +28,6 @@ describe('Job.viewCountByFilters', () => {
         }
       ]
     }
-
     const operation = `
       query {
         job(id: "job1") {
@@ -40,7 +37,7 @@ describe('Job.viewCountByFilters', () => {
       }
     `
 
-    return expect(executeQueryOnDbUsingSchema({ operation, db, nosql, schema })).to.eventually.deep.equal({
+    return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
         job: {
           id: 'job1',
@@ -54,12 +51,9 @@ describe('Job.viewCountByFilters', () => {
     const db = {
       jobs: [{
         id: 'job1'
-      }]
-    }
-    const nosql = {
+      }],
       jobViewEvents: []
     }
-
     const operation = `
       query {
         job(id: "job1") {
@@ -69,7 +63,7 @@ describe('Job.viewCountByFilters', () => {
       }
     `
 
-    return expect(executeQueryOnDbUsingSchema({ operation, db, nosql, schema })).to.eventually.deep.equal({
+    return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
         job: {
           id: 'job1',
@@ -83,9 +77,7 @@ describe('Job.viewCountByFilters', () => {
     const db = {
       jobs: [{
         id: 'job1'
-      }]
-    }
-    const nosql = {
+      }],
       jobViewEvents: [
         {
           job: 'job1',
@@ -114,7 +106,6 @@ describe('Job.viewCountByFilters', () => {
         }
       ]
     }
-
     const operation = `
       query filteredViews ($to: DateTime, $from: DateTime) {
         job(id: "job1") {
@@ -128,7 +119,7 @@ describe('Job.viewCountByFilters', () => {
       to: '2017-12-09 10:00:00'
     }
 
-    return expect(executeQueryOnDbUsingSchema({ operation, variables, db, nosql, schema })).to.eventually.deep.equal({
+    return expect(executeQueryOnDbUsingSchema({ operation, variables, db, schema })).to.eventually.deep.equal({
       data: {
         job: {
           id: 'job1',

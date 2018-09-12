@@ -1,7 +1,7 @@
 const promiseSerial = require('promise-serial')
 const chunk = require('lodash/chunk')
 const { logger } = require('@nudj/library')
-const { intercom } = require('@nudj/library/analytics')
+const intercom = require('@nudj/library/lib/analytics/intercom')
 
 const INTERCOM_BATCH_AMOUNT = 10
 

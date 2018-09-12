@@ -4,7 +4,7 @@ const values = require('lodash/values')
 const omit = require('lodash/omit')
 
 const { logger } = require('@nudj/library')
-const { intercom } = require('@nudj/library/analytics')
+const intercom = require('@nudj/library/lib/analytics/intercom')
 const { values: hirerTypes } = require('../../schema/enums/hirer-types')
 
 const intercomTags = {

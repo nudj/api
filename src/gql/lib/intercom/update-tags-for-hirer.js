@@ -7,7 +7,7 @@ const { logger } = require('@nudj/library')
 const intercom = require('@nudj/library/lib/analytics/intercom')
 const { values: hirerTypes } = require('../../schema/enums/hirer-types')
 
-const intercomTags = {
+const hirerTypeTags = {
   [hirerTypes.ADMIN]: 'admin',
   [hirerTypes.MEMBER]: 'team-member'
 }
@@ -23,34 +23,27 @@ const updateIntercomTagsForHirer = async (context, hirer) => {
     })
 
     const existingTags = get(intercomUser, 'tags.tags')
-    const incorrectTag = values(omit(intercomTags, [hirer.type]))[0]
+    const incorrectTag = values(omit(hirerTypeTags, [hirer.type]))[0]
     const hasCorrectTag = find(existingTags, {
-      name: intercomTags[hirer.type]
+      name: hirerTypeTags[hirer.type]
     })
     const hasIncorrectTag = find(existingTags, {
       name: incorrectTag
     })
 
-    if (!hasCorrectTag && !hasIncorrectTag) {
-      // has no tags
+    if (!hasCorrectTag) {
       await intercom.user.tag({
         user: intercomUser,
         tags: [
-          intercomTags[hirer.type]
+          hirerTypeTags[hirer.type]
         ]
       })
-    } else if ((!hasCorrectTag && hasIncorrectTag) || (hasCorrectTag && hasIncorrectTag)) {
-      // has only incorrect tag OR has both tags
+    }
+
+    if (hasIncorrectTag) {
       await intercom.user.untag({
         user: intercomUser,
         tags: [incorrectTag]
-      })
-
-      await intercom.user.tag({
-        user: intercomUser,
-        tags: [
-          intercomTags[hirer.type]
-        ]
       })
     }
   } catch (error) {

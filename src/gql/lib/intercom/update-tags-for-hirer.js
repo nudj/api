@@ -1,6 +1,7 @@
 const get = require('lodash/get')
 const find = require('lodash/find')
 const values = require('lodash/values')
+const omit = require('lodash/omit')
 
 const { logger } = require('@nudj/library')
 const { intercom } = require('@nudj/library/analytics')
@@ -22,14 +23,27 @@ const updateIntercomTagsForHirer = async (context, hirer) => {
     })
 
     const existingTags = get(intercomUser, 'tags.tags')
+    const incorrectTag = values(omit(intercomTags, [hirer.type]))[0]
     const hasCorrectTag = find(existingTags, {
       name: intercomTags[hirer.type]
     })
+    const hasIncorrectTag = find(existingTags, {
+      name: incorrectTag
+    })
 
-    if (!hasCorrectTag) {
+    if (!hasCorrectTag && !hasIncorrectTag) {
+      // has no tags
+      await intercom.user.tag({
+        user: intercomUser,
+        tags: [
+          intercomTags[hirer.type]
+        ]
+      })
+    } else if ((!hasCorrectTag && hasIncorrectTag) || (hasCorrectTag && hasIncorrectTag)) {
+      // has only incorrect tag OR has both tags
       await intercom.user.untag({
         user: intercomUser,
-        tags: values(intercomTags)
+        tags: [incorrectTag]
       })
 
       await intercom.user.tag({

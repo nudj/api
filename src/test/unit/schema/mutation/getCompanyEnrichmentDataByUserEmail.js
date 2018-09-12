@@ -13,7 +13,7 @@ const operation = `
   }
 `
 
-describe('Mutation.getCompanyEnrichmentDataByUserEmail', () => {
+xdescribe('Mutation.getCompanyEnrichmentDataByUserEmail', () => {
   let cachedClearbitStatus
 
   before(() => {

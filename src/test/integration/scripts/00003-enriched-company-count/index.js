@@ -14,7 +14,7 @@ const {
 const script = require('../../../../scripts/00003-enriched-company-count')
 const executeScript = () => script({ db, nosql })
 
-describe('00003 Enriched Company Count', () => {
+xdescribe('00003 Enriched Company Count', () => {
   let consoleStub
 
   before(async () => {

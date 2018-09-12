@@ -1,6 +1,6 @@
 const { logger } = require('@nudj/library')
 
-const { enrichOrFetchEnrichedCompanyByDomain } = require('../../lib/clearbit')
+const { enrichCompanyByDomain } = require('../../lib/clearbit')
 const fetchPerson = require('../../lib/helpers/fetch-person')
 
 const domainBlacklist = [
@@ -127,7 +127,7 @@ module.exports = {
           }
         }
 
-        return enrichOrFetchEnrichedCompanyByDomain(domain, context)
+        return enrichCompanyByDomain(domain)
       }
     }
   }

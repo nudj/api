@@ -1,7 +1,7 @@
 require('envkey')
 const { Database } = require('arangojs')
 const knex = require('knex')
-const { OLD_DB_URL, NO_SQL_URL } = require('../lib/constants')
+const { OLD_DB_URL } = require('../lib/constants')
 
 const db = new Database({ url: OLD_DB_URL })
 db.useDatabase(process.env.DB_NAME)
@@ -26,16 +26,12 @@ const sql = knex({
   }
 })
 
-const nosql = new Database({ url: NO_SQL_URL })
-nosql.useDatabase(process.env.NO_SQL_NAME)
-nosql.useBasicAuth(process.env.NO_SQL_USER, process.env.NO_SQL_PASS)
-
 const script = require(`./${scriptName}`);
 
 (async () => {
   let exitCode = 0
   try {
-    await script({ db, sql, nosql, arg })
+    await script({ db, sql, arg })
   } catch (error) {
     console.log('\n\n', error)
     exitCode = 1

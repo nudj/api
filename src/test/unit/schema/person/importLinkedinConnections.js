@@ -30,10 +30,6 @@ xdescribe('Person.importLinkedinConnections', () => {
     sql: {
       import: importStub,
       readAll: readAllStub
-    },
-    nosql: {
-      readOne: () => ({}),
-      create: () => ({})
     }
   }
   const args = {

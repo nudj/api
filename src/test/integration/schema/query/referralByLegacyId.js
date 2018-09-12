@@ -7,11 +7,6 @@ const times = require('lodash/times')
 
 const {
   sql,
-  nosql,
-  setupCollections,
-  populateCollections,
-  truncateCollections,
-  teardownCollections,
   expect
 } = require('../../lib')
 const {
@@ -20,7 +15,6 @@ const {
 
 const schema = require('../../../../gql/schema')
 const { store: mysqlAdaptor } = require('../../../../gql/adaptors/mysql')
-const { store: arangoAdaptor } = require('../../../../gql/adaptors/arango')
 
 chai.use(chaiAsPromised)
 
@@ -41,18 +35,12 @@ describe('Query.referralByLegacyId', () => {
   }
   async function runQuery (query, variables = {}) {
     const sqlStore = mysqlAdaptor({ db: sql })
-    const nosqlStore = arangoAdaptor({ db: nosql })
     const context = {
-      sql: sqlStore,
-      nosql: nosqlStore
+      sql: sqlStore
     }
     const result = await graphql(schema, query, undefined, context, variables)
     return result
   }
-
-  before(async () => {
-    await setupCollections(nosql, ['jobViewEvents', 'referralKeyToSlugMaps'])
-  })
 
   beforeEach(async () => {
     [
@@ -72,7 +60,8 @@ describe('Query.referralByLegacyId', () => {
         data: [
           {
             name: 'Company',
-            slug: 'company'
+            slug: 'company',
+            hash: '123'
           }
         ]
       }
@@ -109,24 +98,20 @@ describe('Query.referralByLegacyId', () => {
     await sql(TABLES.JOBS).whereNot('id', '').del()
     await sql(TABLES.COMPANIES).whereNot('id', '').del()
     await sql(TABLES.PEOPLE).whereNot('id', '').del()
-    await truncateCollections(nosql)
-  })
-
-  after(async () => {
-    await teardownCollections(nosql)
+    await sql(TABLES.REFERRAL_KEY_TO_SLUG_MAP).whereNot('referralKey', '').del()
   })
 
   describe('when passing old arango id', () => {
     let result
 
     beforeEach(async () => {
-      populateCollections(nosql, [
+      await seedSql([
         {
-          name: 'referralKeyToSlugMaps',
+          name: TABLES.REFERRAL_KEY_TO_SLUG_MAP,
           data: [
             {
-              _key: '30810601',
-              slug: '1234567890'
+              referralKey: '30810601',
+              jobSlug: '1234567890'
             }
           ]
         }
@@ -160,13 +145,13 @@ describe('Query.referralByLegacyId', () => {
     let result
 
     beforeEach(async () => {
-      populateCollections(nosql, [
+      await seedSql([
         {
-          name: 'referralKeyToSlugMaps',
+          name: TABLES.REFERRAL_KEY_TO_SLUG_MAP,
           data: [
             {
-              _key: '745cbb4b67a4d37caadb09f438da7322',
-              slug: '1234567890'
+              referralKey: '745cbb4b67a4d37caadb09f438da7322',
+              jobSlug: '1234567890'
             }
           ]
         }
@@ -200,13 +185,13 @@ describe('Query.referralByLegacyId', () => {
     let result
 
     beforeEach(async () => {
-      populateCollections(nosql, [
+      await seedSql([
         {
-          name: 'referralKeyToSlugMaps',
+          name: TABLES.REFERRAL_KEY_TO_SLUG_MAP,
           data: [
             {
-              _key: '745cbb4b67a4d37caadb09f438da7322',
-              slug: '1234567890'
+              referralKey: '745cbb4b67a4d37caadb09f438da7322',
+              jobSlug: '1234567890'
             }
           ]
         }
@@ -239,13 +224,13 @@ describe('Query.referralByLegacyId', () => {
     let result
 
     beforeEach(async () => {
-      populateCollections(nosql, [
+      await seedSql([
         {
-          name: 'referralKeyToSlugMaps',
+          name: TABLES.REFERRAL_KEY_TO_SLUG_MAP,
           data: [
             {
-              _key: '745cbb4b67a4d37caadb09f438da7322',
-              slug: '1234567890'
+              referralKey: '745cbb4b67a4d37caadb09f438da7322',
+              jobSlug: '1234567890'
             }
           ]
         }

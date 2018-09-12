@@ -23,16 +23,14 @@ describe('Job.recordViewEvent', () => {
           {
             id: 'job1'
           }
-        ]
-      }
-      const nosql = {
+        ],
         jobViewEvents: []
       }
       const variables = {
         browserId: '12345'
       }
 
-      return expect(executeQueryOnDbUsingSchema({ operation, variables, db, nosql, schema })).to.eventually.deep.equal({
+      return expect(executeQueryOnDbUsingSchema({ operation, variables, db, schema })).to.eventually.deep.equal({
         data: {
           job: {
             recordViewEvent: {
@@ -63,14 +61,12 @@ describe('Job.recordViewEvent', () => {
             id: 'job1'
           }
         ],
-        events: []
-      }
-      const nosql = {
+        events: [],
         jobViewEvents: []
       }
       const variables = {}
 
-      return executeQueryOnDbUsingSchema({ operation, variables, db, nosql, schema })
+      return executeQueryOnDbUsingSchema({ operation, variables, db, schema })
       .then(result => {
         const event = result.data.job.recordViewEvent
         expect(event.browserId).to.exist()

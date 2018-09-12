@@ -42,7 +42,7 @@ enrichCompanyByDomainStub.withArgs('anotherNew.Co')
 
 chai.use(sinonChai)
 
-describe('Clearbit.enrichOrFetchEnrichedCompanyByDomain', () => {
+xdescribe('Clearbit.enrichOrFetchEnrichedCompanyByDomain', () => {
   const fakeContext = {
     store: {
       readOne: storeReadOneStub

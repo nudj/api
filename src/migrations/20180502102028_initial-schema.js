@@ -48,7 +48,7 @@ exports.up = async knex => {
       defaultFields(table, knex)
       table.string(NAME).notNullable()
       table.string(SLUG).notNullable()
-      table.string(HASH).notNullable()
+      table.string(HASH).nullable()
       table.text(DESCRIPTION).nullable()
       table.string(LOCATION).nullable()
       urlType(LOGO, table, knex).nullable()

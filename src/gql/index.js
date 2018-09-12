@@ -3,14 +3,11 @@ const bodyParser = require('body-parser')
 const { graphqlExpress } = require('apollo-server-express')
 
 const schema = require('./schema')
-const {
-  sql,
-  nosql
-} = require('../lib/stores')
+const { sql } = require('../lib/stores')
 const healthcheck = require('./routers/health-check')
 const formatError = require('./lib/format-error')
 
-module.exports = ({ transaction, sqlStore, nosqlStore }) => {
+module.exports = ({ transaction, sqlStore }) => {
   const app = express()
   app.use(healthcheck())
   app.use(
@@ -32,9 +29,6 @@ module.exports = ({ transaction, sqlStore, nosqlStore }) => {
         transaction,
         sql: sqlStore({
           db: sql
-        }),
-        nosql: nosqlStore({
-          db: nosql
         })
       }
       return {

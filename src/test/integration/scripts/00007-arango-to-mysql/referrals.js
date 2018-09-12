@@ -5,7 +5,6 @@ const chaiAsPromised = require('chai-as-promised')
 const {
   db,
   sql,
-  nosql,
   setupCollections,
   populateCollections,
   truncateCollections,
@@ -14,8 +13,7 @@ const {
   genericExpectationsForTable
 } = require('../../lib')
 const {
-  TABLES,
-  COLLECTIONS
+  TABLES
 } = require('../../../../lib/sql')
 const {
   OLD_COLLECTIONS
@@ -28,21 +26,18 @@ chai.use(chaiAsPromised)
 describe('00007 Arango to MySQL', () => {
   async function seedRun (data) {
     await populateCollections(db, data)
-    await script({ db, sql, nosql })
+    await script({ db, sql })
   }
 
   before(async () => {
     await setupCollections(db, Object.values(OLD_COLLECTIONS))
-    await setupCollections(nosql, Object.values(COLLECTIONS))
   })
 
   afterEach(async () => {
     await truncateCollections(db)
-    await truncateCollections(nosql)
   })
 
   after(async () => {
-    await teardownCollections(nosql)
     await teardownCollections(db)
   })
 
@@ -55,8 +50,8 @@ describe('00007 Arango to MySQL', () => {
     }
 
     afterEach(async () => {
-      await sql(TABLES.REFERRALS).where('created', '2019-02-01 01:02:03').del()
-      await sql(TABLES.REFERRALS).where('created', '2018-02-01 01:02:03').del()
+      await sql(TABLES.REFERRAL_KEY_TO_SLUG_MAP).whereNot('referralKey', '').del()
+      await sql(TABLES.REFERRALS).whereNot('id', '').del()
       await sql(TABLES.JOBS).whereNot('id', '').del()
       await sql(TABLES.PEOPLE).whereNot('id', '').del()
       await sql(TABLES.COMPANIES).whereNot('id', '').del()
@@ -94,7 +89,8 @@ describe('00007 Arango to MySQL', () => {
                 created: '2018-02-01T01:02:03.456Z',
                 modified: '2018-03-02T02:03:04.567Z',
                 name: 'Company Ltd',
-                slug: 'company-ltd'
+                slug: 'company-ltd',
+                hash: '123'
               }
             ]
           },
@@ -168,26 +164,20 @@ describe('00007 Arango to MySQL', () => {
         expect(referrals[0]).to.have.property('slug').to.match(/^[a-z0-9]{10}$/)
       })
 
-      it('should create referralKeyToSlugMaps collection in the NoSQL store', async () => {
-        const referralKeyToSlugMapsCursor = await nosql.collection('referralKeyToSlugMaps')
-        try {
-          await referralKeyToSlugMapsCursor.all()
-          expect(true).to.be.true()
-        } catch (error) {
-          expect(true, 'referralKeyToSlugMaps does not exist').to.be.false()
-        }
-      })
-
       it('should store a key->slug map in the NoSQL store', async () => {
         const referrals = await sql.select().from(TABLES.REFERRALS).orderBy('created', 'asc')
 
-        const referralKeyToSlugMapsCursor = await nosql.collection('referralKeyToSlugMaps')
+        const referral1IdMap = await sql.select().from(TABLES.REFERRAL_KEY_TO_SLUG_MAP).where({
+          referralKey: 'referral1'
+        })
+        expect(referral1IdMap[0]).to.exist()
+        expect(referral1IdMap[0]).to.have.property('jobSlug', referrals[0].slug)
 
-        const referral1IdMap = await referralKeyToSlugMapsCursor.document('referral1')
-        expect(referral1IdMap).to.have.property('slug', referrals[0].slug)
-
-        const referral2IdMap = await referralKeyToSlugMapsCursor.document('referral2')
-        expect(referral2IdMap).to.have.property('slug', referrals[1].slug)
+        const referral2IdMap = await sql.select().from(TABLES.REFERRAL_KEY_TO_SLUG_MAP).where({
+          referralKey: 'referral2'
+        })
+        expect(referral2IdMap[0]).to.exist()
+        expect(referral2IdMap[0]).to.have.property('jobSlug', referrals[1].slug)
       })
     })
   })

@@ -12,7 +12,7 @@ const loggerStub = sinon.stub()
 
 chai.use(sinonChai)
 
-describe('Clearbit.enrichOrFetchEnrichedCompanyByName', () => {
+xdescribe('Clearbit.enrichOrFetchEnrichedCompanyByName', () => {
   const baseCompanyData = { id: 'company1', name: 'Comapny Inc' }
   const fakeContext = {
     nosql: {

@@ -10,7 +10,7 @@ module.exports = {
   resolvers: {
     Job: {
       viewCountByFilters: async (job, args, context) => {
-        const allJobViews = await context.nosql.readAll({
+        const allJobViews = await context.sql.readAll({
           type: 'jobViewEvents',
           filters: merge(args.filters, {
             job: job.id

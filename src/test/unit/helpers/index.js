@@ -5,7 +5,7 @@ const expect = chai.expect
 
 const { transaction, store } = require('../../../gql/adaptors/lodash')
 
-function executeQueryOnDbUsingSchema ({ schema, variables = {}, operation, db, nosql }) {
+function executeQueryOnDbUsingSchema ({ schema, variables = {}, operation, db }) {
   const testContext = {
     web: {
       protocol: process.env.PROTOCOL,
@@ -17,8 +17,7 @@ function executeQueryOnDbUsingSchema ({ schema, variables = {}, operation, db, n
     },
     userId: 'person1',
     transaction: transaction({ db }),
-    sql: store({ db }),
-    nosql: store({ db: nosql })
+    sql: store({ db })
   }
   return graphql(schema, operation, undefined, testContext, variables)
 }

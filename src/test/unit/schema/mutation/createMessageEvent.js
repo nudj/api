@@ -19,20 +19,20 @@ const operation = `
 `
 
 describe('Mutation.createMessageEvent', () => {
-  let nosql
+  let db
   let result
   let variables = {
     hash: 'abc123'
   }
 
   beforeEach(async () => {
-    nosql = {
+    db = {
       messageEvents: []
     }
     result = await executeQueryOnDbUsingSchema({
       operation,
       variables,
-      nosql,
+      db,
       schema
     })
   })
@@ -42,8 +42,8 @@ describe('Mutation.createMessageEvent', () => {
   })
 
   it('should create the messageEvent', async () => {
-    expect(nosql.messageEvents[0]).to.have.property('id', 'messageEvent1')
-    expect(nosql.messageEvents[0]).to.have.property('hash', 'abc123')
+    expect(db.messageEvents[0]).to.have.property('id', 'messageEvent1')
+    expect(db.messageEvents[0]).to.have.property('hash', 'abc123')
   })
 
   it('return the new messageEvent', async () => {

@@ -24,7 +24,7 @@ describe('00021 Add signed up flag to people', () => {
   }
 
   before(async () => {
-    await setupCollections(db, ['people', 'referrals', 'hirers'])
+    await setupCollections(db, ['people', 'referrals', 'hirers', 'applications'])
   })
 
   afterEach(async () => {
@@ -49,6 +49,12 @@ describe('00021 Add signed up flag to people', () => {
             },
             {
               _key: 'person3'
+            },
+            {
+              _key: 'person4'
+            },
+            {
+              _key: 'person5'
             }
           ]
         },
@@ -69,6 +75,21 @@ describe('00021 Add signed up flag to people', () => {
               person: 'person2'
             }
           ]
+        },
+        {
+          name: 'applications',
+          data: [
+            {
+              _key: 'application1',
+              created: '2018-08-15T12:00:00.000+00:00',
+              person: 'person3'
+            },
+            {
+              _key: 'application2',
+              created: '2018-08-29T12:00:00.000+00:00',
+              person: 'person4'
+            }
+          ]
         }
       ])
     })
@@ -79,7 +100,6 @@ describe('00021 Add signed up flag to people', () => {
       const people = orderBy(await cursor.all(), '_key')
 
       expect(people[0]).to.have.property('signedUp', true)
-      expect(people[2]).to.not.have.property('signedUp')
     })
 
     it('adds the `signedUp` boolean `true` to people who have referrals', async () => {
@@ -88,7 +108,23 @@ describe('00021 Add signed up flag to people', () => {
       const people = orderBy(await cursor.all(), '_key')
 
       expect(people[1]).to.have.property('signedUp', true)
-      expect(people[2]).to.not.have.property('signedUp')
+    })
+
+    it('adds the `signedUp` boolean `true` to people who have old applications', async () => {
+      await executeMigration({ direction: 'up' })
+      const cursor = await db.collection('people').all()
+      const people = orderBy(await cursor.all(), '_key')
+
+      expect(people[2]).to.have.property('signedUp', true) // before Auth0 was removed
+      expect(people[3]).to.not.have.property('signedUp') // post Auth0 removal
+    })
+
+    it('does not add the `signedUp` boolean `true` to all other people', async () => {
+      await executeMigration({ direction: 'up' })
+      const cursor = await db.collection('people').all()
+      const people = orderBy(await cursor.all(), '_key')
+
+      expect(people[4]).to.not.have.property('signedUp')
     })
   })
 

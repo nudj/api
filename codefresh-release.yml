@@ -21,25 +21,14 @@ steps:
     build_arguments:
       - NPM_TOKEN=${{NPM_TOKEN}}
 
-  push_dockerhub:
-    title: Push DockerHub
+  push:
+    title: Push
     type: push
     candidate: '${{build}}'
     tag: ${{CF_BRANCH}}
     credentials:
       username: '${{dockerUsername}}'
       password: '${{dockerPassword}}'
-
-  push_ecr:
-    title: Push ECR
-    type: push
-    candidate: ${{build}}
-    tag: ${{CF_BRANCH}}
-    provider: 'ecr'
-    registry: ecr
-    accessKeyId: ${{AWS_ACCESS_KEY_ID}}
-    secretAccessKey: ${{AWS_SECRET_ACCESS_KEY}}
-    region: ${{AWS_DEFAULT_REGION}}
 
   publish:
     title: Publish package to npm

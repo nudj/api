@@ -1,9 +1,13 @@
 const slug = require('slug')
 
-const makeSlug = str => slug(str, {
-  replacement: '-',
-  symbols: true,
-  lower: true
-})
+const makeSlug = str => {
+  if (!str) return ''
+
+  return slug(str, {
+    replacement: '-',
+    symbols: true,
+    lower: true
+  })
+}
 
 module.exports = makeSlug

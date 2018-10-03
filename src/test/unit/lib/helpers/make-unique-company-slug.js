@@ -86,4 +86,17 @@ describe('getMakeCompanyUniqueSlug', () => {
       })
     })
   })
+
+  describe('when `company.name` is empty', () => {
+    it('should not throw', () => {
+      const makeCompanyUniqueSlug = getMakeCompanyUniqueSlug(companyCache)
+      expect(() => makeCompanyUniqueSlug({ id: 'company99', name: null })).to.not.throw()
+    })
+
+    it('should return an empty string', () => {
+      const makeCompanyUniqueSlug = getMakeCompanyUniqueSlug(companyCache)
+      const slug = makeCompanyUniqueSlug({ id: 'company99', name: null })
+      expect(slug).to.be.empty()
+    })
+  })
 })

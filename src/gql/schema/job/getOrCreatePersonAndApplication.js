@@ -1,7 +1,10 @@
 const omitBy = require('lodash/omitBy')
 const isNil = require('lodash/isNil')
 const { logger } = require('@nudj/library')
+
 const intercom = require('../../lib/intercom')
+const mailer = require('../../lib/mailer')
+const { values: hirerTypes } = require('../enums/hirer-types')
 
 module.exports = {
   typeDefs: `
@@ -46,6 +49,27 @@ module.exports = {
             referral: referral && referral.id
           }
         })
+
+        // email admins with the great news!
+        const adminHirers = await context.store.readAll({
+          type: 'hirers',
+          filters: {
+            company: company.id,
+            type: hirerTypes.ADMIN
+          }
+        })
+        const adminPeople = await context.store.readMany({
+          type: 'people',
+          ids: adminHirers.map(admin => admin.person)
+        })
+        await Promise.all(
+          adminPeople.map(admin => mailer.sendNewApplicationEmail({
+            to: admin.email,
+            hire: context.hire,
+            job,
+            person: admin
+          }))
+        )
 
         const { firstName, lastName, email } = person
         const name = firstName && lastName ? `${firstName} ${lastName}` : null

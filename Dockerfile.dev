@@ -4,5 +4,5 @@ RUN mkdir -p /usr/src && apk update && apk add zsh make git && mkdir /root/.zsh 
 WORKDIR /usr/src
 COPY src /usr/src
 RUN yarn
-EXPOSE 80 81
+EXPOSE 80
 CMD ./node_modules/.bin/standard && ./node_modules/.bin/mocha --recursive test/unit

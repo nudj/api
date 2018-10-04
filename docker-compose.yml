@@ -12,7 +12,6 @@ services:
       - ../api/src/migrations:/usr/src/migrations
       - ../api/src/scripts:/usr/src/scripts
       - ../api/src/seeds:/usr/src/seeds
-      - ../api/src/rest:/usr/src/rest
       - ../api/src/test:/usr/src/test
       - ../api/src/.npmignore:/usr/src/.npmignore
       - ../api/src/.npmrc:/usr/src/.npmrc

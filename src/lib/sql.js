@@ -18,6 +18,7 @@ const TABLES = {
   EMPLOYEES: 'employees',
   EMPLOYMENTS: 'employments',
   HIRERS: 'hirers',
+  INTROS: 'intros',
   JOBS: 'jobs',
   JOB_TAGS: 'jobTags',
   JOB_VIEW_EVENTS: 'jobViewEvents',
@@ -99,6 +100,12 @@ const FIELDS = {
     TYPE: 'type',
     PERSON: 'person',
     COMPANY: 'company'
+  },
+  [TABLES.INTROS]: {
+    JOB: 'job',
+    PERSON: 'person',
+    CANDIDATE: 'candidate',
+    NOTES: 'notes'
   },
   [TABLES.JOBS]: {
     TITLE: 'title',

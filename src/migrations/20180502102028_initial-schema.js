@@ -519,10 +519,27 @@ exports.up = async knex => {
       table.string(JOB_SLUG).notNullable()
       table.unique(JOB_SLUG, INDICES[TABLES.REFERRAL_KEY_TO_SLUG_MAP][JOB_SLUG].name)
     })
+
+    .createTable(TABLES.INTROS, table => {
+      const {
+        JOB,
+        PERSON,
+        CANDIDATE,
+        NOTES
+      } = FIELDS[TABLES.INTROS]
+
+      defaultConfig(table, knex)
+      defaultFields(table, knex)
+      relationType(JOB, TABLES.JOBS, table, knex).notNullable()
+      relationType(PERSON, TABLES.PEOPLE, table, knex).notNullable()
+      relationType(CANDIDATE, TABLES.PEOPLE, table, knex).notNullable()
+      table.text(NOTES).notNullable()
+    })
 }
 
 exports.down = async knex => {
   await knex.schema
+    .dropTable(TABLES.INTROS)
     .dropTable(TABLES.REFERRAL_KEY_TO_SLUG_MAP)
     .dropTable(TABLES.MESSAGE_EVENTS)
     .dropTable(TABLES.JOB_VIEW_EVENTS)

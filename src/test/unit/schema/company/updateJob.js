@@ -405,7 +405,7 @@ describe('Company.updateJob', () => {
           {
             id: 'job1',
             company: 'company1',
-            title: 'cheese',
+            title: 'job-title',
             slug: 'draft-12345678',
             status: jobStatusTypes.DRAFT,
             bonus: '£500'
@@ -417,6 +417,7 @@ describe('Company.updateJob', () => {
         companyId: 'company1',
         id: 'job1',
         data: {
+          title: 'cheese',
           status: jobStatusTypes.PUBLISHED
         }
       }

@@ -76,6 +76,7 @@ const modules = [
   require('./job/relatedJobs'),
   require('./job/tags'),
   require('./job/viewCountByFilters'),
+  require('./job/createIntro'),
   require('./message'),
   require('./message/from'),
   require('./message/to'),

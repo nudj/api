@@ -13,6 +13,7 @@ const requestAccessEmailTemplate = require('./request-access-email-template')
 const sendJobsEmailBodyTemplate = require('./send-jobs-email-template')
 const jobNotificationEmailBodyTemplate = require('./job-notification-email-template')
 const requestAcceptedEmailBodyTemplate = require('./request-accepted-email-template')
+const newIntroEmailBodyTemplate = require('./new-intro-email-template')
 
 const fromViaNudj = name => `${name} via ${INTERNAL_EMAIL_FROM}`
 
@@ -65,6 +66,25 @@ module.exports = {
           requestSlug,
           company,
           hire
+        })
+      })
+  },
+  sendNewIntroEmail: ({
+    to,
+    hire,
+    job,
+    person
+  }) => {
+    return mailgun
+      .messages()
+      .send({
+        from: INTERNAL_EMAIL_FROM,
+        to,
+        subject: 'You\'ve received a new intro on nudj',
+        html: newIntroEmailBodyTemplate({
+          hire,
+          job,
+          person
         })
       })
   },

@@ -14,6 +14,7 @@ const sendJobsEmailBodyTemplate = require('./send-jobs-email-template')
 const jobNotificationEmailBodyTemplate = require('./job-notification-email-template')
 const requestAcceptedEmailBodyTemplate = require('./request-accepted-email-template')
 const newApplicationEmailBodyTemplate = require('./new-application-email-template')
+const newIntroEmailBodyTemplate = require('./new-intro-email-template')
 
 const mailgun = Mailgun({
   apiKey: process.env.MAILGUN_API_KEY,
@@ -83,6 +84,25 @@ module.exports = {
         to,
         subject: 'You\'ve had a new application on nudj',
         html: newApplicationEmailBodyTemplate({
+          hire,
+          job,
+          person
+        })
+      })
+  },
+  sendNewIntroEmail: ({
+    to,
+    hire,
+    job,
+    person
+  }) => {
+    return mailgun
+      .messages()
+      .send({
+        from: INTERNAL_EMAIL_FROM,
+        to,
+        subject: 'You\'ve received a new intro on nudj',
+        html: newIntroEmailBodyTemplate({
           hire,
           job,
           person

@@ -92,7 +92,7 @@ module.exports = {
         if (existingJob.status === jobStatusTypes.DRAFT && data.status && data.status !== jobStatusTypes.DRAFT) {
           data.slug = await makeUniqueSlug({
             type: 'jobs',
-            data: { title: data.title },
+            data: { title: data.title || existingJob.title },
             context
           })
         }

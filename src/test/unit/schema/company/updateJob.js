@@ -417,7 +417,6 @@ describe('Company.updateJob', () => {
         companyId: 'company1',
         id: 'job1',
         data: {
-          title: 'cheese',
           status: jobStatusTypes.PUBLISHED
         }
       }
@@ -430,7 +429,46 @@ describe('Company.updateJob', () => {
     })
 
     it('should set the sharable slug', async () => {
-      expect(db.jobs[0].slug).to.equal('cheese')
+      expect(db.jobs[0].slug).to.equal('job-title')
+    })
+  })
+
+  describe('when old Job.status is DRAFT and new Job.status is PUBLISHED and new title is passed in', () => {
+    let db
+
+    beforeEach(async () => {
+      db = {
+        ...dbBase,
+        jobs: [
+          {
+            id: 'job1',
+            company: 'company1',
+            title: 'job-title',
+            slug: 'draft-12345678',
+            status: jobStatusTypes.DRAFT,
+            bonus: '£500'
+          }
+        ]
+      }
+
+      const variables = {
+        companyId: 'company1',
+        id: 'job1',
+        data: {
+          title: 'Cheese Bread',
+          status: jobStatusTypes.PUBLISHED
+        }
+      }
+
+      await executeQueryOnDbUsingSchema({ operation, db, schema, variables })
+    })
+
+    it('should set the status to PUBLISHED', async () => {
+      expect(db.jobs[0].status).to.equal(jobStatusTypes.PUBLISHED)
+    })
+
+    it('should set the sharable slug', async () => {
+      expect(db.jobs[0].slug).to.equal('cheese-bread')
     })
   })
 

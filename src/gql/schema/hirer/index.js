@@ -28,6 +28,7 @@ module.exports = {
       dateTo: DateTime
       type: HirerType
       dateFrom: DateTime
+      company: ID
     }
   `
 }

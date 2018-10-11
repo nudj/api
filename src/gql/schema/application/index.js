@@ -11,6 +11,9 @@ module.exports = {
       person: ID
       dateTo: DateTime
       dateFrom: DateTime
+      job: ID
+      person: ID
+      referral: ID
     }
   `
 }

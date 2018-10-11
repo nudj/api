@@ -18,6 +18,9 @@ module.exports = {
       id: ID
       dateTo: DateTime
       dateFrom: DateTime
+      job: ID
+      person: ID
+      candidate: ID
     }
   `
 }

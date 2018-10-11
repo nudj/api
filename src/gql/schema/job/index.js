@@ -62,6 +62,7 @@ module.exports = {
       status: JobStatus
       dateTo: DateTime
       dateFrom: DateTime
+      company: ID
     }
   `
 }

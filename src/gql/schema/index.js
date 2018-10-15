@@ -102,6 +102,7 @@ const modules = [
   require('./person/hirer'),
   require('./person/importLinkedinConnections'),
   require('./person/incompleteTaskCount'),
+  require('./person/intro'),
   require('./person/notifyByEmail'),
   require('./person/referralByFilters'),
   require('./person/referrals'),

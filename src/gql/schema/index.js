@@ -14,6 +14,7 @@ const modules = [
   require('./application/person'),
   require('./application/referral'),
   require('./company'),
+  require('./company/application'),
   require('./company/accessRequestByFilters'),
   require('./company/createHirerByEmail'),
   require('./company/createAccessRequest'),

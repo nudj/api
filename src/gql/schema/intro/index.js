@@ -4,6 +4,7 @@ module.exports = {
       id: ID!
       created: DateTime!
       modified: DateTime!
+      consent: Boolean!
       notes: String
     }
 
@@ -11,6 +12,7 @@ module.exports = {
       job: ID!
       person: ID!
       candidate: ID!
+      consent: Boolean!
       notes: String
     }
 
@@ -21,6 +23,7 @@ module.exports = {
       job: ID
       person: ID
       candidate: ID
+      consent: Boolean
     }
   `
 }

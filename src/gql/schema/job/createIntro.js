@@ -6,6 +6,7 @@ module.exports = {
     extend type Job {
       createIntro(
         candidate: PersonCreateInput!
+        consent: Boolean!
         notes: String
       ): Intro
     }
@@ -15,6 +16,7 @@ module.exports = {
       createIntro: async (job, args, context) => {
         const {
           candidate: candidateData,
+          consent,
           notes
         } = args
         const { userId } = context
@@ -47,6 +49,7 @@ module.exports = {
             person: person.id,
             job: job.id,
             candidate: candidate.id,
+            consent,
             notes
           }
         })

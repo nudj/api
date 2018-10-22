@@ -13,13 +13,16 @@ describe('Job.createIntro', () => {
       $job: ID!
       $candidate: PersonCreateInput!
       $notes: String
+      $consent: Boolean!
     ) {
       job (id: $job) {
         createIntro(
           candidate: $candidate,
-          notes: $notes
+          notes: $notes,
+          consent: $consent
         ) {
           id
+          consent
           job {
             id
           }
@@ -64,6 +67,7 @@ describe('Job.createIntro', () => {
       }
       const variables = {
         job: 'job1',
+        consent: true,
         candidate: {
           email: 'candidate@company.com',
           firstName: 'CandidateFirst',
@@ -93,6 +97,7 @@ describe('Job.createIntro', () => {
           job: 'job1',
           person: 'person1',
           candidate: 'person2',
+          consent: true,
           notes: 'Here are some notes!'
         })
     })
@@ -103,6 +108,7 @@ describe('Job.createIntro', () => {
           job: {
             createIntro: {
               id: 'intro1',
+              consent: true,
               job: {
                 id: 'job1'
               },
@@ -155,6 +161,7 @@ describe('Job.createIntro', () => {
       }
       const variables = {
         job: 'job1',
+        consent: true,
         candidate: {
           email: 'candidate@company.com',
           firstName: 'CandidateFirst',
@@ -177,6 +184,7 @@ describe('Job.createIntro', () => {
           job: 'job1',
           person: 'person1',
           candidate: 'person2',
+          consent: true,
           notes: 'Here are some notes!'
         })
     })
@@ -187,6 +195,7 @@ describe('Job.createIntro', () => {
           job: {
             createIntro: {
               id: 'intro1',
+              consent: true,
               job: {
                 id: 'job1'
               },
@@ -233,6 +242,7 @@ describe('Job.createIntro', () => {
       }
       const variables = {
         job: 'job1',
+        consent: true,
         candidate: {
           email: 'candidate@company.com',
           firstName: 'CandidateFirst',
@@ -261,16 +271,18 @@ describe('Job.createIntro', () => {
           job: 'job1',
           person: 'person1',
           candidate: 'person2',
+          consent: true,
           notes: undefined
         })
     })
 
-    it('should return the intro will null for notes', async () => {
+    it('should return the intro with `null` for notes', async () => {
       expect(result).to.deep.equal({
         data: {
           job: {
             createIntro: {
               id: 'intro1',
+              consent: true,
               job: {
                 id: 'job1'
               },

@@ -11,10 +11,10 @@ const {
   teardownCollections,
   expect
 } = require('../../lib')
-const script = require('../../../../scripts/00003-enriched-company-count')
+const script = require('../../../../scripts/00002-enriched-company-count')
 const executeScript = () => script({ db, nosql })
 
-describe('00003 Enriched Company Count', () => {
+describe('00002 Enriched Company Count', () => {
   let consoleStub
 
   before(async () => {

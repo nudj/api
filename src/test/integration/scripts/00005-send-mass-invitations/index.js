@@ -12,7 +12,7 @@ const {
   expect
 } = require('../../lib')
 
-const script = require('../../../../scripts/00006-send-mass-invitations')
+const script = require('../../../../scripts/00005-send-mass-invitations')
 const executeScript = (arg) => script({ db, arg })
 const { fetchAll } = require('../../../../lib')
 
@@ -41,9 +41,9 @@ function mockExternalRequests () {
 }
 
 const getFullPathFor = relativePath => path.join(__dirname, relativePath)
-const importCsvPath = getFullPathFor('../../../../scripts/00006-send-mass-invitations/team.csv')
+const importCsvPath = getFullPathFor('../../../../scripts/00005-send-mass-invitations/team.csv')
 
-describe('00006 Send Mass Invitations', () => {
+describe('00005 Send Mass Invitations', () => {
   let nocked
 
   before(async () => {

@@ -13,18 +13,17 @@ const {
   genericExpectationsForTable
 } = require('../../lib')
 const {
-  TABLES,
-  ENUMS
+  TABLES
 } = require('../../../../lib/sql')
 const {
   OLD_COLLECTIONS
-} = require('../../../../scripts/00010-arango-to-mysql/helpers')
+} = require('../../../../scripts/00011-arango-to-mysql/helpers')
 
-const script = require('../../../../scripts/00010-arango-to-mysql')
+const script = require('../../../../scripts/00011-arango-to-mysql')
 
 chai.use(chaiAsPromised)
 
-describe('00010 Arango to MySQL', () => {
+describe('00011 Arango to MySQL', () => {
   async function seedRun (data) {
     await populateCollections(db, data)
     await script({ db, sql })
@@ -42,19 +41,22 @@ describe('00010 Arango to MySQL', () => {
     await teardownCollections(db)
   })
 
-  describe('for connections table', () => {
+  describe('for applications table', () => {
     const COLLECTIONS = {
-      CONNECTIONS: TABLES.CONNECTIONS,
+      APPLICATIONS: TABLES.APPLICATIONS,
+      REFERRALS: TABLES.REFERRALS,
       PEOPLE: TABLES.PEOPLE,
       COMPANIES: TABLES.COMPANIES,
-      ROLES: TABLES.ROLES
+      JOBS: TABLES.JOBS
     }
 
     afterEach(async () => {
-      await sql(TABLES.CONNECTIONS).whereNot('id', '').del()
-      await sql(TABLES.ROLES).whereNot('id', '').del()
-      await sql(TABLES.COMPANIES).whereNot('id', '').del()
+      await sql(TABLES.APPLICATIONS).whereNot('id', '').del()
+      await sql(TABLES.REFERRALS).where('created', '2018-02-01 01:02:03').del()
+      await sql(TABLES.JOBS).whereNot('id', '').del()
       await sql(TABLES.PEOPLE).whereNot('id', '').del()
+      await sql(TABLES.COMPANIES).whereNot('id', '').del()
+      await sql(TABLES.REFERRAL_KEY_TO_SLUG_MAP).whereNot('referralKey', '').del()
     })
 
     describe('with a full data set', () => {
@@ -75,7 +77,9 @@ describe('00010 Arango to MySQL', () => {
                 _key: 'person2',
                 created: '2019-02-01T01:02:03.456Z',
                 modified: '2019-03-02T02:03:04.567Z',
-                email: 'jom@bib.com'
+                email: 'jom@bib.com',
+                firstName: 'Jom',
+                lastName: 'Bib'
               }
             ]
           },
@@ -93,18 +97,33 @@ describe('00010 Arango to MySQL', () => {
             ]
           },
           {
-            name: COLLECTIONS.ROLES,
+            name: COLLECTIONS.JOBS,
             data: [
               {
-                _key: 'role1',
+                _key: 'job1',
                 created: '2018-02-01T01:02:03.456Z',
                 modified: '2018-03-02T02:03:04.567Z',
-                name: 'Role name'
+                title: 'Job title',
+                slug: 'job-title',
+                bonus: 1000,
+                company: 'company1'
               }
             ]
           },
           {
-            name: COLLECTIONS.CONNECTIONS,
+            name: COLLECTIONS.REFERRALS,
+            data: [
+              {
+                _key: 'referral1',
+                created: '2018-02-01T01:02:03.456Z',
+                modified: '2018-03-02T02:03:04.567Z',
+                person: 'person1',
+                job: 'job1'
+              }
+            ]
+          },
+          {
+            name: COLLECTIONS.APPLICATIONS,
             data: [
               {
                 _id: 'applications/123',
@@ -112,13 +131,9 @@ describe('00010 Arango to MySQL', () => {
                 _key: 'application1',
                 created: '2018-02-01T01:02:03.456Z',
                 modified: '2018-03-02T02:03:04.567Z',
-                firstName: 'Jom',
-                lastName: 'Bib',
-                source: ENUMS.DATA_SOURCES.LINKEDIN,
                 person: 'person2',
-                from: 'person1',
-                role: 'role1',
-                company: 'company1',
+                job: 'job1',
+                referral: 'referral1',
                 batchSize: 100,
                 skip: 0
               }
@@ -127,25 +142,17 @@ describe('00010 Arango to MySQL', () => {
         ])
       })
 
-      genericExpectationsForTable(TABLES.CONNECTIONS)
-
-      it('should transfer all scalar properties', async () => {
-        const connections = await sql.select().from(TABLES.CONNECTIONS)
-        expect(connections[0]).to.have.property('firstName', 'Jom')
-        expect(connections[0]).to.have.property('lastName', 'Bib')
-        expect(connections[0]).to.have.property('source', ENUMS.DATA_SOURCES.LINKEDIN)
-      })
+      genericExpectationsForTable(TABLES.APPLICATIONS)
 
       it('should remap the relations', async () => {
-        const connections = await sql.select().from(TABLES.CONNECTIONS)
-        const roles = await sql.select().from(TABLES.ROLES)
-        const companies = await sql.select().from(TABLES.COMPANIES)
+        const applications = await sql.select().from(TABLES.APPLICATIONS)
+        const referrals = await sql.select().from(TABLES.REFERRALS)
+        const jobs = await sql.select().from(TABLES.JOBS)
         const people = await sql.select().from(TABLES.PEOPLE).orderBy('created', 'asc')
 
-        expect(connections[0]).to.have.property('from', people[0].id)
-        expect(connections[0]).to.have.property('person', people[1].id)
-        expect(connections[0]).to.have.property('company', companies[0].id)
-        expect(connections[0]).to.have.property('role', roles[0].id)
+        expect(applications[0]).to.have.property('job', jobs[0].id)
+        expect(applications[0]).to.have.property('person', people[1].id)
+        expect(applications[0]).to.have.property('referral', referrals[0].id)
       })
     })
 
@@ -167,22 +174,62 @@ describe('00010 Arango to MySQL', () => {
                 _key: 'person2',
                 created: '2019-02-01T01:02:03.456Z',
                 modified: '2019-03-02T02:03:04.567Z',
-                email: 'jom@bib.com'
+                email: 'jom@bib.com',
+                firstName: 'Jom',
+                lastName: 'Bib'
               }
             ]
           },
           {
-            name: COLLECTIONS.CONNECTIONS,
+            name: COLLECTIONS.COMPANIES,
             data: [
               {
+                _key: 'company1',
+                created: '2018-02-01T01:02:03.456Z',
+                modified: '2018-03-02T02:03:04.567Z',
+                name: 'Company Ltd',
+                slug: 'company-ltd',
+                hash: '123'
+              }
+            ]
+          },
+          {
+            name: COLLECTIONS.JOBS,
+            data: [
+              {
+                _key: 'job1',
+                created: '2018-02-01T01:02:03.456Z',
+                modified: '2018-03-02T02:03:04.567Z',
+                title: 'Job title',
+                slug: 'job-title',
+                bonus: 1000,
+                company: 'company1'
+              }
+            ]
+          },
+          {
+            name: COLLECTIONS.REFERRALS,
+            data: [
+              {
+                _key: 'referral1',
+                created: '2018-02-01T01:02:03.456Z',
+                modified: '2018-03-02T02:03:04.567Z',
+                person: 'person1',
+                job: 'job1'
+              }
+            ]
+          },
+          {
+            name: COLLECTIONS.APPLICATIONS,
+            data: [
+              {
+                _id: 'applications/123',
+                _rev: '_WpP1l3W---',
                 _key: 'application1',
                 created: '2018-02-01T01:02:03.456Z',
                 modified: '2018-03-02T02:03:04.567Z',
-                firstName: 'Jom',
-                lastName: 'Bib',
-                source: ENUMS.DATA_SOURCES.LINKEDIN,
                 person: 'person2',
-                from: 'person1'
+                job: 'job1'
               }
             ]
           }
@@ -190,55 +237,8 @@ describe('00010 Arango to MySQL', () => {
       })
 
       it('should set null', async () => {
-        const connections = await sql.select().from(TABLES.CONNECTIONS)
-        expect(connections[0]).to.have.property('role', null)
-        expect(connections[0]).to.have.property('company', null)
-      })
-    })
-
-    describe('with emojis in the name', () => {
-      beforeEach(async () => {
-        await seedRun([
-          {
-            name: COLLECTIONS.PEOPLE,
-            data: [
-              {
-                _key: 'person1',
-                created: '2018-02-01T01:02:03.456Z',
-                modified: '2018-03-02T02:03:04.567Z',
-                email: 'jim@bob.com',
-                firstName: 'Jim',
-                lastName: 'Bob'
-              },
-              {
-                _key: 'person2',
-                created: '2019-02-01T01:02:03.456Z',
-                modified: '2019-03-02T02:03:04.567Z',
-                email: 'jom@bib.com'
-              }
-            ]
-          },
-          {
-            name: COLLECTIONS.CONNECTIONS,
-            data: [
-              {
-                _key: 'application1',
-                created: '2018-02-01T01:02:03.456Z',
-                modified: '2018-03-02T02:03:04.567Z',
-                firstName: '👍',
-                lastName: 'Bib',
-                source: ENUMS.DATA_SOURCES.LINKEDIN,
-                person: 'person2',
-                from: 'person1'
-              }
-            ]
-          }
-        ])
-      })
-
-      it('should set firstName', async () => {
-        const connections = await sql.select().from(TABLES.CONNECTIONS)
-        expect(connections[0]).to.have.property('firstName', '👍')
+        const applications = await sql.select().from(TABLES.APPLICATIONS)
+        expect(applications[0]).to.have.property('referral', null)
       })
     })
   })

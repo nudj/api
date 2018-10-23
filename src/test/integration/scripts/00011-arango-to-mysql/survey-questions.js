@@ -13,17 +13,18 @@ const {
   genericExpectationsForTable
 } = require('../../lib')
 const {
-  TABLES
+  TABLES,
+  ENUMS
 } = require('../../../../lib/sql')
 const {
   OLD_COLLECTIONS
-} = require('../../../../scripts/00010-arango-to-mysql/helpers')
+} = require('../../../../scripts/00011-arango-to-mysql/helpers')
 
-const script = require('../../../../scripts/00010-arango-to-mysql')
+const script = require('../../../../scripts/00011-arango-to-mysql')
 
 chai.use(chaiAsPromised)
 
-describe('00010 Arango to MySQL', () => {
+describe('00011 Arango to MySQL', () => {
   async function seedRun (data) {
     await populateCollections(db, data)
     await script({ db, sql })
@@ -41,7 +42,7 @@ describe('00010 Arango to MySQL', () => {
     await teardownCollections(db)
   })
 
-  describe('for surveySections table', () => {
+  describe('for surveyQuestions table', () => {
     const COLLECTIONS = {
       SURVEY_QUESTIONS: TABLES.SURVEY_QUESTIONS,
       SURVEY_SECTIONS: TABLES.SURVEY_SECTIONS,
@@ -93,17 +94,14 @@ describe('00010 Arango to MySQL', () => {
             name: COLLECTIONS.SURVEY_SECTIONS,
             data: [
               {
-                _id: 'surveySections/123',
-                _rev: '_WpP1l3W---',
-                _key: '123',
+                _key: 'surveySection1',
                 created: '2018-02-01T01:02:03.456Z',
                 modified: '2018-03-02T02:03:04.567Z',
-                title: 'Some Survey Section',
+                slug: 'survey-section-slug',
+                title: 'Title',
                 description: 'Description',
-                surveyQuestions: ['surveyQuestion1'],
-                survey: 'survey1',
-                batchSize: 100,
-                skip: 0
+                surveyQuestions: ['surveyQuestion1', 'surveyQuestion2'],
+                survey: 'survey1'
               }
             ]
           },
@@ -111,14 +109,18 @@ describe('00010 Arango to MySQL', () => {
             name: COLLECTIONS.SURVEY_QUESTIONS,
             data: [
               {
-                _id: 'surveyQuestions/surveyQuestion1',
+                _id: 'surveyQuestions/123',
                 _rev: '_WpP1l3W---',
-                _key: 'surveyQuestion1',
+                _key: '123',
                 created: '2018-02-01T01:02:03.456Z',
                 modified: '2018-03-02T02:03:04.567Z',
-                title: 'Some Survey Section',
+                title: 'Some Survey Question',
                 description: 'Description',
-                surveySection: '123'
+                required: true,
+                type: ENUMS.QUESTION_TYPES.CONNECTIONS,
+                surveySection: 'surveySection1',
+                batchSize: 100,
+                skip: 0
               }
             ]
           }
@@ -128,26 +130,22 @@ describe('00010 Arango to MySQL', () => {
       genericExpectationsForTable(TABLES.SURVEY_SECTIONS)
 
       it('should transfer all scalar properties', async () => {
-        const surveySections = await sql.select().from(TABLES.SURVEY_SECTIONS)
-        expect(surveySections[0]).to.have.property('title', 'Some Survey Section')
-        expect(surveySections[0]).to.have.property('description', 'Description')
+        const surveyQuestions = await sql.select().from(TABLES.SURVEY_QUESTIONS)
+        expect(surveyQuestions[0]).to.have.property('title', 'Some Survey Question')
+        expect(surveyQuestions[0]).to.have.property('description', 'Description')
+        expect(surveyQuestions[0]).to.have.property('required', 1)
+        expect(surveyQuestions[0]).to.have.property('type', ENUMS.QUESTION_TYPES.CONNECTIONS)
       })
 
       it('should generate a slug based on the title', async () => {
-        const surveySections = await sql.select().from(TABLES.SURVEY_SECTIONS)
-        expect(surveySections[0]).to.have.property('slug', 'some-survey-section')
+        const surveyQuestions = await sql.select().from(TABLES.SURVEY_QUESTIONS)
+        expect(surveyQuestions[0]).to.have.property('slug', 'some-survey-question')
       })
 
       it('should remap the relations', async () => {
-        const surveySections = await sql.select().from(TABLES.SURVEY_SECTIONS)
-        const surveys = await sql.select().from(TABLES.SURVEYS)
-        expect(surveySections[0]).to.have.property('survey', surveys[0].id)
-      })
-
-      it('should remap the order caches', async () => {
-        const surveySections = await sql.select().from(TABLES.SURVEY_SECTIONS)
         const surveyQuestions = await sql.select().from(TABLES.SURVEY_QUESTIONS)
-        expect(surveySections[0]).to.have.property('surveyQuestions', JSON.stringify([surveyQuestions[0].id]))
+        const surveySections = await sql.select().from(TABLES.SURVEY_SECTIONS)
+        expect(surveyQuestions[0]).to.have.property('surveySection', surveySections[0].id)
       })
     })
 
@@ -191,19 +189,36 @@ describe('00010 Arango to MySQL', () => {
                 _key: 'surveySection1',
                 created: '2018-02-01T01:02:03.456Z',
                 modified: '2018-03-02T02:03:04.567Z',
-                title: 'Some Survey Section',
+                slug: 'survey-section-slug',
+                title: 'Title',
                 description: 'Description',
                 surveyQuestions: ['surveyQuestion1', 'surveyQuestion2'],
                 survey: 'survey1'
+              }
+            ]
+          },
+          {
+            name: COLLECTIONS.SURVEY_QUESTIONS,
+            data: [
+              {
+                _key: 'surveyQuestion1',
+                created: '2018-02-01T01:02:03.456Z',
+                modified: '2018-03-02T02:03:04.567Z',
+                title: 'Some Survey Question',
+                description: 'Description',
+                required: true,
+                type: ENUMS.QUESTION_TYPES.CONNECTIONS,
+                surveySection: 'surveySection1'
               },
               {
-                _key: 'surveySection2',
+                _key: 'surveyQuestion2',
                 created: '2019-02-01T01:02:03.456Z',
                 modified: '2019-03-02T02:03:04.567Z',
-                title: 'Some Survey Section',
+                title: 'Some Survey Question',
                 description: 'Description',
-                surveyQuestions: ['surveyQuestion1', 'surveyQuestion2'],
-                survey: 'survey1'
+                required: true,
+                type: ENUMS.QUESTION_TYPES.CONNECTIONS,
+                surveySection: 'surveySection1'
               }
             ]
           }
@@ -211,8 +226,8 @@ describe('00010 Arango to MySQL', () => {
       })
 
       it('should generate another non-clashing slug', async () => {
-        const surveySections = await sql.select().from(TABLES.SURVEY_SECTIONS).orderBy('created', 'asc')
-        expect(surveySections[1]).to.have.property('slug').to.match(/^some-survey-section-[a-z0-9]{8}$/)
+        const surveyQuestions = await sql.select().from(TABLES.SURVEY_QUESTIONS).orderBy('created', 'asc')
+        expect(surveyQuestions[1]).to.have.property('slug').to.match(/^some-survey-question-[a-z0-9]{8}$/)
       })
     })
   })

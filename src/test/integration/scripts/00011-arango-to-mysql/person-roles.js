@@ -13,18 +13,17 @@ const {
   genericExpectationsForTable
 } = require('../../lib')
 const {
-  TABLES,
-  ENUMS
+  TABLES
 } = require('../../../../lib/sql')
 const {
   OLD_COLLECTIONS
-} = require('../../../../scripts/00010-arango-to-mysql/helpers')
+} = require('../../../../scripts/00011-arango-to-mysql/helpers')
 
-const script = require('../../../../scripts/00010-arango-to-mysql')
+const script = require('../../../../scripts/00011-arango-to-mysql')
 
 chai.use(chaiAsPromised)
 
-describe('00010 Arango to MySQL', () => {
+describe('00011 Arango to MySQL', () => {
   async function seedRun (data) {
     await populateCollections(db, data)
     await script({ db, sql })
@@ -42,18 +41,18 @@ describe('00010 Arango to MySQL', () => {
     await teardownCollections(db)
   })
 
-  describe('for employments table', () => {
+  describe('for personRoles table', () => {
     const COLLECTIONS = {
-      EMPLOYMENTS: TABLES.EMPLOYMENTS,
+      PERSON_ROLES: TABLES.PERSON_ROLES,
       PEOPLE: TABLES.PEOPLE,
-      COMPANIES: TABLES.COMPANIES
+      ROLES: TABLES.ROLES
     }
 
     afterEach(async () => {
-      await sql(TABLES.CURRENT_EMPLOYMENTS).whereNot('id', '').del()
-      await sql(TABLES.EMPLOYMENTS).whereNot('id', '').del()
+      await sql(TABLES.CURRENT_PERSON_ROLES).whereNot('id', '').del()
+      await sql(TABLES.PERSON_ROLES).whereNot('id', '').del()
       await sql(TABLES.PEOPLE).whereNot('id', '').del()
-      await sql(TABLES.COMPANIES).whereNot('id', '').del()
+      await sql(TABLES.ROLES).whereNot('id', '').del()
     })
 
     describe('with a full data set', () => {
@@ -73,20 +72,18 @@ describe('00010 Arango to MySQL', () => {
             ]
           },
           {
-            name: COLLECTIONS.COMPANIES,
+            name: COLLECTIONS.ROLES,
             data: [
               {
-                _key: 'company1',
+                _key: 'role1',
                 created: '2018-02-01T01:02:03.456Z',
                 modified: '2018-03-02T02:03:04.567Z',
-                name: 'Company Ltd',
-                slug: 'company-ltd',
-                hash: '123'
+                name: 'Role name'
               }
             ]
           },
           {
-            name: COLLECTIONS.EMPLOYMENTS,
+            name: COLLECTIONS.PERSON_ROLES,
             data: [
               {
                 _id: 'employments/123',
@@ -95,9 +92,8 @@ describe('00010 Arango to MySQL', () => {
                 created: '2018-02-01T01:02:03.456Z',
                 modified: '2018-03-02T02:03:04.567Z',
                 current: false,
-                source: ENUMS.DATA_SOURCES.MANUAL,
                 person: 'person1',
-                company: 'company1',
+                role: 'role1',
                 batchSize: 100,
                 skip: 0
               }
@@ -106,19 +102,14 @@ describe('00010 Arango to MySQL', () => {
         ])
       })
 
-      genericExpectationsForTable(TABLES.EMPLOYMENTS)
-
-      it('should transfer all scalar properties', async () => {
-        const employments = await sql.select().from(TABLES.EMPLOYMENTS)
-        expect(employments[0]).to.have.property('source', ENUMS.DATA_SOURCES.MANUAL)
-      })
+      genericExpectationsForTable(TABLES.PERSON_ROLES)
 
       it('should remap the relations', async () => {
-        const employments = await sql.select().from(TABLES.EMPLOYMENTS)
+        const personRoles = await sql.select().from(TABLES.PERSON_ROLES)
         const people = await sql.select().from(TABLES.PEOPLE)
-        const companies = await sql.select().from(TABLES.COMPANIES)
-        expect(employments[0]).to.have.property('person', people[0].id)
-        expect(employments[0]).to.have.property('company', companies[0].id)
+        const roles = await sql.select().from(TABLES.ROLES)
+        expect(personRoles[0]).to.have.property('person', people[0].id)
+        expect(personRoles[0]).to.have.property('role', roles[0].id)
       })
     })
 
@@ -139,42 +130,37 @@ describe('00010 Arango to MySQL', () => {
             ]
           },
           {
-            name: COLLECTIONS.COMPANIES,
+            name: COLLECTIONS.ROLES,
             data: [
               {
-                _key: 'company1',
+                _key: 'role1',
                 created: '2018-02-01T01:02:03.456Z',
                 modified: '2018-03-02T02:03:04.567Z',
-                name: 'Company Ltd',
-                slug: 'company-ltd',
-                hash: '123'
+                name: 'Role name'
               }
             ]
           },
           {
-            name: COLLECTIONS.EMPLOYMENTS,
+            name: COLLECTIONS.PERSON_ROLES,
             data: [
               {
-                _id: 'employments/123',
-                _rev: '_WpP1l3W---',
-                _key: '123',
+                _key: 'personRole1',
+                created: '2018-02-01T01:02:03.456Z',
+                modified: '2018-03-02T02:03:04.567Z',
                 current: true,
-                source: ENUMS.DATA_SOURCES.MANUAL,
                 person: 'person1',
-                company: 'company1',
-                batchSize: 100,
-                skip: 0
+                role: 'role1'
               }
             ]
           }
         ])
       })
 
-      it('should create a currentEmployments record', async () => {
-        const currentEmployments = await sql.select().from(TABLES.CURRENT_EMPLOYMENTS)
-        const employments = await sql.select().from(TABLES.EMPLOYMENTS)
-        expect(currentEmployments[0]).to.have.property('employment', employments[0].id)
-        expect(currentEmployments[0]).to.have.property('person', employments[0].person)
+      it('should create a currentPersonRoles record', async () => {
+        const currentPersonRoles = await sql.select().from(TABLES.CURRENT_PERSON_ROLES)
+        const personRoles = await sql.select().from(TABLES.PERSON_ROLES)
+        expect(currentPersonRoles[0]).to.have.property('personRole', personRoles[0].id)
+        expect(currentPersonRoles[0]).to.have.property('person', personRoles[0].person)
       })
     })
   })

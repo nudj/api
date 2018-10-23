@@ -18,13 +18,13 @@ const {
 } = require('../../../../lib/sql')
 const {
   OLD_COLLECTIONS
-} = require('../../../../scripts/00010-arango-to-mysql/helpers')
+} = require('../../../../scripts/00011-arango-to-mysql/helpers')
 
-const script = require('../../../../scripts/00010-arango-to-mysql')
+const script = require('../../../../scripts/00011-arango-to-mysql')
 
 chai.use(chaiAsPromised)
 
-describe('00010 Arango to MySQL', () => {
+describe('00011 Arango to MySQL', () => {
   async function seedRun (data) {
     await populateCollections(db, data)
     await script({ db, sql })
@@ -42,48 +42,30 @@ describe('00010 Arango to MySQL', () => {
     await teardownCollections(db)
   })
 
-  describe('for jobTags table', () => {
+  describe('for roleTags table', () => {
     const COLLECTIONS = {
-      JOB_TAGS: TABLES.JOB_TAGS,
-      JOBS: TABLES.JOBS,
-      TAGS: TABLES.TAGS,
-      COMPANIES: TABLES.COMPANIES
+      ROLE_TAGS: TABLES.ROLE_TAGS,
+      ROLES: TABLES.ROLES,
+      TAGS: TABLES.TAGS
     }
 
     afterEach(async () => {
-      await sql(TABLES.JOB_TAGS).whereNot('id', '').del()
+      await sql(TABLES.ROLE_TAGS).whereNot('id', '').del()
+      await sql(TABLES.ROLES).whereNot('id', '').del()
       await sql(TABLES.TAGS).whereNot('id', '').del()
-      await sql(TABLES.JOBS).whereNot('id', '').del()
-      await sql(TABLES.COMPANIES).whereNot('id', '').del()
     })
 
     describe('with a full data set', () => {
       beforeEach(async () => {
         await seedRun([
           {
-            name: COLLECTIONS.COMPANIES,
+            name: COLLECTIONS.ROLES,
             data: [
               {
-                _key: 'company1',
+                _key: 'role1',
                 created: '2018-02-01T01:02:03.456Z',
                 modified: '2018-03-02T02:03:04.567Z',
-                name: 'Company Ltd',
-                slug: 'company-ltd',
-                hash: '123'
-              }
-            ]
-          },
-          {
-            name: COLLECTIONS.JOBS,
-            data: [
-              {
-                _key: 'job1',
-                created: '2018-02-01T01:02:03.456Z',
-                modified: '2018-03-02T02:03:04.567Z',
-                title: 'Job title',
-                slug: 'job-title',
-                bonus: 1000,
-                company: 'company1'
+                name: 'Role name'
               }
             ]
           },
@@ -100,7 +82,7 @@ describe('00010 Arango to MySQL', () => {
             ]
           },
           {
-            name: COLLECTIONS.JOB_TAGS,
+            name: COLLECTIONS.ROLE_TAGS,
             data: [
               {
                 _id: 'tags/123',
@@ -109,7 +91,7 @@ describe('00010 Arango to MySQL', () => {
                 created: '2018-02-01T01:02:03.456Z',
                 modified: '2018-03-02T02:03:04.567Z',
                 source: ENUMS.DATA_SOURCES.MANUAL,
-                job: 'job1',
+                role: 'role1',
                 tag: 'tag1',
                 batchSize: 100,
                 skip: 0
@@ -119,19 +101,19 @@ describe('00010 Arango to MySQL', () => {
         ])
       })
 
-      genericExpectationsForTable(TABLES.JOB_TAGS)
+      genericExpectationsForTable(TABLES.ROLE_TAGS)
 
       it('should transfer all scalar properties', async () => {
-        const jobTags = await sql.select().from(TABLES.JOB_TAGS)
-        expect(jobTags[0]).to.have.property('source', ENUMS.DATA_SOURCES.MANUAL)
+        const roleTags = await sql.select().from(TABLES.ROLE_TAGS)
+        expect(roleTags[0]).to.have.property('source', ENUMS.DATA_SOURCES.MANUAL)
       })
 
       it('should remap the relations', async () => {
-        const jobTags = await sql.select().from(TABLES.JOB_TAGS)
-        const jobs = await sql.select().from(TABLES.JOBS)
+        const roleTags = await sql.select().from(TABLES.ROLE_TAGS)
+        const roles = await sql.select().from(TABLES.ROLES)
         const tags = await sql.select().from(TABLES.TAGS)
-        expect(jobTags[0]).to.have.property('job', jobs[0].id)
-        expect(jobTags[0]).to.have.property('tag', tags[0].id)
+        expect(roleTags[0]).to.have.property('role', roles[0].id)
+        expect(roleTags[0]).to.have.property('tag', tags[0].id)
       })
     })
   })

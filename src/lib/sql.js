@@ -141,7 +141,8 @@ const FIELDS = {
     LAST_NAME: 'lastName',
     URL: 'url',
     EMAIL_PREFERENCE: 'emailPreference',
-    SIGNED_UP: 'signedUp'
+    SIGNED_UP: 'signedUp',
+    ACCEPTED_TERMS: 'acceptedTerms'
   },
   [TABLES.PERSON_ROLES]: {
     PERSON: 'person',

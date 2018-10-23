@@ -20,7 +20,8 @@ exports.up = async knex => {
         LAST_NAME,
         URL,
         EMAIL_PREFERENCE,
-        SIGNED_UP
+        SIGNED_UP,
+        ACCEPTED_TERMS
       } = FIELDS[TABLES.PEOPLE]
 
       defaultConfig(table, knex)
@@ -31,7 +32,8 @@ exports.up = async knex => {
       urlType(URL, table, knex).nullable()
       table.enum(EMAIL_PREFERENCE, ENUMS.ACCOUNT_TYPES.values).nullable()
       table.unique(EMAIL, INDICES[TABLES.PEOPLE][EMAIL].name)
-      table.boolean(SIGNED_UP).nullable()
+      table.boolean(SIGNED_UP).defaultTo(false).notNullable()
+      table.boolean(ACCEPTED_TERMS).defaultTo(false).notNullable()
     })
 
     .createTable(TABLES.COMPANIES, table => {

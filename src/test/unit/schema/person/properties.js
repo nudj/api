@@ -24,6 +24,7 @@ describe('Person properties', () => {
     await expectPropertyReceivesValue('lastName', DUMMY_STRING)
     await expectPropertyReceivesValue('url', DUMMY_STRING)
     await expectPropertyReceivesValue('signedUp', DUMMY_BOOLEAN)
+    await expectPropertyReceivesValue('acceptedTerms', DUMMY_BOOLEAN)
   })
   it('should have the following required properties', async () => {
     await expectPropertyIsRequired('id')

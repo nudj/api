@@ -12,14 +12,14 @@ const {
   expect
 } = require('../../lib')
 
-const script = proxyquire('../../../../scripts/00008-daily-jobs-report', {
+const script = proxyquire('../../../../scripts/00007-daily-jobs-report', {
   'date-fns/sub_days': () => ({
     toISOString: () => '2000-01-01' // To set "yesterday's" timestamp
   })
 })
 const executeScript = (arg) => script({ db, arg })
 
-describe('00008 Daily Jobs Report', () => {
+describe('00007 Daily Jobs Report', () => {
   let consoleStub
 
   before(async () => {

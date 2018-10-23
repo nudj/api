@@ -12,7 +12,7 @@ const {
   expect
 } = require('../../lib')
 
-const script = proxyquire('../../../../scripts/00009-weekly-jobs-report', {
+const script = proxyquire('../../../../scripts/00008-weekly-jobs-report', {
   'date-fns/sub_days': () => ({
     toISOString: () => '2000-01-04' // To set "yesterday's" timestamp
   })
@@ -32,7 +32,7 @@ const csvHeaders = [
   '"lifetime applications"'
 ].join(',')
 
-describe('00009 Weekly Jobs Report', () => {
+describe('00008 Weekly Jobs Report', () => {
   let consoleStub
 
   before(async () => {

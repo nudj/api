@@ -21,7 +21,7 @@ const clearbitStub = sinon.stub()
 const CLEARBIT_ID = 'CLEARBIT_ID'
 const CLEARBIT_DATA = 'CLEARBIT_DATA'
 
-const script = proxyquire('../../../../scripts/00005-enrich-client-companies', {
+const script = proxyquire('../../../../scripts/00004-enrich-client-companies', {
   '../../gql/lib/clearbit': {
     enrichCompanyByName: clearbitStub
   }
@@ -33,7 +33,7 @@ const fetchStubCalls = (stub) => {
   return flatten(args)
 }
 
-describe('00005 Enrich Client Companies', () => {
+describe('00004 Enrich Client Companies', () => {
   before(async () => {
     await Promise.all([
       setupCollections(db, ['companies']),

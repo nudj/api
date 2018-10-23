@@ -10,6 +10,7 @@ module.exports = {
       url: String
       emailPreference: EmailPreference
       signedUp: Boolean
+      acceptedTerms: Boolean
     }
 
     input PersonFilterInput {
@@ -18,6 +19,7 @@ module.exports = {
       signedUp: Boolean
       dateTo: DateTime
       dateFrom: DateTime
+      acceptedTerms: Boolean
     }
 
     input PersonCreateInput {
@@ -28,6 +30,7 @@ module.exports = {
       company: String
       role: String
       signedUp: Boolean
+      acceptedTerms: Boolean
     }
 
     input PersonUpdateInput {
@@ -39,6 +42,7 @@ module.exports = {
       company: String
       role: String
       signedUp: Boolean
+      acceptedTerms: Boolean
     }
   `
 }

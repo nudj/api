@@ -16,5 +16,6 @@ describe('Person filters', () => {
     await expectTypeIsFilterableBy('id', DUMMY_ID, 'ID')
     await expectTypeIsFilterableBy('email', DUMMY_STRING, 'String')
     await expectTypeIsFilterableBy('signedUp', DUMMY_BOOLEAN, 'Boolean')
+    await expectTypeIsFilterableBy('acceptedTerms', DUMMY_BOOLEAN, 'Boolean')
   })
 })

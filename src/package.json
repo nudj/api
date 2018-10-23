@@ -25,6 +25,7 @@
     "@nudj/library": "6.8.0",
     "apollo-server-express": "^1.2.0",
     "arangojs": "^6.0.1",
+    "auth0": "^2.13.0",
     "axios": "^0.17.1",
     "body-parser": "1.18.2",
     "clearbit": "^1.3.3",

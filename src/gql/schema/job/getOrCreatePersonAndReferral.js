@@ -1,5 +1,7 @@
 const omitBy = require('lodash/omitBy')
 
+const mailer = require('../../lib/mailer')
+
 module.exports = {
   typeDefs: `
     extend type Job {
@@ -16,7 +18,8 @@ module.exports = {
 
         const [
           person,
-          parent
+          parent,
+          company
         ] = await Promise.all([
           context.store.readOneOrCreate({
             type: 'people',
@@ -26,6 +29,10 @@ module.exports = {
           parentId && context.store.readOne({
             type: 'referrals',
             id: parentId
+          }),
+          context.store.readOne({
+            type: 'companies',
+            id: job.company
           })
         ])
 
@@ -45,6 +52,15 @@ module.exports = {
             person: person.id
           },
           data: referralData
+        })
+
+        await mailer.sendReferralLinkEmailBodyTemplate({
+          to: person.email,
+          web: context.web,
+          person,
+          company,
+          job,
+          referral
         })
 
         return referral

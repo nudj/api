@@ -1,9 +1,14 @@
 /* eslint-env mocha */
 const chai = require('chai')
+const nock = require('nock')
+const sinon = require('sinon')
+const qs = require('qs')
 const expect = chai.expect
 
 const schema = require('../../../../gql/schema')
 const { executeQueryOnDbUsingSchema } = require('../../helpers')
+
+const mailerStub = sinon.stub()
 
 describe('Job.getOrCreatePersonAndReferral', () => {
   const operation = `
@@ -28,6 +33,25 @@ describe('Job.getOrCreatePersonAndReferral', () => {
     }
   `
 
+  before(() => {
+    nock('https://api.mailgun.net')
+      .persist()
+      .filteringRequestBody(body => {
+        mailerStub(qs.parse(body))
+        return true
+      })
+      .post(() => true)
+      .reply(200, 'OK')
+  })
+
+  afterEach(() => {
+    mailerStub.reset()
+  })
+
+  after(() => {
+    nock.cleanAll()
+  })
+
   describe('when person exists and referral does not', () => {
     let db
     let result
@@ -43,6 +67,12 @@ describe('Job.getOrCreatePersonAndReferral', () => {
           {
             id: 'job1',
             company: 'company1'
+          }
+        ],
+        companies: [
+          {
+            id: 'company1',
+            name: 'Company One'
           }
         ],
         referrals: []
@@ -102,6 +132,12 @@ describe('Job.getOrCreatePersonAndReferral', () => {
           {
             id: 'job1',
             company: 'company1'
+          }
+        ],
+        companies: [
+          {
+            id: 'company1',
+            name: 'Company One'
           }
         ],
         referrals: [
@@ -171,6 +207,12 @@ describe('Job.getOrCreatePersonAndReferral', () => {
             company: 'company1'
           }
         ],
+        companies: [
+          {
+            id: 'company1',
+            name: 'Company One'
+          }
+        ],
         referrals: []
       }
       const variables = {
@@ -228,6 +270,12 @@ describe('Job.getOrCreatePersonAndReferral', () => {
             company: 'company1'
           }
         ],
+        companies: [
+          {
+            id: 'company1',
+            name: 'Company One'
+          }
+        ],
         referrals: [
           {
             id: 'referral1',
@@ -279,6 +327,12 @@ describe('Job.getOrCreatePersonAndReferral', () => {
           {
             id: 'job1',
             company: 'company1'
+          }
+        ],
+        companies: [
+          {
+            id: 'company1',
+            name: 'Company One'
           }
         ],
         referrals: []

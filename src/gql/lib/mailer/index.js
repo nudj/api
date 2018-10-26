@@ -15,6 +15,7 @@ const jobNotificationEmailBodyTemplate = require('./job-notification-email-templ
 const requestAcceptedEmailBodyTemplate = require('./request-accepted-email-template')
 const newApplicationEmailBodyTemplate = require('./new-application-email-template')
 const newIntroEmailBodyTemplate = require('./new-intro-email-template')
+const referralLinkEmailBodyTemplate = require('./referral-link-email-template')
 
 const mailgun = Mailgun({
   apiKey: process.env.MAILGUN_API_KEY,
@@ -106,6 +107,29 @@ module.exports = {
           hire,
           job,
           person
+        })
+      })
+  },
+  sendReferralLinkEmailBodyTemplate: ({
+    to,
+    web,
+    person,
+    company,
+    job,
+    referral
+  }) => {
+    return mailgun
+      .messages()
+      .send({
+        from: INTERNAL_EMAIL_FROM,
+        to,
+        subject: 'Your unique nudj referral link',
+        html: referralLinkEmailBodyTemplate({
+          web,
+          person,
+          company,
+          job,
+          referral
         })
       })
   },

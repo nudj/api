@@ -2,15 +2,19 @@
 # yarn lockfile v1
 
 
-"@nudj/library@6.8.0":
-  version "6.8.0"
-  resolved "https://registry.yarnpkg.com/@nudj/library/-/library-6.8.0.tgz#c1a2b9ba16be8390b519f4c14afbe9682c65fcc0"
+"@nudj/library@7.4.0":
+  version "7.4.0"
+  resolved "https://registry.yarnpkg.com/@nudj/library/-/library-7.4.0.tgz#23f9fdf58c79443a43bf9b4dcd628f629843a90e"
   dependencies:
     axios "^0.16.2"
     date-fns "^1.29.0"
     deepmerge "^1.5.0"
+    es6-promisify "^6.0.0"
+    exenv "^1.2.2"
     intercom-client "^2.9.4"
     mailbuild "^0.3.7"
+    mixpanel "^0.9.2"
+    mixpanel-browser "^2.22.4"
     proxyquire "^2.0.1"
     shortid "^2.2.8"
 
@@ -1205,6 +1209,10 @@ es6-promisify@^5.0.0:
   dependencies:
     es6-promise "^4.0.3"
 
+es6-promisify@^6.0.0:
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/es6-promisify/-/es6-promisify-6.0.1.tgz#6edaa45f3bd570ffe08febce66f7116be4b1cdb6"
+
 es6-set@~0.1.5:
   version "0.1.5"
   resolved "https://registry.yarnpkg.com/es6-set/-/es6-set-0.1.5.tgz#d2b3ec5d4d800ced818db538d28974db0a73ccb1"
@@ -1438,6 +1446,10 @@ event-stream@~3.3.0:
     split "^1.0.1"
     stream-combiner "^0.2.2"
     through "^2.3.8"
+
+exenv@^1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/exenv/-/exenv-1.2.2.tgz#2ae78e85d9894158670b03d47bec1f03bd91bb9d"
 
 exit-hook@^1.0.0:
   version "1.1.1"
@@ -2137,7 +2149,7 @@ http-signature@^1.0.0, http-signature@~1.2.0:
     jsprim "^1.2.2"
     sshpk "^1.7.0"
 
-https-proxy-agent@^2.2.1:
+https-proxy-agent@2.2.1, https-proxy-agent@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/https-proxy-agent/-/https-proxy-agent-2.2.1.tgz#51552970fa04d723e04c56d04178c3f92592bbc0"
   dependencies:
@@ -3071,6 +3083,16 @@ mixin-deep@^1.2.0:
   dependencies:
     for-in "^1.0.2"
     is-extendable "^1.0.1"
+
+mixpanel-browser@^2.22.4:
+  version "2.23.0"
+  resolved "https://registry.yarnpkg.com/mixpanel-browser/-/mixpanel-browser-2.23.0.tgz#e7757f7f1fa8c2e57aefb0f38eefd24e1359484d"
+
+mixpanel@^0.9.2:
+  version "0.9.2"
+  resolved "https://registry.yarnpkg.com/mixpanel/-/mixpanel-0.9.2.tgz#b71c78e8914cb2c334e359673b1917740aa4d4ef"
+  dependencies:
+    https-proxy-agent "2.2.1"
 
 mkdirp@0.5.1, mkdirp@^0.5.0, mkdirp@^0.5.1, mkdirp@~0.5.1:
   version "0.5.1"

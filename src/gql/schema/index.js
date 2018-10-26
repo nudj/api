@@ -115,6 +115,7 @@ const modules = [
   require('./person/sendEmail'),
   require('./person/verifyGoogleAuthentication'),
   require('./referral'),
+  require('./referral/children'),
   require('./referral/job'),
   require('./referral/parent'),
   require('./referral/person'),

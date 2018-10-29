@@ -19,10 +19,8 @@ module.exports = {
           type: 'jobs',
           id: application.job
         })
+        if (job.company !== company.id) return null
 
-        if (job.company !== company.id) {
-          return null
-        }
         return application
       }
     }

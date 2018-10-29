@@ -1,4 +1,4 @@
-const { intercom } = require('@nudj/library/analytics')
+const intercom = require('@nudj/library/lib/analytics/intercom')
 
 const makeUniqueSlug = require('./make-unique-slug')
 const { random: randomSlugGenerator } = require('../../../lib/slug-generators')

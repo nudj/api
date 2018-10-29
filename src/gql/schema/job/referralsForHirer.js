@@ -15,7 +15,7 @@ module.exports = {
         const { userId } = context
         const { parent } = args
 
-        const hirer = await context.store.readOne({
+        const hirer = await context.sql.readOne({
           type: 'hirers',
           filters: {
             person: userId,
@@ -30,7 +30,7 @@ module.exports = {
         })
         if (hirer.type === hirerTypes.MEMBER) {
           if (parent) {
-            const parentReferral = await context.store.readOne({
+            const parentReferral = await context.sql.readOne({
               type: 'referrals',
               id: parent
             })
@@ -40,7 +40,7 @@ module.exports = {
           }
         }
 
-        const referrals = await context.store.readAll({
+        const referrals = await context.sql.readAll({
           type: 'referrals',
           filters
         })

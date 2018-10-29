@@ -1,5 +1,5 @@
 const { renderSimpleTemplate, getInvitationUrl } = require('@nudj/library')
-const { intercom } = require('@nudj/library/analytics')
+const intercom = require('@nudj/library/lib/analytics/intercom')
 
 const {
   validateInviteesAndFetchEmailData,

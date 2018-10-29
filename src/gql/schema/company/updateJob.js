@@ -1,4 +1,4 @@
-const { intercom } = require('@nudj/library/analytics')
+const intercom = require('@nudj/library/lib/analytics/intercom')
 const { values: tagTypes } = require('../enums/tag-types')
 const { values: tagSources } = require('../enums/tag-sources')
 const { values: jobStatusTypes } = require('../enums/job-status-types')

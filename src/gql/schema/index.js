@@ -25,6 +25,7 @@ const modules = [
   require('./company/inviteMembers'),
   require('./company/inviteMembersOnboarding'),
   require('./company/jobByFilters'),
+  require('./company/referral'),
   require('./company/jobs'),
   require('./company/jobsByFilters'),
   require('./company/sendJobEmails'),

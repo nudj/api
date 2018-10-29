@@ -12,7 +12,7 @@ module.exports = {
         const { id: referralId } = args
         const { userId } = context
 
-        const referral = await context.store.readOne({
+        const referral = await context.sql.readOne({
           type: 'referrals',
           id: referralId
         })
@@ -22,13 +22,13 @@ module.exports = {
           hirer,
           parent
         ] = await Promise.all([
-          context.store.readOne({
+          context.sql.readOne({
             type: 'hirers',
             filters: {
               person: userId
             }
           }),
-          referral.parent && context.store.readOne({
+          referral.parent && context.sql.readOne({
             type: 'referrals',
             id: referral.parent
           })
@@ -41,7 +41,7 @@ module.exports = {
           }
         }
 
-        const job = await context.store.readOne({
+        const job = await context.sql.readOne({
           type: 'jobs',
           id: referral.job
         })

@@ -72,6 +72,7 @@ const modules = [
   require('./job/createReferralByEmail'),
   require('./job/createReferralWithParentForPerson'),
   require('./job/getOrCreatePersonAndApplication'),
+  require('./job/getOrCreatePersonAndReferral'),
   require('./job/getOrCreateReferralForUser'),
   require('./job/intros'),
   require('./job/introsForHirer'),

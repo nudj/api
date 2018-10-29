@@ -98,15 +98,11 @@ module.exports = ({ web, company, jobs, recipient }) => dedent`
                                   <tr>
                                     <td class="" style="padding: 0; text-align: left; ">
                                       <a href="https://nudj.co" style="text-decoration: none; " universal="true" target="_blank">
-                                          <img alt="nudj" src="https://nudjcms.s3.amazonaws.com/assets/images/social/nudj-sq-profile-alt-sm-no-bg.png" style="border: 0; height: auto;  max-width: 40px; vertical-align: middle; display: block;" width="103">
+                                          <img src="https://nudjcms.s3.amazonaws.com/assets/images/social/nudj-sq-profile-alt-sm-no-bg.png" style="border: 0; height: auto;  max-width: 40px; vertical-align: middle; display: inline-block;" width="103">
                                         </a>
                                     </td>
                                   </tr>
                                 </tbody>
-                              </table>
-                            </td>
-                            <td class="" align="center" valign="middle" style="width: 100%;">
-                              <table cellpadding="0" cellspacing="0" dir="ltr" style="border: 0; width: 100%; ">
                               </table>
                             </td>
                           </tr>

@@ -1,3 +1,4 @@
+const omit = require('lodash/omit')
 const omitBy = require('lodash/omitBy')
 const isNil = require('lodash/isNil')
 const { logger } = require('@nudj/library')
@@ -17,7 +18,7 @@ module.exports = {
         const person = await context.sql.readOneOrCreate({
           type: 'people',
           filters: { email: args.person.email },
-          data: omitBy(args.person, ['company', 'role'])
+          data: omit(args.person, ['company', 'role'])
         })
 
         const [

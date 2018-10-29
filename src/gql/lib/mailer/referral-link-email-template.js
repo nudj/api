@@ -1,8 +1,12 @@
 const dedent = require('dedent')
-const possessiveCase = require('./possessive-case')
-const renderJobsRows = require('./render-job-rows')
 
-module.exports = ({ web, senderName, company, jobs, email }) => dedent`
+module.exports = ({
+  web,
+  person,
+  company,
+  job,
+  referral
+}) => dedent`
   <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
   <html xmlns="http://www.w3.org/1999/xhtml" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
 
@@ -98,8 +102,8 @@ module.exports = ({ web, senderName, company, jobs, email }) => dedent`
                                   <tr>
                                     <td class="" style="padding: 0; text-align: left; ">
                                       <a href="https://nudj.co" style="text-decoration: none; " universal="true" target="_blank">
-                                          <img src="https://nudjcms.s3.amazonaws.com/assets/images/social/nudj-sq-profile-alt-sm-no-bg.png" style="border: 0; height: auto;  max-width: 40px; vertical-align: middle; display: inline-block;" width="103">
-                                        </a>
+                                        <img src="https://nudjcms.s3.amazonaws.com/assets/images/social/nudj-sq-profile-alt-sm-no-bg.png" style="border: 0; height: auto;  max-width: 40px; vertical-align: middle; display: inline-block;" width="103">
+                                      </a>
                                     </td>
                                   </tr>
                                 </tbody>
@@ -116,55 +120,35 @@ module.exports = ({ web, senderName, company, jobs, email }) => dedent`
                 <tbody>
                   <tr>
                     <td style="padding: 20px 35px; text-align: center;">
-                      <img alt="" class="" src="https://nudjcms.s3.amazonaws.com/assets/images/social/review-the-best-img.png" style="border: 0; height: auto;  max-width: 100%; vertical-align: middle; " width="372">
+                      <img alt="nudj - Help your company find more great people to hire and get rewarded when they do!" class="" src="https://nudjcms.s3.amazonaws.com/assets/images/social/review-the-best-img.png" style="border: 0; height: auto;  max-width: 100%; vertical-align: middle; " width="350">
                     </td>
                   </tr>
                 </tbody>
               </table>
               <table width="100%" cellpadding="0" cellspacing="0" style="font-family: sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                 <tr style="font-family: sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
-                  <td class="content-block" style="font-family: sans-serif; box-sizing: border-box; font-size: 14px; text-align: left; vertical-align: top; margin: 0; padding: 0 0 20px; line-height: 1.5;" valign="top">
-                    <h2>Help ${company.name} hire more great people and get rewarded when they do</h2>
+                  <td class="content-block" style="font-family: sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;" valign="top">
+                    Hello ${person.firstName},
                   </td>
                 </tr>
                 <tr style="font-family: sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                   <td class="content-block" style="font-family: sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;" valign="top">
-                    <strong>${senderName || 'We\'ve'}</strong> invited you to join the rest of <strong>${company.name}</strong> on nudj; an employee referral platform that makes it incredibly easy for you to share ${possessiveCase(company.name)} open roles with your network and ensures you get rewarded when they get hired.
+                    This is a copy of your referral link for ${job.title} at ${company.name} should you wish to share it again:
                   </td>
                 </tr>
                 <tr style="font-family: sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                   <td class="content-block" itemprop="handler" itemscope itemtype="http://schema.org/HttpActionHandler" style="font-family: sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;" valign="top">
-                    <a href='${web.protocol}://${process.env.HIRE_HOSTNAME}/invitation-accept/${company.hash}' class="btn-primary" itemprop="url" style="font-family: sans-serif; box-sizing: border-box; font-size: 14px; color: #FFF; text-decoration: none; line-height: 2em; width: 12rem; font-weight: bold; text-align: center; cursor: pointer; display: block; border-radius: 5px; background-color: #002d72; margin: 0 auto; border-color: #002d72; border-style: solid; border-width: 10px 20px;">Join your team</a>
+                    <a href='${web.protocol}://${web.hostname}/companies/${company.slug}/jobs/${job.slug}?referralId=${referral.id}' itemprop="url" style="font-family: sans-serif; box-sizing: border-box; font-size: 14px; color: #002d72; text-decoration: none; font-weight: bold; text-align: center; cursor: pointer; display: inline;">${web.protocol}://${web.hostname}/companies/${company.slug}/jobs/${job.slug}?referralId=${referral.id}</a>
                   </td>
                 </tr>
                 <tr style="font-family: sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                   <td class="content-block" style="font-family: sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;" valign="top">
-                    <strong>Work with people you like and respect</strong><br />You know who the best people are, so have a say in who gets hired.
+                    The more people you share the job with the higher your chances are of getting rewarded.
                   </td>
                 </tr>
                 <tr style="font-family: sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                   <td class="content-block" style="font-family: sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;" valign="top">
-                    <strong>Get rewarded when they are hired</strong><br />Sign-up to claim your unique link to each of ${possessiveCase(company.name)} jobs and start sharing. If someone applies using your link and they get the job, you'll get the referral bonus on offer.
-                  </td>
-                </tr>
-                <hr />
-                <tr style="font-family: sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
-                  <td class="content-block" style="font-family: sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;" valign="top">
-                    <h2 style="text-align: left">${possessiveCase(company.name)} Current Openings</h2>
-                    <table style="width: 100%;">
-                      <thead>
-                        <tr>
-                          <th style="width:75%; font-family: sans-serif; font-weight: bold; text-align: left;">Position</th>
-                          <th style="width:25%; font-family: sans-serif; font-weight: bold; text-align: left;">Referral bonus</th>
-                        </tr>
-                      </thead>
-                      <tbody>${renderJobsRows(web, company, jobs)}</tbody>
-                    </table>
-                  </td>
-                </tr>
-                <tr style="font-family: sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
-                  <td class="content-block" style="font-family: sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;" valign="top">
-                    <strong>Got questions?</strong> Visit our <a href="https://help.nudj.co/">help centre</a> or <a href="mailto: help@nudj.co">contact the nudj team.</a>
+                    Not sure who to share it with? Check out our handy guide <a href='http://help.nudj.co/referring-a-friend-for-a-job-on-nudj/sharing-your-unique-link' itemprop="url" style="font-family: sans-serif; box-sizing: border-box; font-size: 14px; color: #002d72; text-decoration: none; font-weight: bold; text-align: center; cursor: pointer; display: inline;">here</a>.
                   </td>
                 </tr>
                 <tr style="font-family: sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">

@@ -40,14 +40,18 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
       email: DUMMY_APPLICANT_EMAIL_ADDRESS
     }]
   }
-  const variables = {
-    companyData: {
-      name: 'Fake Company',
-      location: 'Fakeland',
-      description: 'Fake it til you make it',
-      client: true
+  let variables
+
+  beforeEach(() => {
+    variables = {
+      companyData: {
+        name: 'Fake Company',
+        location: 'Fakeland',
+        description: 'Fake it til you make it',
+        client: true
+      }
     }
-  }
+  })
 
   describe('when company exists', async () => {
     describe('when user is a hirer for the company', async () => {
@@ -445,6 +449,7 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
         ])
       })
     })
+
     it('creates the company', async () => {
       const db = {
         ...baseDb,
@@ -469,6 +474,48 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
       expect(db.companies[0]).to.have.property('client', true)
       expect(db.companies[0]).to.have.property('onboarded', false)
       expect(db.companies[0]).to.have.property('hash').to.match(/[a-z0-9]{128}/)
+    })
+
+    describe('when company name needs trimming', () => {
+      beforeEach(() => {
+        variables.companyData.name = '   trim me   '
+      })
+      it('trims the company name', async () => {
+        const db = {
+          ...baseDb,
+          companies: [],
+          hirers: [],
+          employments: []
+        }
+
+        await executeQueryOnDbUsingSchema({
+          operation,
+          db,
+          schema,
+          variables
+        })
+
+        expect(db.companies[0]).to.have.property('name', 'trim me')
+      })
+      it('creates slug based on trimmed name', async () => {
+        const db = {
+          ...baseDb,
+          companies: [],
+          hirers: [],
+          employments: []
+        }
+
+        await executeQueryOnDbUsingSchema({
+          operation,
+          db,
+          schema,
+          variables
+        })
+
+        const generatedSlug = db.companies[0].slug
+
+        expect(generatedSlug).to.equal('trim-me')
+      })
     })
 
     it('creates a unique company slug', async () => {

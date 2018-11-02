@@ -133,7 +133,7 @@ module.exports = ({
                 </tr>
                 <tr style="font-family: sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                   <td class="content-block" style="font-family: sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;" valign="top">
-                    This is a copy of your referral link for ${job.title} at ${company.name} should you wish to share it again:
+                    This is your referral link for ${job.title} at ${company.name} should you wish to share it again:
                   </td>
                 </tr>
                 <tr style="font-family: sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
@@ -143,7 +143,7 @@ module.exports = ({
                 </tr>
                 <tr style="font-family: sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                   <td class="content-block" style="font-family: sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;" valign="top">
-                    The more people you share the job with the higher your chances are of getting rewarded.
+                    Increase your chances of getting rewarded by sharing the job broadly across your network.
                   </td>
                 </tr>
                 <tr style="font-family: sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">

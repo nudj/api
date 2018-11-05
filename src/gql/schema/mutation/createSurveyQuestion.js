@@ -5,7 +5,7 @@ const makeUniqueSlug = require('../../lib/helpers/make-unique-slug')
 module.exports = {
   typeDefs: `
     extend type Mutation {
-      createSurveyQuestion(surveySection: ID!, data: SurveyQuestionCreateInput!): SurveyQuestion
+      createSurveyQuestion(survey: ID!, data: SurveyQuestionCreateInput!): SurveyQuestion
     }
   `,
   resolvers: {
@@ -15,7 +15,7 @@ module.exports = {
 
         const data = {
           ...surveyQuestionData,
-          surveySection: args.surveySection
+          survey: args.survey
         }
         const slug = await makeUniqueSlug({
           type: 'surveyQuestions',
@@ -31,15 +31,15 @@ module.exports = {
         })
 
         const { surveyQuestions } = await context.sql.readOne({
-          type: 'surveySections',
-          id: surveyQuestion.surveySection
+          type: 'surveys',
+          id: surveyQuestion.survey
         })
         let surveyQuestionsArray = JSON.parse(surveyQuestions)
         surveyQuestionsArray = surveyQuestionsArray.concat(surveyQuestion.id)
 
         await context.sql.update({
-          type: 'surveySections',
-          id: surveyQuestion.surveySection,
+          type: 'surveys',
+          id: surveyQuestion.survey,
           data: {
             surveyQuestions: JSON.stringify(surveyQuestionsArray)
           }

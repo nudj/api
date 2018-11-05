@@ -10,8 +10,8 @@ module.exports = {
     Mutation: {
       updateSurvey: async (root, args, context) => {
         const data = args.data
-        if (data.surveySections) {
-          data.surveySections = JSON.stringify(args.data.surveySections)
+        if (data.surveyQuestions) {
+          data.surveyQuestions = JSON.stringify(args.data.surveyQuestions)
         }
         if (data.introTitle) {
           data.slug = await makeUniqueSlug({

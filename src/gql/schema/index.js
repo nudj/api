@@ -129,19 +129,15 @@ const modules = [
   require('./status'),
   require('./survey'),
   require('./survey/company'),
-  require('./survey/surveySectionByFilters'),
-  require('./survey/surveySections'),
+  require('./survey/surveyQuestionByFilters'),
+  require('./survey/surveyQuestions'),
   require('./surveyAnswer'),
   require('./surveyAnswer/connections'),
   require('./surveyAnswer/person'),
   require('./surveyAnswer/surveyQuestion'),
   require('./surveyQuestion'),
-  require('./surveyQuestion/surveySection'),
+  require('./surveyQuestion/survey'),
   require('./surveyQuestion/tags'),
-  require('./surveySection'),
-  require('./surveySection/survey'),
-  require('./surveySection/surveyQuestionByFilters'),
-  require('./surveySection/surveyQuestions'),
   require('./tag'),
 
   // Enums
@@ -185,7 +181,6 @@ const modules = [
   require('./mutation/createPersonAndHirer'),
   require('./mutation/createSurvey'),
   require('./mutation/createSurveyQuestion'),
-  require('./mutation/createSurveySection'),
   require('./mutation/employee'),
   require('./mutation/employeeByFilters'),
   require('./mutation/employees'),
@@ -238,16 +233,11 @@ const modules = [
   require('./mutation/surveyQuestionsByFilters'),
   require('./mutation/surveys'),
   require('./mutation/surveysByFilters'),
-  require('./mutation/surveySection'),
-  require('./mutation/surveySectionByFilters'),
-  require('./mutation/surveySections'),
-  require('./mutation/surveySectionsByFilters'),
   require('./mutation/updateCompany'),
   require('./mutation/updatePerson'),
   require('./mutation/updatePersonAndHirer'),
   require('./mutation/updateSurvey'),
   require('./mutation/updateSurveyQuestion'),
-  require('./mutation/updateSurveySection'),
   require('./mutation/user'),
 
   // Queries
@@ -316,10 +306,6 @@ const modules = [
   require('./query/surveyQuestionsByFilters'),
   require('./query/surveys'),
   require('./query/surveysByFilters'),
-  require('./query/surveySection'),
-  require('./query/surveySectionByFilters'),
-  require('./query/surveySections'),
-  require('./query/surveySectionsByFilters'),
   require('./query/user')
 ]
 

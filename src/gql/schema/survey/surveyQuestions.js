@@ -1,13 +1,13 @@
 module.exports = {
   typeDefs: `
-    extend type SurveySection {
+    extend type Survey {
       surveyQuestions: [SurveyQuestion!]!
     }
   `,
   resolvers: {
-    SurveySection: {
-      surveyQuestions: async (surveySection, args, context) => {
-        const { surveyQuestions } = surveySection
+    Survey: {
+      surveyQuestions: async (survey, args, context) => {
+        const { surveyQuestions } = survey
         const questionIds = JSON.parse(surveyQuestions)
         const questions = await context.sql.readMany({
           type: 'surveyQuestions',

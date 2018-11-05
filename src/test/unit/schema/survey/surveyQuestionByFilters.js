@@ -5,10 +5,10 @@ const expect = chai.expect
 const schema = require('../../../../gql/schema')
 const { executeQueryOnDbUsingSchema } = require('../../helpers')
 
-describe('SurveySection.surveyQuestionByFilters', () => {
+describe('Survey.surveyQuestionByFilters', () => {
   const operation = `
     query {
-      surveySection (id: "surveySection1") {
+      survey (id: "survey1") {
         surveyQuestionByFilters (filters: {
           id: "surveyQuestion2"
         }) {
@@ -20,25 +20,25 @@ describe('SurveySection.surveyQuestionByFilters', () => {
 
   it('should fetch filtered surveyQuestions', async () => {
     const db = {
-      surveySections: [
+      surveys: [
         {
-          id: 'surveySection1'
+          id: 'survey1'
         }
       ],
       surveyQuestions: [
         {
           id: 'surveyQuestion1',
-          surveySection: 'surveySection2'
+          survey: 'survey2'
         },
         {
           id: 'surveyQuestion2',
-          surveySection: 'surveySection1'
+          survey: 'survey1'
         }
       ]
     }
     return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
-        surveySection: {
+        survey: {
           surveyQuestionByFilters: {
             id: 'surveyQuestion2'
           }
@@ -47,27 +47,27 @@ describe('SurveySection.surveyQuestionByFilters', () => {
     })
   })
 
-  it('should return null if surveyQuestion exists but is not child of selected surveySection', async () => {
+  it('should return null if surveyQuestion exists but is not child of selected survey', async () => {
     const db = {
-      surveySections: [
+      surveys: [
         {
-          id: 'surveySection1'
+          id: 'survey1'
         }
       ],
       surveyQuestions: [
         {
           id: 'surveyQuestion1',
-          surveySection: 'surveySection1'
+          survey: 'survey1'
         },
         {
           id: 'surveyQuestion2',
-          surveySection: 'surveySection2'
+          survey: 'survey2'
         }
       ]
     }
     return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
-        surveySection: {
+        survey: {
           surveyQuestionByFilters: null
         }
       }
@@ -76,21 +76,21 @@ describe('SurveySection.surveyQuestionByFilters', () => {
 
   it('should return null if no matches', async () => {
     const db = {
-      surveySections: [
+      surveys: [
         {
-          id: 'surveySection1'
+          id: 'survey1'
         }
       ],
       surveyQuestions: [
         {
           id: 'surveyQuestion1',
-          surveySection: 'surveySection2'
+          survey: 'survey2'
         }
       ]
     }
     return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
-        surveySection: {
+        survey: {
           surveyQuestionByFilters: null
         }
       }

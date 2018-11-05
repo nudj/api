@@ -23,7 +23,7 @@ module.exports = {
       introDescription: String
       outroTitle: String
       outroDescription: String
-      surveySections: [ID!]
+      surveyQuestions: [ID!]
     }
 
     input SurveyFilterInput {

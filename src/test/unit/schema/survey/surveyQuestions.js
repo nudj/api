@@ -7,38 +7,38 @@ const { executeQueryOnDbUsingSchema } = require('../../helpers')
 const operation = `
   query {
     surveys {
-      surveySections {
+      surveyQuestions {
         id
       }
     }
   }
 `
 
-describe('Survey.surveySections', () => {
-  it('should return the surveySections in the correct order', async () => {
+describe('Survey.surveyQuestions', () => {
+  it('should return the surveyQuestions in the correct order', async () => {
     const db = {
       surveys: [
         {
           id: 'survey1',
-          surveySections: JSON.stringify([
-            'surveySection3',
-            'surveySection1',
-            'surveySection2'
+          surveyQuestions: JSON.stringify([
+            'surveyQuestion2',
+            'surveyQuestion3',
+            'surveyQuestion1'
           ])
         }
       ],
-      surveySections: [
+      surveyQuestions: [
         {
-          id: 'surveySection1',
+          id: 'surveyQuestion1',
           survey: 'survey1'
         },
         {
-          id: 'surveySection2',
+          id: 'surveyQuestion2',
           survey: 'survey1'
         },
         {
-          id: 'surveySection3',
-          survey: 'survey2'
+          id: 'surveyQuestion3',
+          survey: 'survey1'
         }
       ]
     }
@@ -46,15 +46,15 @@ describe('Survey.surveySections', () => {
       data: {
         surveys: [
           {
-            surveySections: [
+            surveyQuestions: [
               {
-                id: 'surveySection3'
+                id: 'surveyQuestion2'
               },
               {
-                id: 'surveySection1'
+                id: 'surveyQuestion3'
               },
               {
-                id: 'surveySection2'
+                id: 'surveyQuestion1'
               }
             ]
           }
@@ -68,14 +68,16 @@ describe('Survey.surveySections', () => {
       surveys: [
         {
           id: 'survey1',
-          surveySections: JSON.stringify([
-            'surveySection2'
+          surveyQuestions: JSON.stringify([
+            'surveyQuestion2',
+            'surveyQuestion3',
+            'surveyQuestion1'
           ])
         }
       ],
-      surveySections: [
+      surveyQuestions: [
         {
-          id: 'surveySection1',
+          id: 'surveyQuestion1',
           survey: 'survey2'
         }
       ]
@@ -84,7 +86,7 @@ describe('Survey.surveySections', () => {
       data: {
         surveys: [
           {
-            surveySections: []
+            surveyQuestions: []
           }
         ]
       }

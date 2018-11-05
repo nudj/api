@@ -71,7 +71,7 @@ describe('Mutation.createSurvey', () => {
         introDescription: 'Some intro decription',
         outroTitle: 'Some Outro Title',
         outroDescription: 'Some outro description',
-        surveySections: JSON.stringify([])
+        surveyQuestions: JSON.stringify([])
       })
     })
 
@@ -128,7 +128,7 @@ describe('Mutation.createSurvey', () => {
         introDescription: 'Some intro decription',
         outroTitle: 'Some Outro Title',
         outroDescription: 'Some outro description',
-        surveySections: JSON.stringify([])
+        surveyQuestions: JSON.stringify([])
       })
     })
 

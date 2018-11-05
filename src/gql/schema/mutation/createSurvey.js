@@ -11,7 +11,7 @@ module.exports = {
       createSurvey: async (root, args, context) => {
         const data = {
           ...args.data,
-          surveySections: JSON.stringify([])
+          surveyQuestions: JSON.stringify([])
         }
         data.slug = await makeUniqueSlug({
           type: 'surveys',

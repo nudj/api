@@ -5,28 +5,28 @@ const expect = chai.expect
 const schema = require('../../../../gql/schema')
 const { executeQueryOnDbUsingSchema } = require('../../helpers')
 
-describe('SurveyQuestion.surveySection', () => {
-  it('should fetch filtered surveySection', async () => {
+describe('SurveyQuestion.survey', () => {
+  it('should fetch filtered survey', async () => {
     const db = {
       surveyQuestions: [
         {
           id: 'surveyQuestion1',
-          surveySection: 'surveySection2'
+          survey: 'survey2'
         }
       ],
-      surveySections: [
+      surveys: [
         {
-          id: 'surveySection1'
+          id: 'survey1'
         },
         {
-          id: 'surveySection2'
+          id: 'survey2'
         }
       ]
     }
     const operation = `
       query {
         surveyQuestion (id: "surveyQuestion1") {
-          surveySection {
+          survey {
             id
           }
         }
@@ -35,8 +35,8 @@ describe('SurveyQuestion.surveySection', () => {
     return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
         surveyQuestion: {
-          surveySection: {
-            id: 'surveySection2'
+          survey: {
+            id: 'survey2'
           }
         }
       }
@@ -48,22 +48,22 @@ describe('SurveyQuestion.surveySection', () => {
       surveyQuestions: [
         {
           id: 'surveyQuestion1',
-          surveySection: 'surveySection3'
+          survey: 'survey3'
         }
       ],
-      surveySections: [
+      surveys: [
         {
-          id: 'surveySection1'
+          id: 'survey1'
         },
         {
-          id: 'surveySection2'
+          id: 'survey2'
         }
       ]
     }
     const operation = `
       query {
         surveyQuestion (id: "surveyQuestion1") {
-          surveySection {
+          survey {
             id
           }
         }
@@ -72,7 +72,7 @@ describe('SurveyQuestion.surveySection', () => {
     return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
         surveyQuestion: {
-          surveySection: null
+          survey: null
         }
       }
     })

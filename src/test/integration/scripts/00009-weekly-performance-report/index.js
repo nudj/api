@@ -11,7 +11,7 @@ const {
   expect
 } = require('../../lib')
 
-const script = proxyquire('../../../../scripts/00010-weekly-performance-report', {
+const script = proxyquire('../../../../scripts/00009-weekly-performance-report', {
   'date-fns/sub_days': () => ({
     toISOString: () => '2000-01-04' // To set "yesterday's" timestamp
   })

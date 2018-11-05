@@ -12,11 +12,11 @@ const { values: SurveyQuestionTypes } = require('../../../../gql/schema/enums/su
 const expect = chai.expect
 const operation = `
   mutation (
-    $surveySection: ID!
+    $survey: ID!
     $data: SurveyQuestionCreateInput!
   ) {
     createSurveyQuestion(
-      surveySection: $surveySection
+      survey: $survey
       data: $data
     ) {
       id
@@ -24,7 +24,7 @@ const operation = `
   }
 `
 const variables = {
-  surveySection: 'surveySection1',
+  survey: 'survey1',
   data: {
     title: 'Some title',
     description: 'Some description',
@@ -40,9 +40,9 @@ describe('Mutation.createSurveyQuestion', () => {
 
   beforeEach(() => {
     db = {
-      surveySections: [
+      surveys: [
         {
-          id: 'surveySection1',
+          id: 'survey1',
           surveyQuestions: []
         }
       ],
@@ -66,7 +66,7 @@ describe('Mutation.createSurveyQuestion', () => {
       name: 'someName',
       required: true,
       type: SurveyQuestionTypes.COMPANIES,
-      surveySection: 'surveySection1'
+      survey: 'survey1'
     })
   })
 
@@ -114,14 +114,14 @@ describe('Mutation.createSurveyQuestion', () => {
     ])
   })
 
-  it('should add new id to surveySection', async () => {
+  it('should add new id to survey', async () => {
     await executeQueryOnDbUsingSchema({
       operation,
       variables,
       db,
       schema
     })
-    expect(db.surveySections[0].surveyQuestions).to.deep.equal(['surveyQuestion1'])
+    expect(db.surveys[0].surveyQuestions).to.deep.equal(['surveyQuestion1'])
   })
 
   it('should return the new surveyQuestion', async () => {

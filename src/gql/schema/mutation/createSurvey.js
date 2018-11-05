@@ -11,7 +11,7 @@ module.exports = {
           type: 'surveys',
           data: {
             ...args.data,
-            surveySections: []
+            surveyQuestions: []
           }
         })
         if (args.company) {

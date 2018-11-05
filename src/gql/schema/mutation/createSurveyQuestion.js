@@ -5,30 +5,31 @@ const { values: tagSources } = require('../enums/tag-sources')
 module.exports = {
   typeDefs: `
     extend type Mutation {
-      createSurveyQuestion(surveySection: ID!, data: SurveyQuestionCreateInput!): SurveyQuestion
+      createSurveyQuestion(survey: ID!, data: SurveyQuestionCreateInput!): SurveyQuestion
     }
   `,
   resolvers: {
     Mutation: {
       createSurveyQuestion: async (root, args, context) => {
-        const { tags = [] } = args.data
+        const { data, survey } = args
+        const { tags = [] } = data
 
         const surveyQuestion = await context.store.create({
           type: 'surveyQuestions',
           data: {
             ...omit(args.data, ['tags']),
-            surveySection: args.surveySection
+            survey
           }
         })
 
         const { surveyQuestions = [] } = await context.store.readOne({
-          type: 'surveySections',
-          id: surveyQuestion.surveySection
+          type: 'surveys',
+          id: surveyQuestion.survey
         })
 
         await context.store.update({
-          type: 'surveySections',
-          id: surveyQuestion.surveySection,
+          type: 'surveys',
+          id: surveyQuestion.survey,
           data: {
             surveyQuestions: surveyQuestions.concat(surveyQuestion.id)
           }

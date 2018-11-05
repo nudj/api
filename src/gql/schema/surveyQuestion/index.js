@@ -31,6 +31,7 @@ module.exports = {
 
     input SurveyQuestionFilterInput {
       id: ID
+      survey: ID
       dateTo: DateTime
       dateFrom: DateTime
     }

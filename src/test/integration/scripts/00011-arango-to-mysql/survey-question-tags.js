@@ -48,7 +48,6 @@ describe('00011 Arango to MySQL', () => {
       TAGS: TABLES.TAGS,
       COMPANIES: TABLES.COMPANIES,
       SURVEYS: TABLES.SURVEYS,
-      SURVEY_SECTIONS: TABLES.SURVEY_SECTIONS,
       SURVEY_QUESTIONS: TABLES.SURVEY_QUESTIONS
     }
 
@@ -56,7 +55,6 @@ describe('00011 Arango to MySQL', () => {
       await sql(TABLES.SURVEY_QUESTION_TAGS).whereNot('id', '').del()
       await sql(TABLES.TAGS).whereNot('id', '').del()
       await sql(TABLES.SURVEY_QUESTIONS).whereNot('id', '').del()
-      await sql(TABLES.SURVEY_SECTIONS).whereNot('id', '').del()
       await sql(TABLES.SURVEYS).whereNot('id', '').del()
       await sql(TABLES.COMPANIES).whereNot('id', '').del()
     })
@@ -89,23 +87,8 @@ describe('00011 Arango to MySQL', () => {
                 introDescription: 'Intro description',
                 outroTitle: 'Outro Title',
                 outroDescription: 'Outro description',
-                surveySections: ['surveySection1', 'surveySection2'],
-                company: 'company1'
-              }
-            ]
-          },
-          {
-            name: COLLECTIONS.SURVEY_SECTIONS,
-            data: [
-              {
-                _key: 'surveySection1',
-                created: '2018-02-01T01:02:03.456Z',
-                modified: '2018-03-02T02:03:04.567Z',
-                slug: 'survey-section-slug',
-                title: 'Title',
-                description: 'Description',
                 surveyQuestions: ['surveyQuestion1', 'surveyQuestion2'],
-                survey: 'survey1'
+                company: 'company1'
               }
             ]
           },
@@ -121,7 +104,7 @@ describe('00011 Arango to MySQL', () => {
                 description: 'Description',
                 required: true,
                 type: ENUMS.QUESTION_TYPES.CONNECTIONS,
-                surveySection: 'surveySection1'
+                survey: 'survey1'
               }
             ]
           },

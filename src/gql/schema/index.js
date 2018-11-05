@@ -24,6 +24,7 @@ const modules = [
   require('./company/deleteHirer'),
   require('./company/hirer'),
   require('./company/hirers'),
+  require('./company/integrations'),
   require('./company/inviteMembers'),
   require('./company/inviteMembersOnboarding'),
   require('./company/jobByFilters'),

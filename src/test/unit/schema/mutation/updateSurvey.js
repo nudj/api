@@ -48,7 +48,7 @@ describe('Mutation.updateSurvey', () => {
           introDescription: 'Old intro decription',
           outroTitle: 'Old Outro Title',
           outroDescription: 'Old outro description',
-          surveySections: ['1', '2', '3']
+          surveyQuestions: ['1', '2', '3']
         }
       ]
     }
@@ -69,7 +69,7 @@ describe('Mutation.updateSurvey', () => {
       introDescription: 'New intro decription',
       outroTitle: 'New Outro Title',
       outroDescription: 'New outro description',
-      surveySections: ['1', '2', '3']
+      surveyQuestions: ['1', '2', '3']
     })
   })
 
@@ -92,12 +92,12 @@ describe('Mutation.updateSurvey', () => {
       })
   })
 
-  describe('when given a new section order', () => {
-    it('should update the section order in the db', async () => {
+  describe('when given a new question order', () => {
+    it('should update the question order in the db', async () => {
       variables = {
         id: 'survey1',
         data: {
-          surveySections: ['3', '2', '1']
+          surveyQuestions: ['3', '2', '1']
         }
       }
       await executeQueryOnDbUsingSchema({
@@ -107,7 +107,7 @@ describe('Mutation.updateSurvey', () => {
         schema
       })
       expect(db)
-        .to.have.deep.property('surveys.0.surveySections')
+        .to.have.deep.property('surveys.0.surveyQuestions')
         .to.deep.equal(['3', '2', '1'])
     })
   })

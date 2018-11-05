@@ -5,22 +5,22 @@ const expect = chai.expect
 const schema = require('../../../../gql/schema')
 const { executeQueryOnDbUsingSchema } = require('../../helpers')
 
-describe('Mutation.surveySectionsByFilters', () => {
-  it('should fetch filtered surveySections', async () => {
+describe('Mutation.surveyQuestionsByFilters', () => {
+  it('should fetch filtered surveyQuestions', async () => {
     const db = {
-      surveySections: [
+      surveyQuestions: [
         {
-          id: 'surveySection1'
+          id: 'surveyQuestion1'
         },
         {
-          id: 'surveySection2'
+          id: 'surveyQuestion2'
         }
       ]
     }
     const operation = `
       mutation {
-        surveySectionsByFilters(filters: {
-          id: "surveySection2"
+        surveyQuestionsByFilters(filters: {
+          id: "surveyQuestion2"
         }) {
           id
         }
@@ -28,9 +28,9 @@ describe('Mutation.surveySectionsByFilters', () => {
     `
     return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
-        surveySectionsByFilters: [
+        surveyQuestionsByFilters: [
           {
-            id: 'surveySection2'
+            id: 'surveyQuestion2'
           }
         ]
       }
@@ -39,12 +39,12 @@ describe('Mutation.surveySectionsByFilters', () => {
 
   it('should return empty array if no matches', async () => {
     const db = {
-      surveySections: []
+      surveyQuestions: []
     }
     const operation = `
       mutation {
-        surveySectionsByFilters(filters: {
-          id: "surveySection2"
+        surveyQuestionsByFilters(filters: {
+          id: "surveyQuestion2"
         }) {
           id
         }
@@ -52,7 +52,7 @@ describe('Mutation.surveySectionsByFilters', () => {
     `
     return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
-        surveySectionsByFilters: []
+        surveyQuestionsByFilters: []
       }
     })
   })

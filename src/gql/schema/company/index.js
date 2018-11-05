@@ -19,6 +19,7 @@ module.exports = {
       hash: String!
       onboarded: Boolean!
       client: Boolean!
+      ats: CompanyIntegrationType
     }
 
     input CompanyCreateInput {
@@ -53,6 +54,7 @@ module.exports = {
       url: String
       onboarded: Boolean
       client: Boolean
+      ats: CompanyIntegrationType
     }
 
     input CompanyFilterInput {
@@ -62,6 +64,7 @@ module.exports = {
       client: Boolean
       dateTo: DateTime
       dateFrom: DateTime
+      ats: CompanyIntegrationType
     }
   `
 }

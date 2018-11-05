@@ -349,12 +349,6 @@ const INDICES = merge(
         fields: [F.CONNECTIONS.FROM, F.CONNECTIONS.PERSON]
       }
     },
-    [TABLES.ACCOUNTS]: {
-      [F.ACCOUNTS.EMAIL]: {
-        name: `${TABLES.ACCOUNTS}ByEmail`,
-        fields: [F.ACCOUNTS.EMAIL]
-      }
-    },
     [TABLES.CONVERSATIONS]: {
       [F.CONVERSATIONS.THREAD_ID]: {
         name: `${TABLES.CONVERSATIONS}ByThreadId`,

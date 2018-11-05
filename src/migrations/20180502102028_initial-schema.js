@@ -268,7 +268,6 @@ exports.up = async knex => {
       table.json(DATA).notNullable().comment('Object of account authorisation secrets')
       table.enum(TYPE, ENUMS.ACCOUNT_TYPES.values).defaultTo(ENUMS.ACCOUNT_TYPES.GOOGLE).notNullable()
       relationType(PERSON, TABLES.PEOPLE, table, knex).notNullable()
-      table.unique(EMAIL, INDICES[TABLES.ACCOUNTS][EMAIL].name)
     })
 
     .createTable(TABLES.CONVERSATIONS, table => {

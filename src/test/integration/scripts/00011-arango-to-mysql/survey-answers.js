@@ -46,7 +46,6 @@ describe('00011 Arango to MySQL', () => {
     const COLLECTIONS = {
       SURVEY_ANSWERS: TABLES.SURVEY_ANSWERS,
       SURVEY_QUESTIONS: TABLES.SURVEY_QUESTIONS,
-      SURVEY_SECTIONS: TABLES.SURVEY_SECTIONS,
       SURVEYS: TABLES.SURVEYS,
       COMPANIES: TABLES.COMPANIES,
       CONNECTIONS: TABLES.CONNECTIONS,
@@ -57,7 +56,6 @@ describe('00011 Arango to MySQL', () => {
       await sql(TABLES.SURVEY_ANSWER_CONNECTIONS).whereNot('id', '').del()
       await sql(TABLES.SURVEY_ANSWERS).whereNot('id', '').del()
       await sql(TABLES.SURVEY_QUESTIONS).whereNot('id', '').del()
-      await sql(TABLES.SURVEY_SECTIONS).whereNot('id', '').del()
       await sql(TABLES.SURVEYS).whereNot('id', '').del()
       await sql(TABLES.COMPANIES).whereNot('id', '').del()
       await sql(TABLES.CONNECTIONS).whereNot('id', '').del()
@@ -109,23 +107,8 @@ describe('00011 Arango to MySQL', () => {
                 introDescription: 'Intro description',
                 outroTitle: 'Outro Title',
                 outroDescription: 'Outro description',
-                surveySections: ['surveySection1', 'surveySection2'],
-                company: 'company1'
-              }
-            ]
-          },
-          {
-            name: COLLECTIONS.SURVEY_SECTIONS,
-            data: [
-              {
-                _key: 'surveySection1',
-                created: '2018-02-01T01:02:03.456Z',
-                modified: '2018-03-02T02:03:04.567Z',
-                slug: 'survey-section-slug',
-                title: 'Title',
-                description: 'Description',
                 surveyQuestions: ['surveyQuestion1', 'surveyQuestion2'],
-                survey: 'survey1'
+                company: 'company1'
               }
             ]
           },
@@ -141,7 +124,7 @@ describe('00011 Arango to MySQL', () => {
                 description: 'Description',
                 required: true,
                 type: ENUMS.QUESTION_TYPES.CONNECTIONS,
-                surveySection: 'surveySection1'
+                survey: 'survey1'
               }
             ]
           },

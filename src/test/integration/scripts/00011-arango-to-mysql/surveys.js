@@ -44,12 +44,12 @@ describe('00011 Arango to MySQL', () => {
   describe('for surveys table', () => {
     const COLLECTIONS = {
       SURVEYS: TABLES.SURVEYS,
-      SURVEY_SECTIONS: TABLES.SURVEY_SECTIONS,
+      SURVEY_QUESTIONS: TABLES.SURVEY_QUESTIONS,
       COMPANIES: TABLES.COMPANIES
     }
 
     afterEach(async () => {
-      await sql(TABLES.SURVEY_SECTIONS).whereNot('id', '').del()
+      await sql(TABLES.SURVEY_QUESTIONS).whereNot('id', '').del()
       await sql(TABLES.SURVEYS).whereNot('id', '').del()
       await sql(TABLES.COMPANIES).whereNot('id', '').del()
     })
@@ -84,26 +84,27 @@ describe('00011 Arango to MySQL', () => {
                 introDescription: 'Intro description',
                 outroTitle: 'Outro Title',
                 outroDescription: 'Outro description',
-                surveySections: ['surveySection1'],
+                surveyQuestions: ['surveyQuestion1'],
                 batchSize: 100,
                 skip: 0
               }
             ]
           },
           {
-            name: COLLECTIONS.SURVEY_SECTIONS,
+            name: COLLECTIONS.SURVEY_QUESTIONS,
             data: [
               {
-                _id: 'surveySections/surveySection1',
+                _id: 'surveyQuestions/surveyQuestion1',
                 _rev: '_WpP1l3W---',
-                _key: 'surveySection1',
+                _key: 'surveyQuestion1',
                 created: '2018-02-01T01:02:03.456Z',
                 modified: '2018-03-02T02:03:04.567Z',
-                slug: 'survey-slug',
-                title: 'Intro Title',
-                description: 'Intro description',
                 survey: '123',
-                surveyQuestions: []
+                name: 'previous-companies',
+                description: 'Intro description',
+                required: true,
+                title: 'Where did you work before?',
+                type: 'COMPANIES'
               }
             ]
           }
@@ -123,8 +124,8 @@ describe('00011 Arango to MySQL', () => {
 
       it('should remap the order caches', async () => {
         const surveys = await sql.select().from(TABLES.SURVEYS)
-        const surveySections = await sql.select().from(TABLES.SURVEY_SECTIONS)
-        expect(surveys[0]).to.have.property('surveySections', JSON.stringify([surveySections[0].id]))
+        const surveyQuestions = await sql.select().from(TABLES.SURVEY_QUESTIONS)
+        expect(surveys[0]).to.have.property('surveyQuestions', JSON.stringify([surveyQuestions[0].id]))
       })
     })
 
@@ -157,26 +158,27 @@ describe('00011 Arango to MySQL', () => {
                 introDescription: 'Intro description',
                 outroTitle: 'Outro Title',
                 outroDescription: 'Outro description',
-                surveySections: ['surveySection1'],
+                surveyQuestions: ['surveyQuestion1'],
                 batchSize: 100,
                 skip: 0
               }
             ]
           },
           {
-            name: COLLECTIONS.SURVEY_SECTIONS,
+            name: COLLECTIONS.SURVEY_QUESTIONS,
             data: [
               {
-                _id: 'surveySections/surveySection1',
+                _id: 'surveyQuestions/surveyQuestion1',
                 _rev: '_WpP1l3W---',
-                _key: 'surveySection1',
+                _key: 'surveyQuestion1',
                 created: '2018-02-01T01:02:03.456Z',
                 modified: '2018-03-02T02:03:04.567Z',
-                slug: 'survey-slug',
-                title: 'Intro Title',
-                description: 'Intro description',
                 survey: '123',
-                surveyQuestions: []
+                name: 'previous-companies',
+                description: 'Intro description',
+                required: true,
+                title: 'Where did you work before?',
+                type: 'COMPANIES'
               }
             ]
           }

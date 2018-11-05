@@ -296,7 +296,7 @@ exports.up = async knex => {
         INTRO_DESCRIPTION,
         OUTRO_TITLE,
         OUTRO_DESCRIPTION,
-        SURVEY_SECTIONS
+        SURVEY_QUESTIONS
       } = FIELDS[TABLES.SURVEYS]
 
       defaultConfig(table, knex)
@@ -306,27 +306,8 @@ exports.up = async knex => {
       table.text(INTRO_DESCRIPTION).notNullable()
       table.string(OUTRO_TITLE).nullable()
       table.text(OUTRO_DESCRIPTION).nullable()
-      table.json(SURVEY_SECTIONS).notNullable().comment('Array of surveySection ids denoting their order')
-      table.unique(SLUG, INDICES[TABLES.SURVEYS][SLUG].name)
-    })
-
-    .createTable(TABLES.SURVEY_SECTIONS, table => {
-      const {
-        SLUG,
-        TITLE,
-        DESCRIPTION,
-        SURVEY_QUESTIONS,
-        SURVEY
-      } = FIELDS[TABLES.SURVEY_SECTIONS]
-
-      defaultConfig(table, knex)
-      defaultFields(table, knex)
-      table.string(SLUG).notNullable()
-      table.string(TITLE).notNullable()
-      table.text(DESCRIPTION).notNullable()
       table.json(SURVEY_QUESTIONS).notNullable().comment('Array of surveyQuestion ids denoting their order')
-      relationType(SURVEY, TABLES.SURVEYS, table, knex).notNullable()
-      table.unique([SLUG, SURVEY], INDICES[TABLES.SURVEY_SECTIONS][[SLUG, SURVEY].join('')].name)
+      table.unique(SLUG, INDICES[TABLES.SURVEYS][SLUG].name)
     })
 
     .createTable(TABLES.SURVEY_QUESTIONS, table => {
@@ -336,7 +317,7 @@ exports.up = async knex => {
         DESCRIPTION,
         REQUIRED,
         TYPE,
-        SURVEY_SECTION
+        SURVEY
       } = FIELDS[TABLES.SURVEY_QUESTIONS]
 
       defaultConfig(table, knex)
@@ -346,8 +327,8 @@ exports.up = async knex => {
       table.text(DESCRIPTION).notNullable()
       table.boolean(REQUIRED).defaultTo(false).notNullable()
       table.enum(TYPE, ENUMS.QUESTION_TYPES.values).notNullable()
-      relationType(SURVEY_SECTION, TABLES.SURVEY_SECTIONS, table, knex).notNullable()
-      table.unique([SLUG, SURVEY_SECTION], INDICES[TABLES.SURVEY_QUESTIONS][[SLUG, SURVEY_SECTION].join('')].name)
+      relationType(SURVEY, TABLES.SURVEYS, table, knex).notNullable()
+      table.unique([SLUG, SURVEY], INDICES[TABLES.SURVEY_QUESTIONS][[SLUG, SURVEY].join('')].name)
     })
 
     .createTable(TABLES.SURVEY_ANSWERS, table => {
@@ -570,7 +551,6 @@ exports.down = async knex => {
     .dropTable(TABLES.SURVEY_ANSWER_CONNECTIONS)
     .dropTable(TABLES.SURVEY_ANSWERS)
     .dropTable(TABLES.SURVEY_QUESTIONS)
-    .dropTable(TABLES.SURVEY_SECTIONS)
     .dropTable(TABLES.COMPANY_SURVEYS)
     .dropTable(TABLES.SURVEYS)
     .dropTable(TABLES.CONVERSATIONS)

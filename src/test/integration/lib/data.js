@@ -178,19 +178,6 @@ module.exports = [
         modified: '2018-01-01T12:00:00.000Z',
         prop: 'value',
         company: ID,
-        surveySections: [ID]
-      }
-    ]
-  },
-  {
-    name: 'surveySections',
-    data: [
-      {
-        _key: ID,
-        created: '2018-01-01T12:00:00.000Z',
-        modified: '2018-01-01T12:00:00.000Z',
-        prop: 'value',
-        survey: ID,
         surveyQuestions: [ID]
       }
     ]
@@ -203,7 +190,7 @@ module.exports = [
         created: '2018-01-01T12:00:00.000Z',
         modified: '2018-01-01T12:00:00.000Z',
         prop: 'value',
-        surveySection: ID
+        survey: ID
       }
     ]
   },

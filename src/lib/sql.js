@@ -11,6 +11,7 @@ const TABLES = {
   APPLICATIONS: 'applications',
   COMPANIES: 'companies',
   COMPANY_SURVEYS: 'companySurveys',
+  COMPANY_INTEGRATIONS: 'companyIntegrations',
   CONNECTIONS: 'connections',
   CONVERSATIONS: 'conversations',
   CURRENT_EMPLOYMENTS: 'currentEmployments',
@@ -66,6 +67,11 @@ const FIELDS = {
     URL: 'url',
     CLIENT: 'client',
     HASH: 'hash'
+  },
+  [TABLES.COMPANY_INTEGRATIONS]: {
+    TYPE: 'type',
+    COMPANY: 'company',
+    DATA: 'data'
   },
   [TABLES.CONNECTIONS]: {
     FIRST_NAME: 'firstName',
@@ -245,7 +251,8 @@ const ENUMS = {
   DATA_SOURCES: createEnumDefinition(['MANUAL', 'LINKEDIN', 'SURVEY', 'NUDJ']),
   ACCOUNT_TYPES: createEnumDefinition(['GOOGLE', 'OTHER']),
   QUESTION_TYPES: createEnumDefinition(['CONNECTIONS', 'COMPANIES']),
-  TAG_TYPES: createEnumDefinition(['EXPERTISE', 'SENIORITY'])
+  TAG_TYPES: createEnumDefinition(['EXPERTISE', 'SENIORITY']),
+  COMPANY_INTEGRATION_TYPES: createEnumDefinition(['GREENHOUSE', 'OTHER'])
 }
 const INDICES = merge(
   reduce(TABLES, (indexes, tableName) => {

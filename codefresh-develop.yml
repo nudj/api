@@ -16,7 +16,7 @@ steps:
     type: push
     candidate: ${{build}}
     tag: latest
-    provider: 'ecr'
+    provider: ecr
     registry: ecr
     accessKeyId: ${{AWS_ACCESS_KEY_ID}}
     secretAccessKey: ${{AWS_SECRET_ACCESS_KEY}}

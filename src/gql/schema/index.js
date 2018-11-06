@@ -38,6 +38,7 @@ const modules = [
   require('./company/surveyOrDefault'),
   require('./company/surveys'),
   require('./company/surveysByFilters'),
+  require('./company/updateIntegration'),
   require('./company/updateJob'),
   require('./connection'),
   require('./connection/company'),

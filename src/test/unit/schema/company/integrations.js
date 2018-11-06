@@ -23,7 +23,7 @@ const baseData = {
 describe('Company.integrations', () => {
   it('should fetch all integrations relating to the company', async () => {
     const db = merge(baseData, {
-      integrations: [
+      companyIntegrations: [
         {
           id: 'integration1',
           company: 'company1'
@@ -58,7 +58,7 @@ describe('Company.integrations', () => {
 
   it('should return empty array if no matches', async () => {
     const db = merge(baseData, {
-      integrations: [
+      companyIntegrations: [
         {
           id: 'integration1',
           company: 'company2'

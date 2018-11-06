@@ -16,7 +16,7 @@ const operation = `
   }
 `
 
-describe.only('Company.createIntegration', () => {
+describe('Company.createIntegration', () => {
   let variables
   let db
 

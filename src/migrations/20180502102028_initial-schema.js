@@ -45,7 +45,8 @@ exports.up = async knex => {
         LOGO,
         URL,
         CLIENT,
-        HASH
+        HASH,
+        ATS
       } = FIELDS[TABLES.COMPANIES]
 
       defaultConfig(table, knex)
@@ -60,6 +61,7 @@ exports.up = async knex => {
       table.boolean(CLIENT).defaultTo(false).notNullable()
       table.unique(NAME, INDICES[TABLES.COMPANIES][NAME].name)
       table.unique(SLUG, INDICES[TABLES.COMPANIES][SLUG].name)
+      table.enum(ATS, ENUMS.COMPANY_INTEGRATION_TYPES.values).nullable()
     })
 
     .createTable(TABLES.JOBS, table => {
@@ -535,6 +537,20 @@ exports.up = async knex => {
       relationType(PERSON, TABLES.PEOPLE, table, knex).notNullable()
       relationType(CANDIDATE, TABLES.PEOPLE, table, knex).notNullable()
       table.text(NOTES).notNullable()
+    })
+
+    .createTable(TABLES.COMPANY_INTEGRATIONS, table => {
+      const {
+        COMPANY,
+        TYPE,
+        DATA
+      } = FIELDS[TABLES.COMPANY_INTEGRATIONS]
+
+      defaultConfig(table, knex)
+      defaultFields(table, knex)
+      relationType(COMPANY, TABLES.COMPANY, table, knex).notNullable()
+      table.enum(TYPE, ENUMS.COMPANY_INTEGRATION_TYPES.values).notNullable()
+      table.json(DATA).notNullable().comment('Object of integration authorisation secrets')
     })
 }
 

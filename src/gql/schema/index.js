@@ -23,6 +23,7 @@ const modules = [
   require('./company/createJobAndOnboardHirer'),
   require('./company/deleteHirer'),
   require('./company/deleteIntegration'),
+  require('./company/hirer'),
   require('./company/hirers'),
   require('./company/integrations'),
   require('./company/inviteMembers'),

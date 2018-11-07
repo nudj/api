@@ -2,15 +2,15 @@ version: '1.0'
 
 steps:
 
-  github_release:
-    title: Github Release
-    description: Release the latest tag on Github
-    image: nudj/create-github-release
-    working_directory: 'IMAGE_WORK_DIR'
-    environment:
-      - TOKEN=${{GITHUB_ACCESS_TOKEN}}
-    commands:
-      - /bin/sh -c "node . ${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}"
+  # github_release:
+  #   title: Github Release
+  #   description: Release the latest tag on Github
+  #   image: nudj/create-github-release
+  #   working_directory: 'IMAGE_WORK_DIR'
+  #   environment:
+  #     - TOKEN=${{GITHUB_ACCESS_TOKEN}}
+  #   commands:
+  #     - /bin/sh -c "node . ${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}"
 
   build:
     title: Build
@@ -26,25 +26,21 @@ steps:
     type: push
     candidate: ${{build}}
     tag: ${{CF_BRANCH}}
-    provider: 'ecr'
     registry: ecr
-    accessKeyId: ${{AWS_ACCESS_KEY_ID}}
-    secretAccessKey: ${{AWS_SECRET_ACCESS_KEY}}
-    region: ${{AWS_DEFAULT_REGION}}
 
-  publish:
-    title: Publish package to npm
-    image: ${{build_production}}
-    working_directory: 'IMAGE_WORK_DIR'
-    environment:
-      - NPM_TOKEN=${{NPM_TOKEN}}
-    commands:
-      - npm --no-git-tag-version version ${{CF_BRANCH}}
-      - npm publish
-
-  deploy:
-    image: nudj/devops:aws
-    working_directory: IMAGE_WORK_DIR
-    description: Deploy web service
-    commands:
-      - ./scripts/deploy-service.sh -e production -c api -v core-vpc
+  # publish:
+  #   title: Publish package to npm
+  #   image: ${{build_production}}
+  #   working_directory: 'IMAGE_WORK_DIR'
+  #   environment:
+  #     - NPM_TOKEN=${{NPM_TOKEN}}
+  #   commands:
+  #     - npm --no-git-tag-version version ${{CF_BRANCH}}
+  #     - npm publish
+  #
+  # deploy:
+  #   image: nudj/devops:aws
+  #   working_directory: IMAGE_WORK_DIR
+  #   description: Deploy web service
+  #   commands:
+  #     - ./scripts/deploy-service.sh -e production -c api -v core-vpc

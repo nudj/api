@@ -88,13 +88,11 @@ describe('Job.getOrCreatePersonAndReferral', () => {
     })
 
     it('should create the referral', async () => {
-      expect(db)
-        .to.have.deep.property('referrals.0')
-        .to.deep.equal({
-          id: 'referral1',
-          job: 'job1',
-          person: 'person1'
-        })
+      expect(db).to.have.deep.property('referrals.0')
+      expect(db.referrals[0]).to.have.property('id').to.equal('referral1')
+      expect(db.referrals[0]).to.have.property('job').to.equal('job1')
+      expect(db.referrals[0]).to.have.property('person').to.equal('person1')
+      expect(db.referrals[0]).to.have.property('slug').to.match(/^[a-z0-9]{10}$/)
     })
 
     it('should return the referral', async () => {
@@ -158,14 +156,12 @@ describe('Job.getOrCreatePersonAndReferral', () => {
     })
 
     it('should create the referral', async () => {
-      expect(db)
-        .to.have.deep.property('referrals.1')
-        .to.deep.equal({
-          id: 'referral2',
-          job: 'job1',
-          person: 'person1',
-          parent: 'referral1'
-        })
+      expect(db).to.have.deep.property('referrals.1')
+      expect(db.referrals[1]).to.have.property('id').to.equal('referral2')
+      expect(db.referrals[1]).to.have.property('job').to.equal('job1')
+      expect(db.referrals[1]).to.have.property('person').to.equal('person1')
+      expect(db.referrals[1]).to.have.property('parent').to.equal('referral1')
+      expect(db.referrals[1]).to.have.property('slug').to.match(/^[a-z0-9]{10}$/)
     })
 
     it('should return the referral', async () => {
@@ -227,13 +223,12 @@ describe('Job.getOrCreatePersonAndReferral', () => {
     })
 
     it('should create the referral with null referral', async () => {
-      expect(db)
-        .to.have.deep.property('referrals.0')
-        .to.deep.equal({
-          id: 'referral1',
-          job: 'job1',
-          person: 'person1'
-        })
+      expect(db).to.have.deep.property('referrals.0')
+      expect(db.referrals[0]).to.have.property('id').to.equal('referral1')
+      expect(db.referrals[0]).to.have.property('job').to.equal('job1')
+      expect(db.referrals[0]).to.have.property('person').to.equal('person1')
+      expect(db.referrals[0]).to.not.have.property('parent')
+      expect(db.referrals[0]).to.have.property('slug').to.match(/^[a-z0-9]{10}$/)
     })
 
     it('should return the referral with null referral', async () => {
@@ -361,13 +356,11 @@ describe('Job.getOrCreatePersonAndReferral', () => {
     })
 
     it('should create the referral', async () => {
-      expect(db)
-        .to.have.deep.property('referrals.0')
-        .to.deep.equal({
-          id: 'referral1',
-          job: 'job1',
-          person: 'person1'
-        })
+      expect(db).to.have.deep.property('referrals.0')
+      expect(db.referrals[0]).to.have.property('id').to.equal('referral1')
+      expect(db.referrals[0]).to.have.property('job').to.equal('job1')
+      expect(db.referrals[0]).to.have.property('person').to.equal('person1')
+      expect(db.referrals[0]).to.have.property('slug').to.match(/^[a-z0-9]{10}$/)
     })
 
     it('should return the referral', async () => {

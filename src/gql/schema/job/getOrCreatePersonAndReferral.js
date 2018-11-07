@@ -1,6 +1,7 @@
 const omit = require('lodash/omit')
 
 const mailer = require('../../lib/mailer')
+const { random: randomSlugGenerator } = require('../../../lib/slug-generators')
 
 module.exports = {
   typeDefs: `
@@ -38,7 +39,8 @@ module.exports = {
 
         const referralData = {
           job: job.id,
-          person: person.id
+          person: person.id,
+          slug: randomSlugGenerator()
         }
 
         if (parent) {

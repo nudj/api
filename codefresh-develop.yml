@@ -16,15 +16,11 @@ steps:
     type: push
     candidate: ${{build}}
     tag: latest
-    provider: ecr
     registry: ecr
-    accessKeyId: ${{AWS_ACCESS_KEY_ID}}
-    secretAccessKey: ${{AWS_SECRET_ACCESS_KEY}}
-    region: ${{AWS_DEFAULT_REGION}}
 
-  deploy:
-    image: nudj/devops:aws
-    working_directory: IMAGE_WORK_DIR
-    description: Deploy web service
-    commands:
-      - ./scripts/deploy-service.sh -e staging -c api -v core-vpc
+  # deploy:
+  #   image: nudj/devops:aws
+  #   working_directory: IMAGE_WORK_DIR
+  #   description: Deploy web service
+  #   commands:
+  #     - ./scripts/deploy-service.sh -e staging -c api -v core-vpc

@@ -65,7 +65,9 @@ const FIELDS = {
     LOGO: 'logo',
     URL: 'url',
     CLIENT: 'client',
-    HASH: 'hash'
+    HASH: 'hash',
+    ONBOARDED: 'onboarded',
+    ATS: 'ats'
   },
   [TABLES.COMPANY_INTEGRATIONS]: {
     TYPE: 'type',
@@ -118,7 +120,6 @@ const FIELDS = {
     URL: 'url',
     LOCATION: 'location',
     REMUNERATION: 'remuneration',
-    TEMPLATE: 'template',
     DESCRIPTION: 'description',
     CANDIDATE_DESCRIPTION: 'candidateDescription',
     ROLE_DESCRIPTION: 'roleDescription',

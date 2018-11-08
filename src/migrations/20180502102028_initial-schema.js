@@ -46,6 +46,7 @@ exports.up = async knex => {
         URL,
         CLIENT,
         HASH,
+        ONBOARDED,
         ATS
       } = FIELDS[TABLES.COMPANIES]
 
@@ -59,6 +60,7 @@ exports.up = async knex => {
       urlType(LOGO, table, knex).nullable()
       urlType(URL, table, knex).nullable()
       table.boolean(CLIENT).defaultTo(false).notNullable()
+      table.boolean(ONBOARDED).defaultTo(false).notNullable()
       table.unique(NAME, INDICES[TABLES.COMPANIES][NAME].name)
       table.unique(SLUG, INDICES[TABLES.COMPANIES][SLUG].name)
       table.enum(ATS, ENUMS.COMPANY_INTEGRATION_TYPES.values).nullable()
@@ -71,7 +73,6 @@ exports.up = async knex => {
         URL,
         LOCATION,
         REMUNERATION,
-        TEMPLATE,
         DESCRIPTION,
         CANDIDATE_DESCRIPTION,
         ROLE_DESCRIPTION,
@@ -89,7 +90,6 @@ exports.up = async knex => {
       urlType(URL, table, knex).nullable()
       table.string(LOCATION).nullable()
       table.string(REMUNERATION).nullable()
-      table.string(TEMPLATE).nullable()
       table.text(DESCRIPTION).nullable()
       table.text(CANDIDATE_DESCRIPTION).nullable()
       table.text(ROLE_DESCRIPTION).nullable()
@@ -529,7 +529,7 @@ exports.up = async knex => {
 
       defaultConfig(table, knex)
       defaultFields(table, knex)
-      relationType(COMPANY, TABLES.COMPANY, table, knex).notNullable()
+      relationType(COMPANY, TABLES.COMPANIES, table, knex).notNullable()
       table.enum(TYPE, ENUMS.COMPANY_INTEGRATION_TYPES.values).notNullable()
       table.json(DATA).notNullable().comment('Object of integration authorisation secrets')
     })
@@ -537,6 +537,7 @@ exports.up = async knex => {
 
 exports.down = async knex => {
   await knex.schema
+    .dropTable(TABLES.COMPANY_INTEGRATIONS)
     .dropTable(TABLES.INTROS)
     .dropTable(TABLES.REFERRAL_KEY_TO_SLUG_MAP)
     .dropTable(TABLES.MESSAGE_EVENTS)

@@ -70,9 +70,6 @@ const FIELD_TO_PATH = {
   [TABLES.ACCOUNTS]: {
     [FIELDS[TABLES.ACCOUNTS].EMAIL]: 'emailAddress'
   },
-  [TABLES.JOBS]: {
-    [FIELDS[TABLES.JOBS].TEMPLATE]: 'templateTags.0'
-  },
   [TABLES.JOB_VIEW_EVENTS]: {
     [FIELDS[TABLES.JOB_VIEW_EVENTS].JOB]: 'entityId'
   }

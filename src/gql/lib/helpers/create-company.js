@@ -1,6 +1,8 @@
 const omitBy = require('lodash/omitBy')
 const omit = require('lodash/omit')
 const isUndefined = require('lodash/isUndefined')
+const mapKeys = require('lodash/mapKeys')
+const camelCase = require('lodash/camelCase')
 const generateHash = require('hash-generator')
 
 const makeUniqueSlug = require('./make-unique-slug')
@@ -43,7 +45,7 @@ const createCompany = async (context, companyData, options = {}) => {
   enrichOrFetchEnrichedCompanyByName(company, context)
 
   if (options.createDummyData) {
-    // Fetch dummy job copy
+    // Create dummy job
     const [ jobData ] = await prismic.fetchContent({
       type: 'mock-job',
       tags: ['mock-job'],
@@ -61,11 +63,11 @@ const createCompany = async (context, companyData, options = {}) => {
       status: jobStatusTypes.DRAFT
     })
 
+    // Create dummy application
     const dummyApplicant = await context.store.readOne({
       type: 'people',
       filters: { email: DUMMY_APPLICANT_EMAIL_ADDRESS }
     })
-
     await context.store.create({
       type: 'applications',
       data: {
@@ -74,6 +76,51 @@ const createCompany = async (context, companyData, options = {}) => {
         referral: null
       }
     })
+
+    // Create default survey
+    const [ defaultSurvey ] = await prismic.fetchContent({
+      type: 'default-survey',
+      tags: ['default-survey'],
+      keys: {
+        title: 'introTitle',
+        slug: 'slug',
+        description: 'introDescription',
+        questions: 'questions'
+      }
+    })
+    const survey = await context.store.create({
+      type: 'surveys',
+      data: mapKeys(omit(defaultSurvey, [
+        'questions',
+        'tags'
+      ]), (value, key) => camelCase(key))
+    })
+    const questions = await Promise.all(defaultSurvey.questions.map(question => {
+      return context.store.create({
+        type: 'surveyQuestions',
+        data: {
+          ...question,
+          survey: survey.id,
+          required: true
+        }
+      })
+    }))
+    await Promise.all([
+      context.store.update({
+        type: 'surveys',
+        id: survey.id,
+        data: {
+          questions: questions.map(q => q.id)
+        }
+      }),
+      context.store.create({
+        type: 'companySurveys',
+        data: {
+          survey: survey.id,
+          company: company.id
+        }
+      })
+    ])
   }
 
   return company

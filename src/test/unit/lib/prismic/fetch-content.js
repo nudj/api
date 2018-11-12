@@ -12,23 +12,41 @@ const baseArgs = {
   repo: 'web',
   tags: [ 'test' ],
   keys: {
-    testMessage: 'document.testing'
+    testMessage: 'message'
   }
 }
 
 const queryResponse = {
   results: [
     {
-      get: (value) => ({ value: 'Test Value!' }),
+      rawJSON: {
+        testing: {
+          message: {
+            type: 'Text',
+            value: 'Test Value!'
+          }
+        }
+      },
       tags: [ 'test', 'test-thing' ]
     },
     {
-      get: (value) => ({
-        blocks: [
-          { text: 'Super' },
-          { text: 'Test!' }
-        ]
-      }),
+      rawJSON: {
+        testing: {
+          message: {
+            type: 'StructuredText',
+            value: [
+              {
+                type: 'Paragraph',
+                text: 'Super'
+              },
+              {
+                type: 'Paragraph',
+                text: 'Test!'
+              }
+            ]
+          }
+        }
+      },
       tags: [ 'second-test', 'super-test' ]
     }
   ]

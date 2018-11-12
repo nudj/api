@@ -158,6 +158,7 @@ const modules = [
   require('./enums/prismic-repos'),
   require('./enums/recommendation-sources'),
   require('./enums/survey-question-types'),
+  require('./enums/survey-status-types'),
   require('./enums/tag-sources'),
   require('./enums/tag-types'),
   require('./enums/task-types'),

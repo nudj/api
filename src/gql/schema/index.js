@@ -42,6 +42,8 @@ const modules = [
   require('./company/updateIntegration'),
   require('./company/updateJob'),
   require('./companyIntegration'),
+  require('./companyIntegration/company'),
+  require('./companyIntegration/verify'),
   require('./connection'),
   require('./connection/company'),
   require('./connection/from'),

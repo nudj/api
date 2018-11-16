@@ -44,7 +44,7 @@ describe('Mutation.updateCompany', () => {
         variables,
         db,
         schema
-      }).then(() => {
+      }).then(result => {
         return expect(db.companies[0]).to.deep.equal({
           id: 'company1',
           name: 'Just Dave Now',

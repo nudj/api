@@ -20,6 +20,7 @@ module.exports = {
       onboarded: Boolean!
       client: Boolean!
       ats: CompanyIntegrationType
+      syncing: Boolean!
     }
 
     input CompanyCreateInput {
@@ -55,6 +56,7 @@ module.exports = {
       onboarded: Boolean
       client: Boolean
       ats: CompanyIntegrationType
+      syncing: Boolean
     }
 
     input CompanyFilterInput {

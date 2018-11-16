@@ -1,6 +1,7 @@
 const axios = require('axios')
 const { Base64 } = require('js-base64')
 const verifyGreenhouseIntegration = require('./verification')
+const syncWithGreenhouse = require('./sync')
 
 function encodeKeys ({ partnerKey, harvestKey }) {
   // Greenhouse API keys are required to be suffixed with a colon and then base64 encoded
@@ -64,7 +65,8 @@ function setupGreenhouseHelper ({ partnerKey, harvestKey, user }) {
   return {
     harvest,
     partner,
-    verify: verifyGreenhouseIntegration({ harvest, partner })
+    verify: verifyGreenhouseIntegration({ harvest, partner }),
+    sync: syncWithGreenhouse({ harvest })
   }
 }
 

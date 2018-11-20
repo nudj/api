@@ -105,7 +105,6 @@ describe('Company.createJob', () => {
         location: 'Mars',
         remuneration: '100000',
         status: jobStatusTypes.PUBLISHED,
-        template: 'film',
         tags: ['CEO', 'FOUNDER'],
         url: 'http://www.spacex.com/careers/position/215244'
       }
@@ -174,7 +173,6 @@ describe('Company.createJob', () => {
       location: 'Mars',
       remuneration: '100000',
       status: jobStatusTypes.PUBLISHED,
-      template: 'film',
       url: 'http://www.spacex.com/careers/position/215244'
     })
   })

@@ -29,7 +29,6 @@ describe('Job properties', () => {
     await expectPropertyReceivesValue('location', DUMMY_STRING)
     await expectPropertyReceivesValue('remuneration', DUMMY_STRING)
     await expectPropertyReceivesValue('status', DUMMY_STATUS)
-    await expectPropertyReceivesValue('template', DUMMY_STRING)
     await expectPropertyReceivesValue('url', DUMMY_STRING)
     await expectPropertyReceivesValue('experience', DUMMY_STRING)
     await expectPropertyReceivesValue('requirements', DUMMY_STRING)

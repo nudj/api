@@ -84,7 +84,6 @@ describe('00011 Arango to MySQL', () => {
                 url: 'https://company.com/job',
                 location: 'London',
                 remuneration: '£5',
-                templateTags: ['some-template'],
                 description: 'A description',
                 candidateDescription: 'A candidate description',
                 roleDescription: 'A role description',
@@ -108,7 +107,6 @@ describe('00011 Arango to MySQL', () => {
                 url: 'https://company.com/job',
                 location: 'London',
                 remuneration: '£5',
-                templateTags: ['some-template'],
                 description: 'A description',
                 candidateDescription: 'A candidate description',
                 roleDescription: 'A role description',
@@ -145,11 +143,6 @@ describe('00011 Arango to MySQL', () => {
         const jobs = await sql.select().from(TABLES.JOBS)
         const companies = await sql.select().from(TABLES.COMPANIES)
         expect(jobs[0]).to.have.property('company', companies[0].id)
-      })
-
-      it('should map templateTags to template', async () => {
-        const jobs = await sql.select().from(TABLES.JOBS)
-        expect(jobs[0]).to.have.property('template', 'some-template')
       })
 
       it('should add entries to relatedJobs', async () => {
@@ -203,7 +196,6 @@ describe('00011 Arango to MySQL', () => {
         expect(records[0]).to.have.property('url', null)
         expect(records[0]).to.have.property('location', null)
         expect(records[0]).to.have.property('remuneration', null)
-        expect(records[0]).to.have.property('template', null)
         expect(records[0]).to.have.property('description', null)
         expect(records[0]).to.have.property('candidateDescription', null)
         expect(records[0]).to.have.property('roleDescription', null)

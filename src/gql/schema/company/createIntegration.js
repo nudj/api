@@ -1,3 +1,6 @@
+const integrationHelpers = require('../../lib/integration-helpers')
+const { values: jobStatusTypes } = require('../enums/job-status-types')
+
 module.exports = {
   typeDefs: `
     extend type Company {
@@ -8,6 +11,7 @@ module.exports = {
     Company: {
       createIntegration: async (company, args, context) => {
         const { data, type } = args
+        const integrationHelper = integrationHelpers[type](data)
 
         const existingIntegration = await context.store.readOne({
           type: 'companyIntegrations',
@@ -20,14 +24,33 @@ module.exports = {
           throw new Error(`Company already has an integration of type "${existingIntegration.type}"`)
         }
 
-        const integration = await context.store.create({
-          type: 'companyIntegrations',
-          data: {
-            company: company.id,
-            type,
-            data
-          }
-        })
+        // Verify credentials
+        await integrationHelper.verify()
+
+        const [ integration, companyJobs ] = await Promise.all([
+          context.store.create({
+            type: 'companyIntegrations',
+            data: {
+              company: company.id,
+              type,
+              data
+            }
+          }),
+          context.store.readAll({
+            type: 'jobs',
+            filters: { company: company.id }
+          })
+        ])
+
+        // Set all jobs currently on nudj to `BACKUP` state
+        await Promise.all(companyJobs.map(job => context.store.update({
+          type: 'jobs',
+          id: job.id,
+          data: { status: jobStatusTypes.BACKUP }
+        })))
+
+        // Sync integration
+        await integrationHelper.sync(context)
 
         await context.store.update({
           type: 'companies',

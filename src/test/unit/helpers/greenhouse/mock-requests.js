@@ -83,6 +83,18 @@ function mockGreenhouseAPIRequests (props = {}) {
     .get('/v1/partner/current_user')
     .query(() => true)
     .reply(200)
+
+  // Generic Harvest API requests
+  nock('https://harvest.greenhouse.io')
+    .persist()
+    .get('/v1/job_posts')
+    .query(() => true)
+    .reply(200, [])
+  nock('https://harvest.greenhouse.io')
+    .persist()
+    .get('/v1/jobs')
+    .query(() => true)
+    .reply(200, [])
 }
 
 module.exports = {

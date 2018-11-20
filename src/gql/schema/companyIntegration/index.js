@@ -10,7 +10,7 @@ module.exports = {
 
     input CompanyIntegrationFilterInput {
       id: ID
-      type: String
+      type: CompanyIntegrationType
     }
   `
 }

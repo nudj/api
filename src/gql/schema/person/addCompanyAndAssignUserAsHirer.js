@@ -51,34 +51,48 @@ module.exports = {
           })
         }
 
-        const currentEmployment = await context.sql.readOne({
-          type: 'employments',
-          filters: {
-            person: person.id,
-            current: true
-          }
-        })
-
-        const employedWithOtherCompany = currentEmployment && currentEmployment.company !== company.id
-
-        if (employedWithOtherCompany) {
-          await context.sql.update({
+        const [
+          employment,
+          currentEmployment
+        ] = await Promise.all([
+          context.sql.readOneOrCreate({
             type: 'employments',
-            id: currentEmployment.id,
-            data: {
-              current: false
-            }
-          })
-        }
-
-        if (!currentEmployment || employedWithOtherCompany) {
-          await context.sql.create({
-            type: 'employments',
+            filters: {
+              person: person.id,
+              company: company.id
+            },
             data: {
               person: person.id,
               company: company.id,
-              current: true,
               source: dataSources.NUDJ
+            }
+          }),
+          context.sql.readOne({
+            type: 'currentEmployments',
+            filters: {
+              person: person.id
+            }
+          })
+        ])
+
+        if (currentEmployment) {
+          const currentlyEmployedWithOtherCompany = currentEmployment && currentEmployment.company !== company.id
+
+          if (currentlyEmployedWithOtherCompany) {
+            await context.sql.update({
+              type: 'currentEmployments',
+              id: currentEmployment.id,
+              data: {
+                employment: employment.id
+              }
+            })
+          }
+        } else {
+          await context.sql.create({
+            type: 'currentEmployments',
+            data: {
+              person: person.id,
+              employment: employment.id
             }
           })
         }

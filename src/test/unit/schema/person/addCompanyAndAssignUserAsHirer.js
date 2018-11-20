@@ -71,7 +71,8 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
               company: 'company1'
             }
           ],
-          employments: []
+          employments: [],
+          currentEmployments: []
         }
 
         const result = await executeQueryOnDbUsingSchema({
@@ -106,7 +107,8 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
               company: 'company1'
             }
           ],
-          employments: []
+          employments: [],
+          currentEmployments: []
         }
 
         await executeQueryOnDbUsingSchema({
@@ -142,7 +144,8 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
               company: 'company1'
             }
           ],
-          employments: []
+          employments: [],
+          currentEmployments: []
         }
 
         await executeQueryOnDbUsingSchema({
@@ -175,7 +178,8 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
               }
             ],
             hirers: [],
-            employments: []
+            employments: [],
+            currentEmployments: []
           }
 
           await executeQueryOnDbUsingSchema({
@@ -199,7 +203,8 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
               }
             ],
             hirers: [],
-            employments: []
+            employments: [],
+            currentEmployments: []
           }
 
           const result = await executeQueryOnDbUsingSchema({
@@ -227,7 +232,8 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
               }
             ],
             hirers: [],
-            employments: []
+            employments: [],
+            currentEmployments: []
           }
 
           await executeQueryOnDbUsingSchema({
@@ -260,7 +266,8 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
               }
             ],
             hirers: [],
-            employments: []
+            employments: [],
+            currentEmployments: []
           }
 
           await executeQueryOnDbUsingSchema({
@@ -276,7 +283,6 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
               id: 'employment1',
               person: 'person1',
               company: 'company1',
-              current: true,
               source: dataSources.NUDJ
             }
           ])
@@ -293,7 +299,8 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
               }
             ],
             hirers: [],
-            employments: []
+            employments: [],
+            currentEmployments: []
           }
 
           await executeQueryOnDbUsingSchema({
@@ -313,7 +320,7 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
   describe('when company does not exist', async () => {
     describe('when a current employment exists', () => {
       describe('when employed with a different company', () => {
-        it('updates the current employment to `current: false`', async () => {
+        it('updates the current employment with the new employment', async () => {
           const db = {
             ...baseDb,
             companies: [
@@ -328,8 +335,14 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
               {
                 id: 'employment1',
                 person: 'person1',
-                company: 'company2',
-                current: true
+                company: 'company2'
+              }
+            ],
+            currentEmployments: [
+              {
+                id: 'currentEmployment1',
+                person: 'person1',
+                employment: 'employment1'
               }
             ]
           }
@@ -341,9 +354,9 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
             variables
           })
 
-          const oldEmployment = find(db.employments, { company: 'company2' })
+          const currentEmployment = db.currentEmployments[0]
 
-          expect(oldEmployment).to.have.property('current').to.be.false()
+          expect(currentEmployment).to.have.property('employment').to.equal('employment2')
         })
 
         it('creates an employment', async () => {
@@ -361,8 +374,14 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
               {
                 id: 'employment1',
                 person: 'person1',
-                company: 'company2',
-                current: true
+                company: 'company2'
+              }
+            ],
+            currentEmployments: [
+              {
+                id: 'currentEmployment1',
+                person: 'person1',
+                employment: 'employment1'
               }
             ]
           }
@@ -377,7 +396,12 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
           const newEmployment = find(db.employments, { id: 'employment2' })
 
           expect(db.employments.length).to.equal(2)
-          expect(newEmployment).to.have.property('current').to.be.true()
+          expect(newEmployment).to.deep.equal({
+            id: 'employment2',
+            person: 'person1',
+            company: 'company1',
+            source: dataSources.NUDJ
+          })
         })
       })
 
@@ -397,8 +421,14 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
               {
                 id: 'employment1',
                 person: 'person1',
-                company: 'company1',
-                current: true
+                company: 'company1'
+              }
+            ],
+            currentEmployments: [
+              {
+                id: 'currentEmployment1',
+                person: 'person1',
+                employment: 'employment1'
               }
             ]
           }
@@ -427,7 +457,8 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
             }
           ],
           hirers: [],
-          employments: []
+          employments: [],
+          currentEmployments: []
         }
 
         await executeQueryOnDbUsingSchema({
@@ -443,8 +474,39 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
             id: 'employment1',
             person: 'person1',
             company: 'company1',
-            current: true,
             source: dataSources.NUDJ
+          }
+        ])
+      })
+
+      it('creates a currentEmployment', async () => {
+        const db = {
+          ...baseDb,
+          companies: [
+            {
+              id: 'company1',
+              client: false,
+              name: 'Fake Company'
+            }
+          ],
+          hirers: [],
+          employments: [],
+          currentEmployments: []
+        }
+
+        await executeQueryOnDbUsingSchema({
+          operation,
+          db,
+          schema,
+          variables
+        })
+
+        expect(db.currentEmployments.length).to.equal(1)
+        expect(db.currentEmployments).to.deep.equal([
+          {
+            id: 'currentEmployment1',
+            person: 'person1',
+            employment: 'employment1'
           }
         ])
       })
@@ -455,7 +517,8 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
         ...baseDb,
         companies: [],
         hirers: [],
-        employments: []
+        employments: [],
+        currentEmployments: []
       }
 
       await executeQueryOnDbUsingSchema({
@@ -485,7 +548,8 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
           ...baseDb,
           companies: [],
           hirers: [],
-          employments: []
+          employments: [],
+          currentEmployments: []
         }
 
         await executeQueryOnDbUsingSchema({
@@ -502,7 +566,8 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
           ...baseDb,
           companies: [],
           hirers: [],
-          employments: []
+          employments: [],
+          currentEmployments: []
         }
 
         await executeQueryOnDbUsingSchema({
@@ -530,7 +595,8 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
           }
         ],
         hirers: [],
-        employments: []
+        employments: [],
+        currentEmployments: []
       }
 
       await executeQueryOnDbUsingSchema({
@@ -552,7 +618,8 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
         ...baseDb,
         companies: [],
         hirers: [],
-        employments: []
+        employments: [],
+        currentEmployments: []
       }
 
       await executeQueryOnDbUsingSchema({
@@ -579,7 +646,8 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
         ...baseDb,
         companies: [],
         hirers: [],
-        employments: []
+        employments: [],
+        currentEmployments: []
       }
 
       const result = await executeQueryOnDbUsingSchema({
@@ -605,7 +673,8 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
         jobs: [],
         companies: [],
         hirers: [],
-        employments: []
+        employments: [],
+        currentEmployments: []
       }
       await executeQueryOnDbUsingSchema({
         operation,
@@ -632,7 +701,8 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
         jobs: [],
         companies: [],
         hirers: [],
-        employments: []
+        employments: [],
+        currentEmployments: []
       }
       await executeQueryOnDbUsingSchema({
         operation,

@@ -13,7 +13,6 @@ module.exports = {
       location: String
       remuneration: String
       status: JobStatus!
-      template: String
       url: String
       experience: String
       labels: [String!]
@@ -28,7 +27,6 @@ module.exports = {
       location: String
       remuneration: String
       status: JobStatus!
-      template: String
       url: String
       experience: String
       requirements: String
@@ -47,7 +45,6 @@ module.exports = {
       location: String
       remuneration: String
       status: JobStatus
-      template: String
       url: String
       experience: String
       requirements: String

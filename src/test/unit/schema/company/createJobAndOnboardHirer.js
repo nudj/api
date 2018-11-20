@@ -55,7 +55,6 @@ const variables = {
     location: 'Mars',
     remuneration: '100000',
     status: 'PUBLISHED',
-    template: 'film',
     tags: ['CEO', 'FOUNDER'],
     url: 'http://www.spacex.com/careers/position/215244'
   }
@@ -120,7 +119,6 @@ describe('Company.createJobAndOnboardHirer', () => {
       location: 'Mars',
       remuneration: '100000',
       status: 'PUBLISHED',
-      template: 'film',
       url: 'http://www.spacex.com/careers/position/215244'
     })
   })

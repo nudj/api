@@ -106,6 +106,11 @@ const domainBlacklist = [
   'bigpond.net.au'
 ]
 
+const NO_MATCH = {
+  company: null,
+  enrichedCompany: null
+}
+
 module.exports = {
   typeDefs: `
     extend type Mutation {
@@ -120,14 +125,12 @@ module.exports = {
 
         if (domainBlacklist.includes(domain)) {
           logger('info', 'Blacklisted domain enrichment', domain)
-
-          return {
-            company: null,
-            enrichedCompany: null
-          }
+          return NO_MATCH
         }
 
-        return enrichCompanyByDomain(domain)
+        const result = await enrichCompanyByDomain(domain)
+
+        return result || NO_MATCH
       }
     }
   }

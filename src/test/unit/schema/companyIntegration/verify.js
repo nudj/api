@@ -33,14 +33,17 @@ const baseDB = {
 }
 
 const operation = `
-  query {
+  query verifyIntegration ($type: CompanyIntegrationType) {
     company (id: "company1") {
-      integrationByFilters (filters: { type: "GREENHOUSE" }) {
+      integrationByFilters (filters: { type: $type }) {
         verify
       }
     }
   }
 `
+const variables = {
+  type: 'GREENHOUSE'
+}
 
 describe('CompanyIntegration.verify', () => {
   beforeEach(() => {
@@ -54,7 +57,7 @@ describe('CompanyIntegration.verify', () => {
     describe('when the integration credentials are correct', () => {
       it('returns true', () => {
         const db = clone(baseDB)
-        return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
+        return expect(executeQueryOnDbUsingSchema({ operation, db, schema, variables })).to.eventually.deep.equal({
           data: {
             company: {
               integrationByFilters: {
@@ -84,7 +87,7 @@ describe('CompanyIntegration.verify', () => {
       }
 
       it('throws an error', async () => {
-        const result = await executeQueryOnDbUsingSchema({ operation, db, schema })
+        const result = await executeQueryOnDbUsingSchema({ operation, db, schema, variables })
         shouldRespondWithGqlError({
           message: 'Verification failed',
           locations: [{ line: 4, column: 7 }],

@@ -1,4 +1,4 @@
-const integrationHelpers = require('../../lib/integration-helpers')
+const fetchIntegrationHelper = require('../../lib/fetch-integration-helper')
 
 module.exports = {
   typeDefs: `

@@ -1,4 +1,4 @@
-const integrationHelpers = require('../../lib/integration-helpers')
+const fetchIntegrationHelper = require('../../lib/fetch-integration-helper')
 const { values: jobStatusTypes } = require('../enums/job-status-types')
 
 module.exports = {
@@ -11,7 +11,7 @@ module.exports = {
     Company: {
       createIntegration: async (company, args, context) => {
         const { data, type } = args
-        const integrationHelper = integrationHelpers[type](data)
+        const integrationHelper = fetchIntegrationHelper({ type, data })
 
         const existingIntegration = await context.store.readOne({
           type: 'companyIntegrations',

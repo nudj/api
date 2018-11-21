@@ -1,3 +1,5 @@
+const integrationHelpers = require('../../lib/integration-helpers')
+
 module.exports = {
   typeDefs: `
     extend type Company {
@@ -16,6 +18,11 @@ module.exports = {
         if (!integration) {
           throw new Error(`companyIntegration with id "${id}" does not exist`)
         }
+
+        const data = args.data || integration.data
+        const integrationHelper = fetchIntegrationHelper({ type: integration.type, data })
+
+        await integrationHelper.verify()
 
         return context.store.update({
           type: 'companyIntegrations',

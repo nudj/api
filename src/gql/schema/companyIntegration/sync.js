@@ -1,4 +1,4 @@
-const integrationHelpers = require('../../lib/integration-helpers')
+const fetchIntegrationHelper = require('../../lib/fetch-integration-helper')
 
 module.exports = {
   typeDefs: `
@@ -8,11 +8,10 @@ module.exports = {
   `,
   resolvers: {
     CompanyIntegration: {
-      sync: async (companyIntegration, args, context) => {
-        const { type, data } = companyIntegration
-        const integration = integrationHelpers[type](data)
+      sync: async (integration, args, context) => {
+        const integrationHelper = fetchIntegrationHelper(integration)
 
-        await integration.sync(context)
+        await integrationHelper.sync(context)
         return true
       }
     }

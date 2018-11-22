@@ -22,7 +22,7 @@ module.exports = {
         return context.sql.readOne({
           type: 'referrals',
           index: INDICES[TABLES.REFERRALS].slug,
-          key: slugMap.jobSlug
+          key: slugMap.slug
         })
       }
     }

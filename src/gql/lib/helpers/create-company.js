@@ -9,7 +9,7 @@ const makeUniqueSlug = require('./make-unique-slug')
 const createJob = require('./create-job')
 const prismic = require('../prismic')
 const { enrichOrFetchEnrichedCompanyByName } = require('../clearbit')
-const { DUMMY_APPLICANT_EMAIL_ADDRESS } = require('../constants')
+const { DUMMY_APPLICANT } = require('../constants')
 const { values: jobStatusTypes } = require('../../schema/enums/job-status-types')
 
 const createCompany = async (context, companyData, options = {}) => {
@@ -60,9 +60,10 @@ const createCompany = async (context, companyData, options = {}) => {
       status: jobStatusTypes.DRAFT
     })
 
-    const dummyApplicant = await context.sql.readOne({
+    const dummyApplicant = await context.sql.readOneOrCreate({
       type: 'people',
-      filters: { email: DUMMY_APPLICANT_EMAIL_ADDRESS }
+      filters: { email: DUMMY_APPLICANT.email },
+      data: DUMMY_APPLICANT
     })
 
     await context.sql.create({

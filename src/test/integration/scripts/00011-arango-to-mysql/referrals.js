@@ -171,13 +171,13 @@ describe('00011 Arango to MySQL', () => {
           referralKey: 'referral1'
         })
         expect(referral1IdMap[0]).to.exist()
-        expect(referral1IdMap[0]).to.have.property('jobSlug', referrals[0].slug)
+        expect(referral1IdMap[0]).to.have.property('slug', referrals[0].slug)
 
         const referral2IdMap = await sql.select().from(TABLES.REFERRAL_KEY_TO_SLUG_MAP).where({
           referralKey: 'referral2'
         })
         expect(referral2IdMap[0]).to.exist()
-        expect(referral2IdMap[0]).to.have.property('jobSlug', referrals[1].slug)
+        expect(referral2IdMap[0]).to.have.property('slug', referrals[1].slug)
       })
     })
   })

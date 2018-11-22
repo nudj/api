@@ -495,13 +495,13 @@ exports.up = async knex => {
     .createTable(TABLES.REFERRAL_KEY_TO_SLUG_MAP, table => {
       const {
         REFERRAL_KEY,
-        JOB_SLUG
+        SLUG
       } = FIELDS[TABLES.REFERRAL_KEY_TO_SLUG_MAP]
 
       defaultConfig(table, knex)
       table.string(REFERRAL_KEY).primary('byReferralKey')
-      table.string(JOB_SLUG).notNullable()
-      table.unique(JOB_SLUG, INDICES[TABLES.REFERRAL_KEY_TO_SLUG_MAP][JOB_SLUG].name)
+      table.string(SLUG).notNullable()
+      table.unique(SLUG, INDICES[TABLES.REFERRAL_KEY_TO_SLUG_MAP][SLUG].name)
     })
 
     .createTable(TABLES.INTROS, table => {

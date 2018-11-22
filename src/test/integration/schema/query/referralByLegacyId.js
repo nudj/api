@@ -111,7 +111,7 @@ describe('Query.referralByLegacyId', () => {
           data: [
             {
               referralKey: '30810601',
-              jobSlug: '1234567890'
+              slug: '1234567890'
             }
           ]
         }
@@ -151,7 +151,7 @@ describe('Query.referralByLegacyId', () => {
           data: [
             {
               referralKey: '745cbb4b67a4d37caadb09f438da7322',
-              jobSlug: '1234567890'
+              slug: '1234567890'
             }
           ]
         }
@@ -191,7 +191,7 @@ describe('Query.referralByLegacyId', () => {
           data: [
             {
               referralKey: '745cbb4b67a4d37caadb09f438da7322',
-              jobSlug: '1234567890'
+              slug: '1234567890'
             }
           ]
         }
@@ -230,7 +230,7 @@ describe('Query.referralByLegacyId', () => {
           data: [
             {
               referralKey: '745cbb4b67a4d37caadb09f438da7322',
-              jobSlug: '1234567890'
+              slug: '1234567890'
             }
           ]
         }

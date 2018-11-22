@@ -167,7 +167,7 @@ const FIELDS = {
   },
   [TABLES.REFERRAL_KEY_TO_SLUG_MAP]: {
     REFERRAL_KEY: 'referralKey',
-    JOB_SLUG: 'jobSlug'
+    SLUG: 'slug'
   },
   [TABLES.RELATED_JOBS]: {
     FROM: 'from',

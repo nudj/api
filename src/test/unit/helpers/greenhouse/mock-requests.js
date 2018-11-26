@@ -95,6 +95,13 @@ function mockGreenhouseAPIRequests (props = {}) {
     .get('/v1/jobs')
     .query(() => true)
     .reply(200, [])
+
+  // Greenhouse post
+  nock('https://api.greenhouse.io')
+    .persist()
+    .post('/v1/partner/candidates')
+    .query(() => true)
+    .reply(200, [])
 }
 
 module.exports = {

@@ -2,6 +2,7 @@ const axios = require('axios')
 const { Base64 } = require('js-base64')
 const verifyGreenhouseIntegration = require('./verification')
 const syncWithGreenhouse = require('./sync')
+const postCandidateToGreenhouse = require('./post-candidate')
 
 function encodeKeys ({ partnerKey, harvestKey }) {
   // Greenhouse API keys are required to be suffixed with a colon and then base64 encoded
@@ -44,9 +45,11 @@ function setupPartnerMethods (authKey, authorisedUser) {
     return request.data
   }
 
-  async function post (type, params = {}) {
-    const request = await axios.post(`${baseURL}${type}`, {
-      params,
+  async function post (type, data = {}) {
+    const request = await axios({
+      url: `${baseURL}${type}`,
+      method: 'post',
+      data,
       headers
     })
 
@@ -66,7 +69,8 @@ function setupGreenhouseHelper ({ partnerKey, harvestKey, user }) {
     harvest,
     partner,
     verify: verifyGreenhouseIntegration({ harvest, partner }),
-    sync: syncWithGreenhouse({ harvest })
+    sync: syncWithGreenhouse({ harvest }),
+    postCandidate: postCandidateToGreenhouse({ partner })
   }
 }
 

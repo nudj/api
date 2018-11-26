@@ -1,10 +1,15 @@
 /* eslint-env mocha */
 const chai = require('chai')
+const nock = require('nock')
+const orderBy = require('lodash/orderBy')
 const expect = chai.expect
 
 const schema = require('../../../../gql/schema')
 const { values: integrationTypes } = require('../../../../gql/schema/enums/company-integration-types')
+const { values: hirerTypes } = require('../../../../gql/schema/enums/hirer-types')
+const { values: jobStatusTypes } = require('../../../../gql/schema/enums/job-status-types')
 const { executeQueryOnDbUsingSchema, shouldRespondWithGqlError } = require('../../helpers')
+const { mockGreenhouseAPIRequests } = require('../../helpers/greenhouse/mock-requests')
 
 const operation = `
   mutation CreateIntegration($type: CompanyIntegrationType!, $data: Data!) {
@@ -27,15 +32,36 @@ describe('Company.createIntegration', () => {
           id: 'company1'
         }
       ],
-      companyIntegrations: []
+      companyIntegrations: [],
+      people: [{
+        id: 'person1'
+      }],
+      hirers: [{
+        id: 'hirer1',
+        person: 'person1',
+        company: 'company1',
+        type: hirerTypes.ADMIN
+      }],
+      jobs: [
+        { id: 'job1', company: 'company1', status: jobStatusTypes.PUBLISHED },
+        { id: 'job2', company: 'company1', status: jobStatusTypes.PUBLISHED },
+        { id: 'job3', company: 'company2', status: jobStatusTypes.ARCHIVED },
+        { id: 'job4', company: 'company1', status: jobStatusTypes.ARCHIVED }
+      ]
     }
+  })
+
+  afterEach(() => {
+    nock.cleanAll()
   })
 
   describe('when type is valid', () => {
     beforeEach(() => {
+      mockGreenhouseAPIRequests()
       variables = {
         type: integrationTypes.GREENHOUSE,
         data: {
+          user: 'trump@bing.com',
           this_is_a_specific_key_needed_for_this_integration: 'creamy_fish',
           no_way: 'folks',
           leaderOfTheFreeWorld: true,
@@ -58,6 +84,7 @@ describe('Company.createIntegration', () => {
       expect(newIntegration).to.have.property('type', integrationTypes.GREENHOUSE)
       expect(newIntegration).to.have.property('company', 'company1')
       expect(newIntegration).to.have.property('data').to.deep.equal({
+        user: 'trump@bing.com',
         this_is_a_specific_key_needed_for_this_integration: 'creamy_fish',
         no_way: 'folks',
         leaderOfTheFreeWorld: true,
@@ -77,8 +104,19 @@ describe('Company.createIntegration', () => {
       expect(db.companies[0]).to.have.property('ats', integrationTypes.GREENHOUSE)
     })
 
+    it('updates existing jobs to have `status` value of `BACKUP`', async () => {
+      await executeQueryOnDbUsingSchema({ operation, variables, db, schema })
+      const jobs = orderBy(db.jobs, ['company'])
+
+      expect(jobs[0]).to.have.property('status', jobStatusTypes.BACKUP)
+      expect(jobs[1]).to.have.property('status', jobStatusTypes.BACKUP)
+      expect(jobs[2]).to.have.property('status', jobStatusTypes.BACKUP)
+      expect(jobs[3]).to.have.property('status', jobStatusTypes.ARCHIVED)
+    })
+
     describe('when a company integration already exists', () => {
       beforeEach(() => {
+        mockGreenhouseAPIRequests()
         db = {
           companies: [
             {
@@ -137,6 +175,45 @@ describe('Company.createIntegration', () => {
 
       shouldRespondWithGqlError({
         message: 'Variable "$type" got invalid value "TRUMP".\nExpected type "CompanyIntegrationType", found "TRUMP".'
+      })(result)
+    })
+  })
+
+  describe('when verification fails', () => {
+    beforeEach(() => {
+      nock('https://harvest.greenhouse.io')
+        .get('/v1/job_posts')
+        .query(() => true)
+        .reply(200)
+      nock('https://harvest.greenhouse.io')
+        .get('/v1/jobs')
+        .query(() => true)
+        .reply(200)
+      nock('https://api.greenhouse.io')
+        .get('/v1/partner/current_user')
+        .query(() => true)
+        .reply(401, {
+          message: 'Invalid Basic Auth credentials'
+        })
+
+      variables = {
+        type: integrationTypes.GREENHOUSE,
+        data: {
+          user: 'trump@bing.com',
+          this_is_a_specific_key_needed_for_this_integration: 'creamy_fish',
+          no_way: 'folks',
+          leaderOfTheFreeWorld: true,
+          bing_bing_bong_bong: ['You', 'know', 'what', 'this', 'is', 'right?']
+        }
+      }
+    })
+
+    it('throws an error', async () => {
+      const result = await executeQueryOnDbUsingSchema({ operation, variables, db, schema })
+
+      shouldRespondWithGqlError({
+        message: 'Verification failed',
+        path: [ 'company', 'createIntegration' ]
       })(result)
     })
   })

@@ -5,6 +5,8 @@ module.exports = rootEnum({
   values: [
     'DRAFT',
     'PUBLISHED',
-    'ARCHIVED'
+    'ARCHIVED',
+    'DELETED',
+    'BACKUP'
   ]
 })

@@ -36,7 +36,8 @@ const TABLES = {
   SURVEY_ANSWER_CONNECTIONS: 'surveyAnswerConnections',
   SURVEY_QUESTIONS: 'surveyQuestions',
   SURVEY_QUESTION_TAGS: 'surveyQuestionTags',
-  TAGS: 'tags'
+  TAGS: 'tags',
+  ATS_JOBS: 'atsJobs'
 }
 const TABLES_INVERTED = invert(TABLES)
 const FIELDS = {
@@ -56,6 +57,11 @@ const FIELDS = {
     PERSON: 'person',
     JOB: 'job',
     REFERRAL: 'referral'
+  },
+  [TABLES.ATS_JOBS]: {
+    COMPANY: 'company',
+    JOB_ID: 'jobId',
+    EXTERNAL_ID: 'externalId'
   },
   [TABLES.COMPANIES]: {
     NAME: 'name',

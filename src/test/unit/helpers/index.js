@@ -5,21 +5,23 @@ const expect = chai.expect
 
 const { transaction, store } = require('../../../gql/adaptors/lodash')
 
+const createTestContext = db => ({
+  web: {
+    protocol: 'https',
+    hostname: process.env.WEB_HOSTNAME
+  },
+  hire: {
+    protocol: 'https',
+    hostname: process.env.HIRE_HOSTNAME
+  },
+  userId: 'person1',
+  transaction: transaction({ db }),
+  store: store({ db }),
+  nosql: store({ db })
+})
+
 function executeQueryOnDbUsingSchema ({ schema, variables = {}, operation, db }) {
-  const testContext = {
-    web: {
-      protocol: 'https',
-      hostname: process.env.WEB_HOSTNAME
-    },
-    hire: {
-      protocol: 'https',
-      hostname: process.env.HIRE_HOSTNAME
-    },
-    userId: 'person1',
-    transaction: transaction({ db }),
-    store: store({ db }),
-    nosql: store({ db })
-  }
+  const testContext = createTestContext(db)
   return graphql(schema, operation, undefined, testContext, variables)
 }
 
@@ -160,6 +162,7 @@ function generateFakeContextWithStore (store) {
 }
 
 module.exports = {
+  createTestContext,
   executeQueryOnDbUsingSchema,
   expectPropertyReceivesValue,
   expectTypeIsFilterableBy,

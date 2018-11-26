@@ -21,14 +21,19 @@ function mockGreenhouseAPIRequests (props = {}) {
       'Authorization': `Basic ${Base64.encode(`${validHarvestKey}:`)}`
     }
   })
+    .persist()
     .get('/v1/jobs')
-    .reply(200)
+    .query(() => true)
+    .reply(200, [])
+
   nock('https://harvest.greenhouse.io', {
     reqheaders: {
       'Authorization': `Basic ${Base64.encode(`${validHarvestKey}:`)}`
     }
   })
+    .persist()
     .get('/v1/job_posts')
+    .query(() => true)
     .reply(200)
 
   // Invalid Harvest API key requests
@@ -37,7 +42,9 @@ function mockGreenhouseAPIRequests (props = {}) {
       'Authorization': `Basic ${Base64.encode(`${invalidHarvestKey}:`)}`
     }
   })
+    .persist()
     .get('/v1/jobs')
+    .query(() => true)
     .reply(200)
   nock('https://harvest.greenhouse.io', {
     reqheaders: {
@@ -45,6 +52,7 @@ function mockGreenhouseAPIRequests (props = {}) {
     }
   })
     .get('/v1/job_posts')
+    .query(() => true)
     .reply(401, {
       message: 'Invalid Basic Auth credentials'
     })
@@ -55,19 +63,25 @@ function mockGreenhouseAPIRequests (props = {}) {
       'Authorization': `Basic ${Base64.encode(`${badPermissionsHarvestKey}:`)}`
     }
   })
+    .persist()
     .get('/v1/jobs')
+    .query(() => true)
     .reply(200)
   nock('https://harvest.greenhouse.io', {
     reqheaders: {
       'Authorization': `Basic ${Base64.encode(`${badPermissionsHarvestKey}:`)}`
     }
   })
+    .persist()
     .get('/v1/job_posts')
+    .query(() => true)
     .reply(200)
 
   // Valid Partner API key request
   nock('https://api.greenhouse.io')
+    .persist()
     .get('/v1/partner/current_user')
+    .query(() => true)
     .reply(200)
 }
 

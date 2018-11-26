@@ -18,7 +18,8 @@ const createCompany = async (context, companyData, options = {}) => {
     location,
     description,
     onboarded = false,
-    client = false
+    client = false,
+    syncing = false
   } = companyData
 
   const slug = await makeUniqueSlug({
@@ -37,6 +38,7 @@ const createCompany = async (context, companyData, options = {}) => {
       description,
       client,
       onboarded,
+      syncing,
       hash: generateHash(128)
     }, isUndefined)
   })

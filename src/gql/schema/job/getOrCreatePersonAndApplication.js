@@ -57,9 +57,9 @@ module.exports = {
             type: 'companyIntegrations',
             filters: { company: company.id }
           })
-          const ats = fetchIntegrationHelper(integration)
-          await ats.postCandidate({
-            context,
+          const integrationHelper = fetchIntegrationHelper(integration)
+          await integrationHelper.postCandidate({
+            store: context.store,
             referral,
             person,
             company,

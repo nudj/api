@@ -149,7 +149,7 @@ describe('Job.createApplication', () => {
 
     it('posts the candidate to the ats', () => {
       expect(postCandidateStub).to.have.been.calledWith({
-        context,
+        store: context.store,
         application: { id: 'application1', job: 'job1', person: 'person1', referral: null },
         company: { ats: 'GREENHOUSE', id: 'company1' },
         job: { company: 'company1', id: 'job1', title: 'Head Trumper' },

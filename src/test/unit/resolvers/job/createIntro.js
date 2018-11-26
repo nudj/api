@@ -151,7 +151,7 @@ describe('Job.createIntro', () => {
       await createIntro(job, args, context)
 
       expect(postCandidateStub).to.have.been.calledWith({
-        context,
+        store: context.store,
         application: {
           consent: true,
           candidate: 'person5',

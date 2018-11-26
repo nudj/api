@@ -66,14 +66,17 @@ const baseDB = {
 }
 
 const operation = `
-  query {
+  query syncIntegration ($type: CompanyIntegrationType) {
     company (id: "company1") {
-      integrationByFilters (filters: { type: "GREENHOUSE" }) {
+      integrationByFilters(filters: { type: $type }) {
         sync
       }
     }
   }
 `
+const variables = {
+  type: 'GREENHOUSE'
+}
 
 describe('CompanyIntegration.sync', () => {
   beforeEach(() => {
@@ -87,7 +90,7 @@ describe('CompanyIntegration.sync', () => {
     describe('when the sync succeeds', () => {
       it('returns true', () => {
         const db = clone(baseDB)
-        return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
+        return expect(executeQueryOnDbUsingSchema({ operation, db, schema, variables })).to.eventually.deep.equal({
           data: {
             company: {
               integrationByFilters: {
@@ -117,7 +120,7 @@ describe('CompanyIntegration.sync', () => {
       }
 
       it('throws an error', async () => {
-        const result = await executeQueryOnDbUsingSchema({ operation, db, schema })
+        const result = await executeQueryOnDbUsingSchema({ operation, db, schema, variables })
         shouldRespondWithGqlError({
           message: 'Request failed with status code 401',
           locations: [{ line: 4, column: 7 }],

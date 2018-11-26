@@ -533,10 +533,25 @@ exports.up = async knex => {
       table.enum(TYPE, ENUMS.COMPANY_INTEGRATION_TYPES.values).notNullable()
       table.json(DATA).notNullable().comment('Object of integration authorisation secrets')
     })
+
+    .createTable(TABLES.ATS_JOBS, table => {
+      const {
+        COMPANY,
+        JOB_ID,
+        EXTERNAL_ID
+      } = FIELDS[TABLES.ATS_JOBS]
+
+      defaultConfig(table, knex)
+      defaultFields(table, knex)
+      relationType(COMPANY, TABLES.COMPANIES, table, knex).notNullable()
+      relationType(JOB_ID, TABLES.JOBS, table, knex).notNullable()
+      table.string(EXTERNAL_ID).notNullable()
+    })
 }
 
 exports.down = async knex => {
   await knex.schema
+    .dropTable(TABLES.ATS_JOBS)
     .dropTable(TABLES.COMPANY_INTEGRATIONS)
     .dropTable(TABLES.INTROS)
     .dropTable(TABLES.REFERRAL_KEY_TO_SLUG_MAP)

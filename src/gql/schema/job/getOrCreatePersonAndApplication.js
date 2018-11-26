@@ -2,6 +2,7 @@ const omitBy = require('lodash/omitBy')
 const isNil = require('lodash/isNil')
 const { logger } = require('@nudj/library')
 
+const fetchIntegrationHelper = require('../../lib/fetch-integration-helper')
 const intercom = require('../../lib/intercom')
 const mailer = require('../../lib/mailer')
 const { values: hirerTypes } = require('../enums/hirer-types')
@@ -49,6 +50,23 @@ module.exports = {
             referral: referral && referral.id
           }
         })
+
+        // Applicant details need to be sent to the company's integrated ATS
+        if (company.ats) {
+          const integration = await context.store.readOne({
+            type: 'companyIntegrations',
+            filters: { company: company.id }
+          })
+          const ats = fetchIntegrationHelper(integration)
+          await ats.postCandidate({
+            context,
+            referral,
+            person,
+            company,
+            job,
+            application
+          })
+        }
 
         // email admins with the great news!
         const adminHirers = await context.store.readAll({

@@ -73,7 +73,8 @@ const FIELDS = {
     CLIENT: 'client',
     HASH: 'hash',
     ONBOARDED: 'onboarded',
-    ATS: 'ats'
+    ATS: 'ats',
+    SYNCING: 'syncing'
   },
   [TABLES.COMPANY_INTEGRATIONS]: {
     TYPE: 'type',

@@ -47,7 +47,8 @@ exports.up = async knex => {
         CLIENT,
         HASH,
         ONBOARDED,
-        ATS
+        ATS,
+        SYNCING
       } = FIELDS[TABLES.COMPANIES]
 
       defaultConfig(table, knex)
@@ -61,6 +62,7 @@ exports.up = async knex => {
       urlType(URL, table, knex).nullable()
       table.boolean(CLIENT).defaultTo(false).notNullable()
       table.boolean(ONBOARDED).defaultTo(false).notNullable()
+      table.boolean(SYNCING).defaultTo(false).notNullable()
       table.unique(NAME, INDICES[TABLES.COMPANIES][NAME].name)
       table.unique(SLUG, INDICES[TABLES.COMPANIES][SLUG].name)
       table.enum(ATS, ENUMS.COMPANY_INTEGRATION_TYPES.values).nullable()

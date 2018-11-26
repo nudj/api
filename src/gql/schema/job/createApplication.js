@@ -2,6 +2,7 @@ const omitBy = require('lodash/omitBy')
 const isNil = require('lodash/isNil')
 const { logger } = require('@nudj/library')
 const intercom = require('../../lib/intercom')
+const fetchIntegrationHelper = require('../../lib/fetch-integration-helper')
 
 module.exports = {
   typeDefs: `
@@ -51,10 +52,26 @@ module.exports = {
           }
         })
 
-        const { firstName, lastName, email } = person
-        const name = firstName && lastName ? `${firstName} ${lastName}` : null
+        // Applicant details need to be sent to the company's integrated ATS
+        if (company.ats) {
+          const integration = await context.store.readOne({
+            type: 'companyIntegrations',
+            filters: { company: company.id }
+          })
+          const ats = fetchIntegrationHelper(integration)
+          await ats.postCandidate({
+            context,
+            person,
+            company,
+            job,
+            application,
+            referral
+          })
+        }
 
         try {
+          const { firstName, lastName, email } = person
+          const name = firstName && lastName ? `${firstName} ${lastName}` : null
           const lead = await intercom.fetchLeadBy({ email })
 
           if (lead && lead.id) {

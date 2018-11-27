@@ -1,15 +1,15 @@
 const omitBy = require('lodash/omitBy')
 const omit = require('lodash/omit')
 const isUndefined = require('lodash/isUndefined')
+const mapKeys = require('lodash/mapKeys')
+const camelCase = require('lodash/camelCase')
 const generateHash = require('hash-generator')
-
-const { possessiveCase } = require('@nudj/library')
 
 const makeUniqueSlug = require('./make-unique-slug')
 const createJob = require('./create-job')
-const prismic = require('../prismic')
 const { enrichOrFetchEnrichedCompanyByName } = require('../clearbit')
-const { DUMMY_APPLICANT } = require('../constants')
+const prismic = require('../prismic')
+const { DUMMY_APPLICANT_EMAIL_ADDRESS } = require('../constants')
 const { values: jobStatusTypes } = require('../../schema/enums/job-status-types')
 
 const createCompany = async (context, companyData, options = {}) => {
@@ -45,7 +45,7 @@ const createCompany = async (context, companyData, options = {}) => {
   enrichOrFetchEnrichedCompanyByName(company, context)
 
   if (options.createDummyData) {
-    // Fetch dummy job copy
+    // Create dummy job
     const [ jobData ] = await prismic.fetchContent({
       type: 'mock-job',
       tags: ['mock-job'],
@@ -53,21 +53,21 @@ const createCompany = async (context, companyData, options = {}) => {
         title: 'title',
         bonus: 'bonus',
         location: 'location',
+        type: 'type',
         description: 'description'
       }
     })
     const job = await createJob(context, company, {
       ...omit(jobData, ['tags']), // Omit prismic tags
-      title: `${possessiveCase(company.name)} First Job`,
+      templateTags: [],
       status: jobStatusTypes.DRAFT
     })
 
-    const dummyApplicant = await context.sql.readOneOrCreate({
+    // Create dummy application
+    const dummyApplicant = await context.sql.readOne({
       type: 'people',
-      filters: { email: DUMMY_APPLICANT.email },
-      data: DUMMY_APPLICANT
+      filters: { email: DUMMY_APPLICANT_EMAIL_ADDRESS }
     })
-
     await context.sql.create({
       type: 'applications',
       data: {
@@ -76,6 +76,51 @@ const createCompany = async (context, companyData, options = {}) => {
         referral: null
       }
     })
+
+    // Create default survey
+    const [ defaultSurvey ] = await prismic.fetchContent({
+      type: 'default-survey',
+      tags: ['default-survey'],
+      keys: {
+        title: 'introTitle',
+        slug: 'slug',
+        description: 'introDescription',
+        questions: 'questions'
+      }
+    })
+    const survey = await context.sql.create({
+      type: 'surveys',
+      data: mapKeys(omit(defaultSurvey, [
+        'questions',
+        'tags'
+      ]), (value, key) => camelCase(key))
+    })
+    const questions = await Promise.all(defaultSurvey.questions.map(question => {
+      return context.sql.create({
+        type: 'surveyQuestions',
+        data: {
+          ...question,
+          survey: survey.id,
+          required: true
+        }
+      })
+    }))
+    await Promise.all([
+      context.sql.update({
+        type: 'surveys',
+        id: survey.id,
+        data: {
+          questions: questions.map(q => q.id)
+        }
+      }),
+      context.sql.create({
+        type: 'companySurveys',
+        data: {
+          survey: survey.id,
+          company: company.id
+        }
+      })
+    ])
   }
 
   return company

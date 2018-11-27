@@ -9,6 +9,7 @@ module.exports = {
       introDescription: String
       outroTitle: String
       outroDescription: String
+      status: SurveyStatus!
     }
 
     input SurveyCreateInput {
@@ -16,6 +17,7 @@ module.exports = {
       introDescription: String
       outroTitle: String
       outroDescription: String
+      status: SurveyStatus
     }
 
     input SurveyUpdateInput {
@@ -24,6 +26,7 @@ module.exports = {
       outroTitle: String
       outroDescription: String
       surveyQuestions: [ID!]
+      status: SurveyStatus
     }
 
     input SurveyFilterInput {
@@ -31,6 +34,7 @@ module.exports = {
       slug: String
       dateTo: DateTime
       dateFrom: DateTime
+      status: SurveyStatus
     }
   `
 }

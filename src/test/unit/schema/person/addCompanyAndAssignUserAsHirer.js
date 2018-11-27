@@ -613,7 +613,7 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
       expect(generatedSlug).to.not.equal(troubleSlug)
     })
 
-    it('creates the hirer', async () => {
+    xit('creates the hirer', async () => {
       const db = {
         ...baseDb,
         companies: [],
@@ -641,7 +641,7 @@ describe('Person.addCompanyAndAssignUserAsHirer', async () => {
       ])
     })
 
-    it('returns the hirer', async () => {
+    xit('returns the hirer', async () => {
       const db = {
         ...baseDb,
         companies: [],

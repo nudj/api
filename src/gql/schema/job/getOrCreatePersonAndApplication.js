@@ -3,6 +3,7 @@ const omitBy = require('lodash/omitBy')
 const isNil = require('lodash/isNil')
 const { logger } = require('@nudj/library')
 const intercom = require('../../lib/intercom')
+const fetchIntegrationHelper = require('../../lib/fetch-integration-helper')
 
 module.exports = {
   typeDefs: `
@@ -47,6 +48,23 @@ module.exports = {
             referral: referral && referral.id
           }
         })
+
+        // Applicant details need to be sent to the company's integrated ATS
+        if (company.ats) {
+          const integration = await context.sql.readOne({
+            type: 'companyIntegrations',
+            filters: { company: company.id }
+          })
+          const ats = fetchIntegrationHelper(integration)
+          await ats.postCandidate({
+            context,
+            referral,
+            person,
+            company,
+            job,
+            application
+          })
+        }
 
         const { firstName, lastName, email } = person
         const name = firstName && lastName ? `${firstName} ${lastName}` : null

@@ -44,7 +44,7 @@ describe('Greenhouse post candidate', () => {
 
   it('calls the `candidates` endpoint on the Greenhouse `partner` api', async () => {
     await postCandidate({
-      context,
+      sql: context.sql,
       person,
       job,
       application
@@ -55,7 +55,7 @@ describe('Greenhouse post candidate', () => {
 
   it('formats the submitted data', async () => {
     await postCandidate({
-      context,
+      sql: context.sql,
       person,
       job,
       application
@@ -82,7 +82,7 @@ describe('Greenhouse post candidate', () => {
         url: 'https://the-lads.com'
       }
       await postCandidate({
-        context,
+        sql: context.sql,
         person,
         job,
         application
@@ -105,7 +105,7 @@ describe('Greenhouse post candidate', () => {
     it('adds the `notes` field to the submitted data', async () => {
       const notes = 'I am a note, and I say: Huzzah!'
       await postCandidate({
-        context,
+        sql: context.sql,
         person,
         job,
         application,
@@ -137,7 +137,7 @@ describe('Greenhouse post candidate', () => {
         person: 'the_referral_person'
       }
       await postCandidate({
-        context,
+        sql: context.sql,
         person,
         job,
         application,

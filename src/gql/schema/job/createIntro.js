@@ -1,5 +1,6 @@
 const mailer = require('../../lib/mailer')
 const { values: hirerTypes } = require('../enums/hirer-types')
+const fetchIntegrationHelper = require('../../lib/fetch-integration-helper')
 
 module.exports = {
   typeDefs: `
@@ -53,6 +54,23 @@ module.exports = {
             notes
           }
         })
+
+        // Applicant details need to be sent to the company's integrated ATS
+        if (company.ats) {
+          const integration = await context.sql.readOne({
+            type: 'companyIntegrations',
+            filters: { company: company.id }
+          })
+          const ats = fetchIntegrationHelper(integration)
+          await ats.postCandidate({
+            context,
+            person,
+            company,
+            job,
+            application: intro, // Purely for the ID for reference
+            notes
+          })
+        }
 
         // email admins with the great news!
         const adminHirers = await context.sql.readAll({

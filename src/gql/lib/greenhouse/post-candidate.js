@@ -1,21 +1,21 @@
 const { omitUndefined } = require('@nudj/library')
 
 function postCandidateToGreenhouse ({ partner }) {
-  return async ({ context, person, job, application, referral, notes }) => {
+  return async ({ sql, person, job, application, referral, notes }) => {
     const {
       email,
       firstName: first_name,
       lastName: last_name,
       url
     } = person
-    const { externalId: job_id } = await context.sql.readOne({
+    const { externalId: job_id } = await sql.readOne({
       type: 'atsJobs',
       filters: { jobId: job.id }
     })
 
     let referralDetails
     if (referral && referral.id && referral.person) {
-      const referralPerson = await context.sql.readOne({
+      const referralPerson = await sql.readOne({
         type: 'people',
         id: referral.person
       })

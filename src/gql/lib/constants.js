@@ -11,7 +11,12 @@ const SLUG_GENERATORS = {
   companies: slugGenerators.field('name'),
   jobs: slugGenerators.field('title'),
   surveys: slugGenerators.field('introTitle'),
+  surveyQuestions: slugGenerators.field('title'),
   accessRequests: slugGenerators.random
+}
+
+const SLUG_FILTER_BY = {
+  surveyQuestions: ['survey']
 }
 
 const INTERCOM = {
@@ -30,6 +35,7 @@ module.exports = {
   INTERNAL_EMAIL_ADDRESS,
   INTERNAL_EMAIL_FROM,
   SLUG_GENERATORS,
+  SLUG_FILTER_BY,
   DUMMY_APPLICANT_EMAIL_ADDRESS,
   INTERCOM
 }

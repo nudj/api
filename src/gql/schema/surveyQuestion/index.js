@@ -2,11 +2,11 @@ module.exports = {
   typeDefs: `
     type SurveyQuestion {
       id: ID!
+      slug: String!
       created: DateTime!
       modified: DateTime!
       title: String!
       description: String
-      name: String!
       required: Boolean!
       type: SurveyQuestionType!
     }
@@ -14,7 +14,6 @@ module.exports = {
     input SurveyQuestionCreateInput {
       title: String!
       description: String
-      name: String!
       required: Boolean!
       type: SurveyQuestionType!
       tags: [ExpertiseTagType!]
@@ -23,7 +22,6 @@ module.exports = {
     input SurveyQuestionUpdateInput {
       title: String
       description: String
-      name: String
       required: Boolean
       type: SurveyQuestionType
       tags: [ExpertiseTagType!]
@@ -31,6 +29,7 @@ module.exports = {
 
     input SurveyQuestionFilterInput {
       id: ID
+      slug: String
       survey: ID
       dateTo: DateTime
       dateFrom: DateTime

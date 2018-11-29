@@ -2,6 +2,7 @@ const omit = require('lodash/omit')
 
 const { values: tagTypes } = require('../enums/tag-types')
 const { values: tagSources } = require('../enums/tag-sources')
+const makeUniqueSlug = require('../../lib/helpers/make-unique-slug')
 
 module.exports = {
   typeDefs: `
@@ -12,15 +13,29 @@ module.exports = {
   resolvers: {
     Mutation: {
       updateSurveyQuestion: async (root, args, context) => {
-        if (!args.data.tags) {
-          return context.store.update({
+        const {
+          data: rawData
+        } = args
+        const {
+          tags,
+          ...data
+        } = rawData
+
+        if (data.title) {
+          data.slug = await makeUniqueSlug({
             type: 'surveyQuestions',
-            id: args.id,
-            data: args.data
+            data,
+            context
           })
         }
 
-        const { tags = [] } = args.data
+        if (!tags) {
+          return context.store.update({
+            type: 'surveyQuestions',
+            id: args.id,
+            data
+          })
+        }
 
         const oldSurveyQuestionTags = await context.store.readAll({
           type: 'surveyQuestionTags',
@@ -34,7 +49,7 @@ module.exports = {
           })
         }))
 
-        const updatedTags = await Promise.all(tags.map(tag => {
+        const updatedTags = await Promise.all((tags || []).map(tag => {
           return context.store.readOneOrCreate({
             type: 'tags',
             filters: {

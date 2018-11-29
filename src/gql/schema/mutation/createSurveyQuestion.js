@@ -1,6 +1,6 @@
-const omit = require('lodash/omit')
 const { values: tagTypes } = require('../enums/tag-types')
 const { values: tagSources } = require('../enums/tag-sources')
+const makeUniqueSlug = require('../../lib/helpers/make-unique-slug')
 
 module.exports = {
   typeDefs: `
@@ -11,13 +11,25 @@ module.exports = {
   resolvers: {
     Mutation: {
       createSurveyQuestion: async (root, args, context) => {
-        const { data, survey } = args
-        const { tags = [] } = data
+        const {
+          data: rawData,
+          survey
+        } = args
+        const {
+          tags = [],
+          ...data
+        } = rawData
 
+        data.slug = await makeUniqueSlug({
+          type: 'surveyQuestions',
+          data,
+          context
+        })
+console.log('data.slug', data.slug)
         const surveyQuestion = await context.store.create({
           type: 'surveyQuestions',
           data: {
-            ...omit(args.data, ['tags']),
+            ...data,
             survey
           }
         })

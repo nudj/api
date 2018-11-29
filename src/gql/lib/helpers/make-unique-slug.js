@@ -1,23 +1,33 @@
-const { SLUG_GENERATORS } = require('../constants')
+const pick = require('lodash/pick')
+const {
+  SLUG_GENERATORS,
+  SLUG_FILTER_BY
+} = require('../constants')
 
-const makeUniqueSlug = async ({ type, data, context }) => {
+const makeUniqueSlug = async ({
+  type,
+  data,
+  context
+}) => {
   const makeSlug = SLUG_GENERATORS[type]
-  let slug = makeSlug(data)
+  const filterBy = SLUG_FILTER_BY[type] || []
+  const filters = pick(data, filterBy)
 
+  filters.slug = makeSlug(data)
   let slugExists = await context.store.readOne({
     type,
-    filters: { slug }
+    filters
   })
 
   while (slugExists) {
-    slug = makeSlug(data, true)
+    filters.slug = makeSlug(data, true)
     slugExists = await context.store.readOne({
       type,
-      filters: { slug }
+      filters
     })
   }
 
-  return slug
+  return filters.slug
 }
 
 module.exports = makeUniqueSlug

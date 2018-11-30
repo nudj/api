@@ -25,7 +25,7 @@ module.exports = {
           data,
           context
         })
-console.log('data.slug', data.slug)
+
         const surveyQuestion = await context.store.create({
           type: 'surveyQuestions',
           data: {

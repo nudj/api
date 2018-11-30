@@ -18,9 +18,9 @@ const operation = `
       data: $data
     ) {
       id
+      slug
       title
       description
-      name
       required
       type
     }
@@ -31,7 +31,6 @@ const variables = {
   data: {
     title: 'New title',
     description: 'New description',
-    name: 'New name',
     required: false,
     type: SurveyQuestionTypes.COMPANIES,
     tags: ['CEO']
@@ -47,9 +46,9 @@ describe('Mutation.updateSurveyQuestion', () => {
         surveyQuestions: [
           {
             id: 'surveyQuestion1',
+            slug: 'some-title',
             title: 'Old title',
             description: 'Old description',
-            name: 'Old name',
             required: true,
             type: SurveyQuestionTypes.CONNECTIONS
           }
@@ -81,9 +80,9 @@ describe('Mutation.updateSurveyQuestion', () => {
       })
       expect(db.surveyQuestions[0]).to.deep.equal({
         id: 'surveyQuestion1',
+        slug: 'new-title',
         title: 'New title',
         description: 'New description',
-        name: 'New name',
         required: false,
         type: SurveyQuestionTypes.COMPANIES
       })
@@ -165,9 +164,9 @@ describe('Mutation.updateSurveyQuestion', () => {
         .to.have.deep.property('data.updateSurveyQuestion')
         .to.deep.equal({
           id: 'surveyQuestion1',
+          slug: 'new-title',
           title: 'New title',
           description: 'New description',
-          name: 'New name',
           required: false,
           type: SurveyQuestionTypes.COMPANIES
         })
@@ -199,9 +198,9 @@ describe('Mutation.updateSurveyQuestion', () => {
         surveyQuestions: [
           {
             id: 'surveyQuestion1',
+            slug: 'old-title',
             title: 'Old title',
             description: 'Old description',
-            name: 'Old name',
             required: true,
             type: SurveyQuestionTypes.CONNECTIONS
           }
@@ -244,9 +243,9 @@ describe('Mutation.updateSurveyQuestion', () => {
       })
       expect(db.surveyQuestions[0]).to.deep.equal({
         id: 'surveyQuestion1',
+        slug: 'new-title',
         title: 'New title',
         description: 'New description',
-        name: 'New name',
         required: false,
         type: SurveyQuestionTypes.COMPANIES
       })

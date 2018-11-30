@@ -1,5 +1,3 @@
-const omit = require('lodash/omit')
-
 const { values: tagTypes } = require('../enums/tag-types')
 const { values: tagSources } = require('../enums/tag-sources')
 const makeUniqueSlug = require('../../lib/helpers/make-unique-slug')
@@ -82,7 +80,7 @@ module.exports = {
         return context.store.update({
           type: 'surveyQuestions',
           id: args.id,
-          data: omit(args.data, ['tags'])
+          data
         })
       }
     }

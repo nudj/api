@@ -1,4 +1,5 @@
 const { NotFound } = require('@nudj/library/errors')
+const makeUniqueSlug = require('../../lib/helpers/make-unique-slug')
 
 module.exports = {
   typeDefs: `
@@ -30,6 +31,14 @@ module.exports = {
         if (!companySurvey) {
           // survey does not belong to the company
           throw new NotFound('Survey not found')
+        }
+
+        if (data.introTitle) {
+          data.slug = await makeUniqueSlug({
+            type: 'surveys',
+            data,
+            context
+          })
         }
 
         return context.store.update({

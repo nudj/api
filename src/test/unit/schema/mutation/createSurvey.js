@@ -44,7 +44,6 @@ describe('Mutation.createSurvey', () => {
     let variables = {
       company: 'company1',
       data: {
-        slug: 'aided-recall-baby',
         introTitle: 'Some Intro Title',
         introDescription: 'Some intro decription',
         outroTitle: 'Some Outro Title',
@@ -67,13 +66,17 @@ describe('Mutation.createSurvey', () => {
     it('should create the survey', async () => {
       expect(db.surveys[0]).to.deep.equal({
         id: 'survey1',
-        slug: 'aided-recall-baby',
+        slug: 'some-intro-title',
         introTitle: 'Some Intro Title',
         introDescription: 'Some intro decription',
         outroTitle: 'Some Outro Title',
         outroDescription: 'Some outro description',
         surveyQuestions: []
       })
+    })
+
+    it('should create the survey with a generated slug', async () => {
+      expect(db.surveys[0]).to.have.property('slug', 'some-intro-title')
     })
 
     it('should create a companySurvey', async () => {
@@ -89,7 +92,7 @@ describe('Mutation.createSurvey', () => {
         .to.have.deep.property('data.createSurvey')
         .to.deep.equal({
           id: 'survey1',
-          slug: 'aided-recall-baby',
+          slug: 'some-intro-title',
           introTitle: 'Some Intro Title',
           introDescription: 'Some intro decription',
           outroTitle: 'Some Outro Title',
@@ -102,7 +105,6 @@ describe('Mutation.createSurvey', () => {
     let result
     let variables = {
       data: {
-        slug: 'aided-recall-baby',
         introTitle: 'Some Intro Title',
         introDescription: 'Some intro decription',
         outroTitle: 'Some Outro Title',
@@ -125,13 +127,17 @@ describe('Mutation.createSurvey', () => {
     it('should create the survey', async () => {
       expect(db.surveys[0]).to.deep.equal({
         id: 'survey1',
-        slug: 'aided-recall-baby',
+        slug: 'some-intro-title',
         introTitle: 'Some Intro Title',
         introDescription: 'Some intro decription',
         outroTitle: 'Some Outro Title',
         outroDescription: 'Some outro description',
         surveyQuestions: []
       })
+    })
+
+    it('should create the survey with a generated slug', async () => {
+      expect(db.surveys[0]).to.have.property('slug', 'some-intro-title')
     })
 
     it('should not create a companySurvey', async () => {
@@ -143,7 +149,7 @@ describe('Mutation.createSurvey', () => {
         .to.have.deep.property('data.createSurvey')
         .to.deep.equal({
           id: 'survey1',
-          slug: 'aided-recall-baby',
+          slug: 'some-intro-title',
           introTitle: 'Some Intro Title',
           introDescription: 'Some intro decription',
           outroTitle: 'Some Outro Title',

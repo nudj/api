@@ -41,6 +41,7 @@ const modules = [
   require('./company/surveysByFilters'),
   require('./company/updateIntegration'),
   require('./company/updateJob'),
+  require('./company/updateSurveyByFilters'),
   require('./companyIntegration'),
   require('./companyIntegration/company'),
   require('./companyIntegration/sync'),

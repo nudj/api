@@ -482,10 +482,6 @@ const SLUG_GENERATORS = {
   [TABLES.REFERRALS]: {
     generator: slugGenerators.random
   },
-  [TABLES.SURVEY_QUESTIONS]: {
-    generator: slugGenerators.field(FIELDS[TABLES.SURVEY_QUESTIONS].TITLE),
-    index: 'surveyQuestionsBySlugSurvey'
-  },
   [TABLES.COMPANIES]: {
     generator: slugGenerators.field(FIELDS[TABLES.COMPANIES].NAME),
     index: 'companiesBySlug'
@@ -498,9 +494,16 @@ const SLUG_GENERATORS = {
     generator: slugGenerators.field(FIELDS[TABLES.SURVEYS].INTRO_TITLE),
     index: 'surveysBySlug'
   },
+  [TABLES.SURVEY_QUESTIONS]: {
+    generator: slugGenerators.field(FIELDS[TABLES.SURVEY_QUESTIONS].TITLE),
+    index: 'surveyQuestionsBySlug'
+  },
   [TABLES.ACCESS_REQUESTS]: {
     generator: slugGenerators.random
   }
+}
+const SLUG_FILTER_BY = {
+  surveyQuestions: ['survey']
 }
 const COLLECTIONS = {
   JOB_VIEW_EVENTS: 'jobViewEvents',
@@ -515,6 +518,7 @@ module.exports = {
   ENUMS,
   INDICES,
   SLUG_GENERATORS,
+  SLUG_FILTER_BY,
   COLLECTIONS,
 
   // functions

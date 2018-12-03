@@ -142,6 +142,7 @@ const modules = [
   require('./surveyAnswer/person'),
   require('./surveyAnswer/surveyQuestion'),
   require('./surveyQuestion'),
+  require('./surveyQuestion/answerOfUser'),
   require('./surveyQuestion/survey'),
   require('./surveyQuestion/tags'),
   require('./tag'),

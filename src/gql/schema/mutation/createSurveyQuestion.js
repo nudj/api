@@ -11,23 +11,18 @@ module.exports = {
   resolvers: {
     Mutation: {
       createSurveyQuestion: async (root, args, context) => {
-        const { tags = [], ...surveyQuestionData } = args.data
+        const { tags = [], ...data } = args.data
 
-        const data = {
-          ...surveyQuestionData,
-          survey: args.survey
-        }
-        const slug = await makeUniqueSlug({
+        data.survey = args.survey
+        data.slug = await makeUniqueSlug({
           type: 'surveyQuestions',
           data,
           context
         })
+
         const surveyQuestion = await context.sql.create({
           type: 'surveyQuestions',
-          data: {
-            ...data,
-            slug
-          }
+          data
         })
 
         const { surveyQuestions } = await context.sql.readOne({

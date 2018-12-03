@@ -137,6 +137,7 @@ const modules = [
   require('./survey'),
   require('./survey/company'),
   require('./survey/createSurveyQuestion'),
+  require('./survey/updateSurveyQuestionByFilters'),
   require('./survey/surveyQuestions'),
   require('./survey/surveyQuestionByFilters'),
   require('./surveyAnswer'),

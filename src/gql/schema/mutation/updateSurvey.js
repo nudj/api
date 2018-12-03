@@ -1,3 +1,5 @@
+const makeUniqueSlug = require('../../lib/helpers/make-unique-slug')
+
 module.exports = {
   typeDefs: `
     extend type Mutation {
@@ -6,7 +8,15 @@ module.exports = {
   `,
   resolvers: {
     Mutation: {
-      updateSurvey: (root, args, context) => {
+      updateSurvey: async (root, args, context) => {
+        if (args.data.introTitle) {
+          args.data.slug = await makeUniqueSlug({
+            type: 'surveys',
+            data: args.data,
+            context
+          })
+        }
+
         return context.store.update({
           type: 'surveys',
           id: args.id,

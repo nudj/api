@@ -41,7 +41,7 @@ const baseDb = {
   }]
 }
 
-describe('Company.updateSurveyByFilters', () => {
+describe.only('Company.updateSurveyByFilters', () => {
   let db
   let result
 
@@ -54,7 +54,7 @@ describe('Company.updateSurveyByFilters', () => {
     result = undefined
   })
 
-  it('updates the survey', async () => {
+  it.only('updates the survey', async () => {
     expect(db.surveys[0]).to.deep.equal({
       id: 'survey1',
       slug: 'the-best-survey-youre-gonna-love-it',
@@ -66,6 +66,21 @@ describe('Company.updateSurveyByFilters', () => {
     expect(result).to.have.deep.property('data.company.updateSurveyByFilters').to.deep.equal({
       id: db.surveys[0].id,
       introTitle: db.surveys[0].introTitle
+    })
+  })
+
+  describe('when the `introTitle` field is updated', () => {
+    beforeEach(async () => {
+      db = clone(baseDb)
+      result = await executeQueryOnDbUsingSchema({ operation, db, schema, variables })
+    })
+
+    afterEach(() => {
+      result = undefined
+    })
+
+    it('updates the slug', async () => {
+      expect(db.surveys[0]).to.have.property('slug', 'bing-bing')
     })
   })
 

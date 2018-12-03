@@ -21,7 +21,7 @@ const variables = {
     slug: 'bing-bing'
   },
   data: {
-    title: 'Bing bing!'
+    title: 'Bing bing bong bong!'
   }
 }
 const baseDb = {
@@ -56,9 +56,9 @@ describe('Survey.updateSurveyQuestionByFilters', () => {
   it('updates the survey question', async () => {
     expect(db.surveyQuestions[0]).to.deep.equal({
       id: 'surveyQuestion1',
-      slug: 'bing-bing',
+      slug: 'bing-bing-bong-bong',
       survey: 'survey1',
-      title: 'Bing bing!'
+      title: 'Bing bing bong bong!'
     })
   })
 
@@ -66,6 +66,17 @@ describe('Survey.updateSurveyQuestionByFilters', () => {
     expect(result).to.have.deep.property('data.survey.updateSurveyQuestionByFilters').to.deep.equal({
       id: db.surveyQuestions[0].id,
       title: db.surveyQuestions[0].title
+    })
+  })
+
+  describe('when the `title` is updated', () => {
+    beforeEach(async () => {
+      db = clone(baseDb)
+      await executeQueryOnDbUsingSchema({ operation, db, schema, variables })
+    })
+
+    it('generates a new slug', async () => {
+      expect(db.surveyQuestions[0]).to.have.property('slug', 'bing-bing-bong-bong')
     })
   })
 

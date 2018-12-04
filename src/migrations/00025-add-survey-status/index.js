@@ -2,7 +2,7 @@ const { values: surveyStatuses } = require('../../gql/schema/enums/survey-status
 const { fetchAll } = require('../../lib')
 
 async function up ({ db, step }) {
-  await step('Add `status` property on existing surveys with value `ADMIN`', async () => {
+  await step('Add `status` property on existing surveys with value `PUBLISHED`', async () => {
     const surveysCollection = db.collection('surveys')
     const allSurveys = await fetchAll(db, 'surveys')
     await Promise.all(allSurveys.map(survey => surveysCollection.update(survey, {

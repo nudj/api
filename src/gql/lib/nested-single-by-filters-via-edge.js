@@ -1,5 +1,6 @@
 const { AppError } = require('@nudj/library/errors')
 const some = require('lodash/some')
+const find = require('lodash/find')
 
 module.exports = function nestedSingleByFiltersViaEdge (props = {}) {
   let {
@@ -32,7 +33,7 @@ module.exports = function nestedSingleByFiltersViaEdge (props = {}) {
         [name]: async (from, args, context) => {
           const [
             edges,
-            filteredItem
+            filteredItems
           ] = await Promise.all([
             context.sql.readAll({
               type: edgeCollection,
@@ -40,17 +41,19 @@ module.exports = function nestedSingleByFiltersViaEdge (props = {}) {
                 [fromEdgePropertyName]: from.id
               }
             }),
-            context.sql.readOne({
+            context.sql.readAll({
               type: toCollection,
               filters: args.filters
             })
           ])
-          if (filteredItem) {
-            const match = some(edges, edge => edge[toEdgePropertyName] === filteredItem.id)
-            return match ? filteredItem : null
-          } else {
-            return null
-          }
+
+          const match = find(filteredItems, filteredItem => {
+            return some(edges, edge => {
+              return edge[toEdgePropertyName] === filteredItem.id
+            })
+          })
+
+          return match || null
         }
       }
     }

@@ -41,7 +41,7 @@ const baseDb = {
   }]
 }
 
-describe.only('Company.updateSurveyByFilters', () => {
+describe('Company.updateSurveyByFilters', () => {
   let db
   let result
 
@@ -54,10 +54,10 @@ describe.only('Company.updateSurveyByFilters', () => {
     result = undefined
   })
 
-  it.only('updates the survey', async () => {
+  it('updates the survey', async () => {
     expect(db.surveys[0]).to.deep.equal({
       id: 'survey1',
-      slug: 'the-best-survey-youre-gonna-love-it',
+      slug: 'bing-bing',
       introTitle: 'Bing bing!'
     })
   })
@@ -97,6 +97,11 @@ describe.only('Company.updateSurveyByFilters', () => {
 
   describe('when the survey does not belong to the company', () => {
     it('throws an error', async () => {
+      db.surveys = [{
+        id: 'survey1',
+        slug: 'the-best-survey-youre-gonna-love-it',
+        introTitle: 'Bing bing, you know what that is, right?'
+      }]
       db.companySurveys = [{
         id: 'companySurvey1',
         company: 'differentCompany111',

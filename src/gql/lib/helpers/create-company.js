@@ -82,9 +82,10 @@ const createCompany = async (context, companyData, options = {}) => {
       type: 'default-survey',
       tags: ['default-survey'],
       keys: {
-        title: 'introTitle',
-        slug: 'slug',
-        description: 'introDescription',
+        introTitle: 'intro_title',
+        slug: 'survey_slug',
+        introDescription: 'intro_description',
+        status: 'status',
         questions: 'questions'
       }
     })

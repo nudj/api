@@ -1,4 +1,5 @@
 module.exports = {
+  readOneViaEdgeCollection: require('./read-one-via-edge-collection'),
   connectionsIndexFormatter: require('./connections-index-formatter'),
   createCompany: require('./create-company'),
   createJob: require('./create-job'),

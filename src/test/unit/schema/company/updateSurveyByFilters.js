@@ -109,7 +109,7 @@ describe('Company.updateSurveyByFilters', () => {
       }]
       const result = await executeQueryOnDbUsingSchema({ operation, db, schema, variables })
       shouldRespondWithGqlError({
-        message: 'Survey not found',
+        message: 'Survey by filters `{"slug":"the-best-survey-youre-gonna-love-it"}` not found',
         path: [ 'company', 'updateSurveyByFilters' ]
       })(result)
     })

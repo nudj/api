@@ -20,8 +20,8 @@ describe('Mutation.requestAccess', () => {
       '../../lib/mailer': {
         sendInternalEmail: mailerSendStub
       },
-      '../../lib/intercom': {
-        createUniqueLeadAndTag: () => {}
+      '@nudj/library/lib/analytics/intercom': {
+        users: { create: () => {} }
       }
     })
   })

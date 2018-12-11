@@ -1,4 +1,4 @@
-const intercom = require('../../lib/intercom')
+const intercom = require('@nudj/library/lib/analytics/intercom')
 const mailer = require('../../lib/mailer')
 
 module.exports = {
@@ -23,14 +23,15 @@ module.exports = {
           title,
           role
         } = args
-        intercom.createUniqueLeadAndTag({
-          name: `${firstName} ${lastName}`,
+        intercom.leads.create({
           email,
+          name: `${firstName} ${lastName}`,
           custom_attributes: {
             job_title: title,
             role
-          }
-        }, 'nudjee')
+          },
+          tags: ['nudjee']
+        })
         return mailer.sendInternalEmail({
           subject: 'Sign-up for Updates',
           html: `

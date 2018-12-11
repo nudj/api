@@ -2,7 +2,7 @@ const get = require('lodash/get')
 const { logger } = require('@nudj/library')
 
 const { sendGmail } = require('../../lib/google')
-const intercom = require('../../lib/intercom')
+const intercom = require('@nudj/library/lib/analytics/intercom')
 const { values: emailPreferences } = require('../enums/email-preference-types')
 
 const createConversation = async ({ context, type, to, person, threadId }) => {
@@ -32,9 +32,11 @@ const fetchEmail = async (context, personId) => {
 
 const trackEmailEvent = (email) => {
   try {
-    intercom.logEvent({
-      event_name: 'request sent',
-      email
+    intercom.users.logEvent({
+      user: { email },
+      event: {
+        name: 'request sent'
+      }
     })
   } catch (error) {
     logger('error', 'Intercom Error', error)

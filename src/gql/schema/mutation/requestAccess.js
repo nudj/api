@@ -1,4 +1,4 @@
-const intercom = require('../../lib/intercom')
+const intercom = require('@nudj/library/lib/analytics/intercom')
 const mailer = require('../../lib/mailer')
 
 module.exports = {
@@ -23,16 +23,15 @@ module.exports = {
           company,
           externalJobUrl
         } = args
-        intercom.createUniqueLeadAndTag({
-          name: `${firstName} ${lastName}`,
+        intercom.users.create({
           email,
-          companies: [
-            {
-              company_id: company.toLowerCase().split(' ').join('-'),
-              name: company
-            }
-          ]
-        }, 'hirer')
+          name: `${firstName} ${lastName}`,
+          companies: [{
+            company_id: company.toLowerCase().split(' ').join('-'),
+            name: company
+          }],
+          tags: ['hirer']
+        })
         return mailer.sendInternalEmail({
           subject: 'Request Access',
           html: `

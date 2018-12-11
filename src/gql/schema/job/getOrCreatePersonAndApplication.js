@@ -1,9 +1,9 @@
 const omitBy = require('lodash/omitBy')
 const isNil = require('lodash/isNil')
 const { logger } = require('@nudj/library')
+const intercom = require('@nudj/library/lib/analytics/intercom')
 
 const fetchIntegrationHelper = require('../../lib/fetch-integration-helper')
-const intercom = require('../../lib/intercom')
 const mailer = require('../../lib/mailer')
 const { values: hirerTypes } = require('../enums/hirer-types')
 
@@ -93,10 +93,10 @@ module.exports = {
         const name = firstName && lastName ? `${firstName} ${lastName}` : null
 
         try {
-          const lead = await intercom.fetchLeadBy({ email })
+          const lead = await intercom.leads.getBy({ email })
 
           if (lead && lead.id) {
-            await intercom.convertLeadToUser({ email, id: lead.id })
+            await intercom.leads.convertToUser(lead)
           } else {
             const intercomUserData = omitBy({
               email,
@@ -105,15 +105,17 @@ module.exports = {
                 lastJobAppliedFor: `${job.title} at ${company.name}`
               }
             }, isNil)
-            await intercom.createUser(intercomUserData)
+            await intercom.users.create(intercomUserData)
           }
 
-          await intercom.logEvent({
-            event_name: 'new-application',
-            email,
-            metadata: {
-              jobTitle: job.title,
-              company: company.name
+          await intercom.users.logEvent({
+            user: { email },
+            event: {
+              name: 'new-application',
+              metadata: {
+                jobTitle: job.title,
+                company: company.name
+              }
             }
           })
         } catch (error) {

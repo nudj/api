@@ -19,8 +19,8 @@ describe('Mutation.signUp', () => {
       '../../lib/mailer': {
         sendInternalEmail: mailerSendStub
       },
-      '../../lib/intercom': {
-        createUniqueLeadAndTag: () => {}
+      '@nudj/library/lib/analytics/intercom': {
+        leads: { create: () => {} }
       }
     })
   })

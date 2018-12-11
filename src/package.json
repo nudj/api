@@ -43,7 +43,6 @@
     "graphql": "0.10.3",
     "graphql-tools": "1.1.0",
     "hash-generator": "^0.1.0",
-    "intercom-client": "^2.9.4",
     "js-base64": "^2.1.9",
     "json2csv": "^4.2.1",
     "lodash": "4.17.5",

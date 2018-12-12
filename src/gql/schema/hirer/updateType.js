@@ -3,7 +3,7 @@ const updateIntercomTagsForHirer = require('../../lib/intercom/update-tags-for-h
 module.exports = {
   typeDefs: `
     extend type Hirer {
-      updateType(type: HirerType!): Hirer
+      updateType(type: HirerType!): HirerType
     }
   `,
   resolvers: {
@@ -17,7 +17,7 @@ module.exports = {
           }
         })
         await updateIntercomTagsForHirer(context, updatedHirer)
-        return updatedHirer
+        return updatedHirer.type
       }
     }
   }

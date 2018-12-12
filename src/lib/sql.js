@@ -437,9 +437,9 @@ const INDICES = merge(
         name: `${TABLES.REFERRAL_KEY_TO_SLUG_MAP}ByReferralKey`,
         fields: [F.REFERRAL_KEY_TO_SLUG_MAP.REFERRAL_KEY]
       },
-      [F.REFERRAL_KEY_TO_SLUG_MAP.JOB_SLUG]: {
+      [F.REFERRAL_KEY_TO_SLUG_MAP.SLUG]: {
         name: `${TABLES.REFERRAL_KEY_TO_SLUG_MAP}ByJobSlug`,
-        fields: [F.MESSAGE_EVENTS.JOB_SLUG]
+        fields: [F.REFERRAL_KEY_TO_SLUG_MAP.SLUG]
       }
     }
   }

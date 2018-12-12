@@ -1,0 +1,45 @@
+version: '1.0'
+
+steps:
+
+  build_production:
+    title: Build
+    type: build
+    image_name: nudj/api
+    tag: production
+    dockerfile: Dockerfile
+    build_arguments:
+      - NPM_TOKEN=${{NPM_TOKEN}}
+
+  push_production:
+    title: Push
+    type: push
+    candidate: ${{build_production}}
+    tag: ${{CF_BRANCH}}
+    registry: ecr
+
+  publish:
+    title: Publish package to npm
+    image: ${{build_production}}
+    working_directory: 'IMAGE_WORK_DIR'
+    environment:
+      - NPM_TOKEN=${{NPM_TOKEN}}
+    commands:
+      - npm --no-git-tag-version version ${{CF_BRANCH}}
+      - npm publish
+
+  build_demo:
+    title: Build
+    type: build
+    image_name: nudj/api
+    tag: demo
+    dockerfile: Dockerfile
+    build_arguments:
+      - NPM_TOKEN=${{NPM_TOKEN}}
+
+  push_demo:
+    title: Push
+    type: push
+    candidate: ${{build_demo}}
+    tag: ${{CF_BRANCH}}-demo
+    registry: ecr

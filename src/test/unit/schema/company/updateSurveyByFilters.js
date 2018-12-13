@@ -31,13 +31,9 @@ const baseDb = {
   }],
   surveys: [{
     id: 'survey1',
+    company: 'company1',
     slug: 'the-best-survey-youre-gonna-love-it',
     introTitle: 'Bing bing, you know what that is, right?'
-  }],
-  companySurveys: [{
-    id: 'companySurvey1',
-    company: 'company1',
-    survey: 'survey1'
   }]
 }
 
@@ -57,6 +53,7 @@ describe('Company.updateSurveyByFilters', () => {
   it('updates the survey', async () => {
     expect(db.surveys[0]).to.deep.equal({
       id: 'survey1',
+      company: 'company1',
       slug: 'bing-bing',
       introTitle: 'Bing bing!'
     })
@@ -99,13 +96,9 @@ describe('Company.updateSurveyByFilters', () => {
     it('throws an error', async () => {
       db.surveys = [{
         id: 'survey1',
+        company: 'differentCompany111',
         slug: 'the-best-survey-youre-gonna-love-it',
         introTitle: 'Bing bing, you know what that is, right?'
-      }]
-      db.companySurveys = [{
-        id: 'companySurvey1',
-        company: 'differentCompany111',
-        survey: 'survey1'
       }]
       const result = await executeQueryOnDbUsingSchema({ operation, db, schema, variables })
       shouldRespondWithGqlError({

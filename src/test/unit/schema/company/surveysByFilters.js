@@ -18,32 +18,18 @@ describe('Company.surveysByFilters', () => {
     surveys: [
       {
         id: 'survey1',
+        company: 'company1',
         slug: 'surveySlug1'
       },
       {
         id: 'survey2',
+        company: 'company1',
         slug: 'surveySlug2'
       },
       {
         id: 'survey3',
-        slug: 'surveySlug3'
-      }
-    ],
-    companySurveys: [
-      {
-        id: 'companySurvey1',
-        company: 'company1',
-        survey: 'survey1'
-      },
-      {
-        id: 'companySurvey2',
-        company: 'company1',
-        survey: 'survey2'
-      },
-      {
-        id: 'companySurvey3',
         company: 'company2',
-        survey: 'survey3'
+        slug: 'surveySlug3'
       }
     ]
   }

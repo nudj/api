@@ -10,19 +10,13 @@ describe('Survey.company', () => {
     const db = {
       surveys: [
         {
-          id: 'survey1'
+          id: 'survey1',
+          company: 'company1'
         }
       ],
       companies: [
         {
           id: 'company1'
-        }
-      ],
-      companySurveys: [
-        {
-          id: 'companySurvey1',
-          company: 'company1',
-          survey: 'survey1'
         }
       ]
     }

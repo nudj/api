@@ -64,6 +64,16 @@ async function action ({ db, sql }) {
         ...relations
       }
 
+      // if survey, need to fetch company relation from old companySurveys collection
+      if (tableName === TABLES.SURVEYS) {
+        const companySurveysCollection = db.collection('companySurveys')
+        console.log('survey item', item)
+        const companySurveys = await companySurveysCollection.firstExample({
+          survey: item._key
+        })
+        data.company = idMaps[TABLES.COMPANIES][companySurveys.company]
+      }
+
       // if slug required and slug does not already exist on the item, generate new slug
       if (slugConfig && !item.slug) {
         data.slug = slugConfig.generator(data)

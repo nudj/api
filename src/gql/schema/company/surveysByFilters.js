@@ -1,12 +1,10 @@
-const { nestedAllByFiltersViaEdge } = require('../../lib')
+const { nestedAllByFilters } = require('../../lib')
 
-module.exports = nestedAllByFiltersViaEdge({
-  fromType: 'Company',
-  toType: 'Survey',
+module.exports = nestedAllByFilters({
+  parentType: 'Company',
+  type: 'Survey',
   name: 'surveysByFilters',
-  edgeCollection: 'companySurveys',
-  toCollection: 'surveys',
-  fromEdgePropertyName: 'company',
-  toEdgePropertyName: 'survey',
+  collection: 'surveys',
+  parentName: 'company',
   filterType: 'SurveyFilterInput'
 })

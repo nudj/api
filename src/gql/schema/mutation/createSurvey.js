@@ -11,7 +11,10 @@ module.exports = {
       createSurvey: async (root, args, context) => {
         const data = {
           ...args.data,
-          surveyQuestions: JSON.stringify([])
+          surveyQuestions: '[]'
+        }
+        if (args.company) {
+          data.company = args.company
         }
         data.slug = await makeUniqueSlug({
           type: 'surveys',
@@ -22,15 +25,6 @@ module.exports = {
           type: 'surveys',
           data
         })
-        if (args.company) {
-          await context.sql.create({
-            type: 'companySurveys',
-            data: {
-              company: args.company,
-              survey: survey.id
-            }
-          })
-        }
         return survey
       }
     }

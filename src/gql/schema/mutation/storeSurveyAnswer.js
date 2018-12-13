@@ -41,7 +41,7 @@ module.exports = {
           })
         }
 
-        const existingConnectionIds = existingConnections.map(c => c.connection)
+        const existingConnectionIds = existingConnections.map(c => `${c.connection}`)
         const connectionsToAdd = difference(latestConnectionIds, existingConnectionIds)
         const connectionsToRemove = difference(existingConnectionIds, latestConnectionIds)
         await Promise.all([

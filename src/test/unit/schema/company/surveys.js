@@ -22,38 +22,23 @@ const baseData = {
   ],
   surveys: [
     {
-      id: 'survey1'
+      id: 'survey1',
+      company: 'company1'
     },
     {
-      id: 'survey2'
+      id: 'survey2',
+      company: 'company1'
     },
     {
-      id: 'survey3'
+      id: 'survey3',
+      company: 'company2'
     }
   ]
 }
 
 describe('Company.surveys', () => {
   it('should fetch all surveys relating to the company', async () => {
-    const db = merge(baseData, {
-      companySurveys: [
-        {
-          id: 'companySurvey1',
-          company: 'company1',
-          survey: 'survey1'
-        },
-        {
-          id: 'companySurvey2',
-          company: 'company1',
-          survey: 'survey2'
-        },
-        {
-          id: 'companySurvey3',
-          company: 'company2',
-          survey: 'survey3'
-        }
-      ]
-    })
+    const db = baseData
     return expect(executeQueryOnDbUsingSchema({ operation, db, schema })).to.eventually.deep.equal({
       data: {
         companies: [
@@ -75,6 +60,10 @@ describe('Company.surveys', () => {
   it('should return empty array if no matches', async () => {
     const db = merge(baseData, {
       surveys: [
+        {
+          id: 'survey1',
+          company: 'company2'
+        },
         {
           id: 'survey1',
           company: 'company2'

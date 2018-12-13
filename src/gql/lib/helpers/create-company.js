@@ -53,7 +53,6 @@ const createCompany = async (context, companyData, options = {}) => {
         title: 'title',
         bonus: 'bonus',
         location: 'location',
-        type: 'type',
         description: 'description'
       }
     })
@@ -90,10 +89,14 @@ const createCompany = async (context, companyData, options = {}) => {
     })
     const survey = await context.sql.create({
       type: 'surveys',
-      data: mapKeys(omit(defaultSurvey, [
-        'questions',
-        'tags'
-      ]), (value, key) => camelCase(key))
+      data: {
+        ...mapKeys(omit(defaultSurvey, [
+          'questions',
+          'tags'
+        ]), (value, key) => camelCase(key)),
+        company: company.id,
+        surveyQuestions: '[]'
+      }
     })
     const questions = await Promise.all(defaultSurvey.questions.map(question => {
       return context.sql.create({
@@ -105,22 +108,13 @@ const createCompany = async (context, companyData, options = {}) => {
         }
       })
     }))
-    await Promise.all([
-      context.sql.update({
-        type: 'surveys',
-        id: survey.id,
-        data: {
-          questions: JSON.stringify(questions.map(q => q.id))
-        }
-      }),
-      context.sql.create({
-        type: 'companySurveys',
-        data: {
-          survey: survey.id,
-          company: company.id
-        }
-      })
-    ])
+    await context.sql.update({
+      type: 'surveys',
+      id: survey.id,
+      data: {
+        surveyQuestions: JSON.stringify(questions.map(q => q.id))
+      }
+    })
   }
 
   return company

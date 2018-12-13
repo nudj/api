@@ -52,3 +52,9 @@ standardFix:
 		-v $(CWD)/src/test:/usr/src/test \
 		$(IMAGEDEV) \
 		/bin/zsh -c './node_modules/.bin/standard --fix'
+
+localMigration:
+	@$(DOCKERCOMPOSE) exec $(APP) /bin/zsh -c 'node_modules/.bin/knex migrate:$(TYPE)'
+
+localEvacuation:
+	@$(DOCKERCOMPOSE) exec $(APP) /bin/zsh -c 'node ./scripts 00011-arango-to-mysql'

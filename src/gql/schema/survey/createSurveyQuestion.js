@@ -25,16 +25,20 @@ module.exports = {
           }
         })
 
-        const { surveyQuestions = [] } = await context.sql.readOne({
+        let { surveyQuestions = '[]' } = await context.sql.readOne({
           type: 'surveys',
           id: surveyQuestion.survey
         })
+
+        surveyQuestions = JSON.parse(surveyQuestions)
+        surveyQuestions = surveyQuestions.concat(surveyQuestion.id)
+        surveyQuestions = JSON.stringify(surveyQuestions)
 
         await context.sql.update({
           type: 'surveys',
           id: surveyQuestion.survey,
           data: {
-            surveyQuestions: surveyQuestions.concat(surveyQuestion.id)
+            surveyQuestions
           }
         })
 

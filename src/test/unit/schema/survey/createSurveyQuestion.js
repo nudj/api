@@ -32,7 +32,7 @@ describe('Survey.createSurveyQuestion', () => {
       surveys: [
         {
           id: 'survey1',
-          surveyQuestions: []
+          surveyQuestions: '[]'
         }
       ],
       surveyQuestions: [],
@@ -66,7 +66,7 @@ describe('Survey.createSurveyQuestion', () => {
       db,
       schema
     })
-    expect(db.surveys[0].surveyQuestions).to.deep.equal(['surveyQuestion1'])
+    expect(db.surveys[0].surveyQuestions).to.deep.equal(JSON.stringify(['surveyQuestion1']))
   })
 
   it('should generate a surveyQuestion slug', async () => {

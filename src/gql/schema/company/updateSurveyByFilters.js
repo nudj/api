@@ -1,5 +1,4 @@
 const makeUniqueSlug = require('../../lib/helpers/make-unique-slug')
-const readOneViaEdgeCollection = require('../../lib/helpers/read-one-via-edge-collection')
 
 module.exports = {
   typeDefs: `
@@ -12,14 +11,12 @@ module.exports = {
       updateSurveyByFilters: async (company, args, context) => {
         const { filters, data } = args
 
-        const survey = await readOneViaEdgeCollection({
-          store: context.sql,
-          fromData: company,
+        const survey = await context.sql.readOne({
           type: 'surveys',
-          edge: 'companySurveys',
-          fromPropertyName: 'company',
-          toPropertyName: 'survey',
-          filters
+          filters: {
+            ...filters,
+            company: company.id
+          }
         })
 
         if (!survey) {
@@ -32,6 +29,10 @@ module.exports = {
             data,
             context
           })
+        }
+
+        if (data.surveyQuestions && typeof data.surveyQuestions !== 'string') {
+          data.surveyQuestions = JSON.stringify(data.surveyQuestions)
         }
 
         return context.sql.update({

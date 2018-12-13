@@ -1,11 +1,9 @@
-const { nestedAllViaEdge } = require('../../lib')
+const { nestedAll } = require('../../lib')
 
-module.exports = nestedAllViaEdge({
-  fromType: 'Company',
-  toType: 'Survey',
+module.exports = nestedAll({
+  parentType: 'Company',
+  parentName: 'company',
+  type: 'Survey',
   name: 'surveys',
-  edgeCollection: 'companySurveys',
-  toCollection: 'surveys',
-  fromEdgePropertyName: 'company',
-  toEdgePropertyName: 'survey'
+  collection: 'surveys'
 })

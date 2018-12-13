@@ -59,7 +59,6 @@ const createCompany = async (context, companyData, options = {}) => {
     })
     const job = await createJob(context, company, {
       ...omit(jobData, ['tags']), // Omit prismic tags
-      templateTags: [],
       status: jobStatusTypes.DRAFT
     })
 

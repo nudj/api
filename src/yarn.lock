@@ -2,9 +2,10 @@
 # yarn lockfile v1
 
 
-"@nudj/library@7.4.0":
-  version "7.4.0"
-  resolved "https://registry.yarnpkg.com/@nudj/library/-/library-7.4.0.tgz#23f9fdf58c79443a43bf9b4dcd628f629843a90e"
+"@nudj/library@8.0.0":
+  version "8.0.0"
+  resolved "https://registry.yarnpkg.com/@nudj/library/-/library-8.0.0.tgz#8c99aada658bb157b24ae5deca1496ad88661d2b"
+  integrity sha512-CGEepXA6FRKO54dcRx9JufQbebQdmcfGeOulluE3mF983JtQhOuFEj55O7F9upLIvtO+QgSXV+1zqTZg2EgQPA==
   dependencies:
     axios "^0.16.2"
     date-fns "^1.29.0"

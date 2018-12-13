@@ -100,8 +100,7 @@ function syncWithGreenhouse ({ harvest }) {
             description: jobPost.content,
             location: (jobPost.location && jobPost.location.name) || '', // Field is required
             status: jobStatusConversions[greenhouseJob.status],
-            type: 'PERMANENT',
-            templateTags: []
+            type: 'PERMANENT'
           })
           await context.sql.create({
             type: 'atsJobs',

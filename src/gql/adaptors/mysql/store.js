@@ -1,6 +1,8 @@
 const omit = require('lodash/omit')
 const isNull = require('lodash/isNull')
 const isObject = require('lodash/isObject')
+const findIndex = require('lodash/findIndex')
+const times = require('lodash/times')
 
 const setupDataLoaderCache = require('./setup-dataloader-cache')
 const {
@@ -235,21 +237,41 @@ module.exports = ({ db }) => {
     }
 
     // array of data items corresponding with null entries in the `recordsByField` array above
-    const newData = recordsByField.reduce((newData, record, index) => {
+    const newData = recordsByField.reduce((newData, record, i) => {
+      const originalData = data[i]
       if (!record) {
-        newData = newData.concat(data[index])
+        // check if the item already exists in the dedupedData
+        let indexInDedupedData = findIndex(newData.dedupedData, item => getIndexKey(index, item) === getIndexKey(index, originalData))
+        // if record does not already exists in dedupedData
+        if (indexInDedupedData < 0) {
+          // add the data to the dedupedData for insertion
+          newData.dedupedData = newData.dedupedData.concat(originalData)
+          // set the index of this item so it can be restored in the correct place
+          indexInDedupedData = newData.dedupedData.length - 1
+        }
+        // cache the index of the record in dedupedData so it can be restored into the correct place later
+        newData.orderCache = newData.orderCache.concat(indexInDedupedData)
       }
       return newData
-    }, [])
+    }, {
+      dedupedData: [],
+      orderCache: []
+    })
 
     // insert new data into the db
-    await transaction(type).insert(newData)
+    await transaction(type).insert(newData.dedupedData)
 
     // fetch the id of the first new record created by the above insert
     let [ [ { lastId } ] ] = await transaction.raw('SELECT LAST_INSERT_ID() AS lastId;')
 
+    // generate the ids of the newly inserted records
+    const insertedRecordIds = times(newData.dedupedData.length, time => lastId + time)
+
+    // map the generated ids back into the order they were passed into the resolver
+    const orderedInsertedRecordIds = newData.orderCache.map(index => insertedRecordIds[index])
+
     // return array of ids (existing or newly inserted) in requested order
-    return recordsByField.map(record => (record && record.id) || lastId++)
+    return recordsByField.map(record => (record && record.id) || orderedInsertedRecordIds.shift())
   })
 
   return {

@@ -216,6 +216,7 @@ module.exports = ({ db }) => {
     // crucially it preserves the order as defined by `data`
     const recordsByField = await dataLoaderByField.loadMany(data.map(item => getIndexKey(index, item)))
 
+    // if is a slug index then we need to make sure there are no slug clashes
     if (slugIndex) {
       const dataLoaderBySlug = getDataLoader({
         type,

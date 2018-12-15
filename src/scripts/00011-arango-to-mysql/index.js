@@ -67,7 +67,6 @@ async function action ({ db, sql }) {
       // if survey, need to fetch company relation from old companySurveys collection
       if (tableName === TABLES.SURVEYS) {
         const companySurveysCollection = db.collection('companySurveys')
-        console.log('survey item', item)
         const companySurveys = await companySurveysCollection.firstExample({
           survey: item._key
         })

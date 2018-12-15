@@ -39,6 +39,8 @@ module.exports = {
           }
         })
 
+        console.log('roleData', roleData)
+
         const [
           personIds,
           roleIds,

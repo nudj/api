@@ -215,7 +215,7 @@ module.exports = ({ db }) => {
     // fetch all existing records returning a null where a record does not already exist
     // crucially it preserves the order as defined by `data`
     const recordsByField = await dataLoaderByField.loadMany(data.map(item => getIndexKey(index, item)))
-
+    console.log('recordsByField', type, recordsByField)
     if (slugIndex) {
       const dataLoaderBySlug = getDataLoader({
         type,
@@ -240,7 +240,7 @@ module.exports = ({ db }) => {
       }
       return newData
     }, [])
-
+    console.log('newData', type, newData)
     // insert new data into the db
     await transaction(type).insert(newData)
 
